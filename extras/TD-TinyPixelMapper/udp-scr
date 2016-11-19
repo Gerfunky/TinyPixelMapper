@@ -1,0 +1,26 @@
+# me - this DAT
+# scriptOp - the OP which is cooking
+#
+# press 'Setup Parameters' in the OP to call this function to re-create the parameters.
+def setupParameters(scriptOp):
+	page = scriptOp.appendCustomPage('Custom')
+	p = page.appendFloat('Valuea', label='FPS')
+	p = page.appendFloat('Valueb', label='Value B')
+	return
+
+# called whenever custom pulse parameter is pushed
+def onPulse(par):
+	outData = op('/project1/outData')		
+	op('/project1/udpout1').sendBytes(outData[0,0],50,50,50,50,50,50,50)
+	return
+
+def cook(scriptOp):
+	scriptOp.clear()
+	#outData = op('/project1/outData')
+	#op('/project1/udpout1').sendBytes(outData[0,0],50,50,50,50,50,50,50)
+	#scriptOp.copy(scriptOp.inputs[0])	# no need to call .clear() above when copying
+	#scriptOp.insertRow(['color', 'size', 'shape'], 0)
+	#scriptOp.appendRow(['red', '3', 'square'])
+	#scriptOp[1,0] += '**'
+
+	return

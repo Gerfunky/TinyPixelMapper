@@ -5,7 +5,7 @@ a Pixelmapping software for the ESP8266 for addressible LED Strips, with a OSC c
 The SW is working this Documentation + wiki is still missing.
 
 # TinyPixelMapper : What is it?
-It is a PixelMapping software for a ESP8266 chip. (will be changend to ESP32 in the future)
+It is a PixelMapping software for a ESP8266 chip. (will be changend to also support the ESP32 in the future)
 
 The main LED driving library is FastLED.
 
