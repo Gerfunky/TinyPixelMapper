@@ -1,0 +1,46 @@
+nav.primary{
+display: table;
+margin: 0 auto;
+ }
+nav.primary ul,
+nav.primary ul li {
+margin: 20px;
+}
+
+nav.primary select {
+display: none;
+width:  100%;
+height: 28px;
+margin: 21px 0;
+}
+
+nav.primary ul li {
+display: inline;
+float: left; 
+position: relative;
+}
+
+nav.primary ul li a {
+display: inline-block;
+line-height: 49px;
+padding:  0 14px;
+color: black;
+text-transform: uppercase;
+text-decoration: none;
+font-weight: bold;
+font-size: 24px;
+letter-spacing: 0.08em;
+background: ##999999;
+}
+
+nav.primary ul li a:hover {
+background: #11A1E0;
+cursor: pointer;
+}
+
+input[type="radio"], label.input[type="radio"] {
+    display: inline;
+}
+input[type="radio"] {
+  margin-left: 10px;
+}

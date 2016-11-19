@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>TinyPixelMapper</title>
+  <meta name="description" content="Portal">
+  <meta name="author" content="TinyPixelMapper">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!--
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  -->
+  
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.mod.css">
+  <link rel="stylesheet" href="css/skeleton.min.css">
+  <!--  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/dropdown.css"> -->
+
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body>
+
+	<script src="js/jquery-2.1.4.min.js"></script>
+
+  <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="band navigation">
+    <nav class="container primary">
+        <div class="sixteen columns">
+            <ul>
+                <li><a style="background: #33C3F0;" href="index.html">Home</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+
+  
+  <div class="section intro">
+    <div class="container">  	
+      <div class="row">
+      <h1 >Light the A</h1>
+      </div>
+      <div class="row" align="center">
+        
+          <h4 class="intro-heading">Setup for Artnet! </h4>
+			<h5>You have a max of 340 leds = 2 universes. You need to select the start universe max = 255 </h5>
+			<h5>note in madrix add 1 ! (eg 50 = 51 in madrix and other software)</h5>
+          		<form action="/index.html" method="post">
+				Artnet Start Universe <input type="number" name="ANSU" id="ANSU">
+				<input type="submit" value="Submit">
+				</form>
+				
+				<form action="/artnet-off" method="get">
+				<input type="Submit" value="Artnet-off">
+				</form>
+		  
+		
+		
+		<script type="text/javascript">
+			
+			$.get('/ansu', function (data) {
+				$("#ANSU").val(data);
+			});
+					
+          
+
+          </script>      
+		</div>
+		
+      </div>
+    </div>
+  </div>
+  
+
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>TinyPixelMapper</title>
+  <meta name="description" content="">
+  <meta name="author" content="TinyPixelMapper">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  
+  
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.mod.css">
+  <link rel="stylesheet" href="css/skeleton.min.css">
+  <!-- <link rel="stylesheet" href="css/fonts.css"> 
+  <link rel="stylesheet" href="css/dropdown.css"> -->
+
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body>
+
+  <script src="js/jquery-2.1.4.min.js"></script>
+  
+  <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="band navigation">
+    <nav class="container primary">
+        <div class="sixteen columns">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a style="background: #33C3F0;" href="settings.html">Settings</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+
+
+  
+  <div class="section intro">
+    <div class="container">  	
+      <div class="row">
+      <h2 >Wifi Settings</h2>
+      </div>
+      <div class="row">
+      	<label for="r1">Access Point Mode:
+        <input type="radio" id="r1" name="someRadioGroup"/> </label>
+        <label for="r2">Wifi Client Mode:
+        <input type="radio" id="r2" name="someRadioGroup"/> </label>
+      </div>
+      <div class="row">
+        <div class="twelve column" id="clientarea">
+          <h4 class="intro-heading">Wireless settings.</h4>
+          <form action="/settings.html" method="POST" id="ssidpasswordform">
+		  	<label for="ssid">SSID:</label>
+  			<input type="text" name="ssid" id="ssid">
+			<label for="password">Password:</label>
+		    <input type="text" name="password" id="password">
+			<input type="hidden" name="wifiMode" id="wifiMode" value="1">
+            <br/>
+		    <input class="button button-primary" type="submit" value="Submit">
+		  </form>          
+        </div>
+        <div class="twelve column" id="accesspointarea">
+          <h4 class="intro-heading">Access Point.</h4> 
+			
+			 <h5 >Open Accespoint no Passwrod</h5>
+			<form action="/settings.html" method="POST" id="set">
+		  	<label for="APname">APname</label>
+  			<input type="text" name="APname" id="APname">
+			<input type="hidden" name="wifiMode" id="wifiMode" value="0">
+            <br/>
+		    <input class="button button-primary" type="submit" value="Submit">
+		  </form>
+			
+        </div>
+        
+        
+        <script type="text/javascript">
+		    
+		
+			$.get('/ssid', function (data) {
+				$("#ssid").val(data);
+			});
+			
+			$.get('/APname', function (data) {
+				$("#APname").val(data);
+			});
+				
+				
+					
+			// Make sure that this only returns fake characters
+			$.get('/password', function (data) {
+    			$("#password").val(data);
+			});
+			
+			$.get('wifiMode', function (data) {
+				
+					
+				if (data.charAt(0) ==  '0')
+				{
+				  
+					$("#r2").prop("checked", false);
+					$("#r1").prop("checked", true);
+					
+					$('#clientarea').hide(); 
+					$('#accesspointarea').show(); 
+				}
+				else if (data.charAt(0) == '1')
+				{
+					
+					$("#r2").prop("checked", true);
+					$("#r1").prop("checked", false);
+					
+					$('#clientarea').show(); 
+					$('#accesspointarea').hide(); 
+				}
+			});
+          
+		  	$("#r1").change(function () {
+				$('#clientarea').hide(); 
+				$('#accesspointarea').show(); 
+			});
+			$("#r2").change(function () {
+				$('#clientarea').show(); 
+				$('#accesspointarea').hide(); 
+			});
+
+			
+			
+			
+          </script>        
+      </div>
+    </div>
+	<div class="container"> 
+		<div class="sixteen columns">
+			<h2 >Artnet</h2>
+			<h4 >You can swtich to Artnet mode. if you want to controll it over a lighting desk.  2 universes</h4>
+				<form action="/artnet-on" method="post">
+				<input type="Submit" value="Artnet-on">
+				</form>
+		</div>
+	 </div>
+	 <div class="container"> 
+		<div class="sixteen columns">
+			<h3 >FFT Slave mode</h3>
+			<h4 >Enable slave mode to recive FFT data over Wifi. needs a Master controller to send out the data</h4>
+				<form action="/index.html" method="post">
+				Slave <input type="radio" id="FFTS" value="0" name="FFTMS"/> 
+				<input type="radio" id="FFTM" value="1" name="FFTMS"/>  Master
+				<br>
+				Enable <input type="radio" id="FFTE" value="1" name="FFTE"/> 
+				<input type="radio" id="FFTE" value="0" name="FFTE"/>  Disable
+				<br>
+				
+				<input type="Submit" value="Set FFT mode">
+				</form>
+		</div>
+	 </div>
+  </div>
+
+ 
+  
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>

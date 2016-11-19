@@ -1,0 +1,52 @@
+python.exe C:\Users\Ger\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.2.0/tools/espota.py -i 172.16.222.20 -p 8266 --auth= -f C:\Users\Ger\AppData\Local\Temp\build9ac6983bae4dbdaab732e7007696032d.tmp/Wifi-ota-SPIFFS.skeleton.ino.bin 
+
+
+
+
+Update firmware CLI:
+install arduino 1.6+
+Start Arduino and open Preferences window.
+Enter http://arduino.esp8266.com/stable/package_esp8266com_index.json into Additional Board Manager URLs field. You can add multiple URLs, separating them with commas.
+Open Boards Manager from Tools > Board menu and find esp8266 platform.
+Select the version you need (2.2.0) from a drop-down box.
+Click install button.
+
+
+open a command prompt.
+cd to the FW file.
+enter the command below  ( check the correct path for espota.py and enter the correct ip)
+python.exe C:\Users\***USERNAME***\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.2.0/tools/espota.py -i 172.16.222.21 -p 8266 --auth= -f Wifi-ota-SPIFFS.skeleton.ino.adafruit.bin
+
+
+
+Update FW over HTTP:
+on OSC make shure the HTTP server is enabled (device settings).
+in the browser  surf to HTTP://**IP**//update 
+select the file and upload
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

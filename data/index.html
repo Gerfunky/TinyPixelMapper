@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>TinyPixelMapper</title>
+  <meta name="description" content="Portal">
+  <meta name="author" content="TinyPixelMapper">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!--
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  -->
+  
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.mod.css">
+  <link rel="stylesheet" href="css/skeleton.min.css">
+  <!--  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/dropdown.css"> -->
+
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body>
+
+	<script src="js/jquery-2.1.4.min.js"></script>
+
+  <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="band navigation">
+    <nav class="container primary">
+        <div class="sixteen columns">
+            <ul>
+                <li><a style="background: #33C3F0;" href="index.html">Home</a></li>
+                <li><a href="settings.html">Settings</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+
+  
+  <div class="section intro">
+    <div class="container">  	
+      <div class="row">
+      <h1 >Main Page</h1>
+      </div>
+      <div class="row" align="center">
+        
+          <h4 class="intro-heading">Fractal Control</h4>
+          		<form action="/index.html" method="post">
+				Play_mode <input type="text" name="play_mode" id="play_mode"><br>
+				<label for="bri">led_brightness</label>
+				<input type="range" name="bri" id="bri" value="200" min="0" max="255"><br>
+				<input type="submit" value="Submit">
+				</form>
+		  
+		 
+	
+	
+	
+	
+		
+		<script type="text/javascript">
+			
+			$.get('/play_mode', function (data) {
+				$("#play_mode").val(data);
+			});
+					
+			// Make sure that this only returns fake characters
+			$.get('/bri', function (data) {
+    			$("#bri").val(data);
+			});
+          
+
+          </script>      
+		</div>
+		
+      </div>
+    </div>
+  </div>
+  
+
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
