@@ -21,11 +21,25 @@ You can configre Strips, Forms(a collection of strips).
 
 There are effects that can be added to each strip/form.
 
+It should work with any ESP8266 it was designed on a Adafruit Huzzah and is configured to use a real ESP8266 PIN numbering.
+default pins are LED_DATA_PIN 12  and  LED_CLK_PIN 13  (leds.h).
+
+FFT data can be sent to the unit over udp. There is an app in programming to send the FFT data to the unit. 
+in the file  extras/TD-TinyPixelMapper/TD-TinyPixelMapper.toe is a TouchDesigner Sketch to send the audio imput from a mic out over udp to the units.
+it is possible to send the fft from a other Microcontroller over serial to the ESP8266, when the ESP32 setup is ready the system will setup to query a MSGEQ7 for the FFT data.
+
 
 
 ## Required Library's
-TODO
-
+[Arduino core for ESP82662.2.0, not tested on 2.3.0] (http://arduino.esp8266.com/stable/package_esp8266com_index.json)
+[FastLed](https://github.com/FastLED/FastLED "FastLED git Page ")
+[Arduino-CmdMessenger](https://github.com/thijse/Arduino-CmdMessenger)
+[RunningAverage](https://github.com/RobTillaart/Arduino/tree/master/libraries/RunningAverage)
+[QueueArray]http://playground.arduino.cc/Code/QueueArray
+[OSC]https://github.com/CNMAT/OSC
+[RemoteDebug](https://github.com/JoaoLopesF/RemoteDebug)
+[Artnet](https://github.com/natcl/Artnet)
+[time](http://playground.arduino.cc/Code/Time)
 
 
 ## Installation 
