@@ -39,9 +39,10 @@ it is possible to send the fft from a other Microcontroller over serial to the E
 
 [RunningAverage](https://github.com/RobTillaart/Arduino/tree/master/libraries/RunningAverage)
 
-[QueueArray]http://playground.arduino.cc/Code/QueueArray
+[QueueArray](http://playground.arduino.cc/Code/QueueArray)
 
-[OSC]https://github.com/CNMAT/OSC
+[OSC](https://github.com/CNMAT/OSC)
+[OSC](https://github.com/CNMAT/OSC)
 
 [RemoteDebug](https://github.com/JoaoLopesF/RemoteDebug)
 
