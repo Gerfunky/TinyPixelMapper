@@ -56,7 +56,7 @@ TODO in wiki ?
 
 ## Where we need help
 the editor under http://ip.address/edit takes to long to load.
-a nice fast editor would be nice
+a nice fast loading editor would be nice.
 
 
 ## Credit where credit is due
