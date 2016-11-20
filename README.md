@@ -32,13 +32,21 @@ it is possible to send the fft from a other Microcontroller over serial to the E
 
 ## Required Library's
 [Arduino core for ESP82662.2.0, not tested on 2.3.0] (http://arduino.esp8266.com/stable/package_esp8266com_index.json)
+
 [FastLed](https://github.com/FastLED/FastLED "FastLED git Page ")
+
 [Arduino-CmdMessenger](https://github.com/thijse/Arduino-CmdMessenger)
+
 [RunningAverage](https://github.com/RobTillaart/Arduino/tree/master/libraries/RunningAverage)
+
 [QueueArray]http://playground.arduino.cc/Code/QueueArray
+
 [OSC]https://github.com/CNMAT/OSC
+
 [RemoteDebug](https://github.com/JoaoLopesF/RemoteDebug)
+
 [Artnet](https://github.com/natcl/Artnet)
+
 [time](http://playground.arduino.cc/Code/Time)
 
 
