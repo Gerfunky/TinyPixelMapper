@@ -25,8 +25,9 @@ It should work with any ESP8266 it was designed on a Adafruit Huzzah and is conf
 default pins are LED_DATA_PIN 12  and  LED_CLK_PIN 13  (leds.h).
 
 FFT data can be sent to the unit over udp. There is an app in programming to send the FFT data to the unit. 
-in the file  extras/TD-TinyPixelMapper/TD-TinyPixelMapper.toe is a TouchDesigner Sketch to send the audio imput from a mic out over udp to the units.
-it is possible to send the fft from a other Microcontroller over serial to the ESP8266, when the ESP32 setup is ready the system will setup to query a MSGEQ7 for the FFT data.
+The file  extras/TD-TinyPixelMapper/TD-TinyPixelMapper.toe is a TouchDesigner Sketch to send the audio imput from a mic out over udp to the units.
+it is possible to send the fft from a other Microcontroller over serial to the ESP8266, when the ESP32 setup is ready the system will setup to query a MSGEQ7 for the FFT data. an example is in the project [TinyPixelMapper-Teensy-FFT](https://github.com/Gerfunky/TinyPixelMapper-Teensy-FFT)
+it uses a Teensy LC and a MSGEQ7 with a mic to get the FFT data and then sends it over serial to the ESP8266.
 
 
 
