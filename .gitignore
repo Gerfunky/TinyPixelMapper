@@ -7,6 +7,13 @@
 *.userosscache
 *.sln.docstates
 
+# Visual Micro
+*.vsarduino.h
+*.vcxproj
+*.vcxproj.filters
+*.sln
+
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
