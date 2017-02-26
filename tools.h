@@ -9,7 +9,7 @@
 	#include "WProgram.h"
 #endif
 										// DEFAULT settings if not loaded from the SPIFFS
-#define DEF_DEBUG_OUT false				// serial debugging
+#define DEF_DEBUG_OUT true				// serial debugging
 #define DEF_WIFI_MODE true				// true = client
 #define DEF_OTA_SERVER true				// enable the OTA server ?
 #define DEF_STATIC_IP_ENABLED true		// set static ip for startup  ?

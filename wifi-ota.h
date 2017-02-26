@@ -28,10 +28,10 @@
 	};
 
 																// DEFAULT setting if no config is loaded from the SPIFFS
-	#define DEF_AP_NAME			"TinyPixelMapper01"				// AP / Hostname
+	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP / Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
-	#define DEF_WIFI_PWD		"love4ALL"		// PW for wifi Client
-	#define DEF_AP_PASSWD		"love4ALL"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
+	#define DEF_WIFI_PWD		"love4all"		// PW for wifi Client
+	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
