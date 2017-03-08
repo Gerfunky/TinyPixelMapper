@@ -157,58 +157,58 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 , 0,50,50 };			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
-	{ 0,  0,  0,  1,  0 , 1 }  //0
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }	//9
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }	//19
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }	//29
-	,{ 0,  0,  0 , 1,  0 , 1 }
-	,{ 0,  0,  0 , 1,  0 , 1 }
+	{ 0,  0,  0,  1,  0 , 1 ,  0}  //0
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}	//9
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}	//19
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}	//29
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0}
 };
 
 struct form_Part_FL_Struct form_part[NR_FORM_PARTS] =					// Holds the Form settings
 {
-	{ 0, 1, 0, NUM_LEDS, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 } //7
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 }
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 } //15 
+	{ 0, 1, 0, NUM_LEDS, 0, 0, 0, 0, 0, 0,0, 1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0} //7
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0} //15 
 };
 
 byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_] =				// Strip Selection menu what efferct on/off/fft ....
@@ -759,13 +759,18 @@ void LEDS_pal_advance()
 	for (int i = 0; i < NR_STRIPS; i++) {
 
 		part[i].index = part[i].index + part[i].index_add_pal;
-
+		part[i].index_long = part[i].index_long + part[i].index_add_pal;
+		if (MAX_INDEX_LONG <= part[i].index_long)
+			part[i].index_long = part[i].index_long - MAX_INDEX_LONG;
 	}
 
 
 	for (int i = 0; i < NR_FORM_PARTS; i++) {
 
 		form_part[i].index = form_part[i].index + form_part[i].index_add_pal;
+		form_part[i].indexLong = form_part[i].indexLong + form_part[i].index_add_pal;
+		if (MAX_INDEX_LONG <= form_part[i].indexLong)
+			form_part[i].indexLong = form_part[i].indexLong - MAX_INDEX_LONG;
 	}
 
 	
@@ -778,6 +783,7 @@ void LEDS_pal_reset_index()
 		for (int i = 0; i < 8; i++) {
 
 			part[i + (z * 8)].index = part[i + (z * 8)].index_start;
+			part[i + (z * 8)].index_long = part[i + (z * 8)].index_start;
 
 		}
 	}
@@ -786,9 +792,132 @@ void LEDS_pal_reset_index()
 		for (int i = 0; i < 8; i++) {
 
 			form_part[i+(z * 8)].index = form_part[i+ (z * 8)].index_start;
+			form_part[i + (z * 8)].indexLong = form_part[i + (z * 8)].index_start;
 		}
 		}
 }
+
+
+CRGB ColorFrom_LONG_Palette(boolean pal,
+	uint16_t longIndex,
+	//uint8_t index,
+	uint8_t brightness = 255,
+	TBlendType blendType = LINEARBLEND) {
+
+
+	uint8_t indexC1 = 0;
+	uint8_t indexC2 = 0;
+	//uint8_t shortIndex = longIndex;
+	//debugMe(longIndex,false);
+	//debugMe("..", false);
+	if (255 < longIndex)
+	while (255 < longIndex)
+	{
+		longIndex = longIndex - 256;
+		indexC1++;
+	}
+
+	if (indexC1 != 15)
+		indexC2 = indexC1 + 1;
+	//else if (indexC1 != 15)
+		
+	//	debugMe(longIndex,false);
+	//debugMe("..", false);
+	//debugMe(indexC1);
+	//delay(100);
+	//debugMe(indexC1);
+
+	CRGB color1 =  ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
+	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2*16, brightness, blendType);
+	//nblend(CRGB& existing, const CRGB& overlay, fract8 amountOfOverlay)
+	CRGB outcolor = blend(color1, color2, longIndex);
+	//debugMe(String(String(color1.red) + "." + String(color1.green) + "." + String(color1.blue)));
+	if (blendType == NOBLEND)
+	//return (CRGB::Red);
+	return color1;
+	else 
+	return outcolor;
+
+
+}
+
+void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror)
+{
+	// fill the pallete with colors
+
+	TBlendType currentBlendingTB;
+	byte mirror_div = 1;
+	byte mirror_add = 0;
+
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= NUM_LEDS))
+	{
+
+		if (get_bool(BLEND_INVERT) == true)
+			currentBlending = !currentBlending;
+		if (currentBlending == true)
+			currentBlendingTB = LINEARBLEND;
+		else
+			currentBlendingTB = NOBLEND;
+
+		if (mirror == true) {
+			mirror_div = 2;
+
+			if (isODDnumber(number_of_leds) == true) {
+				mirror_add = 1; // dosmething
+			}
+
+
+		}
+
+		if (one_color == true) {
+			leds(Start_led, Start_led + number_of_leds - 1) = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
+
+		}
+		else {
+
+
+			if (reversed == true) {
+				//colorIndex = (colorIndex-(number_of_leds) * index_add);
+
+				for (int i = (Start_led + number_of_leds / mirror_div - 1 + mirror_add); i >Start_led - 1; i--) {
+					leds[i] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
+					colorIndex = colorIndex + index_add;
+				}
+
+				//index_add = -index_add;
+			}
+			else
+				for (int i = Start_led; i < (Start_led + number_of_leds / mirror_div + mirror_add); i++) {
+					leds[i] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
+					colorIndex = colorIndex + index_add;
+				}
+
+			if (mirror == true) {
+				LEDS_Copy_strip(Start_led + number_of_leds / 2 + mirror_add, -number_of_leds / 2, Start_led);
+				if (number_of_leds == 1) leds[Start_led] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
+
+			}
+
+		}
+
+
+		// fade RGB if we are not on full
+		if (led_cfg.r != 255)
+			for (int i = Start_led; i < Start_led + number_of_leds; i++)
+				leds[i].r = leds[i].r  * led_cfg.r / 255;
+		if (led_cfg.g != 255)
+			for (int i = Start_led; i < Start_led + number_of_leds; i++)
+				leds[i].g = leds[i].g * led_cfg.g / 255;
+		if (led_cfg.b != 255)
+			for (int i = Start_led; i < Start_led + number_of_leds; i++)
+				leds[i].b = leds[i].b * led_cfg.b / 255;
+
+
+	}
+}
+
+
+
 
 
 void LEDS_pal_fill(boolean targetPaletteX, boolean currentBlending, uint8_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror)
@@ -877,14 +1006,16 @@ void LEDS_pal_routing()
 
 		for (byte zp = 0; zp < _M_NR_STRIP_BYTES_; zp++)
 		{
-			if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_STRIP_], i) == true)) 		LEDS_pal_fill(bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index, part[i + (zp * 8)].index_add, part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
+			//if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_STRIP_], i) == true)) 		LEDS_pal_fill(bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index, part[i + (zp * 8)].index_add, part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
+			if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_STRIP_], i) == true)) 		LEDS_long_pal_fill(bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index_long, part[i + (zp * 8)].index_add, part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
 			if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_FIRE_], i) == true))		Fire2012WithPalette(part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
 		}
 	
 
 		for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)
 		{
-			if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_STRIP_], i) == true)) LEDS_pal_fill(bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_BLEND_], i), form_part[i + (zf * 8)].index, form_part[i + (zf * 8)].index_add, form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_ONE_COLOR_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
+			//if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_STRIP_], i) == true)) LEDS_pal_fill(bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_BLEND_], i), form_part[i + (zf * 8)].index, form_part[i + (zf * 8)].index_add, form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_ONE_COLOR_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
+			if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_STRIP_], i) == true)) LEDS_long_pal_fill(bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_BLEND_], i), form_part[i + (zf * 8)].indexLong, form_part[i + (zf * 8)].index_add, form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_ONE_COLOR_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
 			if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_FIRE_], i) == true)	)   Fire2012WithPalette(form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
 		}
 	}

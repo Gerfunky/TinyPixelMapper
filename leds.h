@@ -42,6 +42,8 @@
 
 #define BMP_MAX_TIME 3000				
 
+#define MAX_INDEX_LONG 4096			// must stay under this number!
+
 // FFT
 #define FFT_MIN_AUTO_TRIGGER 11					// Deafult min auto FFT trigger
 #define FFT_MAX_AUTO_TRIGGER 222				// Default Max auto FFT trigger
@@ -117,6 +119,7 @@
                         int index_add;		//
                     uint8_t index ;			// the index position
 					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition
+					uint16_t index_long; 
 	};
 
 
@@ -124,7 +127,7 @@
 
 	  struct form_Part_FL_Struct 
 	  {
-		  uint8_t	index_start;		// prev state A
+		  uint16_t	index_start;		// prev state A
 			int		index_add;			// how much to add onto the index on ....  CHECKME!!
 		  uint16_t	start_led;			// where the pallete starts
 		  uint16_t	nr_leds;			// how many ?  for mirror how many extra.
@@ -136,6 +139,7 @@
 		  uint8_t	index;				// the pallete index
 			int		rotate;				// ???
 		  uint8_t	index_add_pal;		// ???
+		  uint16_t	indexLong;
 	  };
 
 

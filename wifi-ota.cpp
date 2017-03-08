@@ -103,7 +103,7 @@ void debugMe(String input,boolean line = true)
 {
 	//debugMe(input);
 
-	if ((TelnetDebug.ative(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
 	{
 		if (line == true)
 			TelnetDebug.println(input);
@@ -126,7 +126,7 @@ void debugMe(float input, boolean line = true)
 {
 	//debugMe(input);
 
-	if ((TelnetDebug.ative(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
 	{
 		if (line == true)
 			TelnetDebug.println(String(input));
@@ -148,7 +148,7 @@ void debugMe(uint8_t input, boolean line = true)
 {
 	//debugMe(input);
 
-	if ((TelnetDebug.ative(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
 			TelnetDebug.println(String(input));
@@ -170,7 +170,7 @@ void debugMe(int input, boolean line = true)
 {
 	//debugMe(input);
 
-	if ((TelnetDebug.ative(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
 			TelnetDebug.println(String(input));
@@ -192,7 +192,7 @@ void debugMe(IPAddress input, boolean line = true)
 {
 	//debugMe(input);
 
-	if ((TelnetDebug.ative(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
 			TelnetDebug.println(input);
