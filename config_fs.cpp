@@ -161,6 +161,37 @@ String get_string_conf_value(File myFile, char *character)
 }
 
 
+int	get_IP_conf_value(File myFile, char *character)
+{
+	// When reading from a file give back a INT value
+
+	//char character;
+	String settingName;
+	String settingValue;
+
+	if (*character != ']') {
+		*character = myFile.read();
+		while ((myFile.available()) && (*character != ':') && *character != '.' && *character != ']') {
+			settingValue = settingValue + *character;
+			*character = myFile.read();
+		}
+
+		if (settingValue != NULL)
+		{
+			int outval = settingValue.toInt();
+			yield();
+
+			return outval;
+		}
+		else {
+			return 0;
+		}
+	}
+	else
+		return 0;
+}
+
+
 // fft settings
 
 boolean FS_FFT_read(uint8_t conf_nr) 
@@ -326,24 +357,24 @@ void	FS_wifi_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(STATIC_IP_ENABLED))));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[0])));
-		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[1])));
-		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[2])));
-		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[3])));
+		conf_file.print(String("." + String(wifi_cfg.ipStaticLocal[1])));
+		conf_file.print(String("." + String(wifi_cfg.ipStaticLocal[2])));
+		conf_file.print(String("." + String(wifi_cfg.ipStaticLocal[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipSubnet[0])));
-		conf_file.print(String(":" + String(wifi_cfg.ipSubnet[1])));
-		conf_file.print(String(":" + String(wifi_cfg.ipSubnet[2])));
-		conf_file.print(String(":" + String(wifi_cfg.ipSubnet[3])));
+		conf_file.print(String("." + String(wifi_cfg.ipSubnet[1])));
+		conf_file.print(String("." + String(wifi_cfg.ipSubnet[2])));
+		conf_file.print(String("." + String(wifi_cfg.ipSubnet[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipDGW[0])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDGW[1])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDGW[2])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDGW[3])));
+		conf_file.print(String("." + String(wifi_cfg.ipDGW[1])));
+		conf_file.print(String("." + String(wifi_cfg.ipDGW[2])));
+		conf_file.print(String("." + String(wifi_cfg.ipDGW[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipDNS[0])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDNS[1])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDNS[2])));
-		conf_file.print(String(":" + String(wifi_cfg.ipDNS[3])));
+		conf_file.print(String("." + String(wifi_cfg.ipDNS[1])));
+		conf_file.print(String("." + String(wifi_cfg.ipDNS[2])));
+		conf_file.print(String("." + String(wifi_cfg.ipDNS[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ntp_fqdn)));
 
@@ -410,10 +441,10 @@ boolean FS_wifi_read(uint8_t conf_nr = 0)
 				settingValue.toCharArray(wifi_cfg.pwd, settingValue.length() + 1);
 
 				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));
-				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipStaticLocal[i] = get_int_conf_value(conf_file, &character);
-				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipSubnet[i] = get_int_conf_value(conf_file, &character);
-				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDGW[i] = get_int_conf_value(conf_file, &character);
-				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDNS[i] = get_int_conf_value(conf_file, &character);
+				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipStaticLocal[i] = get_IP_conf_value(conf_file, &character);
+				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipSubnet[i] = get_IP_conf_value(conf_file, &character);
+				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDGW[i] = get_IP_conf_value(conf_file, &character);
+				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDNS[i] = get_IP_conf_value(conf_file, &character);
 			
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.ntp_fqdn, settingValue.length() + 1);
