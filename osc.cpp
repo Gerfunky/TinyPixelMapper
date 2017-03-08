@@ -574,10 +574,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 			switch (option_int) 
 			{
 				case 0:
-					part[strip_int + bit_int * 8].index_start -= osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start - osc_cfg.conf_multiply,0, MAX_INDEX_LONG);
 					break;
 				case 2:
-					part[strip_int + bit_int * 8].index_start += osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start + osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
 					break;
 			}
 
@@ -861,10 +861,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 
 			case 0:
-				form_part[form_int + bit_int * 8].index_start -= osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start - osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_start += osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start + osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
 				break;
 			}
 			outvalue = float(form_part[form_int + bit_int * 8].index_start);
