@@ -115,7 +115,7 @@
    {
 					uint16_t start_led ;	// where the pallete starts
                     uint16_t nr_leds;		// how many ?  for mirror how many extra.
-                    uint8_t index_start;	// prev state A
+					uint16_t index_start;	// prev state A
                         int index_add;		//
                     uint8_t index ;			// the index position
 					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition

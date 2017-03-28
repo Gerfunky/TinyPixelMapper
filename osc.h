@@ -18,6 +18,7 @@
 
 #define OSC_BUNDLE_SEND_COUNT 16				// how many OSC messages to send in one bundle.
 
+#define OSC_MULTIPLY_OPTIONS 11 
 
 struct osc_cfg_struct				// OSC configuration structure
 {

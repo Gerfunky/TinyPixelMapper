@@ -320,6 +320,175 @@ void osc_mc_send(String addr, float value)
 // OSC Settings MSG:/s
 
 
+
+
+void osc_multiply_send()
+{
+	for (uint8_t x = 1;x <= 11  ; x++ )
+	{
+		debugMe((String("/multipl/") + String(x) + String("/1")));
+		if (x != osc_cfg.conf_multiply)
+			osc_queu_MSG_float((String("/multipl/") + String(x) + String("/1")), 0);
+		else
+			osc_queu_MSG_float((String("/multipl/") + String(x) + String("/1")), 1); 
+		//debugMe((String("/multipl/") + String(x) + String("/1")));
+	}
+}
+
+uint16_t osc_miltiply_get()
+{
+	uint16_t value = 1;
+
+
+	switch (osc_cfg.conf_multiply)
+	{
+	case 1:
+		value = 1;
+
+		break;
+	case 2:
+		value = 10;
+
+		break;
+	case 3:
+		value = 100;
+
+		break;
+	case 4:
+		value = 8;
+
+		break;
+	case 5:
+		value = 16;
+
+		break;
+	case 6:
+		value = 32;
+
+		break;
+	case 7:
+		value = 64;
+
+		break;
+	case 8:
+		value = 128;
+
+		break;
+	case 9:
+		value = 256;
+
+		break;
+	case 10:
+		value = 512;
+
+		break;
+	case 11:
+		value = 1000;
+
+		break;
+
+	}
+
+
+	return value;
+}
+
+
+// recive conf multiply toggle
+void osc_multipl_rec(OSCMessage &msg, int addrOffset)
+{	// recive routing of Multiply ocs settings by 1 10 or 100
+
+	// OSC MESSAGE :/m/multipl/?/1
+	if (bool(msg.getFloat(0)) == true)
+	{
+		String select_mode_string;
+		// String select_bit_string;
+		char address[10];
+		bool switch_bool = false;
+
+		msg.getAddress(address, addrOffset + 1);
+		for (byte i = 0; i < sizeof(address); i++)
+		{
+			if (address[i] == '/')
+			{
+				switch_bool = true;
+
+			}
+			else if (switch_bool == false)
+			{
+				select_mode_string = select_mode_string + address[i];
+
+			}
+
+		}
+
+		//int select_mode_int = select_mode_string.toInt();
+		osc_cfg.conf_multiply = select_mode_string.toInt();
+		osc_multiply_send();
+		/*
+		if (bool(msg.getFloat(0)) == true)
+		{
+
+		switch (select_mode_int)
+		{
+		case 1:
+		osc_cfg.conf_multiply = 1;
+
+		break;
+		case 2:
+		osc_cfg.conf_multiply = 10;
+
+		break;
+		case 3:
+		osc_cfg.conf_multiply = 100;
+
+		break;
+		case 4:
+		osc_cfg.conf_multiply = 8;
+
+		break;
+		case 5:
+		osc_cfg.conf_multiply = 16;
+
+		break;
+		case 6:
+		osc_cfg.conf_multiply = 32;
+
+		break;
+		case 7:
+		osc_cfg.conf_multiply = 64;
+
+		break;
+		case 8:
+		osc_cfg.conf_multiply = 128;
+
+		break;
+		case 9:
+		osc_cfg.conf_multiply = 256;
+
+		break;
+		case 10:
+		osc_cfg.conf_multiply = 512;
+
+		break;
+		case 11:
+		osc_cfg.conf_multiply = 1000;
+
+		break;
+
+		}
+		} // end switch
+
+		//outbuffer = String("/multipl/1/1");
+		*/
+
+
+	} // end  new msg
+
+}
+
+
+
 #ifndef ARTNET_DISABLED
 void osc_rec_artnet_info(OSCMessage &msg, int addrOffset)
 {
@@ -377,10 +546,10 @@ void osc_rec_artnet_info(OSCMessage &msg, int addrOffset)
 		switch (row)
 		{
 		case 0:
-			artnet_cfg.startU = constrain(artnet_cfg.startU - osc_cfg.conf_multiply, 0, 255);
+			artnet_cfg.startU = constrain(artnet_cfg.startU -  osc_miltiply_get(), 0, 255);
 			break;
 		case 2:
-			artnet_cfg.startU = constrain(artnet_cfg.startU + osc_cfg.conf_multiply, 0, 255);
+			artnet_cfg.startU = constrain(artnet_cfg.startU +  osc_miltiply_get(), 0, 255);
 			break;
 		}
 		outvalue = artnet_cfg.startU;
@@ -391,10 +560,10 @@ void osc_rec_artnet_info(OSCMessage &msg, int addrOffset)
 		switch (row)
 		{
 		case 0:
-			artnet_cfg.numU = constrain(artnet_cfg.numU - osc_cfg.conf_multiply, 0, 4);
+			artnet_cfg.numU = constrain(artnet_cfg.numU -  osc_miltiply_get(), 0, 4);
 			break;
 		case 2:
-			artnet_cfg.numU = constrain(artnet_cfg.numU + osc_cfg.conf_multiply, 0, 4);
+			artnet_cfg.numU = constrain(artnet_cfg.numU +  osc_miltiply_get(), 0, 4);
 			break;
 		}
 		outvalue = artnet_cfg.numU;
@@ -574,10 +743,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 			switch (option_int) 
 			{
 				case 0:
-					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start - osc_cfg.conf_multiply,0, MAX_INDEX_LONG);
+					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start -  osc_miltiply_get(),0, MAX_INDEX_LONG-1);
 					break;
 				case 2:
-					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start + osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
+					part[strip_int + bit_int * 8].index_start = constrain(part[strip_int + bit_int * 8].index_start +  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
 					break;
 			}
 
@@ -590,10 +759,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 			switch (option_int) 
 			{
 				case 0:
-					part[strip_int + bit_int * 8].index_add -= osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_add -=  osc_miltiply_get();
 					break;
 				case 2:
-					part[strip_int + bit_int * 8].index_add += osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_add +=  osc_miltiply_get();
 					break;
 			}
 			outvalue = float(part[strip_int + bit_int * 8].index_add);
@@ -605,10 +774,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 			switch (option_int) 
 			{
 				case 0:
-					part[strip_int + bit_int * 8].index_add_pal -= osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_add_pal -=  osc_miltiply_get();
 					break;
 				case 2:
-					part[strip_int + bit_int * 8].index_add_pal += osc_cfg.conf_multiply;
+					part[strip_int + bit_int * 8].index_add_pal +=  osc_miltiply_get();
 					break;
 			}
 			outvalue = float(part[strip_int + bit_int * 8].index_add_pal);
@@ -622,7 +791,7 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int) 
 				{
 					case 0:
-						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led - osc_cfg.conf_multiply, 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
+						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
 						break;
 					case 1:
 						if (strip_int !=0 )
@@ -631,7 +800,7 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 							part[strip_int + bit_int * 8].start_led = part[ 7  + (bit_int- 1) * 8].start_led + part[7 + (bit_int-1) * 8].nr_leds;
 					break;
 					case 2:
-						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led + osc_cfg.conf_multiply, 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
+						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
 						break;
 				}
 			outvalue = float(part[strip_int + bit_int * 8].start_led);
@@ -643,10 +812,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int) 
 				{
 					case 0:
-						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds - osc_cfg.conf_multiply, 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
+						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
 						break;
 					case 2:
-						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds + osc_cfg.conf_multiply, 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
+						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
 						break;
 				}
 			outvalue = float(part[strip_int + bit_int * 8].nr_leds);
@@ -676,7 +845,7 @@ void osc_strips_settings_send(byte y) {
 
 		yield(); //delay(1); 
 	}
-
+	osc_multiply_send();
 
 }
 
@@ -783,7 +952,7 @@ void osc_forms_send(byte y) {
 		
 	}
 	//debugMe(String("forms  done"), true);
-
+	
 }
 
 void osc_forms_config_send(byte y) {
@@ -803,7 +972,7 @@ void osc_forms_config_send(byte y) {
  
 	}
 
-
+	osc_multiply_send();
 }
 
 void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
@@ -861,10 +1030,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 
 			case 0:
-				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start - osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
+				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start -  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start + osc_cfg.conf_multiply, 0, MAX_INDEX_LONG);
+				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start +  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
 				break;
 			}
 			outvalue = float(form_part[form_int + bit_int * 8].index_start);
@@ -873,10 +1042,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		if (address[0] == 'I' && address[1] == 'A') {
 			switch (option_int) {
 			case 0:
-				form_part[form_int + bit_int * 8].index_add -= osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_add -=  osc_miltiply_get();
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_add += osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_add +=  osc_miltiply_get();
 				break;
 			}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -889,10 +1058,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		if (address[0] == 'I' && address[1] == 'F') {
 			switch (option_int) {
 			case 0:
-				form_part[form_int + bit_int * 8].index_add_pal -= osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_add_pal -=  osc_miltiply_get();
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_add_pal += osc_cfg.conf_multiply;
+				form_part[form_int + bit_int * 8].index_add_pal +=  osc_miltiply_get();
 				break;
 			}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -907,9 +1076,9 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int)
 				{
 				case 0:
-					//form_part[select_bit_int + z * 8].start_led -= osc_cfg.conf_multiply;
+					//form_part[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
 
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led - osc_cfg.conf_multiply, 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				case 1:
 					if (form_int != 0)
@@ -919,8 +1088,8 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 					break;
 
 				case 2:
-					//form_part[select_bit_int + z * 8].start_led += osc_cfg.conf_multiply;
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led + osc_cfg.conf_multiply, 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					//form_part[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -935,10 +1104,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int)
 				{
 				case 0:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds - osc_cfg.conf_multiply, 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
 					break;
 				case 2:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds + osc_cfg.conf_multiply, 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
 					break;
 				}
 
@@ -970,11 +1139,11 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 					switch (option_int) 
 					{
 					case 0:
-						form_part[form_int + bit_int * 8].rotate = constrain(form_part[form_int + bit_int * 8].rotate - osc_cfg.conf_multiply, -(form_part[form_int + bit_int * 8].nr_leds) + 1, (form_part[form_int + bit_int * 8].nr_leds) - 1);
+						form_part[form_int + bit_int * 8].rotate = constrain(form_part[form_int + bit_int * 8].rotate -  osc_miltiply_get(), -(form_part[form_int + bit_int * 8].nr_leds) + 1, (form_part[form_int + bit_int * 8].nr_leds) - 1);
 						break;
 					case 2:
 
-						form_part[form_int + bit_int * 8].rotate = constrain(form_part[form_int + bit_int * 8].rotate + osc_cfg.conf_multiply, -(form_part[form_int + bit_int * 8].nr_leds) + 1, (form_part[form_int + bit_int * 8].nr_leds) - 1);
+						form_part[form_int + bit_int * 8].rotate = constrain(form_part[form_int + bit_int * 8].rotate +  osc_miltiply_get(), -(form_part[form_int + bit_int * 8].nr_leds) + 1, (form_part[form_int + bit_int * 8].nr_leds) - 1);
 						break;
 					}
 				}
@@ -1274,12 +1443,12 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 			if (get_bool(OSC_EDIT) == true)
 				switch (select_mode_int) {
 				case 0:
-					//copy_leds[select_bit_int + z * 8].start_led -= osc_cfg.conf_multiply;
-					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led - osc_cfg.conf_multiply, 0, NUM_LEDS - copy_leds[select_bit_int + z * 8].nr_leds);
+					//copy_leds[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
+					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - copy_leds[select_bit_int + z * 8].nr_leds);
 					break;
 				case 2:
-					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led + osc_cfg.conf_multiply, 0, NUM_LEDS + copy_leds[select_bit_int + z * 8].nr_leds);
-					//copy_leds[select_bit_int + z * 8].start_led += osc_cfg.conf_multiply;
+					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS + copy_leds[select_bit_int + z * 8].nr_leds);
+					//copy_leds[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -1293,12 +1462,12 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 			if (get_bool(OSC_EDIT) == true)
 				switch (select_mode_int) {
 				case 0:
-					//copy_leds[select_bit_int + z * 8].nr_leds -= osc_cfg.conf_multiply;
-					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds - osc_cfg.conf_multiply, -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS - copy_leds[select_bit_int + z * 8].start_led);
+					//copy_leds[select_bit_int + z * 8].nr_leds -=  osc_miltiply_get();
+					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds -  osc_miltiply_get(), -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS - copy_leds[select_bit_int + z * 8].start_led);
 					break;
 				case 2:
-					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds + osc_cfg.conf_multiply, -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led);
-					//copy_leds[select_bit_int + z * 8].nr_leds += osc_cfg.conf_multiply;
+					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds +  osc_miltiply_get(), -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led);
+					//copy_leds[select_bit_int + z * 8].nr_leds +=  osc_miltiply_get();
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -1312,12 +1481,12 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 			if (get_bool(OSC_EDIT) == true)
 				switch (select_mode_int) {
 				case 0:
-					//copy_leds[select_bit_int + z * 8].Ref_LED -= osc_cfg.conf_multiply;
-					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED - osc_cfg.conf_multiply, 0, NUM_LEDS);
+					//copy_leds[select_bit_int + z * 8].Ref_LED -=  osc_miltiply_get();
+					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED -  osc_miltiply_get(), 0, NUM_LEDS);
 					break;
 				case 2:
-					//copy_leds[select_bit_int + z * 8].Ref_LED += osc_cfg.conf_multiply;
-					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED + osc_cfg.conf_multiply, 0, NUM_LEDS);
+					//copy_leds[select_bit_int + z * 8].Ref_LED +=  osc_miltiply_get();
+					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED +  osc_miltiply_get(), 0, NUM_LEDS);
 					break;
 				}
 
@@ -1576,10 +1745,10 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 		switch (row)
 		{
 		case 0:
-			fft_led_cfg.fftAutoMin = constrain(fft_led_cfg.fftAutoMin - osc_cfg.conf_multiply, 0, 255);
+			fft_led_cfg.fftAutoMin = constrain(fft_led_cfg.fftAutoMin -  osc_miltiply_get(), 0, 255);
 			break;
 		case 2:
-			fft_led_cfg.fftAutoMin = constrain(fft_led_cfg.fftAutoMin + osc_cfg.conf_multiply, 0, 255);
+			fft_led_cfg.fftAutoMin = constrain(fft_led_cfg.fftAutoMin +  osc_miltiply_get(), 0, 255);
 			break;
 		}
 		outvalue = fft_led_cfg.fftAutoMin;
@@ -1590,10 +1759,10 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 		switch (row)
 		{
 		case 0:
-			fft_led_cfg.fftAutoMax = constrain(fft_led_cfg.fftAutoMax - osc_cfg.conf_multiply, 0, 255);
+			fft_led_cfg.fftAutoMax = constrain(fft_led_cfg.fftAutoMax -  osc_miltiply_get(), 0, 255);
 			break;
 		case 2:
-			fft_led_cfg.fftAutoMax = constrain(fft_led_cfg.fftAutoMax + osc_cfg.conf_multiply, 0, 255);
+			fft_led_cfg.fftAutoMax = constrain(fft_led_cfg.fftAutoMax +  osc_miltiply_get(), 0, 255);
 			break;
 		}
 		outvalue = fft_led_cfg.fftAutoMax;
@@ -1939,14 +2108,14 @@ void osc_master_bpm_toggle(OSCMessage &msg, int addrOffset)
 		switch (select_row_int)
 		{
 		case 0:
-			led_cfg.bpm = constrain((led_cfg.bpm - osc_cfg.conf_multiply), 1 , 255)   ;
+			led_cfg.bpm = constrain((led_cfg.bpm -  osc_miltiply_get()), 1 , 255)   ;
 			break;
 		case 1:
 			osc_queu_MSG_float("/m/bpm/enabled", float(get_bool(BPM_COUNTER)));
 
 		break;
 		case 2:
-			led_cfg.bpm = constrain((led_cfg.bpm + osc_cfg.conf_multiply),1,255) ;
+			led_cfg.bpm = constrain((led_cfg.bpm +  osc_miltiply_get()),1,255) ;
 			break;
 		default:
 			break;
@@ -2351,11 +2520,11 @@ void osc_DS_max_bri(OSCMessage &msg, int addrOffset)
 			switch (select_mode_int) 
 			{
 			case 1:
-				led_cfg.max_bri	= led_cfg.max_bri - osc_cfg.conf_multiply;
+				led_cfg.max_bri	= led_cfg.max_bri -  osc_miltiply_get();
 
 				break;
 			case 3:
-				led_cfg.max_bri = led_cfg.max_bri + osc_cfg.conf_multiply;			
+				led_cfg.max_bri = led_cfg.max_bri +  osc_miltiply_get();			
 				break;
 
 			}
@@ -2406,11 +2575,11 @@ void osc_DS_start_bri(OSCMessage &msg, int addrOffset)
 			switch (select_mode_int)
 			{
 			case 1:
-				led_cfg.startup_bri = led_cfg.startup_bri - osc_cfg.conf_multiply;
+				led_cfg.startup_bri = led_cfg.startup_bri -  osc_miltiply_get();
 
 				break;
 			case 3:
-				led_cfg.startup_bri = led_cfg.startup_bri + osc_cfg.conf_multiply;
+				led_cfg.startup_bri = led_cfg.startup_bri +  osc_miltiply_get();
 				break;
 
 			}
@@ -2501,11 +2670,11 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 				switch (option_int) 
 				{
 					case 0:
-						wifi_cfg.ipStaticLocal[byte_int] -= osc_cfg.conf_multiply;
+						wifi_cfg.ipStaticLocal[byte_int] -=  osc_miltiply_get();
 					
 						break;
 					case 2:
-						wifi_cfg.ipStaticLocal[byte_int] += osc_cfg.conf_multiply;
+						wifi_cfg.ipStaticLocal[byte_int] +=  osc_miltiply_get();
 						break;
 				}
 
@@ -2519,11 +2688,11 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 					switch (option_int)
 					{
 					case 0:
-						wifi_cfg.ipSubnet[byte_int] -= osc_cfg.conf_multiply;
+						wifi_cfg.ipSubnet[byte_int] -=  osc_miltiply_get();
 
 						break;
 					case 2:
-						wifi_cfg.ipSubnet[byte_int] += osc_cfg.conf_multiply;
+						wifi_cfg.ipSubnet[byte_int] +=  osc_miltiply_get();
 						break;
 					}
 
@@ -2536,11 +2705,11 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 				switch (option_int)
 				{
 				case 0:
-					wifi_cfg.ipDGW[byte_int] -= osc_cfg.conf_multiply;
+					wifi_cfg.ipDGW[byte_int] -=  osc_miltiply_get();
 
 					break;
 				case 2:
-					wifi_cfg.ipDGW[byte_int] += osc_cfg.conf_multiply;
+					wifi_cfg.ipDGW[byte_int] +=  osc_miltiply_get();
 					break;
 				}
 
@@ -2553,11 +2722,11 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 				switch (option_int)
 				{
 				case 0:
-					wifi_cfg.ipDNS[byte_int] -= osc_cfg.conf_multiply;
+					wifi_cfg.ipDNS[byte_int] -=  osc_miltiply_get();
 
 					break;
 				case 2:
-					wifi_cfg.ipDNS[byte_int] += osc_cfg.conf_multiply;
+					wifi_cfg.ipDNS[byte_int] +=  osc_miltiply_get();
 					break;
 				}
 
@@ -2696,74 +2865,6 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	//debugMe("DS routing END");
 }
 
-
-
-
-
-// recive conf multiply toggle
-void osc_multipl_rec(OSCMessage &msg, int addrOffset) 
-{	// recive routing of Multiply ocs settings by 1 10 or 100
-
-	// OSC MESSAGE :/m/multipl/?/1
-	if (bool(msg.getFloat(0)) == true) 
-	{
-		String select_mode_string;
-		// String select_bit_string;
-		char address[10];
-		bool switch_bool = false;
-
-		msg.getAddress(address, addrOffset + 1);
-		for (byte i = 0; i < sizeof(address); i++) 
-		{
-			if (address[i] == '/') 
-			{
-				switch_bool = true;
-
-			}
-			else if (switch_bool == false) 
-			{
-				select_mode_string = select_mode_string + address[i];
-
-			}
-
-		}
-
-		int select_mode_int = select_mode_string.toInt();
-
-
-		if (bool(msg.getFloat(0)) == true) 
-		{
-			switch (select_mode_int) 
-			{
-			case 1:
-				osc_cfg.conf_multiply = 1;
-				osc_queu_MSG_float("/multipl/1/1", 1);
-				osc_queu_MSG_float("/multipl/2/1", 0);
-				osc_queu_MSG_float("/multipl/3/1", 0);
-				break;
-			case 2:
-				osc_cfg.conf_multiply = 10;
-				osc_queu_MSG_float("/multipl/1/1", 0);
-				osc_queu_MSG_float("/multipl/2/1", 1);
-				osc_queu_MSG_float("/multipl/3/1", 0);
-				break;
-			case 3:
-				osc_cfg.conf_multiply = 100;
-				osc_queu_MSG_float("/multipl/1/1", 0);
-				osc_queu_MSG_float("/multipl/2/1", 0);
-				osc_queu_MSG_float("/multipl/3/1", 1);
-				break;
-
-			}
-		} // end switch
-
-		  //outbuffer = String("/multipl/1/1");
-
-
-
-	} // end  new msg
-
-}
 
 
 // Main OSC loop
