@@ -2453,7 +2453,8 @@ void osc_DS_refresh()
 			// General
 			osc_queu_MSG_float("/DS/EDIT", float(get_bool(OSC_EDIT)));
 			osc_queu_MSG_float("/DS/OSC_M", float(get_bool(OSC_MC_SEND)));
-			osc_queu_MSG_float("/DS/mbi", float(led_cfg.max_bri));
+			osc_queu_MSG_float("/DS/Mbril", float(led_cfg.max_bri));
+			osc_queu_MSG_float("/DS/STARTbril", float(led_cfg.startup_bri));
 			
 			osc_send_out_float_MSG_buffer();   // send out some of it and yield
 			yield();
