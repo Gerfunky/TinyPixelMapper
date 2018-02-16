@@ -11,8 +11,16 @@
 	#include <Time\TimeLib.h>
 	
 #else 
+	#ifdef ESP8266
 	//#include <ESP8266WiFi.h>      // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
 	#include <WiFiClient.h> 
+	#endif //esp8266
+
+	#ifdef ESP32
+	#include <WiFi.h>	
+	#include <WiFiUdp.h>
+	#endif
+
 	#include <ArduinoOTA.h>
 
 	#include <RemoteDebug.h> 

@@ -21,17 +21,24 @@
 
 
 #ifdef _MSC_VER
-	
+#ifdef ESP8266
 	#include <ESP8266WiFi\src\WiFiUdp.h>
 	#include <ESP8266WiFi\src\ESP8266WiFi.h>
+#endif
 	#include <OSC\OSCMessage.h>
 	#include <OSC\OSCBundle.h>
 	#include <OSC\OSCData.h>
 	#include <QueueArray\QueueArray.h>
 
 #else
+
 	#include <WiFiUdp.h>
+#ifdef ESP8266
 	#include <ESP8266WiFi.h>
+#endif
+#ifdef ESP32
+	#include <WiFi.h>
+#endif
 	#include <OSCMessage.h>
 	#include <OSCBundle.h>
 	#include <OSCData.h>

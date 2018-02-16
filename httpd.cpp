@@ -13,16 +13,37 @@
 //#include <WiFiClient.h>					//required for other libs
 
 #ifdef _MSC_VER  
-	#include <ESP8266WiFi\src\ESP8266WiFi.h>
-	#include <ESP8266WebServer\src\ESP8266WebServer.h>
-	#include <ESP8266HTTPUpdateServer\src\ESP8266HTTPUpdateServer.h>
-	#include <ESP8266mDNS\ESP8266mDNS.h>
+	#ifdef ESP8266
+		#include <ESP8266WiFi\src\ESP8266WiFi.h>
+		#include <ESP8266WebServer\src\ESP8266WebServer.h>
+		#include <ESP8266HTTPUpdateServer\src\ESP8266HTTPUpdateServer.h>
+		#include <ESP8266mDNS\ESP8266mDNS.h>
+	#endif
+	
+#ifdef ESP32
+#include<WiFi.h>
+#include <HTTPClient.h>
+#include <ESPmDNS.h>
+#endif
+
+
 #else
+
+#ifdef ESP8266
 	#include <ESP8266WiFi.h>				// REquired for other libs
 	#include <ESP8266WebServer.h>			// the Webserver
 	#include <ESP8266HTTPUpdateServer.h>	// the HTTP update server http://IP/update
 	#include <ESP8266mDNS.h>				// mDNS 
-	
+#endif
+
+#ifdef ESP32
+#include <WiFi.h>	
+#include <HTTPClient.h>
+#include <ESPmDNS.h>
+
+#endif
+
+
 #endif
 #include <FS.h>							// for file system  SPIFFS access
 #include "tools.h"						// for bools reading/writing

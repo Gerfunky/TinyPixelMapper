@@ -56,8 +56,10 @@ void setup()
 		startSerial(DEF_SERIAL_SPEED);
 
 		//Serial.begin(DEF_SERIAL_SPEED);						// enable serial for debugging nand CMDmesanger if using local FFT from teensy
+#ifdef ESP8266
 		debugMe(ESP.getResetReason());
 		debugMe(ESP.getResetInfo());
+#endif //ESP8266
 		debugMe("Starting Setup - Light Fractal");
 	}
 
