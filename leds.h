@@ -22,6 +22,16 @@
 	#endif
 
 
+	#ifdef ESP32 
+		#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
+				//#define WS2812_LED						// LED Type = 1 this is the default led type can be changes online in OSC
+		#define APA102_LED							// Led type = 0
+				//#define SK6822_LED						// Led type = 2
+		#define LED_DATA_PIN    19 //12	
+		#define LED_CLK_PIN     18 //13	// used with APA102
+	#endif
+
+
 //#define FASTLED_ALLOW_INTERRUPTS 0
 #define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
