@@ -88,6 +88,7 @@ extern void OSC_loop();
 // from leds
 extern void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
 extern void LEDS_fadeout();
+extern void LEDS_setall_color();
 extern void LEDS_FFT_enqueue(uint8_t invalue);
 extern uint8_t LEDS_FFT_get_value(uint8_t bit);
 
@@ -459,6 +460,8 @@ void setup_wifi_Network()
 			
 			uint8_t try_led_counter = 0;
 			uint8_t led_color[3] = { 255,0,0 };
+
+			LEDS_setall_color();
 
 			while (WiFi.status() != WL_CONNECTED)
 			{

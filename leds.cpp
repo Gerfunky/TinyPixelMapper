@@ -448,6 +448,13 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 // END Fire
 
+void  LEDS_setall_color() {
+
+	//
+	fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+	
+
+}
 
 void LEDS_fadeout()
 {
