@@ -52,8 +52,9 @@
 	extern wifi_Struct wifi_cfg;
 
 	//extern void load_bool();
-
+#ifndef ARTNET_DISABLED
 	extern artnet_struct artnet_cfg;
+#endif
 	extern fft_ip_cfg_struct fft_ip_cfg;
 
 	// from leds.cpp

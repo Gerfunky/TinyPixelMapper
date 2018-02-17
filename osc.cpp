@@ -69,12 +69,14 @@ extern float byte_tofloat(uint8_t value, uint8_t max_value = 255);
 extern void FS_wifi_write(uint8_t conf_nr);
 extern void FS_Bools_write(uint8_t conf_nr);
 extern void FS_osc_delete_all_saves();
-extern void FS_artnet_write(uint8_t conf_nr);
+
 extern boolean FS_play_conf_read(uint8_t conf_nr);
 extern void FS_play_conf_write(uint8_t conf_nr);
 extern void FS_FFT_write(uint8_t conf_nr);
 extern boolean FS_FFT_read(uint8_t conf_nr);
-
+#ifndef ARTNET_DISABLED
+	extern void FS_artnet_write(uint8_t conf_nr);
+#endif
 
 // from wifi
 #ifndef ARTNET_DISABLED
@@ -85,6 +87,7 @@ extern boolean FS_FFT_read(uint8_t conf_nr);
 	extern void WIFI_FFT_toggle(boolean mode_value);
 	extern fft_data_struct fft_data[7];
 	extern wifi_Struct wifi_cfg;
+
 	extern artnet_struct artnet_cfg;
 
 	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.

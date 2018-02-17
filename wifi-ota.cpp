@@ -1,14 +1,29 @@
+
+
 // 
 // 
-// 
+#define ARTNET_DISABLED 
+
 
 #ifdef _MSC_VER   
 	//#include <ESP8266WiFi\src\ESP8266WiFi.h> // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
+#ifdef ESP8266
 	#include <ESP8266WiFi\src\WiFiClient.h>
 	#include <ArduinoOTA\ArduinoOTA.h>
+#endif
+#ifdef ESP32
+	#include <WiFi\src\WiFi.h>
+	#include <ArduinoOTA\src\ArduinoOTA.h>
+#endif
+
+
+	
 	#include <RemoteDebug\RemoteDebug.h>
-	#include <Artnet\Artnet.h>
+	
 	#include <Time\TimeLib.h>
+#ifndef ARTNET_DISABLED 
+	#include <Artnet\Artnet.h>
+#endif
 	
 #else 
 	#ifdef ESP8266
@@ -25,7 +40,9 @@
 	#include <ArduinoOTA.h>
 
 	#include <RemoteDebug.h> 
+#ifndef ARTNET_DISABLED 
 	#include <Artnet.h>
+#endif
 	#include <TimeLib.h> 
 #endif
 
@@ -542,7 +559,7 @@ void setup_wifi_Network()
 				WiFi.mode(WIFI_AP);
 #ifdef ESP32
 				
-				SetupESP32DeviceAP();
+				//SetupESP32DeviceAP();
 #endif
 #ifdef ESP8266
 				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);

@@ -12,6 +12,8 @@
 
 #include "Header.h"				// add the main Header file
 
+#define ARTNET_DISABLED 
+
 #define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
 #define DEF_SERIAL_SPEED 57600   // teensy - ESP8266 working on 57600
 

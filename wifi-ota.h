@@ -3,7 +3,7 @@
 #ifndef _WIFI-OTA_h
 #define _WIFI-OTA_h
 
-//#define ARTNET_DISABLED 
+#define ARTNET_DISABLED 
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"

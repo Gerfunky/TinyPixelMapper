@@ -36,8 +36,11 @@
 
 // *************** External Functions
 // from wifi-ota.cpp
+#ifndef  ARTNET_DISABLED 
 extern void wifi_artnet_loop();
+#endif
 extern artnet_struct artnet_cfg;
+
 
 // add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
 extern void debugMe(String input, boolean line = true);
