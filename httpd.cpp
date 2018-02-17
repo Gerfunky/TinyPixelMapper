@@ -46,6 +46,9 @@
 
 #endif
 #include <FS.h>							// for file system  SPIFFS access
+#ifdef ESP32
+#include<SPIFFS.h>
+#endif
 #include "tools.h"						// for bools reading/writing
 #include "wifi-ota.h"					// get the wifi structures
 
@@ -74,14 +77,22 @@ extern void FS_wifi_write(uint8_t conf_nr);
 // from wifi-ota.cpp
 extern wifi_Struct wifi_cfg;
 
-
+#ifdef ESP8266
 ESP8266WebServer httpd(80);					// The Web Server 
-File fsUploadFile;							// Variable to hold a file upload
-
 ESP8266HTTPUpdateServer httpUpdater;		// The HTTP update Server
+#endif
+
+#ifdef ESP32
+#include <WebServer.h>
+//HTTPClient httpd(80);					// The Web Server 
+//HTTPUpdateServer httpUpdater;		// The HTTP update Server
+
+WebServer  httpd(80);					// The Web Server 
 
 
+#endif
 
+File fsUploadFile;							// Variable to hold a file upload
 
 
 String httpd_getContentType(String filename) {
@@ -187,13 +198,57 @@ void httpd_handleFileCreate() {
 	path = String();
 }
 
+#ifdef ESP32
 void httpd_handleFileList() {
 	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
 	String path = httpd.arg("dir");
  
 	 debugMe("handleFileList: " + path);
 
+	File dir = SPIFFS.open(path);
+
+
+	path = String();
+
+	String output = "[";
+
+
+
+
+	while (dir.openNextFile()) {
+		//File entry = dir.open("r");
+		if (output != "[") output += ',';
+		bool isDir = dir.isDirectory();
+		output += "{\"type\":\"";
+		output += (isDir) ? "dir" : "file";
+		output += "\",\"name\":\"";
+		output += String(dir.name()).substring(1);
+		output += "\"}";
+		//dir.close();
+	}
+
+
+
+
+	output += "]";
+	httpd.send(200, "text/json", output);
+}
+
+
+
+#endif
+
+#ifdef ESP8266
+void httpd_handleFileList() {
+	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
+	String path = httpd.arg("dir");
+
+	debugMe("handleFileList: " + path);
+
 	Dir dir = SPIFFS.openDir(path);
+
+
+
 	path = String();
 
 	String output = "[";
@@ -212,6 +267,10 @@ void httpd_handleFileList() {
 	output += "]";
 	httpd.send(200, "text/json", output);
 }
+
+
+
+#endif
 
 
 void httpd_handle_default_args()
@@ -311,8 +370,10 @@ void httpd_toggle_webserver()
 	{
 		httpd.begin();
 		write_bool(HTTP_ENABLED, true);
+#ifdef ESP8266
 		 debugMe("httpd turned on");
 		httpUpdater.setup(&httpd);
+#endif		
 		// debugMe("HTTP server started");
 		MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
@@ -334,6 +395,7 @@ void httpd_setup()
 	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
 
 	//get heap status, analog input value and all GPIO statuses in one json call
+#ifdef ESP8266
 	httpd.on("/all", HTTP_GET, []() {
 		String json = "{";
 		json += "\"heap\":" + String(ESP.getFreeHeap());
@@ -343,7 +405,7 @@ void httpd_setup()
 		httpd.send(200, "text/json", json);
 		json = String();
 	});
-
+#endif
 	// end FS handlers
 	//httpd.on("/edit", HTTP_DELETE, handleFileDelete);
 	//httpd.serveStatic("/index.html", SPIFFS, "/index.html");  
@@ -368,9 +430,11 @@ void httpd_setup()
 	if (get_bool(HTTP_ENABLED) == true)
 	{
 		httpd.begin();					// Switch on the HTTP Server
+#ifdef ESP8266
 		httpUpdater.setup(&httpd);
 		 debugMe("HTTP server started");
-		MDNS.begin(wifi_cfg.APname);
+#endif
+		 MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
 	}
 }

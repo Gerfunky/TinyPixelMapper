@@ -25,6 +25,10 @@
 	#include <ESP8266WiFi\src\WiFiUdp.h>
 	#include <ESP8266WiFi\src\ESP8266WiFi.h>
 #endif
+#ifdef ESP32
+	
+#endif
+
 	#include <OSC\OSCMessage.h>
 	#include <OSC\OSCBundle.h>
 	#include <OSC\OSCData.h>
@@ -142,7 +146,13 @@ void OSC_setup()
 {
 	osc_server.begin(osc_cfg.inPort);
 #ifndef OSC_MC_SERVER_DISABLED
-	osc_mc_server.beginMulticast(WiFi.localIP(), osc_cfg.ipMulti, osc_cfg.portMulti);
+		#ifdef ESP8266
+			osc_mc_server.beginMulticast(WiFi.localIP(), osc_cfg.ipMulti, osc_cfg.portMulti);
+		#endif
+
+		#ifdef ESP32
+			osc_mc_server.beginMulticast(osc_cfg.ipMulti, osc_cfg.portMulti);
+		#endif
 #endif
 }
 
@@ -298,7 +308,13 @@ void osc_mc_send(String addr, uint8_t value)
 		addr.toCharArray(address_out, addr.length() + 1); //address_out 
 		OSCMessage msg_out(address_out);
 		msg_out.add(out_value);
+//		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#ifdef ESP8266
 		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#endif
+#ifdef ESP32
+		osc_mc_server.beginMulticastPacket();
+#endif
 		msg_out.send(osc_mc_server);
 		osc_mc_server.endPacket();
 	}
@@ -317,7 +333,12 @@ void osc_mc_send(String addr, float value)
 		addr.toCharArray(address_out, addr.length() + 1); //address_out 
 		OSCMessage msg_out(address_out);
 		msg_out.add(value);
+#ifdef ESP8266
 		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#endif
+#ifdef ESP32
+		osc_mc_server.beginMulticastPacket();
+#endif
 		msg_out.send(osc_mc_server);
 		osc_mc_server.endPacket();
 	}

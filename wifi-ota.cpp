@@ -19,6 +19,7 @@
 	#ifdef ESP32
 	#include <WiFi.h>	
 	#include <WiFiUdp.h>
+	//#include <WiFiAP.h>
 	#endif
 
 	#include <ArduinoOTA.h>
@@ -440,9 +441,25 @@ void setup_wifi_Vars()
 	}
 
 	if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
+#ifdef ESP8266
 	WiFi.hostname(wifi_cfg.APname);
+#endif
 	//else WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
 }
+
+
+#ifdef ESP32
+void SetupESP32DeviceAP() {
+	char* SSID = "Slave_1";
+	bool result = WiFi.softAP(wifi_cfg.ssid, DEF_AP_PASSWD, 1, 0,2);
+	if (!result) {
+		debugMe("AP Config failed.");
+	}
+	else {
+		debugMe("AP Config Success. Broadcasting with AP: " + String(SSID));
+	}
+}
+#endif
 
 void setup_wifi_Network()
 {
@@ -518,9 +535,18 @@ void setup_wifi_Network()
 		}
 			else  // wifimode AP
 			{
+
+
 				WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
+
 				WiFi.mode(WIFI_AP);
+#ifdef ESP32
+				
+				SetupESP32DeviceAP();
+#endif
+#ifdef ESP8266
 				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+#endif
 				debugMe("Start AP mode");
 			}
 		
@@ -532,8 +558,13 @@ void setup_wifi_Network()
 		WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);
 		delay(50);
 		WiFi.mode(WIFI_AP);
+#ifdef ESP32
+
+		SetupESP32DeviceAP();
+#endif
+#ifdef ESP8266
 		WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
-         
+#endif 
 		debugMe("Starting Wifi Backup no Password");
 
 	}
@@ -564,7 +595,12 @@ void WIFI_FFT_enable()
 	}
 	else 
 	{
+#ifdef ESP8266
 		FFT_slave.beginMulticast(WiFi.localIP(), fft_ip_cfg.IP_multi, fft_ip_cfg.port_slave);
+#endif
+#ifdef ESP32
+		FFT_slave.beginMulticast(fft_ip_cfg.IP_multi, fft_ip_cfg.port_slave);
+#endif
 		//FFT_slave.setNoDelay(true); 
 		FFT_slave.flush();
 
@@ -658,7 +694,12 @@ void WIFI_FFT_master_send()
 	{ // && (FFT_fifo.count() >= FFT_SEND_NR_PIXELS)  ) {
 										//CRGB fft_outdata; 
 										// Send a multicast packet to The Slave ESP servers.
+#ifdef ESP8266
 		FFT_master.beginPacketMulticast(fft_ip_cfg.IP_multi, fft_ip_cfg.port_slave, WiFi.localIP());
+#endif 
+#ifdef ESP32
+		FFT_master.beginMulticastPacket();
+#endif
 		FFT_master.write(fft_led_cfg.fps);
 		for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
 		FFT_master.endPacket();

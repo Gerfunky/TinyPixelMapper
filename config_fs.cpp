@@ -12,6 +12,10 @@
 #include "wifi-ota.h"
 #include "tools.h"
 
+#ifdef ESP32
+#include<SPIFFS.h>
+#endif
+
 #ifdef _MSC_VER
 	//#include "FS.h"
 	typedef File;
