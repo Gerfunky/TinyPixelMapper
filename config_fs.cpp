@@ -4,18 +4,29 @@
 
 // TODO  
 
+#ifdef _MSC_VER 
+	#include <FS\src\FS.h>
+	#include <SPIFFS\src\SPIFFS.h>
+
+#else
+    #include <FS.h>
+	#ifdef ESP32
+		#include<SPIFFS.h>
+	#endif
+#endif
+
+
+
 
 
 #include "config_fs.h"
-#include <FS.h>
+
 #include "leds.h"
 #include "wifi-ota.h"
 #include "tools.h"
 
-#ifdef ESP32
-#include<SPIFFS.h>
-#endif
 
+/*
 #ifdef _MSC_VER
 	//#include "FS.h"
 	typedef File;
@@ -25,7 +36,7 @@
 
 
 #endif
-
+// */
 
 
 
@@ -895,7 +906,7 @@ void FS_Bools_write(uint8_t conf_nr)
 boolean FS_Bools_read(uint8_t conf_nr)
 {
 	// read the device config and bools
-
+	//debugMe("Reading bools");
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
@@ -993,6 +1004,7 @@ void FS_osc_delete_all_saves()
 //Setup
 void FS_setup_SPIFFS()
 {
+	debugMe("Start SPIFFS");
 	SPIFFS.begin();
 	delay(100);
 	load_bool();

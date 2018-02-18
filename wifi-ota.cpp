@@ -7,23 +7,23 @@
 
 #ifdef _MSC_VER   
 	//#include <ESP8266WiFi\src\ESP8266WiFi.h> // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
-#ifdef ESP8266
-	#include <ESP8266WiFi\src\WiFiClient.h>
-	#include <ArduinoOTA\ArduinoOTA.h>
-#endif
-#ifdef ESP32
-	#include <WiFi\src\WiFi.h>
-	#include <ArduinoOTA\src\ArduinoOTA.h>
-#endif
+	#ifdef ESP8266
+		#include <ESP8266WiFi\src\WiFiClient.h>
+		#include <ArduinoOTA\ArduinoOTA.h>
+	#endif
+	#ifdef ESP32
+		#include <WiFi\src\WiFi.h>
+		#include <ArduinoOTA\src\ArduinoOTA.h>
+	#endif
 
 
 	
-	#include <RemoteDebug\RemoteDebug.h>
+		#include <RemoteDebug\RemoteDebug.h>
 	
-	#include <Time\TimeLib.h>
-#ifndef ARTNET_DISABLED 
-	#include <Artnet\Artnet.h>
-#endif
+		#include <Time\TimeLib.h>
+	#ifndef ARTNET_DISABLED 
+		#include <Artnet\Artnet.h>
+	#endif
 	
 #else 
 	#ifdef ESP8266
@@ -38,12 +38,12 @@
 	#endif
 
 	#include <ArduinoOTA.h>
-
-	#include <RemoteDebug.h> 
-#ifndef ARTNET_DISABLED 
-	#include <Artnet.h>
-#endif
 	#include <TimeLib.h> 
+	#include <RemoteDebug.h> 
+	#ifndef ARTNET_DISABLED 
+		#include <Artnet.h>
+	#endif
+	
 #endif
 
 
@@ -53,6 +53,10 @@
 #include "leds.h"			// include for led data structures
 #include "tools.h"			// include the Tools for reading and writing bools
 
+
+#ifdef ESP32
+extern void ESP32_startWiFi(); // from main ino did not want to start here
+#endif
 
 // From tools.cpp
 extern boolean get_bool(uint8_t bit_nr);
@@ -433,7 +437,8 @@ void setup_wifi_Vars()
 	memset(wifi_cfg.pwd,		0, sizeof(wifi_cfg.pwd));
 	memset(wifi_cfg.ntp_fqdn,	0, sizeof(wifi_cfg.ntp_fqdn));
 
-	if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
+	//if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
+	if (false == false)		// Get the config of disk,  on fail load defaults.
 	{
 		debugMe("Loading WifiSetup Defaults");
 		//load the defaults
@@ -447,8 +452,8 @@ void setup_wifi_Vars()
 		def_pwd.toCharArray(		wifi_cfg.pwd,		def_pwd.length()		+ 1);
 		def_ntp_fqdn.toCharArray(	wifi_cfg.ntp_fqdn,	def_ntp_fqdn.length()	+ 1);
 
-		write_bool(WIFI_MODE, DEF_WIFI_MODE);
-		write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
+		//write_bool(WIFI_MODE, DEF_WIFI_MODE);
+		//write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
 		wifi_cfg.ipStaticLocal	= DEF_IP_LOCAL;
 		wifi_cfg.ipSubnet		= DEF_IP_SUBNET;
 		wifi_cfg.ipDGW			= DEF_IP_DGW;
@@ -457,7 +462,7 @@ void setup_wifi_Vars()
 
 	}
 
-	if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
+	//if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
 #ifdef ESP8266
 	WiFi.hostname(wifi_cfg.APname);
 #endif
@@ -465,22 +470,87 @@ void setup_wifi_Vars()
 }
 
 
+
+
+
 #ifdef ESP32
+
+boolean wifi_load_settings()
+{
+	// load the wifi vaiables
+
+	// Clean out the Wifi cha arrays
+	memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));
+	memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
+	memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
+	memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
+
+	//if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
+	if (false == false)		// Get the config of disk,  on fail load defaults.
+	{
+		debugMe("Loading WifiSetup Defaults");
+		//load the defaults
+		String def_APname = DEF_AP_NAME;
+		String def_ssid = DEF_SSID;
+		String def_pwd = DEF_WIFI_PWD;
+		String def_ntp_fqdn = DEF_NTP_SERVER;
+
+		def_APname.toCharArray(wifi_cfg.APname, def_APname.length() + 1);
+		def_ssid.toCharArray(wifi_cfg.ssid, def_ssid.length() + 1);
+		def_pwd.toCharArray(wifi_cfg.pwd, def_pwd.length() + 1);
+		def_ntp_fqdn.toCharArray(wifi_cfg.ntp_fqdn, def_ntp_fqdn.length() + 1);
+
+		//write_bool(WIFI_MODE, DEF_WIFI_MODE);
+		//write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
+		wifi_cfg.ipStaticLocal = DEF_IP_LOCAL;
+		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
+		wifi_cfg.ipDGW = DEF_IP_DGW;
+		wifi_cfg.ipDNS = DEF_DNS;
+
+
+	}
+
+
+	//if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
+
+}
+
+
 void SetupESP32DeviceAP() {
-	char* SSID = "Slave_1";
-	bool result = WiFi.softAP(wifi_cfg.ssid, DEF_AP_PASSWD, 1, 0,2);
+	//char* SSID = "Slave_1";
+	bool result = WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, 1, 0,2);
 	if (!result) {
 		debugMe("AP Config failed.");
 	}
 	else {
-		debugMe("AP Config Success. Broadcasting with AP: " + String(SSID));
+		debugMe("AP Config Success. Broadcasting with AP: " + String(wifi_cfg.APname));
 	}
 }
 #endif
 
+
+
 void setup_wifi_Network()
 {
+	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+
+	while (WiFi.status() != WL_CONNECTED) {
+		delay(500);
+		Serial.print(".");
+	}
+
+	debugMe("");
+	debugMe("WiFi connected.");
+	debugMe("IP address: ", false);
+	debugMe(WiFi.localIP());
+	debugMe("COOOOOOOOOOOOL");
+
+}
+
+void setup_wifi_Network_orig()
+{
 		// setup the wifi network
+		
 
 		debugMe("Starting Wifi Setup");
 		unsigned long currentT = millis();
@@ -496,9 +566,22 @@ void setup_wifi_Network()
 				debugMe(String("pwd:" + String(wifi_cfg.pwd)));
 				debugMe(String("try : " + String(con_try) + "."));
 			}
-			WiFi.mode(WIFI_STA);
-			delay(100);
-			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+
+			const char* ssid = "home";
+			const char* password = "love4all";
+			WiFi.begin(ssid, password);
+
+			//WiFi.begin("home", "love4all");
+
+			while (WiFi.status() != WL_CONNECTED) {
+				delay(500);
+				Serial.print(".");
+			}
+
+
+			//WiFi.mode(WIFI_STA);
+			//delay(100);
+			//WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 			
 			uint8_t try_led_counter = 0;
 			uint8_t led_color[3] = { 255,0,0 };
@@ -777,14 +860,25 @@ void FFT_handle_loop()
 void wifi_setup()
 {
 
-	setup_wifi_Vars();
+	//const char* ssid = "home";
+	//const char* password = "love4all";
+	//debugMe(String("ssid:" + String(wifi_cfg.ssid)));
+	//debugMe(String("pwd:" + String(wifi_cfg.pwd)));
+	//WiFi.begin(ssid, password);
+	//String ssidS = wifi_cfg.ssid;
+	//String pwdS = wifi_cfg.pwd;
+	
+	//WiFi.begin(ssisS,pwds);
+	//WiFi.begin(wifi_cfg.ssid,wifi_cfg.pwd);
 
+	setup_wifi_Vars();
+	//wifi_load_settings();
 	
 	
 
 	setup_wifi_Network();
 	setup_OTA();		
-	setup_NTP();
+	//setup_NTP();   //ESP32 NOK
 
 
 	TelnetDebug.begin(wifi_cfg.APname);

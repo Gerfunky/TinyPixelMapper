@@ -15,7 +15,7 @@
 #define ARTNET_DISABLED 
 
 #define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
-#define DEF_SERIAL_SPEED 57600   // teensy - ESP8266 working on 57600
+#define DEF_SERIAL_SPEED 115200   // teensy - ESP8266 working on 57600
 
 		// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
 		extern void debugMe(String input, boolean line = true);				// debug funtions from wifi-ota 
@@ -27,6 +27,7 @@
 		// add wifi funtions from wifi-ota.cpp
 		extern void wifi_setup();
 		extern void wifi_loop();
+		extern void setup_wifi_Vars();
 
 
 		// add Comms functions for CMD messanger comms.cpp
@@ -46,12 +47,43 @@
 		extern void write_bool(uint8_t bit_nr, boolean value);
 
 
+
+
+
+#ifdef ESP322  //did not want to startup correctly in own file
+		#include <WiFi.h>
+#include "wifi-ota.h"
+		extern wifi_Struct wifi_cfg;
+
  
+
+		void ESP32_startWiFi()
+		{
+			//*
+			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+
+			while (WiFi.status() != WL_CONNECTED) {
+				delay(500);
+				Serial.print(".g.");
+			}
+
+			Serial.println("");
+			Serial.println("WiFi connected.");
+			Serial.println("IP address: ");
+			Serial.println(WiFi.localIP());
+			//	*/
+
+
+
+		}
+
+
+#endif
+
+
+
 void setup()
-{
-	write_bool(DEBUG_OUT, DEF_BOOT_DEBUGING);   // Set the Boot debuging level will be overwriten when loading config from SPIFFS
-	
-	
+{		
 	if (DEF_BOOT_DEBUGING == true)
 	{
 
@@ -64,17 +96,24 @@ void setup()
 #endif //ESP8266
 		debugMe("Starting Setup - Light Fractal");
 	}
+	//write_bool(DEBUG_OUT, DEF_BOOT_DEBUGING);   // Set the Boot debuging level will be overwriten when loading config from SPIFFS
 
 	FS_setup_SPIFFS();  // includes loadbool()
 	
 	LEDS_setup();
+	
+
+
+#ifdef ESP32
+	//ESP32_startWiFi();
+#endif
 
 	wifi_setup();
 
 
 		
 
-	setup_comms(DEF_BOOT_DEBUGING, DEF_SERIAL_SPEED);   // Start CMDmessanger and the Serial if DEF_BOOT_DEBUGING == false
+	//setup_comms(DEF_BOOT_DEBUGING, DEF_SERIAL_SPEED);   // Start CMDmessanger and the Serial if DEF_BOOT_DEBUGING == false
 	debugMe("DONE Setup");
 
 
@@ -84,6 +123,6 @@ void loop()
 {
 
 	wifi_loop();
-	LEDS_loop();
-
+	//LEDS_loop();
+	//debugMe("running.");
 }

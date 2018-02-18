@@ -7,6 +7,13 @@
 #include "leds.h"
 
 
+//extern void debugMe(String input, boolean line = true);
+/*
+extern void debugMe(float input, boolean line = true);
+extern void debugMe(uint8_t input, boolean line = true);
+extern void debugMe(int input, boolean line = true);
+// */
+
 // Global Bool Structure soi that we only use 1 Bit and not a byte for a Bool
 // use tool.h to read and write
   
@@ -20,9 +27,14 @@ extern led_cfg_struct led_cfg;
 //
 //	Functions
 //
+//extern void debugMe(String input, boolean line = true);
+//extern void debugMe(float input, boolean line = true);
+//extern void debugMe(uint8_t input, boolean line = true);
+//extern void debugMe(int input, boolean line = true);
 
 boolean get_bool(uint8_t bit_nr)
 {
+
 	boolean return_bool = 0;
 	uint8_t byte_nr = 0;
 	while (bit_nr > 7)
@@ -39,6 +51,7 @@ boolean get_bool(uint8_t bit_nr)
 
 void write_bool(uint8_t bit_nr, boolean value)
 {
+
 	uint8_t byte_nr = 0;
 	while (bit_nr > 7)
 	{
@@ -46,7 +59,6 @@ void write_bool(uint8_t bit_nr, boolean value)
 		bit_nr = bit_nr - 8;
 	}
 	bitWrite(global_options[byte_nr], bit_nr, value);
-
 }
 
 
