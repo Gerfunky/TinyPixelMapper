@@ -1,9 +1,5 @@
 
-
-// 
-// 
-#define ARTNET_DISABLED 
-
+#include "config_TPM.h"
 
 #ifdef _MSC_VER   
 	//#include <ESP8266WiFi\src\ESP8266WiFi.h> // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
@@ -54,26 +50,14 @@
 #include "tools.h"			// include the Tools for reading and writing bools and DebugMe
 
 
-#ifdef ESP32
-extern void ESP32_startWiFi(); // from main ino did not want to start here
-#endif
 
 // From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
 
 // from leds.cpp
 extern void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);
 
-//extern boolean conf_fs_r_wifi();
 
-//#define DBG_OUT		if (get_bool(DEBUG_OUT) == true) Serial
-//#define DBG_OUTL	Serial
 RemoteDebug TelnetDebug;
-// add the Debug functions   --     send to debug MSG to Serial or telnet --- Line == true  add a CR at the end.
-//void debugMe(String input, boolean line = true);
-//void debugMe(float input, boolean line = true);
-//void debugMe(uint8_t input, boolean line = true);
 
 
 // wifi
@@ -81,14 +65,16 @@ wifi_Struct wifi_cfg;
 
 // Artnet
 #ifndef ARTNET_DISABLED
-Artnet artnet;		// make the Artnet server
+	Artnet artnet;		// make the Artnet server
 #endif
-artnet_struct artnet_cfg = { DEF_ARTNET_STAT_UNIVERSE, DEF_ARTNET_NUMBER_OF_UNIVERSES };
+
+	artnet_struct artnet_cfg = { DEF_ARTNET_STAT_UNIVERSE, DEF_ARTNET_NUMBER_OF_UNIVERSES };
 
 
 // ntp
 #define NTP_PACKET_SIZE 48		// the ntp packetsize
 #define NTP_LOCAL_PORT	2843	// 2 Invinity 4 Ever
+
 //the ntp deamon
 WiFiUDP ntp_udp;
 

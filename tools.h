@@ -11,18 +11,6 @@
 
 
 
-/*										// DEFAULT settings if not loaded from the SPIFFS
-#define DEF_DEBUG_OUT true				// serial debugging
-#define DEF_WIFI_MODE false				// false = client
-#define DEF_OTA_SERVER true				// enable the OTA server ?
-#define DEF_STATIC_IP_ENABLED true		// set static ip for startup  ?
-#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
-#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
-#define DEF_AUTO_FFT true				// enalbe auto FFT ?
-#define DEF_LED_TYPE 1					// led type 1 = WS2812b, 0 = APA102
-#define DEF_DEBUG_TELNET true			// debug to TELNET?
-#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
-*/
 #define NR_GLOBAL_OPTIONS_BYTES 2     // to hold the bools in bits not bytes! Enum below must fit in here!!!
 
 enum GLOBAL_OPTIONS_ENUM

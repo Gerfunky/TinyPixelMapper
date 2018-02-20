@@ -11,7 +11,7 @@
 */
 
 #include "Header.h"				// add the main Header file
-#include "config.h"				// add the Config.h wherre the main Settings a DEFINED
+#include "config_TPM.h"			// add the Config.h where the main Settings a DEFINED
 
 
 
