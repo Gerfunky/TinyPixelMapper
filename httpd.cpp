@@ -21,15 +21,19 @@
 	#endif
 	
 #ifdef ESP32
-#include<WiFi.h>
-#include <HTTPClient.h>
-#include <ESPmDNS.h>
+#include<WiFi\src\WiFi.h>
+//#include <HTTPClient.h>
+#include<ESPmDNS\src\ESPmDNS.h>
+#include<SPIFFS\src\SPIFFS.h>
+#include<FS\src\FS.h>
+#include<ESP8266WebServer\WebServer.h>
 #endif
 
 
 #else
 
 #ifdef ESP8266
+	#include <FS.h>	
 	#include <ESP8266WiFi.h>				// REquired for other libs
 	#include <ESP8266WebServer.h>			// the Webserver
 	#include <ESP8266HTTPUpdateServer.h>	// the HTTP update server http://IP/update
@@ -40,14 +44,16 @@
 #include <WiFi.h>	
 #include <HTTPClient.h>
 #include <ESPmDNS.h>
-
-#endif
-
-
-#endif
-#include <FS.h>							// for file system  SPIFFS access
-#ifdef ESP32
+#include <WebServer.h>
+#include <FS.h>	
 #include<SPIFFS.h>
+#endif
+
+
+#endif
+						// for file system  SPIFFS access
+#ifdef ESP32
+
 #endif
 #include "tools.h"						// for bools reading/writing
 #include "wifi-ota.h"					// get the wifi structures
@@ -83,9 +89,7 @@ ESP8266HTTPUpdateServer httpUpdater;		// The HTTP update Server
 #endif
 
 #ifdef ESP32
-#include <WebServer.h>
-//HTTPClient httpd(80);					// The Web Server 
-//HTTPUpdateServer httpUpdater;		// The HTTP update Server
+
 
 WebServer  httpd(80);					// The Web Server 
 
@@ -207,23 +211,29 @@ void httpd_handleFileList() {
 
 	File dir = SPIFFS.open(path);
 
+	//File file = dir.openNextFile();
 
 	path = String();
 
 	String output = "[";
 
+	File fileX = dir.openNextFile();
 
+	debugMe(String(fileX.name()));
 
-
-	while (dir.openNextFile()) {
+	while (fileX) {
 		//File entry = dir.open("r");
 		if (output != "[") output += ',';
-		bool isDir = dir.isDirectory();
+		bool isDir = fileX.isDirectory();
+		//bool isDir = false;
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		output += String(dir.name()).substring(1);
+		output += String(fileX.name());
 		output += "\"}";
+		debugMe(String(fileX.name()));
+		fileX = dir.openNextFile();
+		debugMe(String(fileX.name()));
 		//dir.close();
 	}
 
@@ -233,6 +243,40 @@ void httpd_handleFileList() {
 	output += "]";
 	httpd.send(200, "text/json", output);
 }
+
+
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+	Serial.printf("Listing directory: %s\n", dirname);
+
+	File root = fs.open(dirname);
+	if (!root) {
+		Serial.println("Failed to open directory");
+		return;
+	}
+	if (!root.isDirectory()) {
+		Serial.println("Not a directory");
+		return;
+	}
+
+	File file = root.openNextFile();
+	while (file) {
+		if (file.isDirectory()) {
+			Serial.print("  DIR : ");
+			Serial.println(file.name());
+			if (levels) {
+				listDir(fs, file.name(), levels - 1);
+			}
+		}
+		else {
+			Serial.print("  FILE: ");
+			Serial.print(file.name());
+			Serial.print("  SIZE: ");
+			Serial.println(file.size());
+		}
+		file = root.openNextFile();
+	}
+}
+
 
 
 

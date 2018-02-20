@@ -1005,7 +1005,10 @@ void FS_osc_delete_all_saves()
 void FS_setup_SPIFFS()
 {
 	debugMe("Start SPIFFS");
-	SPIFFS.begin();
+	if (SPIFFS.begin())
+		debugMe("Start SPIFFS");
+	else
+		debugMe("FAILED SPIFFS");
 	delay(100);
 	load_bool();
 
