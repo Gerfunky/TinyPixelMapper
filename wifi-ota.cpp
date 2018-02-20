@@ -51,7 +51,7 @@
 #include "wifi-ota.h"    // needs Wifi and co for data stuctures!!!
 
 #include "leds.h"			// include for led data structures
-#include "tools.h"			// include the Tools for reading and writing bools
+#include "tools.h"			// include the Tools for reading and writing bools and DebugMe
 
 
 #ifdef ESP32
@@ -123,123 +123,6 @@ extern void LEDS_FFT_enqueue(uint8_t invalue);
 extern uint8_t LEDS_FFT_get_value(uint8_t bit);
 
 extern fft_led_cfg_struct fft_led_cfg;
-
-
-//debugging
-// debugging functions 
-// can take String, float, uint8_t, int and IPAddress 
-// and print it to telnet or Serial
-
-void debugMe(String input,boolean line = true)
-{
-	//debugMe(input);
-
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
-	{
-		if (line == true)
-			TelnetDebug.println(input);
-		else 
-			TelnetDebug.print(input);
-	
-	}
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			Serial.println(input);
-		else
-			Serial.print(input);
-	}
-
-
-}
-
-void debugMe(float input, boolean line = true)
-{
-	//debugMe(input);
-
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET) )
-	{
-		if (line == true)
-			TelnetDebug.println(String(input));
-		else
-			TelnetDebug.print(String(input));
-
-	}
-
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			Serial.println(String(input));
-		else
-			Serial.print(String(input));
-	}
-}
-
-void debugMe(uint8_t input, boolean line = true)
-{
-	//debugMe(input);
-
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-		if (line == true)
-			TelnetDebug.println(String(input));
-		else
-			TelnetDebug.print(String(input));
-
-	}
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			Serial.println(String(input));
-		else
-			Serial.print(String(input));
-	}
-
-}
-
-void debugMe(int input, boolean line = true)
-{
-	//debugMe(input);
-
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-		if (line == true)
-			TelnetDebug.println(String(input));
-		else
-			TelnetDebug.print(String(input));
-
-	}
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			Serial.println(String(input));
-		else
-			Serial.print(String(input));
-	}
-
-}
-
-void debugMe(IPAddress input, boolean line = true)
-{
-	//debugMe(input);
-
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-		if (line == true)
-			TelnetDebug.println(input);
-		else
-			TelnetDebug.print(input);
-
-	}
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			Serial.println(input);
-		else
-			Serial.print(input);
-	}
-
-}
 
 
 
@@ -427,7 +310,7 @@ void setup_NTP()
 #endif
 
 // basic WiFi
-void setup_wifi_Vars()
+void setup_wifi_Vars()   // old version for ESP8266
 {
 	// load the wifi vaiables
 
@@ -475,7 +358,7 @@ void setup_wifi_Vars()
 
 #ifdef ESP32
 
-boolean wifi_load_settings()
+boolean wifi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
 {
 	// load the wifi vaiables
 
@@ -510,13 +393,14 @@ boolean wifi_load_settings()
 
 	}
 
-
+	// Set the Static IP if static ip is selected.
 	//if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
 
 }
 
 
-void SetupESP32DeviceAP() {
+void SetupESP32DeviceAP() // Setup the wifi for AP mode.
+{
 	//char* SSID = "Slave_1";
 	bool result = WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, 1, 0,2);
 	if (!result) {
@@ -549,7 +433,7 @@ void setup_wifi_Network()
 
 void setup_wifi_Network_orig()
 {
-		// setup the wifi network
+		// setup the wifi network old version from EPS8266
 		
 
 		debugMe("Starting Wifi Setup");
@@ -871,8 +755,8 @@ void wifi_setup()
 	//WiFi.begin(ssisS,pwds);
 	//WiFi.begin(wifi_cfg.ssid,wifi_cfg.pwd);
 
-	setup_wifi_Vars();
-	//wifi_load_settings();
+	//setup_wifi_Vars();
+	wifi_load_settings();
 	
 	
 

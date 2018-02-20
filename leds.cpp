@@ -12,6 +12,7 @@
 // make a new color creator from fft! 
 // add fire animation link it to FFT if possible!  
 
+#include "config_TPM.h"    // Load the main config
 
 #include "leds.h"
 //#include "boards.h"
@@ -28,9 +29,6 @@
 	#include <QueueArray.h>				// For buffering incoming FFT packets
 #endif
 
-#define DBG_OUT		if (get_bool(DEBUG_OUT) == true) Serial
-#define DBG_OUTL	Serial
-
 
 
 
@@ -43,18 +41,18 @@ extern artnet_struct artnet_cfg;
 
 
 // add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-extern void debugMe(String input, boolean line = true);
-extern void debugMe(float input, boolean line = true);
-extern void debugMe(uint8_t input, boolean line = true);
-extern void debugMe(int input, boolean line = true);
+//extern void debugMe(String input, boolean line = true);
+//extern void debugMe(float input, boolean line = true);
+//extern void debugMe(uint8_t input, boolean line = true);
+//extern void debugMe(int input, boolean line = true);
 
 // from comms.cpp 
 extern void comms_loop();
 
 // From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
-extern boolean isODDnumber(uint8_t number);
+//extern boolean get_bool(uint8_t bit_nr);
+//extern void write_bool(uint8_t bit_nr, boolean value);
+//extern boolean isODDnumber(uint8_t number);
 
 
 

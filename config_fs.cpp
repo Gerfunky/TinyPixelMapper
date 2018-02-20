@@ -1,6 +1,3 @@
-// 
-// 
-// 
 
 // TODO  
 
@@ -18,7 +15,7 @@
 
 
 
-
+#include "config_TPM.h"
 #include "config_fs.h"
 
 #include "leds.h"
@@ -42,19 +39,19 @@
 
 //************ EXTERNAL Functions 
 	// From tools.cpp
-	extern boolean get_bool(uint8_t bit_nr);
-	extern void write_bool(uint8_t bit_nr, boolean value);
-	extern void load_bool();
-	extern uint8_t get_strip_menu_bit(int strip);
-	extern uint8_t striptobit(int strip_no);
+	//extern boolean get_bool(uint8_t bit_nr);
+	//extern void write_bool(uint8_t bit_nr, boolean value);
+	//extern void load_bool();
+	//extern uint8_t get_strip_menu_bit(int strip);
+	//extern uint8_t striptobit(int strip_no);
 
 
 	// from wifi-ota.cpp
 	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
+	//extern void debugMe(String input, boolean line = true);
+	//extern void debugMe(float input, boolean line = true);
+	//extern void debugMe(uint8_t input, boolean line = true);
+	//extern void debugMe(int input, boolean line = true);
 
 
 
@@ -1006,7 +1003,7 @@ void FS_setup_SPIFFS()
 {
 	debugMe("Start SPIFFS");
 	if (SPIFFS.begin())
-		debugMe("Start SPIFFS");
+		debugMe("Started SPIFFS");
 	else
 		debugMe("FAILED SPIFFS");
 	delay(100);

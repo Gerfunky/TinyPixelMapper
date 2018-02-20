@@ -11,14 +11,12 @@
 */
 
 #include "Header.h"				// add the main Header file
+#include "config.h"				// add the Config.h wherre the main Settings a DEFINED
 
-#define ARTNET_DISABLED 
 
-#define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
-#define DEF_SERIAL_SPEED 115200   // teensy - ESP8266 working on 57600
 
 		// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-		extern void debugMe(String input, boolean line = true);				// debug funtions from wifi-ota 
+		//extern void debugMe(String input, boolean line = true);				// debug funtions from wifi-ota 
 		//extern void debugMe(float input, boolean line = true);
 		//extern void debugMe(uint8_t input, boolean line = true);
 		//extern void debugMe(int input, boolean line = true);
@@ -52,7 +50,7 @@
 
 #ifdef ESP322  //did not want to startup correctly in own file
 		#include <WiFi.h>
-#include "wifi-ota.h"
+		#include "wifi-ota.h"
 		extern wifi_Struct wifi_cfg;
 
  

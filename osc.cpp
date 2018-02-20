@@ -7,7 +7,7 @@
 
 
 
-
+#include "config_TPM.h"   // include the main Defines
 #include "osc.h"
 #include "leds.h"
 
@@ -57,10 +57,14 @@
 
 // External Functions  and Variables
 
+
+
+
+
 // From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
-extern float byte_tofloat(uint8_t value, uint8_t max_value = 255);
+//extern boolean get_bool(uint8_t bit_nr);
+//extern void write_bool(uint8_t bit_nr, boolean value);
+//extern float byte_tofloat(uint8_t value, uint8_t max_value = 255);
 
 
 
@@ -90,11 +94,12 @@ extern boolean FS_FFT_read(uint8_t conf_nr);
 
 	extern artnet_struct artnet_cfg;
 
+
 	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
+	//extern void debugMe(String input, boolean line = true);
+	//extern void debugMe(float input, boolean line = true);
+	//extern void debugMe(uint8_t input, boolean line = true);
+	//extern void debugMe(int input, boolean line = true);
 
 
 // from httpd

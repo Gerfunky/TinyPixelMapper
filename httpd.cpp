@@ -63,15 +63,15 @@
 
 // ********* External Functions
 // From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
+//extern boolean get_bool(uint8_t bit_nr);
+//extern void write_bool(uint8_t bit_nr, boolean value);
 
 	// from wifi-ota.cpp
 	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
+	//extern void debugMe(String input, boolean line = true);
+	//extern void debugMe(float input, boolean line = true);
+	//extern void debugMe(uint8_t input, boolean line = true);
+	//extern void debugMe(int input, boolean line = true);
 
 
 // from config_fs.cpp
@@ -480,6 +480,7 @@ void httpd_setup()
 #endif
 		 MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
+		debugMe("Starting HTTP");
 	}
 }
 

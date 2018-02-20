@@ -2,6 +2,9 @@
 // 
 // 
 
+#include "config_TPM.h"
+
+
 #include "tools.h"
 
 #include "leds.h"
@@ -27,11 +30,11 @@ extern led_cfg_struct led_cfg;
 //
 //	Functions
 //
-//extern void debugMe(String input, boolean line = true);
-//extern void debugMe(float input, boolean line = true);
-//extern void debugMe(uint8_t input, boolean line = true);
-//extern void debugMe(int input, boolean line = true);
 
+
+
+
+// Boolean functions
 boolean get_bool(uint8_t bit_nr)
 {
 
@@ -65,9 +68,11 @@ void write_bool(uint8_t bit_nr, boolean value)
 void load_bool()
 {		// Load the global bools from disk or defaults
 
-
-	if (FS_Bools_read(0) == false)
+	//debugMe("loading Bools");
+	//if (FS_Bools_read(0) == false)
+	if (false == false)
 	{
+		debugMe("Loading default BOOLS");
 		led_cfg.ledType = DEF_LED_TYPE;
 		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
 		write_bool(OTA_SERVER, DEF_OTA_SERVER);
@@ -107,9 +112,9 @@ boolean isODDnumber(uint8_t number)
 
 }
 
-uint8_t striptobit(int strip_no) 
+uint8_t striptobit(int strip_no)						
 {
-	// savle down the Strip no to a bit value 0-7
+	// scale down the Strip no to a bit value 0-7
 	while (strip_no > 7) strip_no = strip_no - 8;
 
 
@@ -117,10 +122,134 @@ uint8_t striptobit(int strip_no)
 
 }
 
-float byte_tofloat(uint8_t value, uint8_t max_value = 255) 
+float byte_tofloat(uint8_t value, uint8_t max_value) 
 {
 
 	float float_out = float(value) / max_value;
 
 	return float_out;
 }
+
+
+
+
+
+//debugging
+
+// debugging functions 
+// can take String, float, uint8_t, int and IPAddress 
+// and print it to telnet or Serial
+
+void debugMe(String input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(input);
+	else
+	TelnetDebug.print(input);
+
+	}// */
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			Serial.println(input);
+		else
+			Serial.print(input);
+	}
+
+
+}
+
+void debugMe(float input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(String(input));
+	else
+	TelnetDebug.print(String(input));
+
+	} // */
+
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			Serial.println(String(input));
+		else
+			Serial.print(String(input));
+	}
+}
+
+void debugMe(uint8_t input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(String(input));
+	else
+	TelnetDebug.print(String(input));
+
+	} // */
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			Serial.println(String(input));
+		else
+			Serial.print(String(input));
+	}
+
+}
+
+void debugMe(int input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(String(input));
+	else
+	TelnetDebug.print(String(input));
+
+	} // */
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			Serial.println(String(input));
+		else
+			Serial.print(String(input));
+	}
+
+}
+
+void debugMe(IPAddress input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(input);
+	else
+	TelnetDebug.print(input);
+
+	}
+	// */
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			Serial.println(input);
+		else
+			Serial.print(input);
+	}
+
+}
+
+// end Debug functions
