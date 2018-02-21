@@ -70,7 +70,10 @@ void load_bool()
 
 	//debugMe("loading Bools");
 	//if (FS_Bools_read(0) == false)
-	if (false == false)
+	debugMe("pre_Bool_LOAD");
+	//debugMe(FS_Bools_read(0));
+	//debugMe("PAST_BOOL_LOAD");
+	if (FS_Bools_read(0) == false)
 	{
 		debugMe("Loading default BOOLS");
 		led_cfg.ledType = DEF_LED_TYPE;
@@ -83,6 +86,7 @@ void load_bool()
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
 	}
+	else debugMe("Bools Loaded");
 	
 }
 

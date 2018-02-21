@@ -2,6 +2,9 @@
 // 
 // 
 
+
+#ifndef DISABLED_COMS
+
 #include "comms.h"
 #include "leds.h"
 #include "tools.h"
@@ -143,3 +146,4 @@ void comms_loop()
 }
 
 
+#endif

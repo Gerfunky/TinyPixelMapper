@@ -38,20 +38,7 @@
 
 
 //************ EXTERNAL Functions 
-	// From tools.cpp
-	//extern boolean get_bool(uint8_t bit_nr);
-	//extern void write_bool(uint8_t bit_nr, boolean value);
-	//extern void load_bool();
-	//extern uint8_t get_strip_menu_bit(int strip);
-	//extern uint8_t striptobit(int strip_no);
 
-
-	// from wifi-ota.cpp
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	//extern void debugMe(String input, boolean line = true);
-	//extern void debugMe(float input, boolean line = true);
-	//extern void debugMe(uint8_t input, boolean line = true);
-	//extern void debugMe(int input, boolean line = true);
 
 
 
@@ -132,7 +119,7 @@ int	get_int_conf_value(File myFile, char *character)
 		return 0;
 }
 
-bool	get_bool_conf_value(File myFile, char *character) 
+bool get_bool_conf_value(File myFile, char *character) 
 {
 	// Read a bool value from a file	
 	
@@ -904,12 +891,13 @@ void FS_Bools_write(uint8_t conf_nr)
 boolean FS_Bools_read(uint8_t conf_nr)
 {
 	// read the device config and bools
-	//debugMe("Reading bools");
+	debugMe("Reading bools");
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
 	if (conf_file)
 	{
+		debugMe("in file");
 		char character;
 		//String settingName;
 		String settingValue;
@@ -927,7 +915,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 			type = conf_file.read();
 			character = conf_file.read(); // go past the first ":" after the type
-			
+			debugMe("pre_Bool_LOAD");
 
 			if (type == 'D')
 			{

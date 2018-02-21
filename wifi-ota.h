@@ -48,5 +48,12 @@
  };
 
 
+
+ // Functions
+
+ void wifi_loop();   // The main wifi loop
+ void wifi_setup();  // The wifi setup function
+
+
 #endif
 

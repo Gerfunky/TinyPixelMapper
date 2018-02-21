@@ -160,6 +160,11 @@
 	  };
 
 
+// Functions
+
+	  void LEDS_loop();
+	  void LEDS_setup();
+
 
 
 #endif

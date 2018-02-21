@@ -15,9 +15,11 @@
 
 #define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
 #define DEF_SERIAL_SPEED 115200   // teensy - ESP8266 working on 57600
+#define DEF_SERIAL_PORT Serial
+
 
 // DEFAULT settings if not loaded from the SPIFFS
-	#define DEF_DEBUG_OUT true				// serial debugging
+	#define DEF_DEBUG_OUT false				// serial debugging
 	#define DEF_WIFI_MODE false				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
 	#define DEF_STATIC_IP_ENABLED true		// set static ip for startup  ?

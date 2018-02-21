@@ -10,6 +10,7 @@
 	#ifdef ESP32
 		#include <WiFi\src\WiFi.h>
 		#include <ArduinoOTA\src\ArduinoOTA.h>
+		#include<WiFi\src\WiFiUdp.h>
 	#endif
 
 

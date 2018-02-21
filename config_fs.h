@@ -10,6 +10,10 @@
 #endif
 
 
+// Public function
+void FS_setup_SPIFFS();
+
+
 
 
 

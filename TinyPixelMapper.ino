@@ -10,82 +10,20 @@
 
 */
 
-#include "Header.h"				// add the main Header file
+//#include "Header.h"				// add the main Header file
 #include "config_TPM.h"			// add the Config.h where the main Settings a DEFINED
-
-
-
-		// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-		//extern void debugMe(String input, boolean line = true);				// debug funtions from wifi-ota 
-		//extern void debugMe(float input, boolean line = true);
-		//extern void debugMe(uint8_t input, boolean line = true);
-		//extern void debugMe(int input, boolean line = true);
-
-
-		// add wifi funtions from wifi-ota.cpp
-		extern void wifi_setup();
-		extern void wifi_loop();
-		extern void setup_wifi_Vars();
-
-
-		// add Comms functions for CMD messanger comms.cpp
-		extern void startSerial(int Speed);		// function to start the serial --> from comms
-		extern void setup_comms(boolean bootDebug, int Speed);  // setup CMD messanger
-
-		// add SPIFFS-Functions from config-fs.cpp
-		extern void FS_setup_SPIFFS();
-
-
-		// add led functions from  leds.cpp
-		extern void LEDS_setup();
-		extern void LEDS_loop();
-
-		// From tools.cpp
-		//extern boolean get_bool(uint8_t bit_nr);
-		extern void write_bool(uint8_t bit_nr, boolean value);
-
-
-
-
-
-#ifdef ESP322  //did not want to startup correctly in own file
-		#include <WiFi.h>
-		#include "wifi-ota.h"
-		extern wifi_Struct wifi_cfg;
-
- 
-
-		void ESP32_startWiFi()
-		{
-			//*
-			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-
-			while (WiFi.status() != WL_CONNECTED) {
-				delay(500);
-				Serial.print(".g.");
-			}
-
-			Serial.println("");
-			Serial.println("WiFi connected.");
-			Serial.println("IP address: ");
-			Serial.println(WiFi.localIP());
-			//	*/
-
-
-
-		}
-
-
-#endif
-
+#include "tools.h"
+#include "config_fs.h"
+#include "wifi-ota.h"
+#include "leds.h"
 
 
 void setup()
 {		
 	if (DEF_BOOT_DEBUGING == true)
 	{
-
-		startSerial(DEF_SERIAL_SPEED);
+		DEF_SERIAL_PORT.begin(DEF_SERIAL_SPEED);
+		//startSerial(DEF_SERIAL_SPEED);
 
 		//Serial.begin(DEF_SERIAL_SPEED);						// enable serial for debugging nand CMDmesanger if using local FFT from teensy
 #ifdef ESP8266
@@ -100,11 +38,6 @@ void setup()
 	
 	LEDS_setup();
 	
-
-
-#ifdef ESP32
-	//ESP32_startWiFi();
-#endif
 
 	wifi_setup();
 

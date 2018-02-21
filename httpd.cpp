@@ -24,12 +24,12 @@
 	#endif
 	
 #ifdef ESP32
-#include<WiFi\src\WiFi.h>
-//#include <HTTPClient.h>
-#include<ESPmDNS\src\ESPmDNS.h>
-#include<SPIFFS\src\SPIFFS.h>
-#include<FS\src\FS.h>
-#include<ESP8266WebServer\WebServer.h>
+	#include<WiFi\src\WiFi.h>
+	//#include <HTTPClient.h>
+	#include<ESPmDNS\src\ESPmDNS.h>
+	#include<SPIFFS\src\SPIFFS.h>
+	#include<FS\src\FS.h>
+	#include<ESP8266WebServer\WebServer.h>
 #endif
 
 
@@ -45,7 +45,7 @@
 
 #ifdef ESP32
 #include <WiFi.h>	
-#include <HTTPClient.h>
+//#include <HTTPClient.h>
 #include <ESPmDNS.h>
 #include <WebServer.h>
 #include <FS.h>	
@@ -122,9 +122,11 @@ String httpd_getContentType(String filename) {
 
 bool httpd_handleFileRead(String path) {
 
-	 debugMe("handleFileRead: " + path);
+	 
       
 	if (path.endsWith("/")) path += "index.html";
+	debugMe("handleFileRead: " + path);
+
 	String contentType = httpd_getContentType(path);
 	String pathWithGz = path + ".gz";
 	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
@@ -133,6 +135,7 @@ bool httpd_handleFileRead(String path) {
 		File file = SPIFFS.open(path, "r");
 		size_t sent = httpd.streamFile(file, contentType);
 		file.close();
+		debugMe(path + " closed");
 		return true;
 	}
 	return false;
@@ -234,52 +237,20 @@ void httpd_handleFileList() {
 		output += "\",\"name\":\"";
 		output += String(fileX.name());
 		output += "\"}";
-		debugMe(String(fileX.name()));
+		//debugMe(String(fileX.name()));
+		fileX.close();
 		fileX = dir.openNextFile();
 		debugMe(String(fileX.name()));
 		//dir.close();
 	}
 
-
+	dir.close();
 
 
 	output += "]";
 	httpd.send(200, "text/json", output);
+	//debugMe(output);
 }
-
-
-void listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
-	Serial.printf("Listing directory: %s\n", dirname);
-
-	File root = fs.open(dirname);
-	if (!root) {
-		Serial.println("Failed to open directory");
-		return;
-	}
-	if (!root.isDirectory()) {
-		Serial.println("Not a directory");
-		return;
-	}
-
-	File file = root.openNextFile();
-	while (file) {
-		if (file.isDirectory()) {
-			Serial.print("  DIR : ");
-			Serial.println(file.name());
-			if (levels) {
-				listDir(fs, file.name(), levels - 1);
-			}
-		}
-		else {
-			Serial.print("  FILE: ");
-			Serial.print(file.name());
-			Serial.print("  SIZE: ");
-			Serial.println(file.size());
-		}
-		file = root.openNextFile();
-	}
-}
-
 
 
 
@@ -417,8 +388,9 @@ void httpd_toggle_webserver()
 	{
 		httpd.begin();
 		write_bool(HTTP_ENABLED, true);
+		debugMe("httpd turned on");
 #ifdef ESP8266
-		 debugMe("httpd turned on");
+
 		httpUpdater.setup(&httpd);
 #endif		
 		// debugMe("HTTP server started");
@@ -432,6 +404,7 @@ void httpd_toggle_webserver()
 
 void httpd_setup()
 {
+	debugMe("HTTPd_setup");
 	// Setup Handlers
 	httpd.on("/list", HTTP_GET, httpd_handleFileList);
 	//load editor
@@ -454,7 +427,6 @@ void httpd_setup()
 	});
 #endif
 	// end FS handlers
-	//httpd.on("/edit", HTTP_DELETE, handleFileDelete);
 	//httpd.serveStatic("/index.html", SPIFFS, "/index.html");  
 	//httpd.on( "/set", handle_default_args ); 
 
