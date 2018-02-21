@@ -12,94 +12,48 @@
 #include "config_TPM.h"
 
 
-#include "httpd.h"
-//#include <WiFiClient.h>					//required for other libs
 
 #ifdef _MSC_VER  
-	#ifdef ESP8266
-		#include <ESP8266WiFi\src\ESP8266WiFi.h>
-		#include <ESP8266WebServer\src\ESP8266WebServer.h>
-		#include <ESP8266HTTPUpdateServer\src\ESP8266HTTPUpdateServer.h>
-		#include <ESP8266mDNS\ESP8266mDNS.h>
+
+	#ifdef ESP32
+		#include<WiFi\src\WiFi.h>
+		//#include <HTTPClient.h>
+		#include<ESPmDNS\src\ESPmDNS.h>
+		#include<SPIFFS\src\SPIFFS.h>
+		#include<FS\src\FS.h>
+		#include<ESP8266WebServer\WebServer.h>
 	#endif
-	
-#ifdef ESP32
-	#include<WiFi\src\WiFi.h>
-	//#include <HTTPClient.h>
-	#include<ESPmDNS\src\ESPmDNS.h>
-	#include<SPIFFS\src\SPIFFS.h>
-	#include<FS\src\FS.h>
-	#include<ESP8266WebServer\WebServer.h>
-#endif
 
 
 #else
 
-#ifdef ESP8266
-	#include <FS.h>	
-	#include <ESP8266WiFi.h>				// REquired for other libs
-	#include <ESP8266WebServer.h>			// the Webserver
-	#include <ESP8266HTTPUpdateServer.h>	// the HTTP update server http://IP/update
-	#include <ESP8266mDNS.h>				// mDNS 
-#endif
-
-#ifdef ESP32
-#include <WiFi.h>	
-//#include <HTTPClient.h>
-#include <ESPmDNS.h>
-#include <WebServer.h>
-#include <FS.h>	
-#include<SPIFFS.h>
-#endif
+	#ifdef ESP32
+		#include <WiFi.h>	
+		//#include <HTTPClient.h>
+		#include <ESPmDNS.h>
+		#include <WebServer.h>
+		#include <FS.h>	
+		#include<SPIFFS.h>
+	#endif
 
 
 #endif
-						// for file system  SPIFFS access
-#ifdef ESP32
+ 
 
-#endif
-#include "tools.h"						// for bools reading/writing
-#include "wifi-ota.h"					// get the wifi structures
-
-
-
-
-// ********* External Functions
-// From tools.cpp
-//extern boolean get_bool(uint8_t bit_nr);
-//extern void write_bool(uint8_t bit_nr, boolean value);
-
-	// from wifi-ota.cpp
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	//extern void debugMe(String input, boolean line = true);
-	//extern void debugMe(float input, boolean line = true);
-	//extern void debugMe(uint8_t input, boolean line = true);
-	//extern void debugMe(int input, boolean line = true);
-
-
-// from config_fs.cpp
-extern void FS_wifi_write(uint8_t conf_nr);
-
-
+// ********* Externals
+	#include "tools.h"						// for bools reading/writing
+	#include "config_fs.h"					
+	#include "httpd.h"
 
 // *********** External Variables 
-// from wifi-ota.cpp
-extern wifi_Struct wifi_cfg;
-
-#ifdef ESP8266
-ESP8266WebServer httpd(80);					// The Web Server 
-ESP8266HTTPUpdateServer httpUpdater;		// The HTTP update Server
-#endif
-
-#ifdef ESP32
+	#include "wifi-ota.h"					// get the wifi structures
+	extern wifi_Struct wifi_cfg;			// link to wifi variable wifi_cfg
 
 
-WebServer  httpd(80);					// The Web Server 
+// Variables
+	WebServer  httpd(80);					// The Web Server 
 
 
-#endif
-
-File fsUploadFile;							// Variable to hold a file upload
 
 
 String httpd_getContentType(String filename) {
@@ -142,6 +96,7 @@ bool httpd_handleFileRead(String path) {
 }
 
 void httpd_handleFileUpload() {
+	File fsUploadFile;							// Variable to hold a file upload
 	if (httpd.uri() != "/edit") return;
 	HTTPUpload& upload = httpd.upload();
 	if (upload.status == UPLOAD_FILE_START) {
@@ -208,7 +163,6 @@ void httpd_handleFileCreate() {
 	path = String();
 }
 
-#ifdef ESP32
 void httpd_handleFileList() {
 	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
 	String path = httpd.arg("dir");
@@ -251,45 +205,6 @@ void httpd_handleFileList() {
 	httpd.send(200, "text/json", output);
 	//debugMe(output);
 }
-
-
-
-#endif
-
-#ifdef ESP8266
-void httpd_handleFileList() {
-	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
-	String path = httpd.arg("dir");
-
-	debugMe("handleFileList: " + path);
-
-	Dir dir = SPIFFS.openDir(path);
-
-
-
-	path = String();
-
-	String output = "[";
-	while (dir.next()) {
-		File entry = dir.openFile("r");
-		if (output != "[") output += ',';
-		bool isDir = false;
-		output += "{\"type\":\"";
-		output += (isDir) ? "dir" : "file";
-		output += "\",\"name\":\"";
-		output += String(entry.name()).substring(1);
-		output += "\"}";
-		entry.close();
-	}
-
-	output += "]";
-	httpd.send(200, "text/json", output);
-}
-
-
-
-#endif
-
 
 void httpd_handle_default_args()
 {
@@ -463,7 +378,6 @@ void http_loop()
 {
 	if (get_bool(HTTP_ENABLED) == true)
 		httpd.handleClient();
-	
 }
 
 

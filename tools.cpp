@@ -3,19 +3,11 @@
 // 
 
 #include "config_TPM.h"
-
-
 #include "tools.h"
-
 #include "leds.h"
+#include "config_fs.h"
 
 
-//extern void debugMe(String input, boolean line = true);
-/*
-extern void debugMe(float input, boolean line = true);
-extern void debugMe(uint8_t input, boolean line = true);
-extern void debugMe(int input, boolean line = true);
-// */
 
 // Global Bool Structure soi that we only use 1 Bit and not a byte for a Bool
 // use tool.h to read and write
@@ -23,18 +15,12 @@ extern void debugMe(int input, boolean line = true);
 
 uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00001111, B00000000 };
 
-extern boolean FS_Bools_read(uint8_t conf_nr);
+
 extern led_cfg_struct led_cfg;
 
 
-//
-//	Functions
-//
 
-
-
-
-// Boolean functions
+// Bools functions
 boolean get_bool(uint8_t bit_nr)
 {
 
@@ -89,6 +75,8 @@ void load_bool()
 	else debugMe("Bools Loaded");
 	
 }
+
+// end bools functions
 
 
 

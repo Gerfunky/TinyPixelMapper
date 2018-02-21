@@ -7,53 +7,27 @@
 
 #else
     #include <FS.h>
-	#ifdef ESP32
-		#include<SPIFFS.h>
-	#endif
+	#include<SPIFFS.h>
 #endif
-
-
 
 
 #include "config_TPM.h"
 #include "config_fs.h"
-
-#include "leds.h"
-#include "wifi-ota.h"
 #include "tools.h"
-
-
-/*
-#ifdef _MSC_VER
-	//#include "FS.h"
-	typedef File;
-
-#else
-	
-
-
-#endif
-// */
-
-
-
-//************ EXTERNAL Functions 
 
 
 
 
 // ***************** External Structures
-	// from wifi-ota.cpp
+	#include "wifi-ota.h"
 	extern wifi_Struct wifi_cfg;
 
-	//extern void load_bool();
-#ifndef ARTNET_DISABLED
-	extern artnet_struct artnet_cfg;
-#endif
 
+	#include "leds.h"
+	#ifndef ARTNET_DISABLED
+		extern artnet_struct artnet_cfg;
+	#endif
 	extern fft_ip_cfg_struct fft_ip_cfg;
-
-	// from leds.cpp
 	extern Strip_FL_Struct part[NR_STRIPS];
 	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
 	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
@@ -65,15 +39,15 @@
 	extern byte fft_menu[3];
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-	extern void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);
-	extern uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);
+
+
 
 
 
 //**************** Functions 
 
 
-
+// Reading Conf values from file.
 
 bool get_bool_byte(uint8_t in_byte, uint8_t in_bit) 
 {	
@@ -390,7 +364,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 	
 }
 
-boolean FS_wifi_read(uint8_t conf_nr = 0)
+boolean FS_wifi_read(uint8_t conf_nr)
 {
 	// read the wifi config
 	
@@ -495,7 +469,7 @@ void	FS_artnet_write(uint8_t conf_nr)
 
 }
 
-boolean FS_artnet_read(uint8_t conf_nr = 0)
+boolean FS_artnet_read(uint8_t conf_nr)
 {
 	// read the artnet config from disk
 

@@ -2,38 +2,19 @@
 #include "config_TPM.h"
 
 #ifdef _MSC_VER   
-	//#include <ESP8266WiFi\src\ESP8266WiFi.h> // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
-	#ifdef ESP8266
-		#include <ESP8266WiFi\src\WiFiClient.h>
-		#include <ArduinoOTA\ArduinoOTA.h>
-	#endif
-	#ifdef ESP32
 		#include <WiFi\src\WiFi.h>
 		#include <ArduinoOTA\src\ArduinoOTA.h>
 		#include<WiFi\src\WiFiUdp.h>
-	#endif
-
-
-	
 		#include <RemoteDebug\RemoteDebug.h>
-	
 		#include <Time\TimeLib.h>
 	#ifndef ARTNET_DISABLED 
 		#include <Artnet\Artnet.h>
 	#endif
 	
 #else 
-	#ifdef ESP8266
-	//#include <ESP8266WiFi.h>      // neded to IPADDRESS typedef !!! TODO Replace with EXTERN!!!!
-	#include <WiFiClient.h> 
-	#endif //esp8266
-
-	#ifdef ESP32
 	#include <WiFi.h>	
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
-	#endif
-
 	#include <ArduinoOTA.h>
 	#include <TimeLib.h> 
 	#include <RemoteDebug.h> 
@@ -44,18 +25,13 @@
 #endif
 
 
-
-#include "wifi-ota.h"    // needs Wifi and co for data stuctures!!!
-
-#include "leds.h"			// include for led data structures
 #include "tools.h"			// include the Tools for reading and writing bools and DebugMe
+#include "wifi-ota.h"		// needs Wifi and co for data stuctures!!!
+#include "leds.h"			// include for led data structures
+#include "config_fs.h"
+#include "httpd.h"
+#include "osc.h"
 
-
-
-// From tools.cpp
-
-// from leds.cpp
-extern void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);
 
 
 RemoteDebug TelnetDebug;
@@ -88,26 +64,7 @@ fft_ip_cfg_struct fft_ip_cfg;
 
 
 
-// from confif_fs.cpp
-extern boolean FS_wifi_read(uint8_t conf_nr = 0);
-extern boolean FS_artnet_read(uint8_t conf_nr = 0);
-extern boolean FS_FFT_read(uint8_t conf_nr);
-
-
-// from httpd.cpp
-extern void httpd_setup();
-extern void http_loop();
-
-// from osc.cpp
-extern void OSC_setup();
-extern void OSC_loop();
-
 // from leds
-extern void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
-extern void LEDS_fadeout();
-extern void LEDS_setall_color();
-extern void LEDS_FFT_enqueue(uint8_t invalue);
-extern uint8_t LEDS_FFT_get_value(uint8_t bit);
 
 extern fft_led_cfg_struct fft_led_cfg;
 

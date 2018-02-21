@@ -54,6 +54,6 @@ void loop()
 {
 
 	wifi_loop();
-	//LEDS_loop();
+	LEDS_loop();
 	//debugMe("running.");
 }

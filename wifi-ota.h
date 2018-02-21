@@ -55,5 +55,19 @@
  void wifi_setup();  // The wifi setup function
 
 
+
+ void WIFI_FFT_toggle_master(boolean value);			// osc.cpp
+ void WIFI_FFT_toggle(boolean mode_value);				//osc.cpp
+
+ //void WIFI_FFT_master_send();   // Comms
+
+
+
+#ifndef ARTNET_DISABLED
+	void wifi_artnet_enable();
+	void wifi_artnet_loop();
+#endif
+
+
 #endif
 

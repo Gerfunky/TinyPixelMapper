@@ -12,6 +12,8 @@
 
 
 #define ARTNET_DISABLED 
+//#define OSC_MC_SERVER_DISABLED
+#define DISABLED_COMS   // disable the command msg not needed for ESP32 since the mic is local TODO remove comms
 
 #define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
 #define DEF_SERIAL_SPEED 115200   // teensy - ESP8266 working on 57600
@@ -62,22 +64,19 @@
 // END WIFI
 
 // FastLed Defines
-		//#ifdef ESP32 
 		#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
 		//#define WS2812_LED						// LED Type = 1 this is the default led type can be changes online in OSC
 		#define APA102_LED							// Led type = 0
 		//#define SK6822_LED						// Led type = 2
 		#define LED_DATA_PIN    19 //12	
 		#define LED_CLK_PIN     18 //13	// used with APA102
-		//#endif
 
 
 		//#define FASTLED_ALLOW_INTERRUPTS 0
 		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 		#define NUM_LEDS		680 //321 //642 //490 //640 // 320
-		#define NR_FORM_PARTS	16	// how many forms? default 16
-		#define NR_STRIPS		32	// how many strips  default 32
+
 
 		#define DEF_MAX_BRI 255		// the default max bri
 		#define DEF_BRI 100			// the deault Bri
@@ -88,8 +87,6 @@
 
 		#define MAX_PAL_FPS 60				// maximum FPS 
 
-		#define NR_PALETTS 2				// how many pallets do we have = 2
-
 		#define BMP_MAX_TIME 3000				
 
 		#define MAX_INDEX_LONG 4096			// must stay under this number!
@@ -97,6 +94,13 @@
 		// FFT
 		#define FFT_MIN_AUTO_TRIGGER 11					// Deafult min auto FFT trigger
 		#define FFT_MAX_AUTO_TRIGGER 222				// Default Max auto FFT trigger
+
+		// Strip/Form settings do not change!!! 
+		#define NR_FORM_PARTS	16	// how many forms? default 16
+		#define NR_STRIPS		32	// how many strips  default 32
+		#define NR_PALETTS 2				// how many pallets do we have = 2
+
+
 
 // END FastLed Defines
 
@@ -111,7 +115,7 @@
 
 	#define OSC_BUNDLE_SEND_COUNT 16				// how many OSC messages to send in one bundle.
 
-#define OSC_MULTIPLY_OPTIONS 11					// 
+	#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from osc
 // END OSC
 
 

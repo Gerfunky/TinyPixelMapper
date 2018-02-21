@@ -51,93 +51,44 @@
 
 #include "tools.h"								// include the Tools enums for reading and writing bools
 #include "wifi-ota.h"
+#include "config_fs.h"
+#include "httpd.h"
 
 
+// External Variables/ Structures
 
 
-// External Functions  and Variables
-
-
-
-
-
-// From tools.cpp
-//extern boolean get_bool(uint8_t bit_nr);
-//extern void write_bool(uint8_t bit_nr, boolean value);
-//extern float byte_tofloat(uint8_t value, uint8_t max_value = 255);
-
-
-
-
-// from config.fs
-extern void FS_wifi_write(uint8_t conf_nr);
-extern void FS_Bools_write(uint8_t conf_nr);
-extern void FS_osc_delete_all_saves();
-
-extern boolean FS_play_conf_read(uint8_t conf_nr);
-extern void FS_play_conf_write(uint8_t conf_nr);
-extern void FS_FFT_write(uint8_t conf_nr);
-extern boolean FS_FFT_read(uint8_t conf_nr);
-#ifndef ARTNET_DISABLED
-	extern void FS_artnet_write(uint8_t conf_nr);
-#endif
-
-// from wifi
-#ifndef ARTNET_DISABLED
-	extern void wifi_artnet_enable();
-#endif
-
-	extern void WIFI_FFT_toggle_master(boolean value);
-	extern void WIFI_FFT_toggle(boolean mode_value);
 	extern fft_data_struct fft_data[7];
 	extern wifi_Struct wifi_cfg;
-
 	extern artnet_struct artnet_cfg;
 
 
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	//extern void debugMe(String input, boolean line = true);
-	//extern void debugMe(float input, boolean line = true);
-	//extern void debugMe(uint8_t input, boolean line = true);
-	//extern void debugMe(int input, boolean line = true);
 
-
-// from httpd
-extern void httpd_toggle_webserver();
 
 // from leds
-extern float LEDS_get_FPS();
-extern led_cfg_struct led_cfg;
 
-extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
-extern Strip_FL_Struct part[NR_STRIPS];
-extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
-extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
-extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
-extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
-extern led_cfg_struct led_cfg;
-extern byte fft_menu[3];
-extern fft_led_cfg_struct fft_led_cfg;
+	extern led_cfg_struct led_cfg;
+	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
+	extern Strip_FL_Struct part[NR_STRIPS];
+	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
+	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
+	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
+	extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
+	extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
+	extern byte fft_menu[3];
+	extern fft_led_cfg_struct fft_led_cfg;
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
-extern uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);
-extern void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);
-extern void LEDS_pal_reset_index();
-extern void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);
+
+
 //struct OSC_buffer_float master_rgb = { 255,255,255 };
 
 
 //from coms
-extern void comms_S_FPS(uint8_t fps);
-
-
-
+//extern void comms_S_FPS(uint8_t fps);
 
 
 QueueArray <char> osc_out_float_addr;
 QueueArray <float> osc_out_float_value;
-
-
 
 osc_cfg_struct osc_cfg = { OSC_IPMULTI_ ,OSC_PORT_MULTI_,OSC_OUTPORT, OSC_INPORT, 0,1 };
 
@@ -419,10 +370,13 @@ uint16_t osc_miltiply_get()
 
 		break;
 	case 11:
-		value = 1000;
+		value = 1024;
 
 		break;
 
+	default:
+		value = 1;
+		break;
 	}
 
 
@@ -2233,7 +2187,7 @@ void osc_master_routing(OSCMessage &msg, int addrOffset)
 		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); }   // global_blend_switch = bool(msg.getFloat(0));
 
 		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); }
-		if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
+		//if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
 		if (msg.fullMatch("/FPS", addrOffset))			osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));
 
 		if (msg.fullMatch("/fire/cool", addrOffset)) { led_cfg.fire_cooling = constrain(byte(msg.getFloat(0)), 20, 100); osc_queu_MSG_float("/m/fire/coolL", float(led_cfg.fire_cooling)); }

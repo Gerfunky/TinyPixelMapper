@@ -13,11 +13,11 @@
 // add fire animation link it to FFT if possible!  
 
 #include "config_TPM.h"    // Load the main config
-
 #include "leds.h"
-//#include "boards.h"
 #include "tools.h"
 #include "wifi-ota.h"
+#include "config_fs.h"
+
 
 #ifdef _MSC_VER
 	#include <FastLED\FastLED.h>
@@ -34,33 +34,12 @@
 
 // *************** External Functions
 // from wifi-ota.cpp
-#ifndef  ARTNET_DISABLED 
-extern void wifi_artnet_loop();
-#endif
+
 extern artnet_struct artnet_cfg;
 
 
-// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-//extern void debugMe(String input, boolean line = true);
-//extern void debugMe(float input, boolean line = true);
-//extern void debugMe(uint8_t input, boolean line = true);
-//extern void debugMe(int input, boolean line = true);
-
 // from comms.cpp 
-extern void comms_loop();
-
-// From tools.cpp
-//extern boolean get_bool(uint8_t bit_nr);
-//extern void write_bool(uint8_t bit_nr, boolean value);
-//extern boolean isODDnumber(uint8_t number);
-
-
-
-//from config fs
-extern boolean FS_play_conf_read(uint8_t conf_nr);
-extern boolean FS_FFT_read(uint8_t conf_nr);
-
-
+// extern void comms_loop();
 
 
 
@@ -114,8 +93,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 
 
-// ********************* LED Setup
-	// FastLed
+// ********************* LED Setup  FastLed
 	CRGBArray<NUM_LEDS> leds;			// The Led array!
 	//CRGB leds[NUM_LEDS];
 	//CRGBSet leds_p(leds, NUM_LEDS);
@@ -806,13 +784,13 @@ void LEDS_pal_reset_index()
 }
 
 
-CRGB ColorFrom_LONG_Palette(boolean pal,
+CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
+	boolean pal,
 	uint16_t longIndex,
 	//uint8_t index,
 	uint8_t brightness = 255,
-	TBlendType blendType = LINEARBLEND) {
-
-
+	TBlendType blendType = LINEARBLEND) 
+{
 	uint8_t indexC1 = 0;
 	uint8_t indexC2 = 0;
 	//uint8_t shortIndex = longIndex;
@@ -835,8 +813,8 @@ CRGB ColorFrom_LONG_Palette(boolean pal,
 	//delay(100);
 	//debugMe(indexC1);
 
-	CRGB color1 =  ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
-	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2*16, brightness, blendType);
+	CRGB color1 = ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
+	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2 * 16, brightness , blendType);
 	//nblend(CRGB& existing, const CRGB& overlay, fract8 amountOfOverlay)
 	CRGB outcolor = blend(color1, color2, longIndex);
 	//debugMe(String(String(color1.red) + "." + String(color1.green) + "." + String(color1.blue)));
@@ -922,6 +900,7 @@ void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_
 
 
 	}
+	else debugMe("LEDS_long_pal_fill-NOT NUNNING");
 }
 
 
@@ -1507,8 +1486,8 @@ void LEDS_loop()
 	#ifndef ARTNET_DISABLED
 		wifi_artnet_loop();  //  fetshing data 
 	#endif
-	comms_loop(); // check comms for new FFT data  this is not allowed on a timer since we dont want to overflow the memory with incomming messages
-	yield();
+	//comms_loop(); // check comms for new FFT data  this is not allowed on a timer since we dont want to overflow the memory with incomming messages
+	//yield();
 
 	
 

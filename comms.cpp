@@ -2,6 +2,8 @@
 // 
 // 
 
+#include "config_TPM.h"
+
 
 #ifndef DISABLED_COMS
 
@@ -16,18 +18,6 @@
 #endif
 
 CmdMessenger cmdMessenger = CmdMessenger(CMD_MESSEGER_PORT);
-// From tools.cpp
-//extern boolean get_bool(uint8_t bit_nr);
-//extern void write_bool(uint8_t bit_nr, boolean value);
-
-// from wifi
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	//extern void debugMe(String input, boolean line = true);
-	//extern void debugMe(float input, boolean line = true);
-	//extern void debugMe(uint8_t input, boolean line = true);
-	//extern void debugMe(int input, boolean line = true);
-// EXTERNAL's
-
 
 
 
@@ -38,7 +28,6 @@ extern led_cfg_struct led_cfg;
 extern fft_data_struct fft_data[7];
 extern fft_led_cfg_struct fft_led_cfg;
 
-extern void WIFI_FFT_master_send();
 
 
 void Com_master_Send_FFT_bins() {
