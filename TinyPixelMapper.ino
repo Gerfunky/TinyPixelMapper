@@ -37,12 +37,8 @@ void setup()
 	FS_setup_SPIFFS();  // includes loadbool()
 	
 	LEDS_setup();
-	
 
 	wifi_setup();
-
-
-		
 
 	//setup_comms(DEF_BOOT_DEBUGING, DEF_SERIAL_SPEED);   // Start CMDmessanger and the Serial if DEF_BOOT_DEBUGING == false
 	debugMe("DONE Setup");

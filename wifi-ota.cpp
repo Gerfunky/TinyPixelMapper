@@ -6,7 +6,9 @@
 		#include <ArduinoOTA\src\ArduinoOTA.h>
 		#include<WiFi\src\WiFiUdp.h>
 		#include <RemoteDebug\RemoteDebug.h>
-		#include <Time\TimeLib.h>
+		//#include <Time\TimeLib.h>
+		#include <time.h>
+
 	#ifndef ARTNET_DISABLED 
 		#include <Artnet\Artnet.h>
 	#endif
@@ -16,13 +18,16 @@
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
 	#include <ArduinoOTA.h>
-	#include <TimeLib.h> 
+	//#include <TimeLib.h>
+	#include "time.h"
 	#include <RemoteDebug.h> 
 	#ifndef ARTNET_DISABLED 
 		#include <Artnet.h>
 	#endif
 	
 #endif
+
+
 
 
 #include "tools.h"			// include the Tools for reading and writing bools and DebugMe
@@ -106,7 +111,18 @@ void setup_OTA()
 
 
 
-String NTPprintTime() {
+void NTPprintTime() {
+	
+	struct tm timeinfo;
+	
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return;
+	}
+	Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+	//String XXX = String(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+
+	/*
 	// digital clock display of the time
 	// print the time
 	if (get_bool(DEBUG_OUT) == true)
@@ -126,9 +142,10 @@ String NTPprintTime() {
 		debugMe("  ***************");
 		//debugMe();
 	}
+	*/
 }
 
-
+/*
 void NTP_requestTime(IPAddress& address)		// taken from the arduino NTP example
 {
 	// send out a ntp request to get the actual time
@@ -182,9 +199,16 @@ void NTP_parse_response()
 			setTime(secsSince1900 - 2208988800UL + DEF_TIMEZONE * SECS_PER_HOUR);
 		}
 }
-
+*/
 void setup_NTP()
 {
+	const long  gmtOffset_sec = 3600;
+	const int   daylightOffset_sec = 3600;
+
+	configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
+
+
+	/*
 	// setup the NTP client
 	ntp_udp.begin(NTP_LOCAL_PORT);
 	//get the IP from the NTP server / pool
@@ -203,7 +227,7 @@ void setup_NTP()
 	NTPprintTime();
 	//if (year() == 1970 && get_bool(WIFI_MODE) == 1 && get_bool(DEBUG_OUT) == true) {debugMe("******wifi client no connect no time resetting *****");ESP.restart();}
 
-	
+	// */
 }
 
 
@@ -733,8 +757,8 @@ void wifi_setup()
 void wifi_loop()
 {
 	ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
-	yield();
-	NTP_parse_response();	// get new packets and flush if not correct.
+	//yield();
+	//NTP_parse_response();	// get new packets and flush if not correct.
 	yield();
 	OSC_loop();
 	yield();
