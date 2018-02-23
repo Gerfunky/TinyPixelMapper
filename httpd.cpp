@@ -21,7 +21,7 @@
 		#include<ESPmDNS\src\ESPmDNS.h>
 		#include<SPIFFS\src\SPIFFS.h>
 		#include<FS\src\FS.h>
-		#include<ESP8266WebServer\WebServer.h>
+		#include <WebServer-esp32\src\WebServer.h>
 	#endif
 
 
@@ -88,8 +88,9 @@ bool httpd_handleFileRead(String path) {
 			path += ".gz";
 		File file = SPIFFS.open(path, "r");
 		size_t sent = httpd.streamFile(file, contentType);
+		String(file.size());
 		file.close();
-		debugMe(path + " closed");
+		debugMe("  " + path + " closed and sent :" + String(sent) );
 		return true;
 	}
 	return false;
@@ -289,6 +290,14 @@ void httpd_handleRequestSettings()
 
 
 }
+
+
+
+
+
+
+
+
 
 
 void httpd_toggle_webserver()

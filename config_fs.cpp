@@ -380,7 +380,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		char type;
 		//String 
 		//int strip_no = 0;
-		//DBG_OUTPUT_PORT.println("File-opened");
+		//debugMe("File-opened");
 
 		memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));  // reset them to 0
 		memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
@@ -427,10 +427,11 @@ boolean FS_wifi_read(uint8_t conf_nr)
 				
 				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End				
 			}
-			//if (character == ']') {DBG_OUTPUT_PORT.println("the other side") ;}  // End of getting this strip
+			//if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
 			while ((conf_file.available())) character = conf_file.read();   // goto End
 
 		}
+		
 		conf_file.close();
 		return true;
 	}	// end open conf file
@@ -916,7 +917,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				 debugMe("NO_TYPE");
 
 			while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
-			//if (character == ']') {DBG_OUTPUT_PORT.println("the other side") ;}  // End of getting this strip
+			//if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
 			//while ((conf_file.available())) character = conf_file.read();   // goto End
 
 		}
@@ -961,13 +962,49 @@ void FS_osc_delete_all_saves()
 }
 
 
+
+void FS_listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+	debugMe("Listing directory: %s\n", dirname);
+
+	File root = fs.open(dirname);
+	if (!root) {
+		debugMe("Failed to open directory");
+		return;
+	}
+	if (!root.isDirectory()) {
+		debugMe("Not a directory");
+		return;
+	}
+
+	File file = root.openNextFile();
+	while (file) {
+		if (file.isDirectory()) {
+			debugMe("  DIR : ", false);
+			debugMe(file.name());
+			if (levels) {
+				FS_listDir(fs, file.name(), levels - 1);
+			}
+		}
+		else {
+			debugMe("  FILE: ", false);
+			debugMe(file.name(),false);
+			debugMe("  SIZE: ",false);
+			debugMe(String(file.size()));
+		}
+		file = root.openNextFile();
+	}
+}
+
+
 //Setup
 void FS_setup_SPIFFS()
 {
 	debugMe("Start SPIFFS");
 	if (SPIFFS.begin())
+	{
 		debugMe("Started SPIFFS");
-	else
+		FS_listDir(SPIFFS, "/", 0);
+	} else
 		debugMe("FAILED SPIFFS");
 	delay(100);
 	load_bool();

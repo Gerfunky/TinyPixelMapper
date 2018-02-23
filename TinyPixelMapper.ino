@@ -23,6 +23,7 @@ void setup()
 	if (DEF_BOOT_DEBUGING == true)
 	{
 		DEF_SERIAL_PORT.begin(DEF_SERIAL_SPEED);
+		DEF_SERIAL_PORT.setDebugOutput(true);
 		//startSerial(DEF_SERIAL_SPEED);
 
 		//Serial.begin(DEF_SERIAL_SPEED);						// enable serial for debugging nand CMDmesanger if using local FFT from teensy
