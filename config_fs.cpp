@@ -964,7 +964,7 @@ void FS_osc_delete_all_saves()
 
 
 void FS_listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
-	debugMe("Listing directory: %s\n", dirname);
+	debugMe("Listing directory: "+  String(dirname));
 
 	File root = fs.open(dirname);
 	if (!root) {
@@ -993,6 +993,7 @@ void FS_listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 		}
 		file = root.openNextFile();
 	}
+	file.close();
 }
 
 

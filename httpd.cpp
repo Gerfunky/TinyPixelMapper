@@ -29,9 +29,10 @@
 
 	#ifdef ESP32
 		#include <WiFi.h>	
-		//#include <HTTPClient.h>
+		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
 		#include <WebServer.h>
+		//#include <ESP8266WebServer.h>
 		#include <FS.h>	
 		#include<SPIFFS.h>
 	#endif

@@ -147,9 +147,9 @@ void debugMe(String input, boolean line)
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
-			Serial.println(input);
+			DEF_SERIAL_PORT.println(input);
 		else
-			Serial.print(input);
+			DEF_SERIAL_PORT.print(input);
 	}
 
 
@@ -171,9 +171,9 @@ void debugMe(float input, boolean line)
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
-			Serial.println(String(input));
+			DEF_SERIAL_PORT.println(String(input));
 		else
-			Serial.print(String(input));
+			DEF_SERIAL_PORT.print(String(input));
 	}
 }
 
@@ -192,9 +192,9 @@ void debugMe(uint8_t input, boolean line)
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
-			Serial.println(String(input));
+			DEF_SERIAL_PORT.println(String(input));
 		else
-			Serial.print(String(input));
+			DEF_SERIAL_PORT.print(String(input));
 	}
 
 }
@@ -214,9 +214,9 @@ void debugMe(int input, boolean line)
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
-			Serial.println(String(input));
+			DEF_SERIAL_PORT.println(String(input));
 		else
-			Serial.print(String(input));
+			DEF_SERIAL_PORT.print(String(input));
 	}
 
 }
@@ -237,11 +237,65 @@ void debugMe(IPAddress input, boolean line)
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
-			Serial.println(input);
+			DEF_SERIAL_PORT.println(input);
 		else
-			Serial.print(input);
+			DEF_SERIAL_PORT.print(input);
 	}
 
 }
 
 // end Debug functions
+
+
+#include <rom/rtc.h>		// required to get the reset reason
+#define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
+
+String print_reset_reason(RESET_REASON reason)
+{
+	String stringy_reason;
+		
+	switch (reason)
+	{
+	case 1: stringy_reason = ("POWERON_RESET : Vbat power on reset"); break;									/**<1,  Vbat power on reset*/
+	case 2: stringy_reason = ("Nr 2 who knows!!!"); break;
+	case 3: stringy_reason = ("SW_RESET : Software reset digital core"); break;									/**<3,  Software reset digital core*/
+	case 4: stringy_reason = ("OWDT_RESET :Legacy watch dog reset digital core"); break;						/**<4,  Legacy watch dog reset digital core*/
+	case 5: stringy_reason = ("DEEPSLEEP_RESET : Deep Sleep reset digital core"); break;						/**<5,  Deep Sleep reset digital core*/
+	case 6: stringy_reason = ("SDIO_RESET : Reset by SLC module, reset digital core"); break;					/**<6,  Reset by SLC module, reset digital core*/
+	case 7: stringy_reason = ("TG0WDT_SYS_RESET : Timer Group0 Watch dog reset digital core"); break;			/**<7,  Timer Group0 Watch dog reset digital core*/
+	case 8: stringy_reason = ("TG1WDT_SYS_RESET : Timer Group1 Watch dog reset digital core"); break;			/**<8,  Timer Group1 Watch dog reset digital core*/
+	case 9: stringy_reason = ("RTCWDT_SYS_RESET : RTC Watch dog Reset digital core"); break;					/**<9,  RTC Watch dog Reset digital core*/
+	case 10: stringy_reason = ("INTRUSION_RESET : Instrusion tested to reset CPU"); break;						/**<10, Instrusion tested to reset CPU*/
+	case 11: stringy_reason = ("TGWDT_CPU_RESET : Time Group reset CPU"); break;								/**<11, Time Group reset CPU*/
+	case 12: stringy_reason = ("SW_CPU_RESET : Software reset CPU"); break;										/**<12, Software reset CPU*/
+	case 13: stringy_reason = ("RTCWDT_CPU_RESET : RTC Watch dog Reset CPU"); break;							/**<13, RTC Watch dog Reset CPU*/
+	case 14: stringy_reason = ("EXT_CPU_RESET : for APP CPU, reseted by PRO CPU"); break;						/**<14, for APP CPU, reseted by PRO CPU*/
+	case 15: stringy_reason = ("RTCWDT_BROWN_OUT_RESET : Reset when the vdd voltage is not stable"); break;		/**<15, Reset when the vdd voltage is not stable*/
+	case 16: stringy_reason = ("RTCWDT_RTC_RESET : RTC Watch dog reset digital core and rtc module"); break;    /**<16, RTC Watch dog reset digital core and rtc module*/
+	default: stringy_reason = ("NO_MEAN");
+	}
+	return stringy_reason;
+}
+
+
+
+String debug_ResetReason(boolean core)
+{
+	String the_reason = ("CPU" + String(core) + " : " + print_reset_reason(rtc_get_reset_reason(core)));
+	
+	//debugMe("Reset reason:"+ the_reason);
+	//debugMe("-------------------------------------------");
+
+		return the_reason;
+}
+
+String debug_GetChipID()
+{
+
+	uint64_t chipid = ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
+	Serial.printf("ESP32 Chip ID = %04X", (uint16_t)(chipid >> 32));//print High 2 bytes
+	Serial.printf("%08X\n", (uint32_t)chipid);//print Low 4bytes.
+	//debugMe(String(chipid));
+	//String TEST = printf("ESP32 Chip ID = %04X", (uint16_t)(chipid >> 32));//print High 2 bytes
+	return "uuuups";
+}

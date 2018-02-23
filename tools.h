@@ -45,6 +45,11 @@ void debugMe(uint8_t input, boolean line = true);
 void debugMe(int input, boolean line = true);
 void debugMe(IPAddress input, boolean line = true);
 
+
+String debug_ResetReason(boolean core);   // core 0 or 1 
+//void verbose_print_reset_reason(RESET_REASON reason);
+//void print_reset_reason(RESET_REASON reason);
+
 // Boolean functions
 
 boolean get_bool(uint8_t bit_nr);
