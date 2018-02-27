@@ -1,3 +1,3 @@
 Main Wifi Config for ESP.
 W = Wifi: 0= Client 1 = Access point : name and APname : SSID : Password: 0= DHCP 1= static IP : ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN 
-[W:0:LightFractal00:home:love4all:1:172:16:222:40:255:255:255:0:172:16:222:1:172:16:222:1:MautiRouti.lan] 
+[W:0:LightFractal00:o2-WLAN55:P689H74RX7E6867C:1:172:16:222:40:255:255:255:0:172:16:222:1:172:16:222:1:MautiRouti.lan] 

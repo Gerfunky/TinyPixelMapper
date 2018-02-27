@@ -385,10 +385,12 @@ void SetupESP32DeviceAP() // Setup the wifi for AP mode.
 void setup_wifi_Network()
 {
 	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-
+	int x = 0;
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(500);
 		Serial.print(".");
+		x++;
+		if (x > 50) break;
 	}
 
 	debugMe("");
@@ -424,10 +426,12 @@ void setup_wifi_Network_orig()
 			WiFi.begin(ssid, password);
 
 			//WiFi.begin("home", "love4all");
+			//int x = 0;
 
 			while (WiFi.status() != WL_CONNECTED) {
 				delay(500);
 				Serial.print(".");
+
 			}
 
 

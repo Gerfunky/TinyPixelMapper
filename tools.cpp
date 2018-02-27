@@ -13,7 +13,7 @@
 // use tool.h to read and write
   
 
-uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00001111, B00000000 };
+uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00000001, B00000000 };  //{ B00001111, B00000000 };
 
 
 extern led_cfg_struct led_cfg;
@@ -48,6 +48,7 @@ void write_bool(uint8_t bit_nr, boolean value)
 		bit_nr = bit_nr - 8;
 	}
 	bitWrite(global_options[byte_nr], bit_nr, value);
+	//yield();
 }
 
 
@@ -71,8 +72,11 @@ void load_bool()
 		write_bool(FFT_AUTO, DEF_AUTO_FFT);
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
+		
 	}
-	else debugMe("Bools Loaded");
+	else debugMe("Bools Loaded from SPIFFS!!!");
+
+	debugMe("http Server load = " + String(get_bool(HTTP_ENABLED)));
 	
 }
 

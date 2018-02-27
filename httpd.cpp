@@ -31,7 +31,8 @@
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		#include <WebServer.h>
+		//#include <WebServer.h>
+#include <ESP32WebServer.h>
 		//#include <ESP8266WebServer.h>
 		#include <FS.h>	
 		#include<SPIFFS.h>
@@ -52,7 +53,7 @@
 
 
 // Variables
-	WebServer  httpd(80);					// The Web Server 
+	ESP32WebServer  httpd(80);					// The Web Server 
 
 
 
@@ -88,8 +89,10 @@ bool httpd_handleFileRead(String path) {
 		if (SPIFFS.exists(pathWithGz))
 			path += ".gz";
 		File file = SPIFFS.open(path, "r");
+		debugMe("prestreeam");
 		size_t sent = httpd.streamFile(file, contentType);
-		String(file.size());
+		debugMe("post stream");
+		//String(file.size());
 		file.close();
 		debugMe("  " + path + " closed and sent :" + String(sent) );
 		return true;

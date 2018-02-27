@@ -1628,15 +1628,17 @@ void LEDS_loop()
 		}
 		else // FFT Disabeled
 		{
-			// debugMe("disabled fft");
+			//debugMe("IN LED LOOP - disabled fft");
 			led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
 			//write_bool(UPDATE_LEDS, true);
 
 			if (LEDS_pal_check_bit() == true)
 			{
 				yield();
+				debugMe("pre pal advance");
 				LEDS_pal_advance();
 				yield();
+				debugMe("pre leds routing");
 				LEDS_pal_routing();
 			}
 
@@ -1653,8 +1655,10 @@ void LEDS_loop()
 	
 		//if (get_bool(UPDATE_LEDS) == true)
 		//{
+		//debugMe("pre show processing");
 			LEDS_G_pre_show_processing();
 			yield();
+			//debugMe("pre leds SHOW");
 			FastLED.show();
 			yield();
 		//	write_bool(UPDATE_LEDS, false);
@@ -1662,18 +1666,6 @@ void LEDS_loop()
 	}
 
 
-
-
-
-
-	
-	//yield();
-	//LEDS_pal_run();
-	//yield();
-	//yield();
-
-	//yield();
-	//FastLED.show();
-	//yield();
-
+	//debugMe("leds loop end ", false);
+	//debugMe(String(xPortGetCoreID()));
 }

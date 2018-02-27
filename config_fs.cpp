@@ -866,70 +866,82 @@ void FS_Bools_write(uint8_t conf_nr)
 boolean FS_Bools_read(uint8_t conf_nr)
 {
 	// read the device config and bools
-	debugMe("Reading bools");
+	
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
-	File conf_file = SPIFFS.open(addr, "r");
-	delay(100);
-	if (conf_file)
-	{
-		debugMe("in file");
-		char character;
-		//String settingName;
-		String settingValue;
-		char type;
+	
+	
+	if (SPIFFS.exists(addr))
+	{ 
+		debugMe("Reading bools file");
+		File conf_file = SPIFFS.open(addr, "r");
+		delay(100);
 
-
-		while (conf_file.available())
+		if (conf_file)
 		{
-			
-			character = conf_file.read();
+			debugMe("in file");
+			char character;
+			//String settingName;
+			String settingValue;
+			char type;
 
-			while ((conf_file.available()) && (character != '[')) {  // Go to first setting
+
+			while (conf_file.available())
+			{
+
 				character = conf_file.read();
-			}
 
-			type = conf_file.read();
-			character = conf_file.read(); // go past the first ":" after the type
-			debugMe("pre_Bool_LOAD");
+				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
+					character = conf_file.read();
+				}
 
-			if (type == 'D')
-			{
-				int in_int = 0;
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri		= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
-				
-			}
-			else if (type == 'B')
-			{
-				// debugMe("in B");
-				write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
-				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
-				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
-				write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
-							
-			}
-			else
-				 debugMe("NO_TYPE");
+				type = conf_file.read();
+				character = conf_file.read(); // go past the first ":" after the type
+				debugMe("pre_Bool_LOADing in file");
 
-			while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
-			//if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
-			//while ((conf_file.available())) character = conf_file.read();   // goto End
+				if (type == 'D')
+				{
+					int in_int = 0;
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri = uint8_t(constrain(in_int, 0, 255));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
+
+				}
+				else if (type == 'B')
+				{
+					// debugMe("in B");
+					write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
+					write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
+					write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
+					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
+
+				}
+				else
+					debugMe("NO_TYPE");
+
+				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
+																									  //if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
+																									  //while ((conf_file.available())) character = conf_file.read();   // goto End
+
+			}
+			conf_file.close();
+			return true;
+		}	// end open conf file
+
+		else
+		{
+			debugMe("error opening " + addr + " Loading defaults ");
 
 		}
-		conf_file.close();
-		return true;
-	}	// end open conf file
-	else
-	{
-		 debugMe("error opening " + addr + " Loading defaults "); 
+
 
 	}
-	
+	else
+		debugMe("NO BOOLS File");
+
 
 	return false;
 }

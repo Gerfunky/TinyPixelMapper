@@ -21,22 +21,21 @@
 
 
 // DEFAULT settings if not loaded from the SPIFFS
-	#define DEF_DEBUG_OUT false				// serial debugging
+	#define DEF_DEBUG_OUT true				// serial debugging
 	#define DEF_WIFI_MODE false				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
-	#define DEF_STATIC_IP_ENABLED true		// set static ip for startup  ?
+	#define DEF_STATIC_IP_ENABLED false		// set static ip for startup  ?
 	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
 	#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
 	#define DEF_AUTO_FFT true				// enalbe auto FFT ?
-	#define DEF_LED_TYPE 1					// led type 1 = WS2812b, 0 = APA102
 	#define DEF_DEBUG_TELNET true			// debug to TELNET?
 	#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
 
 // Wifi
 	// DEFAULT setting if no config is loaded from the SPIFFS
 	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP / Hostname
-	#define DEF_SSID			"home"							// SSID to connect to 
-	#define DEF_WIFI_PWD		"love4all"		// PW for wifi Client
+	#define DEF_SSID			"o2-WLAN55"							// SSID to connect to 
+	#define DEF_WIFI_PWD		"P689H74RX7E6867C"		// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
@@ -65,9 +64,8 @@
 
 // FastLed Defines
 		#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
-		//#define WS2812_LED						// LED Type = 1 this is the default led type can be changes online in OSC
-		#define APA102_LED							// Led type = 0
-		//#define SK6822_LED						// Led type = 2
+
+		#define DEF_LED_TYPE 0					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
 		#define LED_DATA_PIN    19 //12	
 		#define LED_CLK_PIN     18 //13	// used with APA102
 
