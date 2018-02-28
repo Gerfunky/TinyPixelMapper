@@ -72,7 +72,7 @@ void load_bool()
 		write_bool(FFT_AUTO, DEF_AUTO_FFT);
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
-		
+		write_bool(WIFI_MODE, DEF_WIFI_MODE);
 	}
 	else debugMe("Bools Loaded from SPIFFS!!!");
 
