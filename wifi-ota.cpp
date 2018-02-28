@@ -351,8 +351,8 @@ boolean wifi_load_settings()   // load the wifi settings from SPIFFS or from def
 		def_pwd.toCharArray(wifi_cfg.pwd, def_pwd.length() + 1);
 		def_ntp_fqdn.toCharArray(wifi_cfg.ntp_fqdn, def_ntp_fqdn.length() + 1);
 
-		//write_bool(WIFI_MODE, DEF_WIFI_MODE);
-		//write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
+		write_bool(WIFI_MODE, DEF_WIFI_MODE);
+		write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
 		wifi_cfg.ipStaticLocal = DEF_IP_LOCAL;
 		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
 		wifi_cfg.ipDGW = DEF_IP_DGW;
@@ -368,8 +368,8 @@ boolean wifi_load_settings()   // load the wifi settings from SPIFFS or from def
 				debugMe("WiFi: Client config Static IP FAILED ");
 	
 		//debugMe("setting AP settings");
-		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet))
-			debugMe("WiFi: AP Config FAILED");
+		//if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet))
+		//	debugMe("WiFi: AP Config FAILED");
 
 	
 }
@@ -425,7 +425,8 @@ void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
 	case SYSTEM_EVENT_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
 		Serial.println("WIFI:STA Connected");
 		debugMe("SSID = " + String(reinterpret_cast<const char*>(info.connected.ssid)));
-		debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.connected.bssid)));
+		//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.connected.bssid)));
+		debugMe("BSSID/MAC = " + String(info.connected.bssid[0], HEX) + ":" + String(info.connected.bssid[1], HEX) + ":" + String(info.connected.bssid[2], HEX) + ":" + String(info.connected.bssid[3], HEX) + ":" + String(info.connected.bssid[4], HEX) + ":" + String(info.connected.bssid[5], HEX));
 		debugMe("Channel = " + String(info.connected.channel));
 		debugMe("Authmode = " + String(info.connected.authmode));
 		break;
@@ -433,7 +434,8 @@ void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
 	case SYSTEM_EVENT_STA_DISCONNECTED:				/**<5 ESP32 station disconnected from AP */
 		Serial.println("STA Disconnected");
 		debugMe("SSID = " + String(reinterpret_cast<const char*>(info.disconnected.ssid)));
-		debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.disconnected.bssid)));
+		//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.disconnected.bssid)));
+		debugMe("BSSID/MAC = " + String(info.disconnected.bssid[0], HEX) + ":" + String(info.disconnected.bssid[1], HEX) + ":" + String(info.disconnected.bssid[2], HEX) + ":" + String(info.disconnected.bssid[3], HEX) + ":" + String(info.disconnected.bssid[4], HEX) + ":" + String(info.disconnected.bssid[5], HEX));
 		debugMe("Reason = " + String(info.disconnected.reason));
 		break;
 
@@ -447,12 +449,16 @@ void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
 		debugMe("station got IP from connected AP");
 		debugMe("ON SSID :" + String(WiFi.SSID()));
 		infoIP = info.got_ip.ip_info.ip.addr;
-		debugMe("Got IPv4: " + String(infoIP));
+		debugMe("Got IPv4: ",false);
+		debugMe(infoIP);
 		infoIP = info.got_ip.ip_info.netmask.addr;
-		debugMe("Got NetMask: " + String(infoIP));
+		debugMe("Got NetMask: ", false);
+		debugMe(infoIP);
 		infoIP = info.got_ip.ip_info.gw.addr;
-		debugMe("Got DGW: " + String(infoIP));
+		debugMe("Got DGW: ", false);
+		debugMe(infoIP);
 		debugMe("Changed = " + String(info.got_ip.ip_changed));
+		
 		break;
 
 	case	SYSTEM_EVENT_STA_LOST_IP:              /**<8 ESP32 station lost IP and the IP is reset to 0 */
@@ -498,7 +504,7 @@ void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
 
 	case	SYSTEM_EVENT_AP_PROBEREQRECVED:        /**<17 Receive probe request packet in soft-AP interface */
 		debugMe("Receive probe request packet in soft-AP interface");
-		debugMe("AID = " + String(info.ap_probereqrecved.aid));
+		debugMe("rssi = " + String(info.ap_probereqrecved.rssi));
 		debugMe("MAC = " + String(info.ap_probereqrecved.mac[0], HEX) + ":" + String(info.ap_probereqrecved.mac[1], HEX) + ":" + String(info.ap_probereqrecved.mac[2], HEX) + ":" + String(info.ap_probereqrecved.mac[3], HEX) + ":" + String(info.ap_probereqrecved.mac[4], HEX) + ":" + String(info.ap_probereqrecved.mac[5], HEX));
 
 		break;
@@ -531,22 +537,24 @@ void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
 		debugMe("OTHER UNKNOWN EVENT");
 		break;
 	}
+	debugMe("WiFi Event END---------");
 }
 
 
 
 void setup_wifi_Network_X()
 {
+	WiFi.mode(WIFI_STA);
 	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 	int x = 0;
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(500);
-		Serial.print(".");
+		debugMe("*"+ String(WiFi.status())+ "*" ,false);
 		x++;
-		if (x > 50) break;
+		if (x > 30) break;
 	}
 
-	debugMe("");
+	debugMe("trys: " + String(x));
 	debugMe("WiFi connected.");
 	debugMe("IP address: ", false);
 	debugMe(WiFi.localIP());
@@ -558,7 +566,7 @@ void setup_wifi_Network()
 {
 		// setup the wifi network old version from EPS8266
 		
-	WiFi.onEvent(WiFiEvent); // Start event handler!
+	
 		debugMe("Starting Wifi Setup");
 		unsigned long currentT = millis();
 		
@@ -849,7 +857,7 @@ void FFT_handle_loop()
 // The main Wifi Setup
 void wifi_setup()
 {
-
+	WiFi.onEvent(WiFiEvent); // Start event handler!
 	//const char* ssid = "home";
 	//const char* password = "love4all";
 	//debugMe(String("ssid:" + String(wifi_cfg.ssid)));
