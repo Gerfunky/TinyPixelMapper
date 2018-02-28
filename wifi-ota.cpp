@@ -119,16 +119,19 @@ void NTPprintTime() {
 		debugMe("Failed to obtain time");
 		return;
 	}
-	Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-	//String XXX = String(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-
+	debugMe("***********************");
+	//Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+	//sprintf(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+	//timeinfo.tm_hour
+		//String XXX = String(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+		debugMe(timeinfo);
 	/*
 	// digital clock display of the time
 	// print the time
 	if (get_bool(DEBUG_OUT) == true)
 	{	
 		debugMe("***************  ", false);
-		debugMe(hour(),false);
+		debugMe(timeinfo.tm_hour,false);
 		debugMe(":", false);
 		debugMe(minute(), false);
 		debugMe(":", false);
@@ -142,7 +145,7 @@ void NTPprintTime() {
 		debugMe("  ***************");
 		//debugMe();
 	}
-	*/
+	//*/
 }
 
 /*
@@ -206,7 +209,7 @@ void setup_NTP()
 	const int   daylightOffset_sec = 3600;
 
 	configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
-
+	NTPprintTime();
 
 	/*
 	// setup the NTP client
@@ -398,7 +401,7 @@ if(!WiFi.config(IPAddress(169, 254, 1, 3), IPAddress(10, 0, 0, 1), IPAddress(255
 
 */
 
-void WiFiEvent(WiFiEvent_t event, system_event_info_t info)
+void wifi_Event(WiFiEvent_t event, system_event_info_t info)
 {
 	debugMe("[WiFi-event] event:"+ String(event));
 	ip4_addr_t  infoIP4;
@@ -857,28 +860,16 @@ void FFT_handle_loop()
 // The main Wifi Setup
 void wifi_setup()
 {
-	WiFi.onEvent(WiFiEvent); // Start event handler!
-	//const char* ssid = "home";
-	//const char* password = "love4all";
-	//debugMe(String("ssid:" + String(wifi_cfg.ssid)));
-	//debugMe(String("pwd:" + String(wifi_cfg.pwd)));
-	//WiFi.begin(ssid, password);
-	//String ssidS = wifi_cfg.ssid;
-	//String pwdS = wifi_cfg.pwd;
+	WiFi.onEvent(wifi_Event); // Start event handler!
 	
-	//WiFi.begin(ssisS,pwds);
-	//WiFi.begin(wifi_cfg.ssid,wifi_cfg.pwd);
 
-	//setup_wifi_Vars();
 	wifi_load_settings();
 	
 	
 
 	setup_wifi_Network();
-	setup_OTA();		
-	//setup_NTP();   //ESP32 NOK
-
-
+	setup_OTA();
+	setup_NTP();   //ESP32 NOK
 	TelnetDebug.begin(wifi_cfg.APname);
 
 	debugMe("Hello World");

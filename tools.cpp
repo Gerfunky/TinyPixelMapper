@@ -6,7 +6,7 @@
 #include "tools.h"
 #include "leds.h"
 #include "config_fs.h"
-
+#include <time.h>
 
 
 // Global Bool Structure soi that we only use 1 Bit and not a byte for a Bool
@@ -157,6 +157,28 @@ void debugMe(String input, boolean line)
 	}
 
 
+}
+
+
+void debugMe(tm input, boolean line)
+{
+	//debugMe(input);
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+	if (line == true)
+	TelnetDebug.println(input);
+	else
+	TelnetDebug.print(input);
+
+	}// */
+	if (get_bool(DEBUG_OUT))
+	{
+		if (line == true)
+			DEF_SERIAL_PORT.println(&input, "%H:%M:%S %d.%m.%y");
+		else
+			DEF_SERIAL_PORT.println(&input, "%H:%M:%S %d.%m.%y");
+	}
 }
 
 void debugMe(float input, boolean line)

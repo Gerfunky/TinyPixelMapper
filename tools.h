@@ -44,6 +44,7 @@ void debugMe(float input, boolean line = true);
 void debugMe(uint8_t input, boolean line = true);
 void debugMe(int input, boolean line = true);
 void debugMe(IPAddress input, boolean line = true);
+void debugMe(tm input, boolean line = true);
 
 
 String debug_ResetReason(boolean core);   // core 0 or 1 
