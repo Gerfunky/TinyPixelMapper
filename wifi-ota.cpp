@@ -3,10 +3,10 @@
 
 #ifdef _MSC_VER   
 		#include <WiFi\src\WiFi.h>
+
 		#include <ArduinoOTA\src\ArduinoOTA.h>
-		#include<WiFi\src\WiFiUdp.h>
+		#include <WiFi\src\WiFiUdp.h>
 		#include <RemoteDebug\RemoteDebug.h>
-		//#include <Time\TimeLib.h>
 		#include <time.h>
 
 	#ifndef ARTNET_DISABLED 
@@ -18,7 +18,7 @@
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
 	#include <ArduinoOTA.h>
-	//#include <TimeLib.h>
+
 	#include "time.h"
 	#include <RemoteDebug.h> 
 	#ifndef ARTNET_DISABLED 
@@ -76,7 +76,7 @@ extern fft_led_cfg_struct fft_led_cfg;
 
 
 //OTA 
-void setup_OTA()
+void WiFi_OTA_setup()
 {
 	// configure and setup the OTA process 
 	//  so that its possible to compile and send
@@ -111,7 +111,7 @@ void setup_OTA()
 
 
 
-void NTPprintTime() {
+void WiFi_NTP_printTime() {
 	
 	struct tm timeinfo;
 	
@@ -119,118 +119,27 @@ void NTPprintTime() {
 		debugMe("Failed to obtain time");
 		return;
 	}
-	debugMe("***********************");
-	//Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-	//sprintf(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-	//timeinfo.tm_hour
-		//String XXX = String(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+	//debugMe("***********************");
 		debugMe(timeinfo);
-	/*
-	// digital clock display of the time
-	// print the time
-	if (get_bool(DEBUG_OUT) == true)
-	{	
-		debugMe("***************  ", false);
-		debugMe(timeinfo.tm_hour,false);
-		debugMe(":", false);
-		debugMe(minute(), false);
-		debugMe(":", false);
-		debugMe(second(), false);
-		debugMe(" ", false);
-		debugMe(day(), false);
-		debugMe(".", false);
-		debugMe(month(), false);
-		debugMe(".", false);
-		debugMe(year(), false);
-		debugMe("  ***************");
-		//debugMe();
-	}
-	//*/
-}
 
-/*
-void NTP_requestTime(IPAddress& address)		// taken from the arduino NTP example
-{
-	// send out a ntp request to get the actual time
-	byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-
-	debugMe("sending NTP request...");
-	// set all bytes in the buffer to 0
-	memset(packetBuffer, 0, NTP_PACKET_SIZE);
-	// Initialize values needed to form NTP request
-	// (see URL above for details on the packets)
-	packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-	packetBuffer[1] = 0;     // Stratum, or type of clock
-	packetBuffer[2] = 6;     // Polling Interval
-	packetBuffer[3] = 0xEC;  // Peer Clock Precision
-							 // 8 bytes of zero for Root Delay & Root Dispersion
-	packetBuffer[12] = 49;
-	packetBuffer[13] = 0x4E;
-	packetBuffer[14] = 49;
-	packetBuffer[15] = 52;
-
-	// all NTP fields have been given values, now
-	// you can send a packet requesting a timestamp:
-
-	ntp_udp.beginPacket(address, 123); //NTP requests are to port 123
-	ntp_udp.write(packetBuffer, NTP_PACKET_SIZE);
-	ntp_udp.endPacket();
 }
 
 
-void NTP_parse_response() 
+void WiFi_NTP_setup()
 {
-		// analyse the ntp response packet to extract the time
-		byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-		memset(packetBuffer, 0, NTP_PACKET_SIZE); // reset to 0
 
-		int packetsize = ntp_udp.parsePacket();
-		if (packetsize >= NTP_PACKET_SIZE)  
-		//else
-		{
-			debugMe("Packetsize : " + String(packetsize));
-			ntp_udp.read(packetBuffer, NTP_PACKET_SIZE);
-
-			debugMe("Receive NTP Response");
-			ntp_udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
-			unsigned long secsSince1900;
-			// convert four bytes starting at location 40 to a long integer
-			secsSince1900 = (unsigned long)packetBuffer[40] << 24;
-			secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
-			secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
-			secsSince1900 |= (unsigned long)packetBuffer[43];
-			setTime(secsSince1900 - 2208988800UL + DEF_TIMEZONE * SECS_PER_HOUR);
-		}
-}
-*/
-void setup_NTP()
-{
+	
 	const long  gmtOffset_sec = 3600;
 	const int   daylightOffset_sec = 3600;
 
-	configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
-	NTPprintTime();
 
-	/*
-	// setup the NTP client
-	ntp_udp.begin(NTP_LOCAL_PORT);
-	//get the IP from the NTP server / pool
-	WiFi.hostByName(wifi_cfg.ntp_fqdn , wifi_cfg.ipNTP);
-
-	NTP_requestTime(wifi_cfg.ipNTP);
-	uint32_t beginWait = millis();
-	while (millis() - beginWait < 1500) 
+	//if (WiFi.hostByName(wifi_cfg.ntp_fqdn, wifi_cfg.ipNTP) == true)
 	{
-		NTP_parse_response();
-		if (timeStatus() == timeSet)
-			break;
-
+		//debugMe("NTP DNS name resolution OK, Getting NTP Time");
+		configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
+		WiFi_NTP_printTime();
 	}
-	
-	NTPprintTime();
-	//if (year() == 1970 && get_bool(WIFI_MODE) == 1 && get_bool(DEBUG_OUT) == true) {debugMe("******wifi client no connect no time resetting *****");ESP.restart();}
 
-	// */
 }
 
 
@@ -238,16 +147,31 @@ void setup_NTP()
 // artnet
 
 #ifndef ARTNET_DISABLED
-	void wifi_artnet_loop()
+	void WiFi_artnet_loop()
 	{
 		// the main artnet loop  calback set to leds function with show
 		if (get_bool(ARTNET_ENABLE)== true) artnet.read();
 	}
 
-	void wifi_artnet_enable() 
+	void WiFi_artnet_Load_Vars()
+	{
+		// configure the Artnet vaiables 
+		// from disk or load the defaults.
+
+		if (FS_artnet_read(0) == false)
+		{
+			write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
+			artnet_cfg.startU = DEF_ARTNET_STAT_UNIVERSE;
+			artnet_cfg.numU = DEF_ARTNET_NUMBER_OF_UNIVERSES;
+
+		}
+
+	}
+
+	void WiFi_artnet_enable() 
 	{
 		// enable artnet, This is a exclusice mode other settings dont apply
-
+		WiFi_artnet_Load_Vars();
 		// byte loc_ip = WiFi.localIP();
 		// debugMe("enable artnet");
 		byte artnet_mac[] = DEF_ARTNET_MAC ;
@@ -256,80 +180,22 @@ void setup_NTP()
 
 	}
 
-	void setup_artnet_Vars()
+	
+
+	void WiFi_artnet_setup()
 	{
-		// configure the Artnet vaiables 
-		// from disk or load the defaults.
 
-		if (FS_artnet_read(0) == false)
-		{
-			write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
-			artnet_cfg.startU	= DEF_ARTNET_STAT_UNIVERSE;
-			artnet_cfg.numU		= DEF_ARTNET_NUMBER_OF_UNIVERSES;
-
-		}
-
-	}
-
-	void setup_artnet()
-	{
 		//the Artnet setup 
-		if (get_bool(ARTNET_ENABLE)== true)	wifi_artnet_enable();
+		if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable();
 
 
 	}
 #endif
 
 // basic WiFi
-void setup_wifi_Vars()   // old version for ESP8266
-{
-	// load the wifi vaiables
-
-	// Clean out the Wifi cha arrays
-	memset(wifi_cfg.APname,		0, sizeof(wifi_cfg.APname));
-	memset(wifi_cfg.ssid,		0, sizeof(wifi_cfg.ssid));
-	memset(wifi_cfg.pwd,		0, sizeof(wifi_cfg.pwd));
-	memset(wifi_cfg.ntp_fqdn,	0, sizeof(wifi_cfg.ntp_fqdn));
-
-	//if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
-	if (false == false)		// Get the config of disk,  on fail load defaults.
-	{
-		debugMe("Loading WifiSetup Defaults");
-		//load the defaults
-		String def_APname = DEF_AP_NAME;
-		String def_ssid = DEF_SSID;
-		String def_pwd = DEF_WIFI_PWD;
-		String def_ntp_fqdn = DEF_NTP_SERVER;
-
-		def_APname.toCharArray(		wifi_cfg.APname,	def_APname.length()		+ 1);
-		def_ssid.toCharArray(		wifi_cfg.ssid,		def_ssid.length()		+ 1);
-		def_pwd.toCharArray(		wifi_cfg.pwd,		def_pwd.length()		+ 1);
-		def_ntp_fqdn.toCharArray(	wifi_cfg.ntp_fqdn,	def_ntp_fqdn.length()	+ 1);
-
-		//write_bool(WIFI_MODE, DEF_WIFI_MODE);
-		//write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
-		wifi_cfg.ipStaticLocal	= DEF_IP_LOCAL;
-		wifi_cfg.ipSubnet		= DEF_IP_SUBNET;
-		wifi_cfg.ipDGW			= DEF_IP_DGW;
-		wifi_cfg.ipDNS			= DEF_DNS;
-		
-
-	}
-
-	//if (get_bool(STATIC_IP_ENABLED) == true) WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
-#ifdef ESP8266
-	WiFi.hostname(wifi_cfg.APname);
-#endif
-	//else WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS);
-}
 
 
-
-
-
-#ifdef ESP32
-
-boolean wifi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
+boolean WiFi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
 {
 	// load the wifi vaiables
 
@@ -378,7 +244,6 @@ boolean wifi_load_settings()   // load the wifi settings from SPIFFS or from def
 }
 
 
-#endif
 
 
 /*
@@ -401,7 +266,7 @@ if(!WiFi.config(IPAddress(169, 254, 1, 3), IPAddress(10, 0, 0, 1), IPAddress(255
 
 */
 
-void wifi_Event(WiFiEvent_t event, system_event_info_t info)
+void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 {
 	debugMe("[WiFi-event] event:"+ String(event));
 	ip4_addr_t  infoIP4;
@@ -545,7 +410,7 @@ void wifi_Event(WiFiEvent_t event, system_event_info_t info)
 
 
 
-void setup_wifi_Network_X()
+void WiFi_Start_Network_X()
 {
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
@@ -565,7 +430,7 @@ void setup_wifi_Network_X()
 
 }
 
-void setup_wifi_Network()
+void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
 		
@@ -820,7 +685,7 @@ void WIFI_FFT_master_handle()
 }
 
 
-void FFT_setup_vars()
+void WiFi_FFT_setup_vars()
 {		// setup the wifi FFT variables
 
 	if (FS_FFT_read(0) == false)
@@ -834,16 +699,16 @@ void FFT_setup_vars()
 
 }
 
-void FFT_Setup()
+void WiFi_FFT_Setup()
 {
 	// setup the wifi FFT 
-	FFT_setup_vars();
+	WiFi_FFT_setup_vars();
 	if (get_bool(FFT_ENABLE)== true) WIFI_FFT_enable();
 
 
 }
 
-void FFT_handle_loop()
+void WiFi_FFT_handle_loop()
 {
 	// the main wifi-fft loop
 	WIFI_FFT_slave_handle();
@@ -860,31 +725,31 @@ void FFT_handle_loop()
 // The main Wifi Setup
 void wifi_setup()
 {
-	WiFi.onEvent(wifi_Event); // Start event handler!
+	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
 
-	wifi_load_settings();
+	WiFi_load_settings();
 	
 	
 
-	setup_wifi_Network();
-	setup_OTA();
-	setup_NTP();   //ESP32 NOK
+	WiFi_Start_Network();
+	WiFi_OTA_setup();
+	WiFi_NTP_setup();   //ESP32 NOK
 	TelnetDebug.begin(wifi_cfg.APname);
 
 	debugMe("Hello World");
 
 
 	#ifndef ARTNET_DISABLED
-		setup_artnet_Vars();
-		setup_artnet();
+		
+		WiFi_artnet_setup();
 	#endif
 
 	OSC_setup();
 	
 	httpd_setup();
 
-	FFT_Setup();
+	WiFi_FFT_Setup();
 	
 }
 
@@ -901,7 +766,7 @@ void wifi_loop()
 	yield();
 	http_loop();
 	yield();
-	FFT_handle_loop();
+	WiFi_FFT_handle_loop();
 	yield();
 	TelnetDebug.handle();
 

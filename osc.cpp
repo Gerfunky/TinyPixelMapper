@@ -681,8 +681,8 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 	int strip_int;
 
 
-	char address[3];
-	char address_out[20];
+	char address[4];
+	//char address_out[20];
 	bool switch_bool = false;
 
 	String outbuffer = "/strips/sX/SIL/X";
@@ -977,12 +977,17 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	int bit_int;
 	int option_int;
 	int form_int;
-	char address[3];
-	char address_out[20];
+	char address[4];
+	//char address_out[20];
 	bool switch_bool = false;
 
 	String outbuffer = "/form/fx/SIL/X";
 	float outvalue;
+
+
+	memset(address, 0, sizeof(address));
+	//memset(address_out, 0, sizeof(address_out));
+
 
 	msg.getAddress(address, addrOffset + 1, 1);
 	bit_string = bit_string + address[0];
@@ -990,7 +995,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset + 3);
-	//debugMe(address);
+	debugMe("Form-Addr1 : " + String(address));
 
 	for (byte i = 0; i < sizeof(address); i++) {
 		if (address[i] == '/') {
@@ -1012,6 +1017,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset - 2, 2);
+	debugMe("Form-type : " + String(address));
 
 	if (bool(msg.getFloat(0)) == true) 
 	{  // only on pushdown
@@ -1142,7 +1148,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
-
+		debugMe("Form-Presend-response");
 		{
 			outbuffer = String("/form/f" + String(bit_int) + "/" + String(address) + "L/" + String(form_int + 1));
 			osc_queu_MSG_float(outbuffer, outvalue);
@@ -1281,6 +1287,7 @@ void osc_forms_toggle_rec(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/
 
 void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
+	debugMe("in Form Routing");
 
 	if (msg.fullMatch("/f/refresh", addrOffset) && bool(msg.getFloat(0)) == true) { osc_forms_send(0); osc_forms_send(1); }
 	if (msg.fullMatch("/f/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) { osc_forms_config_send(0); osc_forms_config_send(1); }
@@ -2257,8 +2264,8 @@ void osc_rec_pal_fader(OSCMessage &msg, int addrOffset) {
 	String pal_no_string;		// Pallete NO
 	String fader_no_string;
 	//String select_bit_string;
-	char address[4];
-	char address_out[20];
+	char address[5];
+	//char address_out[20];
 	bool switch_bool = false;
 	uint8_t pal_no = 0;						// form NR in uint8_t
 	String outbuffer = "/pal/0/x/1-3";
@@ -2392,8 +2399,8 @@ void osc_rec_pal_load(OSCMessage &msg, int addrOffset) {
 void osc_pal_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
 
-	if (msg.fullMatch("/0/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
-	if (msg.fullMatch("/1/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
+	if (msg.fullMatch("/0/ref", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
+	if (msg.fullMatch("/1/ref", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
 	msg.route("/0", osc_rec_pal_fader, addrOffset);
 	msg.route("/1", osc_rec_pal_fader, addrOffset);
 
@@ -2748,9 +2755,12 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 		String select_mode_string;
 		// String select_bit_string;
 		char address[10];
+		debugMe("T3");
+		
 		bool switch_bool = false;
 
 		msg.getAddress(address, addrOffset + 1);
+		debugMe(String(address));
 		for (byte i = 0; i < sizeof(address); i++) {
 			if (address[i] == '/') {
 				switch_bool = true;
@@ -2801,7 +2811,11 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 void osc_device_settings_routing(OSCMessage &msg, int addrOffset) 
 {	// routing of Device settings OSC messages
 
-	char address[10];
+	char address[18];
+
+	memset(address, 0, sizeof(address));
+	debugMe("T1");
+
 	msg.getAddress(address);
 	debugMe(String(address));
 
@@ -2850,8 +2864,9 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	msg.route("/DGW", osc_DS_ip_in, addrOffset);
 	msg.route("/DNS", osc_DS_ip_in, addrOffset);
 
+	debugMe("T2");
 	msg.route("/ledType", osc_DS_led_type, addrOffset);
-
+	debugMe("TXXX");
 
 	//debugMe("DS routing END");
 }
@@ -2869,6 +2884,7 @@ void OSC_loop()
 	OSCMessage oscMSG;
 	OSCMessage oscMSG_MC;
 
+
 	int size = osc_server.parsePacket();
 
 	if (size > 0) {
@@ -2880,6 +2896,12 @@ void OSC_loop()
 			//debugMe("osc: rem , locel");
 			//debugMe(osc_mc_server.remoteIP());
 			//debugMe(WiFi.localIP());
+			char address[30];
+			memset(address, 0, sizeof(address));
+
+			oscMSG.getAddress(address);
+			debugMe(address);
+
 
 			oscMSG.route("/m", osc_master_routing);
 			oscMSG.route("/DS", osc_device_settings_routing);

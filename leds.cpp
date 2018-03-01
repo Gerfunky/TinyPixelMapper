@@ -1635,10 +1635,10 @@ void LEDS_loop()
 			if (LEDS_pal_check_bit() == true)
 			{
 				yield();
-				debugMe("pre pal advance");
+				//debugMe("pre pal advance");
 				LEDS_pal_advance();
 				yield();
-				debugMe("pre leds routing");
+				//debugMe("pre leds routing");
 				LEDS_pal_routing();
 			}
 
