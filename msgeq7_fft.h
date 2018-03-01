@@ -45,6 +45,9 @@
 */
 
 
+// Functions
+void MSGEQ7_setup();
+void MSGEQ7_get();
 
 
 #endif

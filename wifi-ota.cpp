@@ -635,12 +635,10 @@ void WIFI_FFT_slave_handle()
 			{
 				fft_led_cfg.fps = FFT_slave.read(); // Get the speed update  first byte
 				
-				for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
-				//{ FFT_fifo.enqueue(FFT_slave.read()); }
+				//for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
+				
 
-	#ifdef CMD_MESSEGER_PORT    
-				//Com_slave_ESP_Send_FFT();
-	#endif     
+   
 
 			}
 			FFT_slave.flush();						// flush out the open packet
@@ -660,15 +658,13 @@ void WIFI_FFT_master_send()
 	{ // && (FFT_fifo.count() >= FFT_SEND_NR_PIXELS)  ) {
 										//CRGB fft_outdata; 
 										// Send a multicast packet to The Slave ESP servers.
-#ifdef ESP8266
-		FFT_master.beginPacketMulticast(fft_ip_cfg.IP_multi, fft_ip_cfg.port_slave, WiFi.localIP());
-#endif 
+
 #ifdef ESP32
-		FFT_master.beginMulticastPacket();
+		//FFT_master.beginMulticastPacket();
 #endif
-		FFT_master.write(fft_led_cfg.fps);
-		for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
-		FFT_master.endPacket();
+		//FFT_master.write(fft_led_cfg.fps);
+		//for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
+		//FFT_master.endPacket();
 	}
 }
 
