@@ -583,7 +583,7 @@ void osc_toggle_artnet(bool value)
 		write_bool(ARTNET_ENABLE, true); // artnet_enabled = true;		
 		//enable_artnet();
 		FS_artnet_write(0);
-		wifi_artnet_enable();
+		WiFi_artnet_enable();
 		//writeESP_play_Settings();
 	}
 	else {

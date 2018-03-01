@@ -3,7 +3,7 @@
 #ifndef _WIFI-OTA_h
 #define _WIFI-OTA_h
 
-#define ARTNET_DISABLED 
+
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -64,8 +64,9 @@
 
 
 #ifndef ARTNET_DISABLED
-	void wifi_artnet_enable();
-	void wifi_artnet_loop();
+	void WiFi_artnet_enable();
+	void WiFi_artnet_setup();
+	void WiFi_artnet_loop();
 #endif
 
 

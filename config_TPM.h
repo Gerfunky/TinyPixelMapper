@@ -11,7 +11,7 @@
 // It should only hold #defines for compile time replacment
 
 
-#define ARTNET_DISABLED 
+//#define ARTNET_DISABLED 
 //#define OSC_MC_SERVER_DISABLED
 #define DISABLED_COMS   // disable the command msg not needed for ESP32 since the mic is local TODO remove comms
 

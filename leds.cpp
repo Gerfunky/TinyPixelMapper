@@ -1437,7 +1437,7 @@ void LEDS_loop()
 	unsigned long currentT = micros();
 
 	#ifndef ARTNET_DISABLED
-		wifi_artnet_loop();  //  fetshing data 
+		WiFi_artnet_loop();  //  fetshing data 
 	#endif
 
 

@@ -174,8 +174,9 @@ void WiFi_NTP_setup()
 		WiFi_artnet_Load_Vars();
 		// byte loc_ip = WiFi.localIP();
 		// debugMe("enable artnet");
-		byte artnet_mac[] = DEF_ARTNET_MAC ;
-		artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
+		//byte artnet_mac[] = DEF_ARTNET_MAC ;
+		artnet.begin();
+		//artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
 		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with schow
 
 	}
