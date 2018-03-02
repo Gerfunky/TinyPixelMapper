@@ -237,9 +237,7 @@ boolean WiFi_load_settings()   // load the wifi settings from SPIFFS or from def
 			if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS))
 				debugMe("WiFi: Client config Static IP FAILED ");
 	
-		//debugMe("setting AP settings");
-		//if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet))
-		//	debugMe("WiFi: AP Config FAILED");
+		
 
 	
 }
@@ -526,12 +524,20 @@ void WiFi_Start_Network()
 	if (WiFi.status() != WL_CONNECTED)
 	{
 		WiFi.disconnect();
+		WiFi.mode(WIFI_AP);
+		debugMe("setting AP settings");
+		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet))
+			debugMe("WiFi: AP Config FAILED");
 		//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);
 		delay(50);
-		WiFi.mode(WIFI_AP);
+		WiFi.softAPsetHostname(wifi_cfg.APname);
+		//WiFi.softAP(wifi_cfg.APname);
+		
 
-		WiFi.softAP(wifi_cfg.APname);// , DEF_AP_PASSWD);
-		debugMe("Starting Wifi Backup no Password");
+		if (WiFi.softAP(wifi_cfg.APname))// , DEF_AP_PASSWD);
+			debugMe("Starting Wifi Backup no Password");
+		else
+			debugMe("Starting AP failed!");
 		//while(WiFi.status() != )
 
 	}

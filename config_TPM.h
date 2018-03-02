@@ -22,7 +22,7 @@
 
 // DEFAULT settings if not loaded from the SPIFFS
 	#define DEF_DEBUG_OUT true				// serial debugging
-	#define DEF_WIFI_MODE false				// false = client
+	#define DEF_WIFI_MODE true				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
 	#define DEF_STATIC_IP_ENABLED false		// set static ip for startup  ?
 	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
