@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>SPIFFS Editor</title>
+    <title>TinyPixelMapper SPIFFS Editor</title>
     <style type="text/css" media="screen">
       .contextMenu {
         z-index: 300;
@@ -249,12 +249,12 @@
           var ext = /(?:\.([^.]+))?$/.exec(filename)[1];
           var name = /(.*)\.[^.]+$/.exec(filename)[1];
           if(typeof name !== undefined){
-            //if(name.length > 8) name = name.substring(0, 8);
+            if(name.length > 8) name = name.substring(0, 8);
             filename = name;
           }
           if(typeof ext !== undefined){
-            //if(ext === "html") ext = "htm";
-            //else if(ext === "jpeg") ext = "jpg";
+            if(ext === "html") ext = "htm";
+            else if(ext === "jpeg") ext = "jpg";
             filename = filename + "." + ext;
           }
           if(path.value === "/" || path.value.lastIndexOf("/") === 0){
@@ -393,9 +393,9 @@
   
         function createTreeLeaf(path, name, size){
           var leaf = document.createElement("li");
-          leaf.id = (((path == "/x/")?"":path)+"/"+name);//.toLowerCase();
+          leaf.id = (((path == "/")?"":path)+"/"+name).toString();
           var label = document.createElement("span");
-          label.textContent = name;//.toLowerCase();
+          label.textContent = name.toString();
           leaf.appendChild(label);
           leaf.onclick = function(e){
             if(isTextFile(leaf.id)){
@@ -416,12 +416,12 @@
           var leaf = document.createElement("li");
           var check = document.createElement("input");
           check.type = "checkbox";
-          check.id = (((path == "/") ? "" : path) + "/" + name);//.toLowerCase();
+          check.id = (((path == "/")?"":path)+"/"+name).toString();
           if(typeof disabled !== "undefined" && disabled) check.disabled = "disabled";
           leaf.appendChild(check);
           var label = document.createElement("label");
           label.for = check.id;
-          label.textContent = name;//.toLowerCase();
+          label.textContent = name.toString();
           leaf.appendChild(label);
           check.onchange = function(e){
             if(check.checked){
@@ -584,7 +584,7 @@
           return lang;
         }
   
-        if(typeof file === "undefined") file = "/index.html";
+        if(typeof file === "undefined") file = "/edit.html";
   
         if(typeof lang === "undefined"){
           lang = getLangFromFilename(file);
@@ -680,7 +680,8 @@
         createFileUploader("uploader", tree, editor);
       };
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js" type="text/javascript" charset="utf-8"></script> -->
+	<script src="/js/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body onload="onBodyLoad();">
     <div id="uploader"></div>
