@@ -526,7 +526,7 @@ void WiFi_Start_Network()
 		WiFi.disconnect();
 		WiFi.mode(WIFI_AP);
 		debugMe("setting AP settings");
-		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet))
+		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal-1, wifi_cfg.ipSubnet))
 			debugMe("WiFi: AP Config FAILED");
 		//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);
 		delay(50);
@@ -534,8 +534,11 @@ void WiFi_Start_Network()
 		//WiFi.softAP(wifi_cfg.APname);
 		
 
-		if (WiFi.softAP(wifi_cfg.APname))// , DEF_AP_PASSWD);
+		if (WiFi.softAP("test1"), "12345678",0,5)// , DEF_AP_PASSWD);
+		{
 			debugMe("Starting Wifi Backup no Password");
+			debugMe("SSID : " + String(wifi_cfg.APname));
+		}
 		else
 			debugMe("Starting AP failed!");
 		//while(WiFi.status() != )

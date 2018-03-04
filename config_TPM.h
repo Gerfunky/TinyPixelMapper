@@ -22,7 +22,7 @@
 
 // DEFAULT settings if not loaded from the SPIFFS
 	#define DEF_DEBUG_OUT true				// serial debugging
-	#define DEF_WIFI_MODE true				// false = client
+	#define DEF_WIFI_MODE false				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
 	#define DEF_STATIC_IP_ENABLED false		// set static ip for startup  ?
 	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
@@ -34,8 +34,8 @@
 // Wifi
 	// DEFAULT setting if no config is loaded from the SPIFFS
 	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP / Hostname
-	#define DEF_SSID			"o2-WLAN55"							// SSID to connect to 
-	#define DEF_WIFI_PWD		"P689H74RX7E6867C"		// PW for wifi Client
+	#define DEF_SSID			"CDIPGuest"							// SSID to connect to 
+	#define DEF_WIFI_PWD		"comdivision48153!"		// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
