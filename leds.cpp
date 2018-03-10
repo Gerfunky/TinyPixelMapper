@@ -1446,11 +1446,11 @@ void LEDS_loop()
 			
 			CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
 			
-			LEDS_FFT_check_leds(color_result);      // send the color to the leds
+			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
 			yield();
 
 				
-
+			 
 
 		
 		{
