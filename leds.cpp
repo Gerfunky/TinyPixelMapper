@@ -1378,7 +1378,7 @@ void LEDS_setup()
 	switch(led_cfg.ledType)
 	{
 		case 0:
-			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR, DATA_RATE_MHZ(6)>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(12)
+			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
 			 debugMe("APA102 leds added");
 		break;
 		

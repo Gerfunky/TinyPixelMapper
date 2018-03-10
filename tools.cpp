@@ -60,7 +60,8 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
-	if (FS_Bools_read(0) == false)
+	//if (FS_Bools_read(0) == false)
+	if (false == false)
 	{
 		debugMe("Loading default BOOLS");
 		led_cfg.ledType = DEF_LED_TYPE;

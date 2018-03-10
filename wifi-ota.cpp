@@ -459,7 +459,7 @@ void WiFi_Start_Network()
 			uint8_t try_led_counter = 0;
 			uint8_t led_color[3] = { 255,0,0 };
 
-			//LEDS_setall_color();
+			LEDS_setall_color();
 
 			while (WiFi.status() != WL_CONNECTED)
 			{
@@ -521,7 +521,7 @@ void WiFi_Start_Network()
 		
 	
 
-	if (WiFi.status() != WL_CONNECTED)
+/*	if (WiFi.status() != WL_CONNECTED)
 	{
 		WiFi.disconnect();
 		WiFi.mode(WIFI_AP);
@@ -544,7 +544,7 @@ void WiFi_Start_Network()
 		//while(WiFi.status() != )
 
 	}
-	
+	*/
 
 
 		//debugMe("");

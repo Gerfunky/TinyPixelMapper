@@ -11,7 +11,7 @@
 // It should only hold #defines for compile time replacment
 
 
-//#define ARTNET_DISABLED 
+#define ARTNET_DISABLED 
 //#define OSC_MC_SERVER_DISABLED
 #define DISABLED_COMS   // disable the command msg not needed for ESP32 since the mic is local TODO remove comms
 
@@ -25,7 +25,7 @@
 	#define DEF_WIFI_MODE false				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
 	#define DEF_STATIC_IP_ENABLED false		// set static ip for startup  ?
-	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
+	#define DEF_HTTP_ENABLED false			// enable the HTTP server ?
 	#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
 	#define DEF_AUTO_FFT true				// enalbe auto FFT ?
 	#define DEF_DEBUG_TELNET true			// debug to TELNET?
@@ -34,8 +34,8 @@
 // Wifi
 	// DEFAULT setting if no config is loaded from the SPIFFS
 	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP / Hostname
-	#define DEF_SSID			"CDIPGuest"							// SSID to connect to 
-	#define DEF_WIFI_PWD		"comdivision48153!"		// PW for wifi Client
+	#define DEF_SSID			"home"							// SSID to connect to 
+	#define DEF_WIFI_PWD		"love4all"		// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
@@ -44,12 +44,12 @@
 	#define DEF_DNS				{172,16,222,1}					// DNS server
 	#define DEF_NTP_SERVER		"0.at.pool.ntp.org"				//"0.at.pool.ntp.org"	 // only FQDN's  no ip!! 	
 	#define DEF_TIMEZONE		2								// how much to add to UTC for the NTP client
-	#define WIFI_CLIENT_CONNECT_TIMEOUT		10000				// how long to try to connect to the Wifi
-	#define WIFI_CLIENT_CONNECT_TRYS		2					// how many times to try to connect to the wifi 
+	#define WIFI_CLIENT_CONNECT_TIMEOUT		1000				// how long to try to connect to the Wifi
+	#define WIFI_CLIENT_CONNECT_TRYS		1					// how many times to try to connect to the wifi 
 
 	// Artnet
 	#define DEF_ARTNET_STAT_UNIVERSE 5								// Default Artnet Start universe
-	#define DEF_ARTNET_NUMBER_OF_UNIVERSES 4						// Default Arnet NR of universes MAX 4 !!!! TODO 
+	#define DEF_ARTNET_NUMBER_OF_UNIVERSES 2						// Default Arnet NR of universes MAX 4 !!!! TODO 
 	#define DEF_ARTNET_MAC { 0x04, 0xE9, 0xE5, 0x00, 0x69, 0xEC }   // TODO!!!!! we dont want duplicates!!! so lets generate it!!!
 
 	//  DEFAULT FFT parameters if not loaded from SPIFFS
@@ -63,17 +63,17 @@
 // END WIFI
 
 // FastLed Defines
-		#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
+		//#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
 
-		#define DEF_LED_TYPE 0					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
+		#define DEF_LED_TYPE 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
 		#define LED_DATA_PIN    19 //12	
-		#define LED_CLK_PIN     18 //13	// used with APA102
+		#define LED_CLK_PIN     18  //18 //13	// used with APA102
 
 
 		//#define FASTLED_ALLOW_INTERRUPTS 0
 		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
-		#define NUM_LEDS		680 //321 //642 //490 //640 // 320
+		#define NUM_LEDS		340 //680 //321 //642 //490 //640 // 320
 
 
 		#define DEF_MAX_BRI 255		// the default max bri
@@ -120,7 +120,7 @@
 // FFT MSGEQ7 defines
 
 
-#define MSGEQ7_INPUT_PIN  A4 // (=18) //A1    // input from mic
+#define MSGEQ7_INPUT_PIN  A4 // =32 sparkfun  (=18) //A1    // input from mic
 #define MSGEQ7_STROBE_PIN 16 //3		// stobe pin
 #define MSGEQ7_RESET_PIN  15 //4		// reset pin
 
@@ -128,12 +128,12 @@
 /*
 
 MSGEQ7
---------\_/-------
-3v && GND-0.1uF- |1-VDDA 	 CKIN-8|	-- 200k - VVC &&  -- 33pF - GND
-GND	|2-VSSA		RESET-7|	- Reset PIN (17)
-to A4	|3-OUT		  GND-6|	- 0.1uF - GND
-Strobe pin (19) |4-STROBE	   IN-5|	- 0.01uF -22k - Mic (??33pF to input
-------------------
+						--------\_/-------
+	3v && GND-0.1uF-	|1-VDDA 	 CKIN-8|	-- 200k - VVC &&  -- 33pF - GND
+	 			GND		|2-VSSA		RESET-7|	- Reset PIN (17)
+				to A4	|3-OUT		  GND-6|	- 0.1uF - GND
+		Strobe pin (19) |4-STROBE	   IN-5|	- 0.01uF -22k - Mic (??33pF to input
+						------------------
 
 ADAfruit MAX9814
 |GND

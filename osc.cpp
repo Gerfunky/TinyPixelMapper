@@ -1783,7 +1783,7 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 
 	String collum_string;
 	String row_string;
-	char address[4];					// to pick info aut of the msg address
+	char address[14];					// to pick info aut of the msg address
 										//char address_out[20];	
 	int select_bit = 0;
 	String select_bit_string;
@@ -1794,19 +1794,19 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 
 	String out_add_label;				// address label
 
-
+	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
 	select_bit = select_bit_string.toInt();
-	//DBG_OUTPUT_PORT.println(address);
-
+	
+	debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-
+	debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
