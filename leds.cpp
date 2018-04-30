@@ -44,7 +44,7 @@ extern artnet_struct artnet_cfg;
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
 	uint8_t FFT_stage1_sample_count = 0;			// used to count the samples in FFT Stage 1  for pulling into Stage 2
-	#define FFT_AVERAGE_SAMPLES 60					// How many samples to take for the FFT average = Stage 1
+	#define FFT_AVERAGE_SAMPLES 30 //60					// How many samples to take for the FFT average = Stage 1
 	RunningAverage fft_bin0(FFT_AVERAGE_SAMPLES);	// Buffers for the FFT values
 	RunningAverage fft_bin1(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin2(FFT_AVERAGE_SAMPLES);
@@ -660,7 +660,22 @@ void LEDS_G_pre_show_processing()
 	//LEDS_G_master_rgb_faders();
 	LEDS_G_form_effectsRouting();
 	//LED_G_bit_run();
-	FastLED.setBrightness(led_cfg.max_bri * led_cfg.bri / 255);
+
+
+	uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
+	//uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	//debugMe(bri);
+	//Serial.println(analogRead(POTI_BRI_PIN));
+	
+
+	//uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+	
+	//led_cfg.pal_fps = fps /4;
+	///*
+	//led_cfg.pal_fps =  map( fps ,0	,255 ,1 , MAX_PAL_FPS );   //*/
+	//Serial.println(fps);  
+
+	FastLED.setBrightness(bri);
 	//LED_G_bit_run();
 		//= led_cfg.max_br * led_cfg.bri / 255
 }
@@ -1210,22 +1225,32 @@ void LEDS_MSGEQ7_setup() {
 
 void LEDS_MSGEQ7_get() // get the FFT data and put it in fft_data[i].value
 {
-
+	//noInterrupts();
+	digitalWrite(MSGEQ7_STROBE_PIN, LOW);
 	digitalWrite(MSGEQ7_RESET_PIN, HIGH);
 	digitalWrite(MSGEQ7_RESET_PIN, LOW);
-	delayMicroseconds(75);
+	
+	//delayMicroseconds(36);
 
 	for (int i = 0; i<7; i++)
 	{
-		digitalWrite(MSGEQ7_STROBE_PIN, LOW);
-		delayMicroseconds(40);
-		fft_data[i].value = analogRead(MSGEQ7_INPUT_PIN) / 4;   // 
 		digitalWrite(MSGEQ7_STROBE_PIN, HIGH);
-		delayMicroseconds(40);
-	//	debugMe(fft_data[i].value);
+		digitalWrite(MSGEQ7_STROBE_PIN, LOW);
+		delayMicroseconds(36);
+		fft_data[i].value = analogRead(MSGEQ7_INPUT_PIN) / ANALOG_IN_DEVIDER;   // 
+		//digitalWrite(MSGEQ7_STROBE_PIN, HIGH);
+		//delayMicroseconds(40);
+		
 	}
-
-
+	//interrupts();
+	///*
+	for (int i = 0; i < 7; i++)
+	{
+		debugMe(fft_data[i].value, false);
+		debugMe(" - ", false);
+	}
+	debugMe(" x ", true);
+	//*/
 }
 
 

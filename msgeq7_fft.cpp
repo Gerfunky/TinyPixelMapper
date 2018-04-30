@@ -1,7 +1,7 @@
 // 
 // 
 // 
-
+/*
 #include "msgeq7_fft.h"
 
 
@@ -39,4 +39,6 @@ void MSGEQ7_get()
 
 	
 }
+
+*/
 

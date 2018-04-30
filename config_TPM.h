@@ -28,7 +28,7 @@
 	#define DEF_HTTP_ENABLED false			// enable the HTTP server ?
 	#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
 	#define DEF_AUTO_FFT true				// enalbe auto FFT ?
-	#define DEF_DEBUG_TELNET true			// debug to TELNET?
+	#define DEF_DEBUG_TELNET false			// debug to TELNET?
 	#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
 
 // Wifi
@@ -66,12 +66,12 @@
 		//#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
 
 		#define DEF_LED_TYPE 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
-		#define LED_DATA_PIN    19 //12	
-		#define LED_CLK_PIN     18  //18 //13	// used with APA102
+		#define LED_DATA_PIN    18 //12	
+		#define LED_CLK_PIN     19  //18 //13	// used with APA102
 
 
 		//#define FASTLED_ALLOW_INTERRUPTS 0
-		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
+		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 		#define NUM_LEDS		340 //680 //321 //642 //490 //640 // 320
 
@@ -102,6 +102,10 @@
 
 // END FastLed Defines
 
+// Variable resistors + Buttons
+#define POTI_BRI_PIN 35	// For Brightness
+#define POTI_FPS_PIN 34	// for speed
+#define BTN_PIN 26 // for a button 
 
 
 
@@ -120,10 +124,11 @@
 // FFT MSGEQ7 defines
 
 
-#define MSGEQ7_INPUT_PIN  A4 // =32 sparkfun  (=18) //A1    // input from mic
-#define MSGEQ7_STROBE_PIN 16 //3		// stobe pin
-#define MSGEQ7_RESET_PIN  15 //4		// reset pin
+#define MSGEQ7_INPUT_PIN  38 // A0 = 36 ... A4=32 sparkfun  (=18) //A1    // input from mic
+#define MSGEQ7_STROBE_PIN 25 // 16 //3		// stobe pin
+#define MSGEQ7_RESET_PIN  21 //15 //4		// reset pin
 
+#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 
 /*
 

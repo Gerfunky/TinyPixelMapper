@@ -14,9 +14,9 @@
 
 
 
-#define MSGEQ7_INPUT_PIN  A4 // (=18) //A1    // input from mic
-#define MSGEQ7_STROBE_PIN 16 //3		// stobe pin
-#define MSGEQ7_RESET_PIN  15 //4		// reset pin
+//#define MSGEQ7_INPUT_PIN  A4 // (=18) //A1    // input from mic
+//#define MSGEQ7_STROBE_PIN 16 //3		// stobe pin
+//#define MSGEQ7_RESET_PIN  15 //4		// reset pin
 
 /*
 
@@ -46,8 +46,8 @@
 
 
 // Functions
-void MSGEQ7_setup();
-void MSGEQ7_get();
+//void MSGEQ7_setup();
+//void MSGEQ7_get();
 
 
 #endif
