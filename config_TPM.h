@@ -103,8 +103,8 @@
 // END FastLed Defines
 
 // Variable resistors + Buttons
-#define POTI_BRI_PIN 35	// For Brightness
-#define POTI_FPS_PIN 34	// for speed
+#define POTI_BRI_PIN 39 //35	// For Brightness 
+#define POTI_FPS_PIN 36 //34	// for speed
 #define BTN_PIN 26 // for a button 
 
 

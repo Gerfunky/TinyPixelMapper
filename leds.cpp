@@ -662,8 +662,8 @@ void LEDS_G_pre_show_processing()
 	//LED_G_bit_run();
 
 
-	uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
-	//uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
+	uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
 	//debugMe(bri);
 	//Serial.println(analogRead(POTI_BRI_PIN));
 	
@@ -672,7 +672,7 @@ void LEDS_G_pre_show_processing()
 	
 	//led_cfg.pal_fps = fps /4;
 	///*
-	//led_cfg.pal_fps =  map( fps ,0	,255 ,1 , MAX_PAL_FPS );   //*/
+	led_cfg.pal_fps =  map( fps ,0	,255 ,1 , MAX_PAL_FPS );   //*/
 	//Serial.println(fps);  
 
 	FastLED.setBrightness(bri);
