@@ -126,7 +126,7 @@
 
 #define MSGEQ7_INPUT_PIN  34 //38 // A0 = 36 ... A4=32 sparkfun  (=18) //A1    // input from mic   Huzzah ESP32 A2 = 34		q
 #define MSGEQ7_STROBE_PIN 21 //25 // 16 //3		// stobe pin
-#define MSGEQ7_RESET_PIN  27 //15 //4		// reset pin
+#define MSGEQ7_RESET_PIN  26 //15 //4		// reset pin
 
 #define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 
