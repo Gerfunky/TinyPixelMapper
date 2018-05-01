@@ -668,7 +668,7 @@ void LEDS_G_pre_show_processing()
 	//Serial.println(analogRead(POTI_BRI_PIN));
 	
 
-	//uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+	uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 	
 	//led_cfg.pal_fps = fps /4;
 	///*
