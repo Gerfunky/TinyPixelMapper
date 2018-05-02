@@ -459,7 +459,7 @@ void WiFi_Start_Network()
 			uint8_t try_led_counter = 0;
 			uint8_t led_color[3] = { 255,0,0 };
 
-			LEDS_setall_color();
+			//LEDS_setall_color();
 
 			while (WiFi.status() != WL_CONNECTED)
 			{
@@ -506,7 +506,8 @@ void WiFi_Start_Network()
 			}
 
 		}
-		/*	else  // wifimode AP
+		///*	
+		else  // wifimode AP
 			{
 
 
@@ -517,24 +518,27 @@ void WiFi_Start_Network()
 
 				delay(50);
 				debugMe("Start AP mode");
-			} */
+			} //*/
 		
 	
 
-/*	if (WiFi.status() != WL_CONNECTED)
+///*	if (WiFi.status() != WL_CONNECTED)
 	{
 		WiFi.disconnect();
 		WiFi.mode(WIFI_AP);
+		WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+	 /*
 		debugMe("setting AP settings");
 		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal-1, wifi_cfg.ipSubnet))
 			debugMe("WiFi: AP Config FAILED");
+		
 		//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);
 		delay(50);
 		WiFi.softAPsetHostname(wifi_cfg.APname);
 		//WiFi.softAP(wifi_cfg.APname);
 		
 
-		if (WiFi.softAP("test1"), "12345678",0,5)// , DEF_AP_PASSWD);
+		if (WiFi.softAP("test1", "12345678",0,5))// , DEF_AP_PASSWD);
 		{
 			debugMe("Starting Wifi Backup no Password");
 			debugMe("SSID : " + String(wifi_cfg.APname));
@@ -542,9 +546,9 @@ void WiFi_Start_Network()
 		else
 			debugMe("Starting AP failed!");
 		//while(WiFi.status() != )
-
+		//*/
 	}
-	*/
+	//*/
 
 
 		//debugMe("");

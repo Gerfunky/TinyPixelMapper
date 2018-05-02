@@ -1243,7 +1243,7 @@ void LEDS_MSGEQ7_get() // get the FFT data and put it in fft_data[i].value
 		
 	}
 	//interrupts();
-	///*
+	/*
 	for (int i = 0; i < 7; i++)
 	{
 		debugMe(fft_data[i].value, false);
