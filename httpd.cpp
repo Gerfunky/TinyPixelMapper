@@ -35,6 +35,10 @@
 		#include <ESP32WebServer.h>
 		#include <FS.h>	
 		#include<SPIFFS.h>
+
+		//#include <ESP32httpUpdate.h>
+		//#include <Update.h>
+		//#include <WiFiClient.h>
 	#endif
 
 
@@ -168,8 +172,11 @@ void httpd_handleFileCreate() {
 }
 
 void httpd_handleFileList() {
-	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
-	String path = httpd.arg("dir");
+	String path = "/";
+
+	if (httpd.hasArg("dir")) 
+		path = httpd.arg("dir");
+	
  
 	 debugMe("handleFileList: " + path);
 
@@ -320,6 +327,7 @@ void httpd_toggle_webserver()
 
 		httpUpdater.setup(&httpd);
 #endif		
+		//ESPhttpUpdate.setup(&httpd);
 		// debugMe("HTTP server started");
 		MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
@@ -333,6 +341,40 @@ void httpd_setup()
 {
 	debugMe("HTTPd_setup");
 	// Setup Handlers
+	
+	/*handling uploading firmware file */
+	/*
+	httpd.on("/update", HTTP_POST, []() {
+		httpd.sendHeader("Connection", "close");
+		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+		//esp_wifi_wps_disable(); 
+		ESP.restart();
+	}, []() {
+		HTTPUpload& upload = httpd.upload();
+		if (upload.status == UPLOAD_FILE_START) {
+			Serial.printf("Update: %s\n", upload.filename.c_str());
+			if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {//start with max available size
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_WRITE) {
+			// flashing firmware to ESP //
+			if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_END) {
+			if (Update.end(true)) { //true to set the size to the current progress
+				Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+			}
+			else {
+				Update.printError(Serial);
+			}
+		}
+	});  //*/
+
+
+
 	httpd.on("/list", HTTP_GET, httpd_handleFileList);
 	//load editor
 	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
@@ -380,6 +422,7 @@ void httpd_setup()
 		httpUpdater.setup(&httpd);
 		 debugMe("HTTP server started");
 #endif
+		 //ESPhttpUpdate.setup(&httpd);
 		 MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
 		debugMe("Starting HTTP");

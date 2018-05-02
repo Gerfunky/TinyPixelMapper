@@ -1,6 +1,6 @@
 /*
 	TinyPixelMapper
-	a Pixelmapping software for the ESP8266 for addressible LED Strips, with a OSC controll interface.
+	a Pixelmapping software for the ESP32 for addressible LED Strips, with a OSC controll interface.
 	
 	Git site https://github.com/Gerfunky/TinyPixelMapper
 	
