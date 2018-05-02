@@ -11,6 +11,18 @@
 
 
 // Structures
+#define POT_SENSE_DEF 3
+
+	struct led_controls_struct
+	{
+		uint8_t PotBriLast;
+		uint8_t PotFPSLast;
+		uint8_t PotSens;		// the sensitivity
+
+
+
+
+	};
 
 
 	struct led_cfg_struct					// LED config structure
@@ -32,6 +44,7 @@
 		int NrLeds;							// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+
 	};
 
 	// FFT
@@ -136,6 +149,8 @@
 		  , _M_G_MIRROR_ = 1
 
 	  };
+
+	
 
 
 // Functions

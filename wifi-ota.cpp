@@ -144,6 +144,102 @@ void WiFi_NTP_setup()
 
 
 
+
+
+void WiFi_telnet_print(String input, boolean line)
+{
+	///*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(input);
+		else
+			TelnetDebug.print(input);
+
+	}// */
+
+
+
+}
+void WiFi_telnet_print(tm input, boolean line)
+{
+	/*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(String(input));
+		else
+			TelnetDebug.print(String(input));
+
+	}// */
+
+
+
+}
+void WiFi_telnet_print(float input, boolean line)
+{
+	///*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(String(input));
+		else
+			TelnetDebug.print(String(input));
+
+	}// */
+
+
+
+}
+void WiFi_telnet_print(uint8_t input, boolean line)
+{
+	///*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(String(input));
+		else
+			TelnetDebug.print(String(input));
+
+	}// */
+
+
+
+}
+void WiFi_telnet_print(int input, boolean line)
+{
+	///*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(String(input));
+		else
+			TelnetDebug.print(String(input));
+
+	}// */
+
+
+
+}
+void WiFi_telnet_print(IPAddress input, boolean line)
+{
+	///*
+	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
+	{
+		if (line == true)
+			TelnetDebug.println(input);
+		else
+			TelnetDebug.print(input);
+
+	}// */
+
+
+
+}
+
+
+
+
 // artnet
 
 #ifndef ARTNET_DISABLED
@@ -522,7 +618,8 @@ void WiFi_Start_Network()
 		
 	
 
-///*	if (WiFi.status() != WL_CONNECTED)
+///*	
+		if (WiFi.status() != WL_CONNECTED)
 	{
 		WiFi.disconnect();
 		WiFi.mode(WIFI_AP);

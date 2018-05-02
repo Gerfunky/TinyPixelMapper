@@ -128,7 +128,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 	//CRGBPalette16 LEDS_pal_target[NR_PALETTS];
 
 
-
+	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
 led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 , 0,50,50 };			// The basic led config
 
@@ -630,7 +630,7 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 				if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				
-				//if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
+				if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
 				// TODO check above was rebooting for no reason on some selection
 				if (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)        LEDS_G_E_juggle2(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
 				
@@ -661,21 +661,33 @@ void LEDS_G_pre_show_processing()
 	LEDS_G_form_effectsRouting();
 	//LED_G_bit_run();
 
-
+	
 	//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
 	uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
-	//debugMe(bri);
-	//Serial.println(analogRead(POTI_BRI_PIN));
+	if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
+	{
+		led_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
+		led_cnt.PotBriLast = bri;
+	}
+
+	FastLED.setBrightness(led_cfg.bri);
+	
+	//debugMe(led_cfg.bri);
+	
 	
 
 	uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 	
 	//led_cfg.pal_fps = fps /4;
 	///*
-	led_cfg.pal_fps =  map( fps ,0	,255 ,1 , MAX_PAL_FPS );   //*/
+	if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
+	{
+		led_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
+		led_cnt.PotFPSLast = fps;
+	}
 	//Serial.println(fps);  
 
-	FastLED.setBrightness(bri);
+	
 	//LED_G_bit_run();
 		//= led_cfg.max_br * led_cfg.bri / 255
 }

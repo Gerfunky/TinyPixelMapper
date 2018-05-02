@@ -2399,13 +2399,16 @@ void osc_rec_pal_load(OSCMessage &msg, int addrOffset) {
 void osc_pal_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
 
-	if (msg.fullMatch("/0/ref", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
-	if (msg.fullMatch("/1/ref", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
+	debugMe("pal1");
+	if (msg.fullMatch("/ref/0", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
+	if (msg.fullMatch("/ref/1", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
+	debugMe("pal2");
 	msg.route("/0", osc_rec_pal_fader, addrOffset);
 	msg.route("/1", osc_rec_pal_fader, addrOffset);
-
+	debugMe("pal3");
+	
 	msg.route("/load", osc_rec_pal_load, addrOffset);
-
+	debugMe("pal4");
 	//DBG_OUTPUT_PORT.println("yeah");      
 }
 

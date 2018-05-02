@@ -7,6 +7,7 @@
 #include "leds.h"
 #include "config_fs.h"
 #include <time.h>
+#include "wifi-ota.h"		// needs Wifi and co for data stuctures!!!
 
 
 // Global Bool Structure soi that we only use 1 Bit and not a byte for a Bool
@@ -60,8 +61,8 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
-	//if (FS_Bools_read(0) == false)
-	if (false == false)
+	if (FS_Bools_read(0) == false)
+	//if (false == false)
 	{
 		debugMe("Loading default BOOLS");
 		led_cfg.ledType = DEF_LED_TYPE;
@@ -149,6 +150,9 @@ void debugMe(String input, boolean line)
 	TelnetDebug.print(input);
 
 	}// */
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
+
+
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -163,6 +167,7 @@ void debugMe(String input, boolean line)
 
 void debugMe(tm input, boolean line)
 {
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 	//debugMe(input);
 	/*
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
@@ -184,6 +189,7 @@ void debugMe(tm input, boolean line)
 
 void debugMe(float input, boolean line)
 {
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 	//debugMe(input);
 	/*
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
@@ -206,6 +212,7 @@ void debugMe(float input, boolean line)
 
 void debugMe(uint8_t input, boolean line)
 {
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 	//debugMe(input);
 	/*
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
@@ -228,6 +235,7 @@ void debugMe(uint8_t input, boolean line)
 
 void debugMe(int input, boolean line)
 {
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 	//debugMe(input);
 	/*
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
@@ -250,6 +258,7 @@ void debugMe(int input, boolean line)
 
 void debugMe(IPAddress input, boolean line)
 {
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 	//debugMe(input);
 	/*
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))

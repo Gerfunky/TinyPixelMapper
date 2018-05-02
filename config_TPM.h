@@ -28,12 +28,12 @@
 	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
 	#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
 	#define DEF_AUTO_FFT true				// enalbe auto FFT ?
-	#define DEF_DEBUG_TELNET false			// debug to TELNET?
+	#define DEF_DEBUG_TELNET true			// debug to TELNET?
 	#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
 
 // Wifi
 	// DEFAULT setting if no config is loaded from the SPIFFS
-	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP / Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperT"				// AP / Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"		// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
@@ -83,7 +83,7 @@
 		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
 		#define MAX_GLITTER_VALUE 255		// max glitter value
 
-		#define MAX_PAL_FPS 60				// maximum FPS 
+		#define MAX_PAL_FPS 88				// maximum FPS 
 
 		#define BMP_MAX_TIME 3000				
 

@@ -61,6 +61,12 @@
 
  //void WIFI_FFT_master_send();   // Comms
 
+ void WiFi_telnet_print(String input, boolean line);
+ void WiFi_telnet_print(tm input, boolean line);
+ void WiFi_telnet_print(float input, boolean line);
+ void WiFi_telnet_print(uint8_t input, boolean line);
+ void WiFi_telnet_print(int input, boolean line);
+ void WiFi_telnet_print(IPAddress input, boolean line);
 
 
 #ifndef ARTNET_DISABLED
