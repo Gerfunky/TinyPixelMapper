@@ -290,6 +290,66 @@ void httpd_handleRequestSettings()
 {
 	//String  output_bufferZ = "-" ;
 
+	// Setup Handlers
+	
+	/*handling uploading firmware file */
+	/*
+	httpd.on("/update", HTTP_POST, []() {
+		httpd.sendHeader("Connection", "close");
+		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+		//esp_wifi_wps_disable(); 
+		ESP.restart();
+	}, []() {
+		HTTPUpload& upload = httpd.upload();
+		if (upload.status == UPLOAD_FILE_START) {
+			Serial.printf("Update: %s\n", upload.filename.c_str());
+			if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {//start with max available size
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_WRITE) {
+			// flashing firmware to ESP //
+			if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_END) {
+			if (Update.end(true)) { //true to set the size to the current progress
+				Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+			}
+			else {
+				Update.printError(Serial);
+			}
+		}
+	});  //*/
+
+
+
+
+	//get heap status, analog input value and all GPIO statuses in one json call
+
+	
+
+	httpd.on("/index.html", []() {
+#ifdef ARTNET_ENABLED
+		if (get_bool(ARTNET_ENABLE) == true)
+			handleFileRead("/artnet.html");
+		else
+#endif
+		httpd_handleFileRead("/index.html");
+		httpd_handle_default_args();
+	});
+	
+
+	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
+	httpd.on("/list", HTTP_GET, httpd_handleFileList);
+	//load editor
+	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
+	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
+	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
+
+	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
+
 	httpd.on("/wifiMode", []() { httpd.send(200, "text/plain", String(get_bool(WIFI_MODE)));   });
 	httpd.on("/ssid", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.ssid);  });
 	httpd.on("/password", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.pwd);   });
@@ -340,78 +400,7 @@ void httpd_toggle_webserver()
 void httpd_setup()
 {
 	debugMe("HTTPd_setup");
-	// Setup Handlers
 	
-	/*handling uploading firmware file */
-	/*
-	httpd.on("/update", HTTP_POST, []() {
-		httpd.sendHeader("Connection", "close");
-		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-		//esp_wifi_wps_disable(); 
-		ESP.restart();
-	}, []() {
-		HTTPUpload& upload = httpd.upload();
-		if (upload.status == UPLOAD_FILE_START) {
-			Serial.printf("Update: %s\n", upload.filename.c_str());
-			if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {//start with max available size
-				Update.printError(Serial);
-			}
-		}
-		else if (upload.status == UPLOAD_FILE_WRITE) {
-			// flashing firmware to ESP //
-			if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-				Update.printError(Serial);
-			}
-		}
-		else if (upload.status == UPLOAD_FILE_END) {
-			if (Update.end(true)) { //true to set the size to the current progress
-				Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
-			}
-			else {
-				Update.printError(Serial);
-			}
-		}
-	});  //*/
-
-
-
-	httpd.on("/list", HTTP_GET, httpd_handleFileList);
-	//load editor
-	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
-	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
-	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
-
-	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
-
-	//get heap status, analog input value and all GPIO statuses in one json call
-#ifdef ESP8266
-	httpd.on("/all", HTTP_GET, []() {
-		String json = "{";
-		json += "\"heap\":" + String(ESP.getFreeHeap());
-		json += ", \"analog\":" + String(analogRead(A0));
-		json += ", \"gpio\":" + String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
-		json += "}";
-		httpd.send(200, "text/json", json);
-		json = String();
-	});
-#endif
-	// end FS handlers
-	//httpd.serveStatic("/index.html", SPIFFS, "/index.html");  
-	//httpd.on( "/set", handle_default_args ); 
-
-	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
-
-
-	httpd.on("/index.html", []() {
-#ifdef ARTNET_ENABLED
-		if (get_bool(ARTNET_ENABLE) == true)
-			handleFileRead("/artnet.html");
-		else
-#endif
-		httpd_handleFileRead("/index.html");
-		httpd_handle_default_args();
-	});
-	//httpd.on("/all", HTTP_GET, [](){
 
 	httpd_handleRequestSettings();
 
