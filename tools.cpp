@@ -19,6 +19,14 @@ uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00000001, B00000000 };  //{
 
 extern led_cfg_struct led_cfg;
 
+boolean setup_controlls()
+{
+	pinMode(BTN_PIN, INPUT_PULLUP);
+	pinMode(POTI_BRI_PIN, INPUT);
+	pinMode(POTI_FPS_PIN, INPUT);
+
+}
+
 
 
 // Bools functions

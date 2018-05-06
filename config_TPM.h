@@ -105,7 +105,7 @@
 // Variable resistors + Buttons
 #define POTI_BRI_PIN 39 //35	// For Brightness 
 #define POTI_FPS_PIN 36 //34	// for speed
-#define BTN_PIN 26 // for a button 
+#define BTN_PIN 4 // for a button 
 
 
 
@@ -134,9 +134,9 @@
 
 MSGEQ7
 						--------\_/-------
-	3v && GND-0.1uF-	|1-VDDA 	 CKIN-8|	-- 200k - VVC &&  -- 33pF - GND
+	3v && GND-0	.1uF-	|1-VDDA 	 CKIN-8|	-- 200k - VVC &&  -- 33pF - GND
 	 			GND		|2-VSSA		RESET-7|	- Reset PIN (17)
-				to A4	|3-OUT		  GND-6|	- 0.1uF - GND
+				to A4	|3-OUT		  CG -6|	- 0.01uF - GND
 		Strobe pin (19) |4-STROBE	   IN-5|	- 0.01uF -22k - Mic (??33pF to input
 						------------------
 

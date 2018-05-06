@@ -37,6 +37,9 @@ enum GLOBAL_OPTIONS_ENUM
 
 
 // Functions
+
+
+boolean setup_controlls();
 // The main DEbuging Functions.
 
 void debugMe(String input, boolean line = true);

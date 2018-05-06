@@ -34,7 +34,7 @@ void setup()
 		debugMe("Starting Setup - Light Fractal");
 	}
 	write_bool(DEBUG_OUT, DEF_BOOT_DEBUGING);   // Set the Boot debuging level will be overwriten when loading config from SPIFFS
-
+	setup_controlls();
 	FS_setup_SPIFFS();  // includes loadbool()
 	
 	LEDS_setup();
