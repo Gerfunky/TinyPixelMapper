@@ -618,7 +618,7 @@ void WiFi_Start_Network()
 		
 	
 
-///*	
+/*	
 		if (WiFi.status() != WL_CONNECTED)
 	{
 		WiFi.disconnect();
@@ -644,7 +644,7 @@ void WiFi_Start_Network()
 			debugMe("Starting AP failed!");
 		//while(WiFi.status() != )
 		//*/
-	}
+//	}
 	//*/
 
 

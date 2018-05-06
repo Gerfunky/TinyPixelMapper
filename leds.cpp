@@ -1411,6 +1411,8 @@ void LEDS_setup()
 	// add the correct type of led
 	 debugMe("in LED Setup");
 	 LEDS_MSGEQ7_setup();
+	 
+
 
 	switch(led_cfg.ledType)
 	{
