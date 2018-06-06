@@ -5,13 +5,11 @@
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
-#else
-	#include "WProgram.h"
 #endif
 
 
 // Structures
-#define POT_SENSE_DEF 3
+#define POT_SENSE_DEF 4
 
 	struct led_controls_struct
 	{
@@ -168,10 +166,10 @@
 	  void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
 	  void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);  // wifi-ota
 	  void LEDS_fadeout();																		 // wifi-ota
-	  void LEDS_setall_color();																	 // wifi-ota
+	  void LEDS_setall_color(uint8_t color);																	 // wifi-ota
 	  void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
 	  uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
-	  
+	  void LEDS_show(); 																		//wifi-ota
 
 
 #endif

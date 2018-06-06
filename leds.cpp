@@ -424,10 +424,18 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 // END Fire
 
-void  LEDS_setall_color() {
+void  LEDS_setall_color(uint8_t color = 0) {
 
 	//
-	fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+	switch(color) {
+
+		case 0: fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+		case 1: fill_solid(&(leds[0]), NUM_LEDS, CRGB(0, 255, 0));
+
+	}
+
+
+	
 	
 
 }
@@ -1255,7 +1263,7 @@ void LEDS_MSGEQ7_get() // get the FFT data and put it in fft_data[i].value
 		
 	}
 	//interrupts();
-	/*
+	///*
 	for (int i = 0; i < 7; i++)
 	{
 		debugMe(fft_data[i].value, false);

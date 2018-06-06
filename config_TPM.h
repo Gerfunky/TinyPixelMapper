@@ -149,13 +149,13 @@ ADAfruit MAX9814
 
 
 for a gain between :
-­ 20db to 40 db, connect the gain pin to the VDD
-­ 30db to 50 db, connect the gain pin to the GND
-­ 40db to 60 db, leave the gain pin unconnected
+ï¿½ 20db to 40 db, connect the gain pin to the VDD
+ï¿½ 30db to 50 db, connect the gain pin to the GND
+ï¿½ 40db to 60 db, leave the gain pin unconnected
 for a A/R of :
-­ 1:500 ms/ms, connect the AR pin to the GND
-­ 1:2000 ms/ms, connect the AR pin to the VDD
-­ 1:4000 ms/ms, leave the AR pin unconnected
+ï¿½ 1:500 ms/ms, connect the AR pin to the GND
+ï¿½ 1:2000 ms/ms, connect the AR pin to the VDD
+ï¿½ 1:4000 ms/ms, leave the AR pin unconnected
 
 
 
