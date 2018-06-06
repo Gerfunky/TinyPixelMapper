@@ -206,6 +206,11 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 };
 
 
+void LEDS_show()
+{	
+	FastLED.show();
+}
+
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 {	
 	leds[ledNr].r = color[0];
