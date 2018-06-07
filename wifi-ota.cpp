@@ -528,7 +528,7 @@ void WiFi_Start_Network_X()
 void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
-if (digitalRead(BTN_PIN) == true)
+if (digitalRead(BTN_PIN) == false )
 	{
 					//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
 
@@ -542,6 +542,7 @@ if (digitalRead(BTN_PIN) == true)
 
 				LEDS_setall_color(1);
 				LEDS_show();
+				delay(1000);
 
 	}
 	else {	
