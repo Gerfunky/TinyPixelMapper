@@ -24,7 +24,7 @@ boolean setup_controlls()
 	pinMode(BTN_PIN, INPUT_PULLUP);
 	pinMode(POTI_BRI_PIN, INPUT);
 	pinMode(POTI_FPS_PIN, INPUT);
-
+return true;
 }
 
 
@@ -301,7 +301,7 @@ String print_reset_reason(RESET_REASON reason)
 	switch (reason)
 	{
 	case 1: stringy_reason = ("POWERON_RESET : Vbat power on reset"); break;									/**<1,  Vbat power on reset*/
-	case 2: stringy_reason = ("Nr 2 who knows!!!"); break;
+	//case 2: stringy_reason = ("Nr 2 who knows!!!"); break;
 	case 3: stringy_reason = ("SW_RESET : Software reset digital core"); break;									/**<3,  Software reset digital core*/
 	case 4: stringy_reason = ("OWDT_RESET :Legacy watch dog reset digital core"); break;						/**<4,  Legacy watch dog reset digital core*/
 	case 5: stringy_reason = ("DEEPSLEEP_RESET : Deep Sleep reset digital core"); break;						/**<5,  Deep Sleep reset digital core*/

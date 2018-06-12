@@ -292,7 +292,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 // basic WiFi
 
 
-boolean WiFi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
+void WiFi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
 {
 	// load the wifi vaiables
 
@@ -364,7 +364,7 @@ if(!WiFi.config(IPAddress(169, 254, 1, 3), IPAddress(10, 0, 0, 1), IPAddress(255
 void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 {
 	debugMe("[WiFi-event] event:"+ String(event));
-	ip4_addr_t  infoIP4;
+	//ip4_addr_t  infoIP4;
 	IPAddress infoIP;
 	
 
@@ -528,7 +528,24 @@ void WiFi_Start_Network_X()
 void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
-		
+if (digitalRead(BTN_PIN) == false )
+	{
+					//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
+
+
+
+				WiFi.mode(WIFI_AP);
+				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+
+				delay(50);
+				debugMe("Start AP mode");	
+
+				LEDS_setall_color(1);
+				LEDS_show();
+				delay(1000);
+
+	}
+	else {	
 	
 		debugMe("Starting Wifi Setup");
 		unsigned long currentT = millis();
@@ -552,7 +569,7 @@ void WiFi_Start_Network()
 			//delay(100);
 			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 			
-			uint8_t try_led_counter = 0;
+			//uint8_t try_led_counter = 0;
 			uint8_t led_color[3] = { 255,0,0 };
 
 			//LEDS_setall_color();
@@ -572,7 +589,7 @@ void WiFi_Start_Network()
 
 			}
 			
-
+ 
 
 			if(WiFi.status() != WL_CONNECTED)
 			{
@@ -602,7 +619,7 @@ void WiFi_Start_Network()
 			}
 
 		}
-		///*	
+		/*	
 		else  // wifimode AP
 			{
 
@@ -652,6 +669,7 @@ void WiFi_Start_Network()
 		debugMe("Wifi Signal Strength : " + String(WiFi.RSSI()));
 		//debugMe(WiFi.RSSI());  // test to get the Signal strength  returns a "long"
 		//debugMe(String("IP : "  + String(WiFi.localIP())) );
+	}
 		debugMe(String("IP : "),false);
 		debugMe(WiFi.localIP());
 		

@@ -206,6 +206,11 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 };
 
 
+void LEDS_show()
+{	
+	FastLED.show();
+}
+
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 {	
 	leds[ledNr].r = color[0];
@@ -424,10 +429,18 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 // END Fire
 
-void  LEDS_setall_color() {
+void  LEDS_setall_color(uint8_t color = 0) {
 
 	//
-	fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+	switch(color) {
+
+		case 0: fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+		case 1: fill_solid(&(leds[0]), NUM_LEDS, CRGB(0, 255, 0));
+
+	}
+
+
+	
 	
 
 }
