@@ -5,49 +5,22 @@
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
-#else
-	#include "WProgram.h"
 #endif
 
 
-//#pragma once
+// Structures
+#define POT_SENSE_DEF 4
 
-	#ifdef ESP8266
-		#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
-		//#define WS2812_LED						// LED Type = 1 this is the default led type can be changes online in OSC
-		#define APA102_LED							// Led type = 0
-		//#define SK6822_LED						// Led type = 2
-		#define LED_DATA_PIN    12 //12	
-		#define LED_CLK_PIN     13 //13	// used with APA102
-	#endif
+	struct led_controls_struct
+	{
+		uint8_t PotBriLast;
+		uint8_t PotFPSLast;
+		uint8_t PotSens;		// the sensitivity
 
 
-//#define FASTLED_ALLOW_INTERRUPTS 0
-#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
-#define NUM_LEDS		680 //321 //642 //490 //640 // 320
-#define NR_FORM_PARTS	16	// how many forms? default 16
-#define NR_STRIPS		32	// how many strips  default 32
 
-#define DEF_MAX_BRI 255		// the default max bri
-#define DEF_BRI 100			// the deault Bri
-
-#define MAX_FADE_VALUE 90			// maximum for FADE effect on each frame in  amount 0-255 
-#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
-#define MAX_GLITTER_VALUE 255		// max glitter value
-
-#define MAX_PAL_FPS 60				// maximum FPS 
-
-#define NR_PALETTS 2				// how many pallets do we have = 2
-
-#define BMP_MAX_TIME 3000				
-
-#define MAX_INDEX_LONG 4096			// must stay under this number!
-
-// FFT
-#define FFT_MIN_AUTO_TRIGGER 11					// Deafult min auto FFT trigger
-#define FFT_MAX_AUTO_TRIGGER 222				// Default Max auto FFT trigger
-
+	};
 
 
 	struct led_cfg_struct					// LED config structure
@@ -69,10 +42,8 @@
 		int NrLeds;							// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+
 	};
-
-	
-
 
 	// FFT
 
@@ -108,8 +79,6 @@
 		#define NR_COPY_STRIPS 16
 		#define NR_COPY_LED_BYTES 2
 
-
-
 // Forms and Parts 
    struct Strip_FL_Struct
    {
@@ -121,9 +90,6 @@
 					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition
 					uint16_t index_long; 
 	};
-
-
-
 
 	  struct form_Part_FL_Struct 
 	  {
@@ -141,8 +107,6 @@
 		  uint8_t	index_add_pal;		// ???
 		  uint16_t	indexLong;
 	  };
-
-
 
 
 #define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
@@ -184,7 +148,28 @@
 
 	  };
 
+	
 
+
+// Functions
+
+	  void LEDS_loop();
+	  void LEDS_setup();
+
+	  float LEDS_get_FPS(); // osc.cpp
+
+	  void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
+	  uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);				 // used in config_fs. osc.cpp
+	  void LEDS_pal_reset_index();															//osc.cpp
+	  void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);									//osc.cpp
+
+	  void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
+	  void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);  // wifi-ota
+	  void LEDS_fadeout();																		 // wifi-ota
+	  void LEDS_setall_color(uint8_t color);																	 // wifi-ota
+	  void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
+	  uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
+	  void LEDS_show(); 																		//wifi-ota
 
 
 #endif

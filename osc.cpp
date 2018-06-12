@@ -7,7 +7,7 @@
 
 
 
-
+#include "config_TPM.h"   // include the main Defines
 #include "osc.h"
 #include "leds.h"
 
@@ -21,17 +21,28 @@
 
 
 #ifdef _MSC_VER
-	
+#ifdef ESP8266
 	#include <ESP8266WiFi\src\WiFiUdp.h>
 	#include <ESP8266WiFi\src\ESP8266WiFi.h>
+#endif
+#ifdef ESP32
+	
+#endif
+
 	#include <OSC\OSCMessage.h>
 	#include <OSC\OSCBundle.h>
 	#include <OSC\OSCData.h>
 	#include <QueueArray\QueueArray.h>
 
 #else
+
 	#include <WiFiUdp.h>
+#ifdef ESP8266
 	#include <ESP8266WiFi.h>
+#endif
+#ifdef ESP32
+	#include <WiFi.h>
+#endif
 	#include <OSCMessage.h>
 	#include <OSCBundle.h>
 	#include <OSCData.h>
@@ -40,85 +51,44 @@
 
 #include "tools.h"								// include the Tools enums for reading and writing bools
 #include "wifi-ota.h"
+#include "config_fs.h"
+#include "httpd.h"
 
 
+// External Variables/ Structures
 
 
-// External Functions  and Variables
-
-// From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
-extern float byte_tofloat(uint8_t value, uint8_t max_value = 255);
-
-
-
-
-// from config.fs
-extern void FS_wifi_write(uint8_t conf_nr);
-extern void FS_Bools_write(uint8_t conf_nr);
-extern void FS_osc_delete_all_saves();
-extern void FS_artnet_write(uint8_t conf_nr);
-extern boolean FS_play_conf_read(uint8_t conf_nr);
-extern void FS_play_conf_write(uint8_t conf_nr);
-extern void FS_FFT_write(uint8_t conf_nr);
-extern boolean FS_FFT_read(uint8_t conf_nr);
-
-
-// from wifi
-#ifndef ARTNET_DISABLED
-	extern void wifi_artnet_enable();
-#endif
-
-	extern void WIFI_FFT_toggle_master(boolean value);
-	extern void WIFI_FFT_toggle(boolean mode_value);
 	extern fft_data_struct fft_data[7];
 	extern wifi_Struct wifi_cfg;
 	extern artnet_struct artnet_cfg;
 
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
 
 
-// from httpd
-extern void httpd_toggle_webserver();
 
 // from leds
-extern float LEDS_get_FPS();
-extern led_cfg_struct led_cfg;
 
-extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
-extern Strip_FL_Struct part[NR_STRIPS];
-extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
-extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
-extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
-extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
-extern led_cfg_struct led_cfg;
-extern byte fft_menu[3];
-extern fft_led_cfg_struct fft_led_cfg;
+	extern led_cfg_struct led_cfg;
+	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
+	extern Strip_FL_Struct part[NR_STRIPS];
+	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
+	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
+	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
+	extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
+	extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
+	extern byte fft_menu[3];
+	extern fft_led_cfg_struct fft_led_cfg;
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
-extern uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);
-extern void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);
-extern void LEDS_pal_reset_index();
-extern void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);
+
+
 //struct OSC_buffer_float master_rgb = { 255,255,255 };
 
 
 //from coms
-extern void comms_S_FPS(uint8_t fps);
-
-
-
+//extern void comms_S_FPS(uint8_t fps);
 
 
 QueueArray <char> osc_out_float_addr;
 QueueArray <float> osc_out_float_value;
-
-
 
 osc_cfg_struct osc_cfg = { OSC_IPMULTI_ ,OSC_PORT_MULTI_,OSC_OUTPORT, OSC_INPORT, 0,1 };
 
@@ -135,7 +105,13 @@ void OSC_setup()
 {
 	osc_server.begin(osc_cfg.inPort);
 #ifndef OSC_MC_SERVER_DISABLED
-	osc_mc_server.beginMulticast(WiFi.localIP(), osc_cfg.ipMulti, osc_cfg.portMulti);
+		#ifdef ESP8266
+			osc_mc_server.beginMulticast(WiFi.localIP(), osc_cfg.ipMulti, osc_cfg.portMulti);
+		#endif
+
+		#ifdef ESP32
+			osc_mc_server.beginMulticast(osc_cfg.ipMulti, osc_cfg.portMulti);
+		#endif
 #endif
 }
 
@@ -291,7 +267,13 @@ void osc_mc_send(String addr, uint8_t value)
 		addr.toCharArray(address_out, addr.length() + 1); //address_out 
 		OSCMessage msg_out(address_out);
 		msg_out.add(out_value);
+//		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#ifdef ESP8266
 		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#endif
+#ifdef ESP32
+		osc_mc_server.beginMulticastPacket();
+#endif
 		msg_out.send(osc_mc_server);
 		osc_mc_server.endPacket();
 	}
@@ -310,7 +292,12 @@ void osc_mc_send(String addr, float value)
 		addr.toCharArray(address_out, addr.length() + 1); //address_out 
 		OSCMessage msg_out(address_out);
 		msg_out.add(value);
+#ifdef ESP8266
 		osc_mc_server.beginPacketMulticast(osc_cfg.ipMulti, osc_cfg.portMulti, WiFi.localIP());
+#endif
+#ifdef ESP32
+		osc_mc_server.beginMulticastPacket();
+#endif
 		msg_out.send(osc_mc_server);
 		osc_mc_server.endPacket();
 	}
@@ -383,10 +370,13 @@ uint16_t osc_miltiply_get()
 
 		break;
 	case 11:
-		value = 1000;
+		value = 1024;
 
 		break;
 
+	default:
+		value = 1;
+		break;
 	}
 
 
@@ -593,7 +583,7 @@ void osc_toggle_artnet(bool value)
 		write_bool(ARTNET_ENABLE, true); // artnet_enabled = true;		
 		//enable_artnet();
 		FS_artnet_write(0);
-		wifi_artnet_enable();
+		WiFi_artnet_enable();
 		//writeESP_play_Settings();
 	}
 	else {
@@ -691,8 +681,8 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 	int strip_int;
 
 
-	char address[3];
-	char address_out[20];
+	char address[4];
+	//char address_out[20];
 	bool switch_bool = false;
 
 	String outbuffer = "/strips/sX/SIL/X";
@@ -987,12 +977,17 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	int bit_int;
 	int option_int;
 	int form_int;
-	char address[3];
-	char address_out[20];
+	char address[4];
+	//char address_out[20];
 	bool switch_bool = false;
 
 	String outbuffer = "/form/fx/SIL/X";
 	float outvalue;
+
+
+	memset(address, 0, sizeof(address));
+	//memset(address_out, 0, sizeof(address_out));
+
 
 	msg.getAddress(address, addrOffset + 1, 1);
 	bit_string = bit_string + address[0];
@@ -1000,7 +995,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset + 3);
-	//debugMe(address);
+	debugMe("Form-Addr1 : " + String(address));
 
 	for (byte i = 0; i < sizeof(address); i++) {
 		if (address[i] == '/') {
@@ -1022,6 +1017,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset - 2, 2);
+	debugMe("Form-type : " + String(address));
 
 	if (bool(msg.getFloat(0)) == true) 
 	{  // only on pushdown
@@ -1152,7 +1148,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
-
+		debugMe("Form-Presend-response");
 		{
 			outbuffer = String("/form/f" + String(bit_int) + "/" + String(address) + "L/" + String(form_int + 1));
 			osc_queu_MSG_float(outbuffer, outvalue);
@@ -1291,6 +1287,7 @@ void osc_forms_toggle_rec(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/
 
 void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
+	debugMe("in Form Routing");
 
 	if (msg.fullMatch("/f/refresh", addrOffset) && bool(msg.getFloat(0)) == true) { osc_forms_send(0); osc_forms_send(1); }
 	if (msg.fullMatch("/f/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) { osc_forms_config_send(0); osc_forms_config_send(1); }
@@ -1786,7 +1783,7 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 
 	String collum_string;
 	String row_string;
-	char address[4];					// to pick info aut of the msg address
+	char address[14];					// to pick info aut of the msg address
 										//char address_out[20];	
 	int select_bit = 0;
 	String select_bit_string;
@@ -1797,19 +1794,19 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 
 	String out_add_label;				// address label
 
-
+	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
 	select_bit = select_bit_string.toInt();
-	//DBG_OUTPUT_PORT.println(address);
-
+	
+	debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-
+	debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2197,7 +2194,7 @@ void osc_master_routing(OSCMessage &msg, int addrOffset)
 		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); }   // global_blend_switch = bool(msg.getFloat(0));
 
 		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); }
-		if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
+		//if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
 		if (msg.fullMatch("/FPS", addrOffset))			osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));
 
 		if (msg.fullMatch("/fire/cool", addrOffset)) { led_cfg.fire_cooling = constrain(byte(msg.getFloat(0)), 20, 100); osc_queu_MSG_float("/m/fire/coolL", float(led_cfg.fire_cooling)); }
@@ -2267,8 +2264,8 @@ void osc_rec_pal_fader(OSCMessage &msg, int addrOffset) {
 	String pal_no_string;		// Pallete NO
 	String fader_no_string;
 	//String select_bit_string;
-	char address[4];
-	char address_out[20];
+	char address[5];
+	//char address_out[20];
 	bool switch_bool = false;
 	uint8_t pal_no = 0;						// form NR in uint8_t
 	String outbuffer = "/pal/0/x/1-3";
@@ -2402,13 +2399,16 @@ void osc_rec_pal_load(OSCMessage &msg, int addrOffset) {
 void osc_pal_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
 
-	if (msg.fullMatch("/0/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
-	if (msg.fullMatch("/1/conf_refesh", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
+	debugMe("pal1");
+	if (msg.fullMatch("/ref/0", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
+	if (msg.fullMatch("/ref/1", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
+	debugMe("pal2");
 	msg.route("/0", osc_rec_pal_fader, addrOffset);
 	msg.route("/1", osc_rec_pal_fader, addrOffset);
-
+	debugMe("pal3");
+	
 	msg.route("/load", osc_rec_pal_load, addrOffset);
-
+	debugMe("pal4");
 	//DBG_OUTPUT_PORT.println("yeah");      
 }
 
@@ -2758,9 +2758,12 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 		String select_mode_string;
 		// String select_bit_string;
 		char address[10];
+		debugMe("T3");
+		
 		bool switch_bool = false;
 
 		msg.getAddress(address, addrOffset + 1);
+		debugMe(String(address));
 		for (byte i = 0; i < sizeof(address); i++) {
 			if (address[i] == '/') {
 				switch_bool = true;
@@ -2811,7 +2814,11 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 void osc_device_settings_routing(OSCMessage &msg, int addrOffset) 
 {	// routing of Device settings OSC messages
 
-	char address[10];
+	char address[18];
+
+	memset(address, 0, sizeof(address));
+	debugMe("T1");
+
 	msg.getAddress(address);
 	debugMe(String(address));
 
@@ -2860,8 +2867,9 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	msg.route("/DGW", osc_DS_ip_in, addrOffset);
 	msg.route("/DNS", osc_DS_ip_in, addrOffset);
 
+	debugMe("T2");
 	msg.route("/ledType", osc_DS_led_type, addrOffset);
-
+	debugMe("TXXX");
 
 	//debugMe("DS routing END");
 }
@@ -2879,6 +2887,7 @@ void OSC_loop()
 	OSCMessage oscMSG;
 	OSCMessage oscMSG_MC;
 
+
 	int size = osc_server.parsePacket();
 
 	if (size > 0) {
@@ -2890,6 +2899,12 @@ void OSC_loop()
 			//debugMe("osc: rem , locel");
 			//debugMe(osc_mc_server.remoteIP());
 			//debugMe(WiFi.localIP());
+			char address[30];
+			memset(address, 0, sizeof(address));
+
+			oscMSG.getAddress(address);
+			debugMe(address);
+
 
 			oscMSG.route("/m", osc_master_routing);
 			oscMSG.route("/DS", osc_device_settings_routing);

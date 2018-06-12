@@ -12,53 +12,30 @@
 // make a new color creator from fft! 
 // add fire animation link it to FFT if possible!  
 
-
+#include "config_TPM.h"    // Load the main config
 #include "leds.h"
-//#include "boards.h"
 #include "tools.h"
 #include "wifi-ota.h"
+#include "config_fs.h"
+#include "msgeq7_fft.h"
 
 #ifdef _MSC_VER
 	#include <FastLED\FastLED.h>
 	#include <RunningAverage\RunningAverage.h>
-	#include <QueueArray\QueueArray.h>
+	//#include <QueueArray\QueueArray.h>
 #else
 	#include <FastLED.h>
 	#include <RunningAverage.h>			// For Auto FFT
-	#include <QueueArray.h>				// For buffering incoming FFT packets
+	// <QueueArray.h>				// For buffering incoming FFT packets
 #endif
-
-#define DBG_OUT		if (get_bool(DEBUG_OUT) == true) Serial
-#define DBG_OUTL	Serial
 
 
 
 
 // *************** External Functions
 // from wifi-ota.cpp
-extern void wifi_artnet_loop();
+
 extern artnet_struct artnet_cfg;
-
-// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-extern void debugMe(String input, boolean line = true);
-extern void debugMe(float input, boolean line = true);
-extern void debugMe(uint8_t input, boolean line = true);
-extern void debugMe(int input, boolean line = true);
-
-// from comms.cpp 
-extern void comms_loop();
-
-// From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
-extern boolean isODDnumber(uint8_t number);
-
-
-
-//from config fs
-extern boolean FS_play_conf_read(uint8_t conf_nr);
-extern boolean FS_FFT_read(uint8_t conf_nr);
-
 
 
 
@@ -67,7 +44,7 @@ extern boolean FS_FFT_read(uint8_t conf_nr);
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
 	uint8_t FFT_stage1_sample_count = 0;			// used to count the samples in FFT Stage 1  for pulling into Stage 2
-	#define FFT_AVERAGE_SAMPLES 60					// How many samples to take for the FFT average = Stage 1
+	#define FFT_AVERAGE_SAMPLES 30 //60					// How many samples to take for the FFT average = Stage 1
 	RunningAverage fft_bin0(FFT_AVERAGE_SAMPLES);	// Buffers for the FFT values
 	RunningAverage fft_bin1(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin2(FFT_AVERAGE_SAMPLES);
@@ -87,13 +64,13 @@ extern boolean FS_FFT_read(uint8_t conf_nr);
 
 	// FFT
 
-	QueueArray <uint8_t> FFT_fifo;
+	//QueueArray <uint8_t> FFT_fifo;
 	//uint8_t	fft_fps;
 	fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1 };
 	byte fft_menu[3] = { 3,7,200 };
 
-#define FFT_FIFO_COUNT_0_8_NR_PACKETS 35 //28 //35
-#define FFT_FIFO_COUNT_0_9_NR_PACKETS 28 //21 //28
+//#define FFT_FIFO_COUNT_0_8_NR_PACKETS 35 //28 //35
+//#define FFT_FIFO_COUNT_0_9_NR_PACKETS 28 //21 //28
 
 
 
@@ -113,8 +90,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 
 
-// ********************* LED Setup
-	// FastLed
+// ********************* LED Setup  FastLed
 	CRGBArray<NUM_LEDS> leds;			// The Led array!
 	//CRGB leds[NUM_LEDS];
 	//CRGBSet leds_p(leds, NUM_LEDS);
@@ -152,7 +128,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 	//CRGBPalette16 LEDS_pal_target[NR_PALETTS];
 
 
-
+	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
 led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 , 0,50,50 };			// The basic led config
 
@@ -225,10 +201,15 @@ uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_] = { { 0,0 } 
 
 byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection menu
 {
-	 { 0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+	 { 0,0,1,0,0,0,0,0,0,0,0,0,0,0 }
 	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 };
 
+
+void LEDS_show()
+{	
+	FastLED.show();
+}
 
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 {	
@@ -448,10 +429,18 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 // END Fire
 
-void  LEDS_setall_color() {
+void  LEDS_setall_color(uint8_t color = 0) {
 
 	//
-	fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+	switch(color) {
+
+		case 0: fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
+		case 1: fill_solid(&(leds[0]), NUM_LEDS, CRGB(0, 255, 0));
+
+	}
+
+
+	
 	
 
 }
@@ -654,7 +643,7 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 				if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				
-				//if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
+				if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
 				// TODO check above was rebooting for no reason on some selection
 				if (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)        LEDS_G_E_juggle2(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));
 				
@@ -684,7 +673,34 @@ void LEDS_G_pre_show_processing()
 	//LEDS_G_master_rgb_faders();
 	LEDS_G_form_effectsRouting();
 	//LED_G_bit_run();
-	FastLED.setBrightness(led_cfg.max_bri * led_cfg.bri / 255);
+
+	
+	//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
+	uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
+	{
+		led_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
+		led_cnt.PotBriLast = bri;
+	}
+
+	FastLED.setBrightness(led_cfg.bri);
+	
+	//debugMe(led_cfg.bri);
+	
+	
+
+	uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+	
+	//led_cfg.pal_fps = fps /4;
+	///*
+	if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
+	{
+		led_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
+		led_cnt.PotFPSLast = fps;
+	}
+	//Serial.println(fps);  
+
+	
 	//LED_G_bit_run();
 		//= led_cfg.max_br * led_cfg.bri / 255
 }
@@ -805,13 +821,13 @@ void LEDS_pal_reset_index()
 }
 
 
-CRGB ColorFrom_LONG_Palette(boolean pal,
+CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
+	boolean pal,
 	uint16_t longIndex,
 	//uint8_t index,
 	uint8_t brightness = 255,
-	TBlendType blendType = LINEARBLEND) {
-
-
+	TBlendType blendType = LINEARBLEND) 
+{
 	uint8_t indexC1 = 0;
 	uint8_t indexC2 = 0;
 	//uint8_t shortIndex = longIndex;
@@ -834,8 +850,8 @@ CRGB ColorFrom_LONG_Palette(boolean pal,
 	//delay(100);
 	//debugMe(indexC1);
 
-	CRGB color1 =  ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
-	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2*16, brightness, blendType);
+	CRGB color1 = ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
+	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2 * 16, brightness , blendType);
 	//nblend(CRGB& existing, const CRGB& overlay, fract8 amountOfOverlay)
 	CRGB outcolor = blend(color1, color2, longIndex);
 	//debugMe(String(String(color1.red) + "." + String(color1.green) + "." + String(color1.blue)));
@@ -921,6 +937,7 @@ void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_
 
 
 	}
+	else debugMe("LEDS_long_pal_fill-NOT NUNNING");
 }
 
 
@@ -1141,12 +1158,16 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 
 
 // ********************* FFT Functions
+
+/*
 void LEDS_FFT_enqueue(uint8_t invalue)
 {	// put the invalue into the FFT buffer
 	
 	FFT_fifo.enqueue(invalue);
 
 }
+*/
+
 
 uint8_t LEDS_FFT_get_value(uint8_t bit)
 {
@@ -1156,7 +1177,7 @@ uint8_t LEDS_FFT_get_value(uint8_t bit)
 
 void LEDS_FFT_auto()
 {	// automatically calculate the trigger value and set it
-	if (FFT_stage1_sample_count >= fft_led_cfg.fps)				// trigger on the FPS so that we get one stage 2 sammple a second
+	if (FFT_stage1_sample_count >= led_cfg.pal_fps)				// trigger on the FPS so that we get one stage 2 sammple a second
 	{
 		fft_bin0stage2.addValue(fft_data[0].avarage);
 		fft_bin1stage2.addValue(fft_data[1].avarage);
@@ -1165,7 +1186,7 @@ void LEDS_FFT_auto()
 		fft_bin4stage2.addValue(fft_data[4].avarage);
 		fft_bin5stage2.addValue(fft_data[5].avarage);
 		fft_bin6stage2.addValue(fft_data[6].avarage);
-		//fft_bin7stage2.addValue(fft_data[7].avarage);
+		
 		
 		fft_data[0].trigger = constrain((fft_bin0stage2.getFastAverage() + fft_bin0stage2.GetMaxInBuffer()) / 2, fft_led_cfg.fftAutoMin, fft_led_cfg.fftAutoMax);
 		fft_data[1].trigger = constrain((fft_bin1stage2.getFastAverage() + fft_bin1stage2.GetMaxInBuffer()) / 2, fft_led_cfg.fftAutoMin, fft_led_cfg.fftAutoMax);
@@ -1191,7 +1212,7 @@ void LEDS_FFT_calc_avarage()
 	fft_bin4.addValue(fft_data[4].value);
 	fft_bin5.addValue(fft_data[5].value);
 	fft_bin6.addValue(fft_data[6].value);
-	//fft_bin7.addValue(fft_data[7].value);
+
 
 
 	fft_data[0].avarage = fft_bin0.getFastAverage();
@@ -1201,7 +1222,7 @@ void LEDS_FFT_calc_avarage()
 	fft_data[4].avarage = fft_bin4.getFastAverage();
 	fft_data[5].avarage = fft_bin5.getFastAverage();
 	fft_data[6].avarage = fft_bin6.getFastAverage();
-	//fft_data[7].avarage = fft_bin7.getFastAverage();
+	
 
 	if (get_bool(FFT_AUTO))
 	{
@@ -1213,25 +1234,52 @@ void LEDS_FFT_calc_avarage()
 }
 
 
-void LEDS_FFT_dequeue_wifi()
-{	// get the FFT values from the buffer and put them into the active values
 
-	if (get_bool(FFT_MASTER) == false)
-	{
-		// debugMe("FFT slave processing");
-		// debugMe(FFT_fifo.count());
-		for (int i = 0; i < 7; i++)
-		{
-			fft_data[i].value = FFT_fifo.dequeue();
+void LEDS_MSGEQ7_setup() {
 
-			//fft_data[i].avarage = (fft_data[i].value + fft_data[i].avarage) / 2;
-		}
-
-	}
-
-
+	pinMode(MSGEQ7_INPUT_PIN, INPUT);
+	pinMode(MSGEQ7_STROBE_PIN, OUTPUT);
+	pinMode(MSGEQ7_RESET_PIN, OUTPUT);
+	digitalWrite(MSGEQ7_RESET_PIN, LOW);
+	digitalWrite(MSGEQ7_STROBE_PIN, HIGH);
 
 }
+
+
+
+
+void LEDS_MSGEQ7_get() // get the FFT data and put it in fft_data[i].value
+{
+	//noInterrupts();
+	digitalWrite(MSGEQ7_STROBE_PIN, LOW);
+	digitalWrite(MSGEQ7_RESET_PIN, HIGH);
+	digitalWrite(MSGEQ7_RESET_PIN, LOW);
+	
+	//delayMicroseconds(36);
+
+	for (int i = 0; i<7; i++)
+	{
+		digitalWrite(MSGEQ7_STROBE_PIN, HIGH);
+		digitalWrite(MSGEQ7_STROBE_PIN, LOW);
+		delayMicroseconds(36);
+		fft_data[i].value = analogRead(MSGEQ7_INPUT_PIN) / ANALOG_IN_DEVIDER;   // 
+		//digitalWrite(MSGEQ7_STROBE_PIN, HIGH);
+		//delayMicroseconds(40);
+		
+	}
+	//interrupts();
+	/*
+	for (int i = 0; i < 7; i++)
+	{
+		debugMe(fft_data[i].value, false);
+		debugMe(" - ", false);
+	}
+	debugMe(" x ", true);
+	//*/
+}
+
+
+
 
 
 
@@ -1242,8 +1290,8 @@ CRGB LEDS_FFT_process()
 	CRGB color_result = (CRGB::Black);
 	int bins[7] = {0,0,0,0,0,0,0};
 
-	
-	
+	LEDS_MSGEQ7_get();  // get the FFT data and put it in fft_data[i].value
+	LEDS_FFT_calc_avarage(); // update the avarages for autofft.
 
 	// debugMe("FFT fill bins");
 	for (byte i = 0; i < 7; i++) 
@@ -1370,82 +1418,19 @@ void LEDS_FFT_check_leds(CRGB color_result)
 
 }
 
-//
-//
-//void LEDS_FFT_loop()
-//{
-//	unsigned long currentT = micros();
-//
-//	// debugMe("starting fft led loop");
-//	if (get_bool(FFT_ENABLE) == true)
-//	{
-//		if (currentT > fft_led_cfg.update_time)
-//		{
-//			// debugMe("in slave");
-//			
-//
-//			if (get_bool(FFT_MASTER) == false)
-//			{
-//				
-//				if		(FFT_fifo.count() >= 35) { fft_led_cfg.adjuster = 0.8; }//  debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-//				else if (FFT_fifo.count() >= 28) { fft_led_cfg.adjuster = 0.9; }//   debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-//				//else if (FFT_fifo.count() >= 21) { fft_led_cfg.adjuster = 0.9; } // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-//				if (FFT_fifo.count() < 28) { fft_led_cfg.adjuster = 1; } // DBG_OUTPUT_PORT.println("haleved");}  DBG_OUTPUT_PORT.print("---") ; DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-//
-//				if (FFT_fifo.count() >= 7)
-//				{
-//					fft_led_cfg.update_time = currentT + ((1000000 / fft_led_cfg.fps) * fft_led_cfg.adjuster);
-//					// debugMe(".");
-//					// debugMe(FFT_fifo.count());
-//					
-//					// debugMe("pre poc");
-//					CRGB color_result = LEDS_FFT_process();
-//					// debugMe("last hope? in slave");
-//					LEDS_FFT_check_leds(color_result);
-//
-//					yield();
-//					write_bool(UPDATE_LEDS, true);
-//
-//
-//				}
-//
-//			}
-//			else
-//			{
-//			;	// Dot the Master!
-//			 debugMe("in master");
-//			}
-//			
-//			// move this to a trigger outside so we mix it with the palletes later
-//			// debugMe("pre fastled");
-//			
-//			// debugMe("post fastled");
-//		}
-//	}
-//	else
-//	{
-//		uint8_t buffer;
-//		while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
-//		{
-//			 debugMe("dequing overflow");
-//			buffer = FFT_fifo.dequeue();
-//		}
-//	}
-//	
-//
-//
-//}
 
 void LEDS_setup()
 {	// the main led setup function
 	// add the correct type of led
 	 debugMe("in LED Setup");
+	 LEDS_MSGEQ7_setup();
+	 
 
 
 	switch(led_cfg.ledType)
 	{
 		case 0:
-			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR, DATA_RATE_MHZ(6)>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(12)
+			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
 			 debugMe("APA102 leds added");
 		break;
 		
@@ -1494,7 +1479,7 @@ void LEDS_setup()
 		//led_cfg.max_bri = 255;
 
 
-
+	debugMe("end LEDS setup");
 }
 
 
@@ -1504,177 +1489,54 @@ void LEDS_loop()
 	unsigned long currentT = micros();
 
 	#ifndef ARTNET_DISABLED
-		wifi_artnet_loop();  //  fetshing data 
+		WiFi_artnet_loop();  //  fetshing data 
 	#endif
-	comms_loop(); // check comms for new FFT data  this is not allowed on a timer since we dont want to overflow the memory with incomming messages
-	yield();
-
-	
-
-	
-	// dequeu the FFT buffer based on the FFT FPS  if FPS < FFT_FPS the we ignore some FFT frames.
-	if (currentT > fft_led_cfg.update_time  
-				&& get_bool(ARTNET_ENABLE) == false
-				&& (get_bool(FFT_ENABLE) == true) 
-				&& (get_bool(FFT_MASTER) == false) )
-	{	
-		//#define FFT_FIFO_COUNT_1_0_NR_PACKETS 28
-
-		if (FFT_fifo.count() >= FFT_FIFO_COUNT_0_8_NR_PACKETS) { fft_led_cfg.adjuster = 0.90; } //  debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count());
-		else if (FFT_fifo.count() >= FFT_FIFO_COUNT_0_9_NR_PACKETS) { fft_led_cfg.adjuster = 0.95; }//   debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count());
-		else if (FFT_fifo.count() < 14) { fft_led_cfg.adjuster = 1.05; }
-		else if (FFT_fifo.count() < FFT_FIFO_COUNT_0_9_NR_PACKETS) { fft_led_cfg.adjuster = 1.0; } // DBG_OUTPUT_PORT.println("haleved");}  DBG_OUTPUT_PORT.print("---") ; DBG_OUTPUT_PORT.println(FFT_fifo.count());
-			
-		
-		fft_led_cfg.update_time = currentT + ((1000000 / fft_led_cfg.fps) * fft_led_cfg.adjuster);
-		if (FFT_fifo.count() >= 7) LEDS_FFT_dequeue_wifi();
-	
-	}
 
 
 	if (currentT > led_cfg.update_time  && get_bool(ARTNET_ENABLE) == false )
 	{
-		if (get_bool(FFT_ENABLE) == true)
-		{
-
 			
-				if (get_bool(FFT_MASTER) == false)
-				{
+			CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
+			
+			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
+			yield();
 
+				
+			 
 
-					led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
-					LEDS_FFT_calc_avarage();
-
-					CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
-					LEDS_FFT_check_leds(color_result);      // send the color to the leds
-					yield();
-
-					if (LEDS_pal_check_bit() == true)
-					{
-						yield();
-						LEDS_pal_advance();
-						yield();
-						LEDS_pal_routing();
-					}
-
-
-					/*
-					//#define FFT_FIFO_COUNT_1_0_NR_PACKETS 28
-
-					if (FFT_fifo.count() >= FFT_FIFO_COUNT_0_8_NR_PACKETS) { fft_led_cfg.adjuster = 0.90; } //  debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-					else if (FFT_fifo.count() >= FFT_FIFO_COUNT_0_9_NR_PACKETS) { fft_led_cfg.adjuster = 0.95; }//   debugMe(FFT_fifo.count());}  // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-																					//else if (FFT_fifo.count() >= 21) { fft_led_cfg.adjuster = 0.9; } // DBG_OUTPUT_PORT.print("-fifo-"); DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-					else if (FFT_fifo.count() < 14) { fft_led_cfg.adjuster = 1.05; }
-					else if (FFT_fifo.count() < FFT_FIFO_COUNT_0_9_NR_PACKETS) { fft_led_cfg.adjuster = 1.0; } // DBG_OUTPUT_PORT.println("haleved");}  DBG_OUTPUT_PORT.print("---") ; DBG_OUTPUT_PORT.println(FFT_fifo.count()); 
-
-					if (FFT_fifo.count() >= 7)
-					{
-						
-						led_cfg.update_time = currentT + ((1000000 / fft_led_cfg.fps) * fft_led_cfg.adjuster);
-						fft_led_cfg.update_time = currentT;
-						LEDS_FFT_dequeue_wifi();
-						CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
-						// debugMe("last hope? in slave");
-						LEDS_FFT_check_leds(color_result);      // send the color to the leds
-						yield();
-						//write_bool(UPDATE_LEDS, true);
-						
-						
-						if (LEDS_pal_check_bit() == true)
-						{
-							yield();
-							LEDS_pal_advance();
-							yield();
-							LEDS_pal_routing();
-						}
-
-					}
-					//else		// Were not getting any packets so just forward the pallete
-					//if (FFT_fifo.count() < 7 && currentT > (fft_led_cfg.update_time + ((1000000 / fft_led_cfg.fps)))) // * 40)))
-					//{
-					//	// debugMe("last hope? in slave1");
-					//	//write_bool(UPDATE_LEDS, true);
-					//	led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);						
-					//	if (LEDS_pal_check_bit() == true)
-					//	{
-					//		yield();
-					//		LEDS_pal_advance();
-					//		yield();
-					//		LEDS_pal_routing();
-					//	}
-
-
-					//	// debugMe("led no fft pallete");
-					//}
-					else // FFT on but buffer empty so just set it for the next go
-					{
-						// debugMe("last hope? in slave2");
-						led_cfg.update_time = currentT + ((1000000 / fft_led_cfg.fps) * fft_led_cfg.adjuster);
-
-						if (LEDS_pal_check_bit() == true)
-						{
-							yield();
-							LEDS_pal_advance();
-							yield();
-							LEDS_pal_routing();
-						}
-					}   */
-
-
-				}
-				else			// do the master
-				{
-					led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
-
-					LEDS_FFT_calc_avarage();
-					CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
-					LEDS_FFT_check_leds(color_result);      // send the color to the leds
-					yield();
-
-					if (LEDS_pal_check_bit() == true)
-					{
-						yield();
-						LEDS_pal_advance();
-						yield();
-						LEDS_pal_routing();
-					}
-
-
-						// Dot the Master!
-					// debugMe("in master");
-				}
-
-
-		}
-		else // FFT Disabeled
+		
 		{
-			// debugMe("disabled fft");
+			//debugMe("IN LED LOOP - disabled fft");
 			led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
 			//write_bool(UPDATE_LEDS, true);
 
 			if (LEDS_pal_check_bit() == true)
 			{
 				yield();
+				//debugMe("pre pal advance");
 				LEDS_pal_advance();
 				yield();
+				//debugMe("pre leds routing");
 				LEDS_pal_routing();
 			}
 
-
+			/*
 			uint8_t buffer;
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
 			{
 				 debugMe("dequing overflow");
 				buffer = FFT_fifo.dequeue();
-			}
+			} */
 
 		}
 
 	
 		//if (get_bool(UPDATE_LEDS) == true)
 		//{
+		//debugMe("pre show processing");
 			LEDS_G_pre_show_processing();
 			yield();
+			//debugMe("pre leds SHOW");
 			FastLED.show();
 			yield();
 		//	write_bool(UPDATE_LEDS, false);
@@ -1682,18 +1544,6 @@ void LEDS_loop()
 	}
 
 
-
-
-
-
-	
-	//yield();
-	//LEDS_pal_run();
-	//yield();
-	//yield();
-
-	//yield();
-	//FastLED.show();
-	//yield();
-
+	//debugMe("leds loop end ", false);
+	//debugMe(String(xPortGetCoreID()));
 }

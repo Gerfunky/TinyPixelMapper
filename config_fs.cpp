@@ -1,58 +1,33 @@
-// 
-// 
-// 
 
 // TODO  
 
-
-
-#include "config_fs.h"
-#include <FS.h>
-#include "leds.h"
-#include "wifi-ota.h"
-#include "tools.h"
-
-#ifdef _MSC_VER
-	//#include "FS.h"
-	typedef File;
+#ifdef _MSC_VER 
+	#include <FS\src\FS.h>
+	#include <SPIFFS\src\SPIFFS.h>
 
 #else
-	
-
-
+    #include <FS.h>
+	#include<SPIFFS.h>
 #endif
 
 
+#include "config_TPM.h"
+#include "config_fs.h"
+#include "tools.h"
 
-
-//************ EXTERNAL Functions 
-	// From tools.cpp
-	extern boolean get_bool(uint8_t bit_nr);
-	extern void write_bool(uint8_t bit_nr, boolean value);
-	extern void load_bool();
-	extern uint8_t get_strip_menu_bit(int strip);
-	extern uint8_t striptobit(int strip_no);
-
-
-	// from wifi-ota.cpp
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
 
 
 
 // ***************** External Structures
-	// from wifi-ota.cpp
+	#include "wifi-ota.h"
 	extern wifi_Struct wifi_cfg;
 
-	//extern void load_bool();
 
-	extern artnet_struct artnet_cfg;
+	#include "leds.h"
+	#ifndef ARTNET_DISABLED
+		extern artnet_struct artnet_cfg;
+	#endif
 	extern fft_ip_cfg_struct fft_ip_cfg;
-
-	// from leds.cpp
 	extern Strip_FL_Struct part[NR_STRIPS];
 	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
 	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
@@ -64,15 +39,15 @@
 	extern byte fft_menu[3];
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-	extern void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);
-	extern uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);
+
+
 
 
 
 //**************** Functions 
 
 
-
+// Reading Conf values from file.
 
 bool get_bool_byte(uint8_t in_byte, uint8_t in_bit) 
 {	
@@ -118,7 +93,7 @@ int	get_int_conf_value(File myFile, char *character)
 		return 0;
 }
 
-bool	get_bool_conf_value(File myFile, char *character) 
+bool get_bool_conf_value(File myFile, char *character) 
 {
 	// Read a bool value from a file	
 	
@@ -389,7 +364,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 	
 }
 
-boolean FS_wifi_read(uint8_t conf_nr = 0)
+boolean FS_wifi_read(uint8_t conf_nr)
 {
 	// read the wifi config
 	
@@ -405,7 +380,7 @@ boolean FS_wifi_read(uint8_t conf_nr = 0)
 		char type;
 		//String 
 		//int strip_no = 0;
-		//DBG_OUTPUT_PORT.println("File-opened");
+		//debugMe("File-opened");
 
 		memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));  // reset them to 0
 		memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
@@ -452,10 +427,11 @@ boolean FS_wifi_read(uint8_t conf_nr = 0)
 				
 				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End				
 			}
-			//if (character == ']') {DBG_OUTPUT_PORT.println("the other side") ;}  // End of getting this strip
+			//if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
 			while ((conf_file.available())) character = conf_file.read();   // goto End
 
 		}
+		
 		conf_file.close();
 		return true;
 	}	// end open conf file
@@ -494,7 +470,7 @@ void	FS_artnet_write(uint8_t conf_nr)
 
 }
 
-boolean FS_artnet_read(uint8_t conf_nr = 0)
+boolean FS_artnet_read(uint8_t conf_nr)
 {
 	// read the artnet config from disk
 
@@ -890,69 +866,82 @@ void FS_Bools_write(uint8_t conf_nr)
 boolean FS_Bools_read(uint8_t conf_nr)
 {
 	// read the device config and bools
-
+	
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
-	File conf_file = SPIFFS.open(addr, "r");
-	delay(100);
-	if (conf_file)
-	{
-		char character;
-		//String settingName;
-		String settingValue;
-		char type;
+	
+	
+	if (SPIFFS.exists(addr))
+	{ 
+		debugMe("Reading bools file");
+		File conf_file = SPIFFS.open(addr, "r");
+		delay(100);
 
-
-		while (conf_file.available())
+		if (conf_file)
 		{
-			
-			character = conf_file.read();
+			debugMe("in file");
+			char character;
+			//String settingName;
+			String settingValue;
+			char type;
 
-			while ((conf_file.available()) && (character != '[')) {  // Go to first setting
+
+			while (conf_file.available())
+			{
+
 				character = conf_file.read();
-			}
 
-			type = conf_file.read();
-			character = conf_file.read(); // go past the first ":" after the type
-			
+				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
+					character = conf_file.read();
+				}
 
-			if (type == 'D')
-			{
-				int in_int = 0;
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri		= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
-				
-			}
-			else if (type == 'B')
-			{
-				// debugMe("in B");
-				write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
-				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
-				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
-				write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
-							
-			}
-			else
-				 debugMe("NO_TYPE");
+				type = conf_file.read();
+				character = conf_file.read(); // go past the first ":" after the type
+				debugMe("pre_Bool_LOADing in file");
 
-			while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
-			//if (character == ']') {DBG_OUTPUT_PORT.println("the other side") ;}  // End of getting this strip
-			//while ((conf_file.available())) character = conf_file.read();   // goto End
+				if (type == 'D')
+				{
+					int in_int = 0;
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri = uint8_t(constrain(in_int, 0, 255));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
+
+				}
+				else if (type == 'B')
+				{
+					// debugMe("in B");
+					write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
+					write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
+					write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
+					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
+
+				}
+				else
+					debugMe("NO_TYPE");
+
+				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
+																									  //if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
+																									  //while ((conf_file.available())) character = conf_file.read();   // goto End
+
+			}
+			conf_file.close();
+			return true;
+		}	// end open conf file
+
+		else
+		{
+			debugMe("error opening " + addr + " Loading defaults ");
 
 		}
-		conf_file.close();
-		return true;
-	}	// end open conf file
-	else
-	{
-		 debugMe("error opening " + addr + " Loading defaults "); 
+
 
 	}
-	
+	else
+		debugMe("NO BOOLS File");
+
 
 	return false;
 }
@@ -985,10 +974,51 @@ void FS_osc_delete_all_saves()
 }
 
 
+
+void FS_listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+	debugMe("Listing directory: "+  String(dirname));
+
+	File root = fs.open(dirname);
+	if (!root) {
+		debugMe("Failed to open directory");
+		return;
+	}
+	if (!root.isDirectory()) {
+		debugMe("Not a directory");
+		return;
+	}
+
+	File file = root.openNextFile();
+	while (file) {
+		if (file.isDirectory()) {
+			debugMe("  DIR : ", false);
+			debugMe(file.name());
+			if (levels) {
+				FS_listDir(fs, file.name(), levels - 1);
+			}
+		}
+		else {
+			debugMe("  FILE: ", false);
+			debugMe(file.name(),false);
+			debugMe("  SIZE: ",false);
+			debugMe(String(file.size()));
+		}
+		file = root.openNextFile();
+	}
+	file.close();
+}
+
+
 //Setup
 void FS_setup_SPIFFS()
 {
-	SPIFFS.begin();
+	debugMe("Start SPIFFS");
+	if (SPIFFS.begin())
+	{
+		debugMe("Started SPIFFS");
+		FS_listDir(SPIFFS, "/", 0);
+	} else
+		debugMe("FAILED SPIFFS");
 	delay(100);
 	load_bool();
 
