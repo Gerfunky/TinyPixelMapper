@@ -201,7 +201,7 @@ uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_] = { { 0,0 } 
 
 byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection menu
 {
-	 { 0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+	 { 0,0,1,0,0,0,0,0,0,0,0,0,0,0 }
 	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 };
 

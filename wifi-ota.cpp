@@ -496,6 +496,10 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 		debugMe("ethernet got IP from connected AP");
 		break;
 
+	case 	SYSTEM_EVENT_WIFI_READY:
+		debugMe("WIFI-Ready");
+		break;
+
 	default:
 		debugMe("OTHER UNKNOWN EVENT");
 		break;
