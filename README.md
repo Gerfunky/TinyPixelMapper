@@ -32,11 +32,9 @@ it uses a Teensy LC and a MSGEQ7 with a mic to get the FFT data and then sends i
 
 
 ## Required Library's
-[Arduino core for ESP82662.2.0, not tested on 2.3.0] (http://arduino.esp8266.com/stable/package_esp8266com_index.json)
+[Arduino for ESP32](https://github.com/espressif/arduino-esp32)
 
 [FastLed](https://github.com/FastLED/FastLED "FastLED git Page ")
-
-[Arduino-CmdMessenger](https://github.com/thijse/Arduino-CmdMessenger)
 
 [RunningAverage](https://github.com/RobTillaart/Arduino/tree/master/libraries/RunningAverage)
 
@@ -48,7 +46,13 @@ it uses a Teensy LC and a MSGEQ7 with a mic to get the FFT data and then sends i
 
 [Artnet](https://github.com/natcl/Artnet)
 
+
+### Additional for ESP8266
+[Arduino core for ESP82662.2.0, not tested on 2.3.0](http://arduino.esp8266.com/stable/package_esp8266com_index.json)
 [time](http://playground.arduino.cc/Code/Time)
+
+[Arduino-CmdMessenger](https://github.com/thijse/Arduino-CmdMessenger)
+
 
 
 ## Installation 

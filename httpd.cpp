@@ -9,56 +9,54 @@
 
 */
 
-#include "httpd.h"
-//#include <WiFiClient.h>					//required for other libs
+#include "config_TPM.h"
+
+
 
 #ifdef _MSC_VER  
-	#include <ESP8266WiFi\src\ESP8266WiFi.h>
-	#include <ESP8266WebServer\src\ESP8266WebServer.h>
-	#include <ESP8266HTTPUpdateServer\src\ESP8266HTTPUpdateServer.h>
-	#include <ESP8266mDNS\ESP8266mDNS.h>
+
+	#ifdef ESP32
+		#include<WiFi\src\WiFi.h>
+		//#include <HTTPClient.h>
+		#include<ESPmDNS\src\ESPmDNS.h>
+		#include<SPIFFS\src\SPIFFS.h>
+		#include<FS\src\FS.h>
+		#include <WebServer-esp32\src\WebServer.h>
+	#endif
+
+
 #else
-	#include <ESP8266WiFi.h>				// REquired for other libs
-	#include <ESP8266WebServer.h>			// the Webserver
-	#include <ESP8266HTTPUpdateServer.h>	// the HTTP update server http://IP/update
-	#include <ESP8266mDNS.h>				// mDNS 
-	
+
+	#ifdef ESP32
+		#include <WiFi.h>	
+		#include <HTTPClient.h>
+		#include <ESPmDNS.h>
+		//#include <WebServer.h>
+		#include <ESP32WebServer.h>
+		#include <FS.h>	
+		#include<SPIFFS.h>
+
+		//#include <ESP32httpUpdate.h>
+		//#include <Update.h>
+		//#include <WiFiClient.h>
+	#endif
+
+
 #endif
-#include <FS.h>							// for file system  SPIFFS access
-#include "tools.h"						// for bools reading/writing
-#include "wifi-ota.h"					// get the wifi structures
+ 
 
-
-
-
-// ********* External Functions
-// From tools.cpp
-extern boolean get_bool(uint8_t bit_nr);
-extern void write_bool(uint8_t bit_nr, boolean value);
-
-	// from wifi-ota.cpp
-	// add the Debug functions   --     send to debug   MSG to  Serial or telnet --- Line == true  add a CR at the end.
-	extern void debugMe(String input, boolean line = true);
-	extern void debugMe(float input, boolean line = true);
-	extern void debugMe(uint8_t input, boolean line = true);
-	extern void debugMe(int input, boolean line = true);
-
-
-// from config_fs.cpp
-extern void FS_wifi_write(uint8_t conf_nr);
-
-
+// ********* Externals
+	#include "tools.h"						// for bools reading/writing
+	#include "config_fs.h"					
+	#include "httpd.h"
 
 // *********** External Variables 
-// from wifi-ota.cpp
-extern wifi_Struct wifi_cfg;
+	#include "wifi-ota.h"					// get the wifi structures
+	extern wifi_Struct wifi_cfg;			// link to wifi variable wifi_cfg
 
 
-ESP8266WebServer httpd(80);					// The Web Server 
-File fsUploadFile;							// Variable to hold a file upload
-
-ESP8266HTTPUpdateServer httpUpdater;		// The HTTP update Server
-
+// Variables
+	ESP32WebServer  httpd(80);					// The Web Server 
 
 
 
@@ -83,23 +81,30 @@ String httpd_getContentType(String filename) {
 
 bool httpd_handleFileRead(String path) {
 
-	 debugMe("handleFileRead: " + path);
+	 
       
 	if (path.endsWith("/")) path += "index.html";
+	debugMe("handleFileRead: " + path);
+
 	String contentType = httpd_getContentType(path);
 	String pathWithGz = path + ".gz";
 	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
 		if (SPIFFS.exists(pathWithGz))
 			path += ".gz";
 		File file = SPIFFS.open(path, "r");
+		debugMe("prestreeam");
 		size_t sent = httpd.streamFile(file, contentType);
+		debugMe("post stream");
+		//String(file.size());
 		file.close();
+		debugMe("  " + path + " closed and sent :" + String(sent) );
 		return true;
 	}
 	return false;
 }
 
 void httpd_handleFileUpload() {
+	File fsUploadFile;							// Variable to hold a file upload
 	if (httpd.uri() != "/edit") return;
 	HTTPUpload& upload = httpd.upload();
 	if (upload.status == UPLOAD_FILE_START) {
@@ -167,31 +172,50 @@ void httpd_handleFileCreate() {
 }
 
 void httpd_handleFileList() {
-	if (!httpd.hasArg("dir")) { httpd.send(500, "text/plain", "BAD ARGS"); return; }
-	String path = httpd.arg("dir");
+	String path = "/";
+
+	if (httpd.hasArg("dir")) 
+		path = httpd.arg("dir");
+	
  
 	 debugMe("handleFileList: " + path);
 
-	Dir dir = SPIFFS.openDir(path);
+	File dir = SPIFFS.open(path);
+
+	//File file = dir.openNextFile();
+
 	path = String();
 
 	String output = "[";
-	while (dir.next()) {
-		File entry = dir.openFile("r");
+
+	File fileX = dir.openNextFile();
+
+	debugMe(String(fileX.name()));
+
+	while (fileX) {
+		//File entry = dir.open("r");
 		if (output != "[") output += ',';
-		bool isDir = false;
+		bool isDir = fileX.isDirectory();
+		//bool isDir = false;
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		output += String(entry.name()).substring(1);
+		output += String(fileX.name());
 		output += "\"}";
-		entry.close();
+		//debugMe(String(fileX.name()));
+		fileX.close();
+		fileX = dir.openNextFile();
+		debugMe(String(fileX.name()));
+		//dir.close();
 	}
+
+	dir.close();
+
 
 	output += "]";
 	httpd.send(200, "text/json", output);
+	//debugMe(output);
 }
-
 
 void httpd_handle_default_args()
 {
@@ -266,6 +290,66 @@ void httpd_handleRequestSettings()
 {
 	//String  output_bufferZ = "-" ;
 
+	// Setup Handlers
+	
+	/*handling uploading firmware file */
+	/*
+	httpd.on("/update", HTTP_POST, []() {
+		httpd.sendHeader("Connection", "close");
+		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+		//esp_wifi_wps_disable(); 
+		ESP.restart();
+	}, []() {
+		HTTPUpload& upload = httpd.upload();
+		if (upload.status == UPLOAD_FILE_START) {
+			Serial.printf("Update: %s\n", upload.filename.c_str());
+			if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {//start with max available size
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_WRITE) {
+			// flashing firmware to ESP //
+			if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+				Update.printError(Serial);
+			}
+		}
+		else if (upload.status == UPLOAD_FILE_END) {
+			if (Update.end(true)) { //true to set the size to the current progress
+				Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+			}
+			else {
+				Update.printError(Serial);
+			}
+		}
+	});  //*/
+
+
+
+
+	//get heap status, analog input value and all GPIO statuses in one json call
+
+	
+
+	httpd.on("/index.html", []() {
+#ifdef ARTNET_ENABLED
+		if (get_bool(ARTNET_ENABLE) == true)
+			handleFileRead("/artnet.html");
+		else
+#endif
+		httpd_handleFileRead("/index.html");
+		httpd_handle_default_args();
+	});
+	
+
+	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
+	httpd.on("/list", HTTP_GET, httpd_handleFileList);
+	//load editor
+	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
+	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
+	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
+
+	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
+
 	httpd.on("/wifiMode", []() { httpd.send(200, "text/plain", String(get_bool(WIFI_MODE)));   });
 	httpd.on("/ssid", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.ssid);  });
 	httpd.on("/password", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.pwd);   });
@@ -276,6 +360,14 @@ void httpd_handleRequestSettings()
 
 
 }
+
+
+
+
+
+
+
+
 
 
 void httpd_toggle_webserver()
@@ -290,8 +382,12 @@ void httpd_toggle_webserver()
 	{
 		httpd.begin();
 		write_bool(HTTP_ENABLED, true);
-		 debugMe("httpd turned on");
+		debugMe("httpd turned on");
+#ifdef ESP8266
+
 		httpUpdater.setup(&httpd);
+#endif		
+		//ESPhttpUpdate.setup(&httpd);
 		// debugMe("HTTP server started");
 		MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
@@ -303,54 +399,22 @@ void httpd_toggle_webserver()
 
 void httpd_setup()
 {
-	// Setup Handlers
-	httpd.on("/list", HTTP_GET, httpd_handleFileList);
-	//load editor
-	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
-	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
-	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
-
-	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
-
-	//get heap status, analog input value and all GPIO statuses in one json call
-	httpd.on("/all", HTTP_GET, []() {
-		String json = "{";
-		json += "\"heap\":" + String(ESP.getFreeHeap());
-		json += ", \"analog\":" + String(analogRead(A0));
-		json += ", \"gpio\":" + String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
-		json += "}";
-		httpd.send(200, "text/json", json);
-		json = String();
-	});
-
-	// end FS handlers
-	//httpd.on("/edit", HTTP_DELETE, handleFileDelete);
-	//httpd.serveStatic("/index.html", SPIFFS, "/index.html");  
-	//httpd.on( "/set", handle_default_args ); 
-
-	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
-
-
-	httpd.on("/index.html", []() {
-#ifdef ARTNET_ENABLED
-		if (get_bool(ARTNET_ENABLE) == true)
-			handleFileRead("/artnet.html");
-		else
-#endif
-		httpd_handleFileRead("/index.html");
-		httpd_handle_default_args();
-	});
-	//httpd.on("/all", HTTP_GET, [](){
+	debugMe("HTTPd_setup");
+	
 
 	httpd_handleRequestSettings();
 
 	if (get_bool(HTTP_ENABLED) == true)
 	{
 		httpd.begin();					// Switch on the HTTP Server
+#ifdef ESP8266
 		httpUpdater.setup(&httpd);
 		 debugMe("HTTP server started");
-		MDNS.begin(wifi_cfg.APname);
+#endif
+		 //ESPhttpUpdate.setup(&httpd);
+		 MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
+		debugMe("Starting HTTP");
 	}
 }
 
@@ -358,7 +422,6 @@ void http_loop()
 {
 	if (get_bool(HTTP_ENABLED) == true)
 		httpd.handleClient();
-	
 }
 
 

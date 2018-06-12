@@ -8,19 +8,11 @@
 #else
 	#include "WProgram.h"
 #endif
-										// DEFAULT settings if not loaded from the SPIFFS
-#define DEF_DEBUG_OUT true				// serial debugging
-#define DEF_WIFI_MODE true				// true = client
-#define DEF_OTA_SERVER true				// enable the OTA server ?
-#define DEF_STATIC_IP_ENABLED true		// set static ip for startup  ?
-#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
-#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
-#define DEF_AUTO_FFT true				// enalbe auto FFT ?
-#define DEF_LED_TYPE 1					// led type 1 = WS2812b, 0 = APA102
-#define DEF_DEBUG_TELNET true			// debug to TELNET?
-#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
+
+
 
 #define NR_GLOBAL_OPTIONS_BYTES 2     // to hold the bools in bits not bytes! Enum below must fit in here!!!
+
 enum GLOBAL_OPTIONS_ENUM
 {
 	DEBUG_OUT			= 0		// Debug to Serial ?
@@ -41,6 +33,43 @@ enum GLOBAL_OPTIONS_ENUM
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
 
 };
+
+
+
+// Functions
+
+
+boolean setup_controlls();
+// The main DEbuging Functions.
+
+void debugMe(String input, boolean line = true);
+void debugMe(float input, boolean line = true);
+void debugMe(uint8_t input, boolean line = true);
+void debugMe(int input, boolean line = true);
+void debugMe(IPAddress input, boolean line = true);
+void debugMe(tm input, boolean line = true);
+
+
+String debug_ResetReason(boolean core);   // core 0 or 1 
+//void verbose_print_reset_reason(RESET_REASON reason);
+//void print_reset_reason(RESET_REASON reason);
+
+// Boolean functions
+
+boolean get_bool(uint8_t bit_nr);
+void write_bool(uint8_t bit_nr, boolean value);
+void load_bool();
+
+// Get bit for bools
+uint8_t get_strip_menu_bit(int strip);
+uint8_t striptobit(int strip_no);
+
+
+//generic functions
+
+boolean isODDnumber(uint8_t number);
+float byte_tofloat(uint8_t value, uint8_t max_value = 255);
+
 
 
 #endif
