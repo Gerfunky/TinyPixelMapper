@@ -19,15 +19,10 @@
 #include "config_fs.h"
 #include "msgeq7_fft.h"
 
-#ifdef _MSC_VER
-	#include <FastLED\FastLED.h>
-	#include <RunningAverage\RunningAverage.h>
-	//#include <QueueArray\QueueArray.h>
-#else
+
 	#include <FastLED.h>
 	#include <RunningAverage.h>			// For Auto FFT
-	// <QueueArray.h>				// For buffering incoming FFT packets
-#endif
+
 
 
 
@@ -130,7 +125,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 , 0,50,50 };			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_TYPE, NUM_LEDS ,50,50 };			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
 	{ 0,  0,  0,  1,  0 , 1 ,  0}  //0
@@ -1425,12 +1420,21 @@ void LEDS_setup()
 	 debugMe("in LED Setup");
 	 LEDS_MSGEQ7_setup();
 	 
+	FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	 debugMe("APA102 leds added on  DATA1+CLK");
+	FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	debugMe("WS2812 leds added on DATA3");
+	FastLED.addLeds<SK6822, LED_DATA_4_PIN>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	debugMe("SK6822 leds added on DATA4");
 
 
+
+/*
 	switch(led_cfg.ledType)
 	{
 		case 0:
-			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
+			FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
+			//FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
 			 debugMe("APA102 leds added");
 		break;
 		
@@ -1449,7 +1453,7 @@ void LEDS_setup()
 
 	}
 
-	
+*/	
 	for (int i = 0; i < NR_PALETTS; i++) 
 	{
 #ifdef BLEND_PATTERN

@@ -25,23 +25,24 @@
 
 	struct led_cfg_struct					// LED config structure
 	{										// 
-		uint8_t max_bri;					// max Bri
-		uint8_t bri;						// actual BRI
-		uint8_t startup_bri;					// the startup brightness
-		uint8_t r;							// max Red
-		uint8_t g;							// max green
-		uint8_t b;							// max blue
-		uint8_t hue;						// HSV hue used for effects, every frame increments by one automatically
-		unsigned long update_time;			// when to update the leds again
-		uint8_t pal_fps;					// pallete FPS ... FFT FPS overrides this if FFT is enabled
-		uint8_t pal_bri;					// Pallete bri so that we can dimm it down to the FFT 
-		uint8_t bpm;						// BPM , used to time the pallete to a bpm
-		unsigned long bpm_lastT;			// timing for BMP
-		unsigned long bpm_diff;				// 
-		uint8_t ledType;					// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
-		int NrLeds;							// how many leds total  not fully implemented TODO!!!
+		uint8_t 		max_bri;			// max Bri
+		uint8_t 		bri;				// actual BRI
+		uint8_t 		startup_bri;		// the startup brightness
+		uint8_t 		r;					// max Red
+		uint8_t 		g;					// max green
+		uint8_t 		b;					// max blue
+		uint8_t 		hue;				// HSV hue used for effects, every frame increments by one automatically
+		unsigned long 	update_time;		// when to update the leds again
+		uint8_t 		pal_fps;			// pallete FPS ... FFT FPS overrides this if FFT is enabled
+		uint8_t 		pal_bri;			// Pallete bri so that we can dimm it down to the FFT 
+		uint8_t 		bpm;				// BPM , used to time the pallete to a bpm
+		unsigned long 	bpm_lastT;			// timing for BMP
+		unsigned long 	bpm_diff;			// 
+		uint8_t 		ledType;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
+		uint16_t 		NrLeds;				// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+	
 
 	};
 

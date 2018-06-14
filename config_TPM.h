@@ -1,19 +1,16 @@
 #ifndef _CONFIG_TPM_h
 #define _CONFIG_TPM_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+
 
 // This is the Config file for the TinyPixxelMapper
 // It should only hold #defines for compile time replacment
 
 
-#define ARTNET_DISABLED 
+//#define ARTNET_DISABLED 
 //#define OSC_MC_SERVER_DISABLED
-#define DISABLED_COMS   // disable the command msg not needed for ESP32 since the mic is local TODO remove comms
+
 
 #define DEF_BOOT_DEBUGING  true  // Set to true to get DEbuging info on serial port during boot. else set to false  TODO put this in epprom
 #define DEF_SERIAL_SPEED 115200   // teensy - ESP8266 working on 57600
@@ -21,6 +18,7 @@
 
 
 // DEFAULT settings if not loaded from the SPIFFS
+	#define DEF_WIFI_POWER true
 	#define DEF_DEBUG_OUT true				// serial debugging
 	#define DEF_WIFI_MODE false				// false = client
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
@@ -65,10 +63,12 @@
 // FastLed Defines
 		//#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
 
-		#define DEF_LED_TYPE 1// 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
-		#define LED_DATA_PIN    18 //12	
-		#define LED_CLK_PIN     5 //19  //18 //13	// used with APA102
+		#define DEF_LED_TYPE    0	// 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
+		#define LED_DATA_PIN    18 							// DATA 1 PIN	
+		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
+		#define LED_DATA_3_PIN  19							// DATA 3 pin not used at the moment 
+		#define LED_DATA_4_PIN  17							// DATA 4 PIN not used at the moment 
 
 		//#define FASTLED_ALLOW_INTERRUPTS 0
 		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds

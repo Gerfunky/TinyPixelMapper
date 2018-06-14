@@ -254,7 +254,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		// configure the Artnet vaiables 
 		// from disk or load the defaults.
 
-		if (FS_artnet_read(0) == false)
+		if (!FS_artnet_read(0))
 		{
 			write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
 			artnet_cfg.startU = DEF_ARTNET_STAT_UNIVERSE;
@@ -547,6 +547,7 @@ if (digitalRead(BTN_PIN) == false )
 				LEDS_setall_color(1);
 				LEDS_show();
 				delay(1000);
+				write_bool(WIFI_POWER,true);
 
 	}
 	else {	
@@ -862,24 +863,27 @@ void wifi_setup()
 	
 
 	WiFi_Start_Network();
-	WiFi_OTA_setup();
-	WiFi_NTP_setup();   //ESP32 NOK
-	TelnetDebug.begin(wifi_cfg.APname);
 
-	debugMe("Hello World");
+	if (get_bool(WIFI_POWER))
+	{
+		WiFi_OTA_setup();
+		WiFi_NTP_setup();   //ESP32 NOK
+		TelnetDebug.begin(wifi_cfg.APname);
+
+		debugMe("Hello World");
 
 
-	#ifndef ARTNET_DISABLED
+		#ifndef ARTNET_DISABLED
+			
+			WiFi_artnet_setup();
+		#endif
+
+		OSC_setup();
 		
-		WiFi_artnet_setup();
-	#endif
+		httpd_setup();
 
-	OSC_setup();
-	
-	httpd_setup();
-
-	WiFi_FFT_Setup();
-	
+		WiFi_FFT_Setup();
+	}
 }
 
 
@@ -887,17 +891,18 @@ void wifi_setup()
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
 {
-	ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
-	//yield();
-	//NTP_parse_response();	// get new packets and flush if not correct.
-	yield();
-	OSC_loop();
-	yield();
-	http_loop();
-	yield();
-	WiFi_FFT_handle_loop();
-	yield();
-	TelnetDebug.handle();
+
+		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
+		//yield();
+		//NTP_parse_response();	// get new packets and flush if not correct.
+		yield();
+		OSC_loop();
+		yield();
+		http_loop();
+		yield();
+		WiFi_FFT_handle_loop();
+		yield();
+		TelnetDebug.handle();
 
 }
 
