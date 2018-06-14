@@ -75,7 +75,7 @@ void WiFi_OTA_setup()
 	// Hostname defaults to esp8266-[ChipID]
 	ArduinoOTA.setHostname(wifi_cfg.APname);
 
-	// authentication by default Password = love
+	// authentication by default Password = 
 	//ArduinoOTA.setPassword((const char *) "love" );
 
 	if (get_bool(DEBUG_OUT) == true) 
@@ -121,7 +121,7 @@ void WiFi_NTP_setup()
 	const int   daylightOffset_sec = 3600;
 
 
-	//if (WiFi.hostByName(wifi_cfg.ntp_fqdn, wifi_cfg.ipNTP) == true)
+
 	{
 		//debugMe("NTP DNS name resolution OK, Getting NTP Time");
 		configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
@@ -136,7 +136,7 @@ void WiFi_NTP_setup()
 
 void WiFi_telnet_print(String input, boolean line)
 {
-	///*
+	
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -144,7 +144,7 @@ void WiFi_telnet_print(String input, boolean line)
 		else
 			TelnetDebug.print(input);
 
-	}// */
+	}
 
 
 
@@ -166,7 +166,7 @@ void WiFi_telnet_print(tm input, boolean line)
 }
 void WiFi_telnet_print(float input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -174,14 +174,14 @@ void WiFi_telnet_print(float input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(uint8_t input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -189,14 +189,14 @@ void WiFi_telnet_print(uint8_t input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(int input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -204,14 +204,14 @@ void WiFi_telnet_print(int input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(IPAddress input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -219,7 +219,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		else
 			TelnetDebug.print(input);
 
-	}// */
+	}
 
 
 
@@ -234,7 +234,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 	void WiFi_artnet_loop()
 	{
 		// the main artnet loop  calback set to leds function with show
-		if (get_bool(ARTNET_ENABLE)== true) artnet.read();
+		artnet.read();
 
 	}
 
@@ -262,7 +262,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		//byte artnet_mac[] = DEF_ARTNET_MAC ;
 		artnet.begin();
 		//artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
-		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with schow
+		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with show
 
 	}
 

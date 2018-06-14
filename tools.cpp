@@ -161,16 +161,7 @@ float byte_tofloat(uint8_t value, uint8_t max_value)
 
 void debugMe(String input, boolean line)
 {
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
 
-	}// */
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 
 
@@ -189,16 +180,6 @@ void debugMe(String input, boolean line)
 void debugMe(tm input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
-
-	}// */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -211,17 +192,6 @@ void debugMe(tm input, boolean line)
 void debugMe(float input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
-
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -234,16 +204,6 @@ void debugMe(float input, boolean line)
 void debugMe(uint8_t input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -257,16 +217,6 @@ void debugMe(uint8_t input, boolean line)
 void debugMe(int input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -280,17 +230,6 @@ void debugMe(int input, boolean line)
 void debugMe(IPAddress input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
-
-	}
-	// */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)

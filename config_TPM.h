@@ -71,7 +71,7 @@
 
 		#define DEF_LED_TYPE    0	// 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
 															// Changed to multioutput Data1 + clock = APA102 , data3 = WS2812, data4 = SK6822
-															// led type must be set before compiling so its not possible to load from SPIFFS.
+															
 
 		#define LED_DATA_PIN    18 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
@@ -79,8 +79,7 @@
 		#define LED_DATA_3_PIN  19							// DATA 3 PIN = WS2812 
 		#define LED_DATA_4_PIN  17							// DATA 4 PIN = SK6822 
 
-		#define NUM_LEDS		170 
-
+		#define NUM_LEDS		170 		
 
 		#define DEF_MAX_BRI 255		// the default max bri
 		#define DEF_BRI 100			// the deault Bri
