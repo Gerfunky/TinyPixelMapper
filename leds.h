@@ -8,9 +8,29 @@
 #endif
 
 
-// Structures
-#define POT_SENSE_DEF 4
 
+// defines , DO NOT CHANGE!!!!
+
+		#define MAX_NUM_LEDS   680  			// what is the max it can be set to in the config   
+		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
+
+
+		#define MAX_FADE_VALUE 90			// maximum for FADE effect on each frame in  amount 0-255 
+		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
+		#define MAX_GLITTER_VALUE 255		// max glitter value
+
+		#define MAX_PAL_FPS 88				// maximum FPS 
+
+		#define BMP_MAX_TIME 3000				
+
+		#define MAX_INDEX_LONG 4096			// must stay under this number!
+
+		// Strip/Form settings do not change!!! 
+		#define NR_FORM_PARTS	16				// how many forms? default 16
+		#define NR_STRIPS		32				// how many strips  default 32
+		#define NR_PALETTS 		2				// how many pallets do we have = 2
+
+// Structures
 	struct led_controls_struct
 	{
 		uint8_t PotBriLast;
@@ -25,23 +45,24 @@
 
 	struct led_cfg_struct					// LED config structure
 	{										// 
-		uint8_t max_bri;					// max Bri
-		uint8_t bri;						// actual BRI
-		uint8_t startup_bri;					// the startup brightness
-		uint8_t r;							// max Red
-		uint8_t g;							// max green
-		uint8_t b;							// max blue
-		uint8_t hue;						// HSV hue used for effects, every frame increments by one automatically
-		unsigned long update_time;			// when to update the leds again
-		uint8_t pal_fps;					// pallete FPS ... FFT FPS overrides this if FFT is enabled
-		uint8_t pal_bri;					// Pallete bri so that we can dimm it down to the FFT 
-		uint8_t bpm;						// BPM , used to time the pallete to a bpm
-		unsigned long bpm_lastT;			// timing for BMP
-		unsigned long bpm_diff;				// 
-		uint8_t ledType;					// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
-		int NrLeds;							// how many leds total  not fully implemented TODO!!!
+		uint8_t 		max_bri;			// max Bri
+		uint8_t 		bri;				// actual BRI
+		uint8_t 		startup_bri;		// the startup brightness
+		uint8_t 		r;					// max Red
+		uint8_t 		g;					// max green
+		uint8_t 		b;					// max blue
+		uint8_t 		hue;				// HSV hue used for effects, every frame increments by one automatically
+		unsigned long 	update_time;		// when to update the leds again
+		uint8_t 		pal_fps;			// pallete FPS ... FFT FPS overrides this if FFT is enabled
+		uint8_t 		pal_bri;			// Pallete bri so that we can dimm it down to the FFT 
+		uint8_t 		bpm;				// BPM , used to time the pallete to a bpm
+		unsigned long 	bpm_lastT;			// timing for BMP
+		unsigned long 	bpm_diff;			// 
+		uint8_t 		ledType;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
+		uint16_t 		NrLeds;				// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+	
 
 	};
 

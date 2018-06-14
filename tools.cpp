@@ -45,6 +45,17 @@ boolean get_bool(uint8_t bit_nr)
 	return return_bool;
 }
 
+boolean get_bool(uint8_t inByte, uint8_t bit_nr)
+{
+
+	boolean return_bool = 0;
+
+	return_bool = bitRead(inByte, bit_nr);
+
+	return return_bool;
+}
+
+
 
 
 void write_bool(uint8_t bit_nr, boolean value)
@@ -69,24 +80,26 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
-	if (FS_Bools_read(0) == false)
-	//if (false == false)
+	if (!FS_Bools_read(0))
 	{
-		debugMe("Loading default BOOLS");
-		led_cfg.ledType = DEF_LED_TYPE;
-		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
-		write_bool(OTA_SERVER, DEF_OTA_SERVER);
-		write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
-		write_bool(HTTP_ENABLED, DEF_HTTP_ENABLED);
-		write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
-		write_bool(FFT_AUTO, DEF_AUTO_FFT);
-		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
-		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
-		write_bool(WIFI_MODE, DEF_WIFI_MODE);
-	}
-	else debugMe("Bools Loaded from SPIFFS!!!");
+		debugMe("Loading default device config");
+		led_cfg.ledType = constrain(DEF_LED_TYPE, 0, 2);
+		led_cfg.max_bri = constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.startup_bri = constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.NrLeds = constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
 
-	debugMe("http Server load = " + String(get_bool(HTTP_ENABLED)));
+		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
+		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
+		write_bool(FFT_ENABLE, DEF_FFT_ENABLE);
+		write_bool(FFT_MASTER, DEF_FFT_MASTER);
+		write_bool(FFT_AUTO, DEF_AUTO_FFT);	
+		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
+
+		if (WRITE_CONF_AT_INIT) FS_Bools_write(0);
+	}
+	else debugMe("Bools Loaded from SPIFFS!");
+
+	//debugMe("http Server load = " + String(get_bool(HTTP_ENABLED)));
 	
 }
 
@@ -148,16 +161,7 @@ float byte_tofloat(uint8_t value, uint8_t max_value)
 
 void debugMe(String input, boolean line)
 {
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
 
-	}// */
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 
 
@@ -176,16 +180,6 @@ void debugMe(String input, boolean line)
 void debugMe(tm input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
-
-	}// */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -198,17 +192,6 @@ void debugMe(tm input, boolean line)
 void debugMe(float input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
-
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -221,16 +204,6 @@ void debugMe(float input, boolean line)
 void debugMe(uint8_t input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -244,16 +217,6 @@ void debugMe(uint8_t input, boolean line)
 void debugMe(int input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(String(input));
-	else
-	TelnetDebug.print(String(input));
-
-	} // */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)
@@ -267,17 +230,6 @@ void debugMe(int input, boolean line)
 void debugMe(IPAddress input, boolean line)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	//debugMe(input);
-	/*
-	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
-	{
-	if (line == true)
-	TelnetDebug.println(input);
-	else
-	TelnetDebug.print(input);
-
-	}
-	// */
 	if (get_bool(DEBUG_OUT))
 	{
 		if (line == true)

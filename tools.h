@@ -11,7 +11,7 @@
 
 
 
-#define NR_GLOBAL_OPTIONS_BYTES 2     // to hold the bools in bits not bytes! Enum below must fit in here!!!
+#define NR_GLOBAL_OPTIONS_BYTES 3     // to hold the bools in bits not bytes! Enum below must fit in here!!!
 
 enum GLOBAL_OPTIONS_ENUM
 {
@@ -31,6 +31,8 @@ enum GLOBAL_OPTIONS_ENUM
 	,FFT_AUTO			= 13	// Auto FFT mode ?
 	,DEBUG_TELNET		= 14	// Debug to telnet ?
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
+	,WIFI_POWER 		= 16    // enable WIFI power.
+	
 
 };
 

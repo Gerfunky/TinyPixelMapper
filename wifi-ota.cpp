@@ -1,19 +1,7 @@
 
 #include "config_TPM.h"
 
-#ifdef _MSC_VER   
-		#include <WiFi\src\WiFi.h>
 
-		#include <ArduinoOTA\src\ArduinoOTA.h>
-		#include <WiFi\src\WiFiUdp.h>
-		#include <RemoteDebug\RemoteDebug.h>
-		#include <time.h>
-
-	#ifndef ARTNET_DISABLED 
-		#include <Artnet\Artnet.h>
-	#endif
-	
-#else 
 	#include <WiFi.h>	
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
@@ -25,7 +13,7 @@
 		#include <Artnet.h>
 	#endif
 	
-#endif
+
 
 
 
@@ -87,7 +75,7 @@ void WiFi_OTA_setup()
 	// Hostname defaults to esp8266-[ChipID]
 	ArduinoOTA.setHostname(wifi_cfg.APname);
 
-	// authentication by default Password = love
+	// authentication by default Password = 
 	//ArduinoOTA.setPassword((const char *) "love" );
 
 	if (get_bool(DEBUG_OUT) == true) 
@@ -133,7 +121,7 @@ void WiFi_NTP_setup()
 	const int   daylightOffset_sec = 3600;
 
 
-	//if (WiFi.hostByName(wifi_cfg.ntp_fqdn, wifi_cfg.ipNTP) == true)
+
 	{
 		//debugMe("NTP DNS name resolution OK, Getting NTP Time");
 		configTime(gmtOffset_sec, daylightOffset_sec, wifi_cfg.ntp_fqdn);
@@ -148,7 +136,7 @@ void WiFi_NTP_setup()
 
 void WiFi_telnet_print(String input, boolean line)
 {
-	///*
+	
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -156,7 +144,7 @@ void WiFi_telnet_print(String input, boolean line)
 		else
 			TelnetDebug.print(input);
 
-	}// */
+	}
 
 
 
@@ -178,7 +166,7 @@ void WiFi_telnet_print(tm input, boolean line)
 }
 void WiFi_telnet_print(float input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -186,14 +174,14 @@ void WiFi_telnet_print(float input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(uint8_t input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -201,14 +189,14 @@ void WiFi_telnet_print(uint8_t input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(int input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -216,14 +204,14 @@ void WiFi_telnet_print(int input, boolean line)
 		else
 			TelnetDebug.print(String(input));
 
-	}// */
+	}
 
 
 
 }
 void WiFi_telnet_print(IPAddress input, boolean line)
 {
-	///*
+
 	if ((TelnetDebug.isActive(TelnetDebug.VERBOSE)) && get_bool(DEBUG_TELNET))
 	{
 		if (line == true)
@@ -231,7 +219,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		else
 			TelnetDebug.print(input);
 
-	}// */
+	}
 
 
 
@@ -246,7 +234,8 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 	void WiFi_artnet_loop()
 	{
 		// the main artnet loop  calback set to leds function with show
-		if (get_bool(ARTNET_ENABLE)== true) artnet.read();
+		artnet.read();
+
 	}
 
 	void WiFi_artnet_Load_Vars()
@@ -254,7 +243,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		// configure the Artnet vaiables 
 		// from disk or load the defaults.
 
-		if (FS_artnet_read(0) == false)
+		if (!FS_artnet_read(0))
 		{
 			write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
 			artnet_cfg.startU = DEF_ARTNET_STAT_UNIVERSE;
@@ -273,20 +262,20 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 		//byte artnet_mac[] = DEF_ARTNET_MAC ;
 		artnet.begin();
 		//artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
-		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with schow
+		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with show
 
 	}
 
-	
 
-	void WiFi_artnet_setup()
+	/*void WiFi_artnet_setup()
 	{
 
 		//the Artnet setup 
 		if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable();
 
 
-	}
+	}  */
+
 #endif
 
 // basic WiFi
@@ -296,40 +285,49 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 {
 	// load the wifi vaiables
 
-	// Clean out the Wifi cha arrays
+	// Clean out the Wifi char arrays
 	memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));
+	memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
 	memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
 	memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
 	memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
 
-	//if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
-	if (false == false)		// Get the config of disk,  on fail load defaults.
+
+	
+	if (!FS_wifi_read(0))		// Get the config of disk,  on fail load defaults.
+	//if (false == false)		// Get the config of disk,  on fail load defaults.
 	{
 		debugMe("Loading WifiSetup Defaults");
 		//load the defaults
-		String def_APname = DEF_AP_NAME;
-		String def_ssid = DEF_SSID;
-		String def_pwd = DEF_WIFI_PWD;
-		String def_ntp_fqdn = DEF_NTP_SERVER;
+		String def_APname 		= DEF_AP_NAME;
+		String def_APpassword 	= DEF_AP_PASSWD;
+		String def_ssid 		= DEF_SSID;
+		String def_pwd 			= DEF_WIFI_PWD;
+		String def_ntp_fqdn 	= DEF_NTP_SERVER;
 
 		def_APname.toCharArray(wifi_cfg.APname, def_APname.length() + 1);
+		def_APpassword.toCharArray(wifi_cfg.APpassword,def_APpassword.length() +1);
 		def_ssid.toCharArray(wifi_cfg.ssid, def_ssid.length() + 1);
 		def_pwd.toCharArray(wifi_cfg.pwd, def_pwd.length() + 1);
 		def_ntp_fqdn.toCharArray(wifi_cfg.ntp_fqdn, def_ntp_fqdn.length() + 1);
 
+		write_bool(WIFI_POWER, DEF_WIFI_POWER);
+		write_bool(OTA_SERVER, DEF_OTA_SERVER);
+		write_bool(HTTP_ENABLED, DEF_HTTP_ENABLED);
 		write_bool(WIFI_MODE, DEF_WIFI_MODE);
 		write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
+
 		wifi_cfg.ipStaticLocal = DEF_IP_LOCAL;
 		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
 		wifi_cfg.ipDGW = DEF_IP_DGW;
 		wifi_cfg.ipDNS = DEF_DNS;
 
-
+		if (WRITE_CONF_AT_INIT) FS_wifi_write(0);
 	}
 
 
 		// Set the Static IP if static ip is selected.
-		if (get_bool(STATIC_IP_ENABLED) == true)
+		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE) == 0)   // if were static and a wifi client, configure the wifi connection
 			if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS))
 				debugMe("WiFi: Client config Static IP FAILED ");
 	
@@ -547,6 +545,7 @@ if (digitalRead(BTN_PIN) == false )
 				LEDS_setall_color(1);
 				LEDS_show();
 				delay(1000);
+				write_bool(WIFI_POWER,true);
 
 	}
 	else {	
@@ -557,7 +556,7 @@ if (digitalRead(BTN_PIN) == false )
 		if (get_bool(WIFI_MODE) == false)
 		{
 			
-			uint8_t con_try = 1;
+			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
 
 			if (get_bool(DEBUG_OUT) == true)
 			{
@@ -623,7 +622,7 @@ if (digitalRead(BTN_PIN) == false )
 			}
 
 		}
-		/*	
+		// /*	
 		else  // wifimode AP
 			{
 
@@ -631,7 +630,7 @@ if (digitalRead(BTN_PIN) == false )
 				//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
 
 				WiFi.mode(WIFI_AP);
-				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+				WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
 
 				delay(50);
 				debugMe("Start AP mode");
@@ -862,24 +861,28 @@ void wifi_setup()
 	
 
 	WiFi_Start_Network();
-	WiFi_OTA_setup();
-	WiFi_NTP_setup();   //ESP32 NOK
-	TelnetDebug.begin(wifi_cfg.APname);
 
-	debugMe("Hello World");
+	if (get_bool(WIFI_POWER))
+	{
+		WiFi_OTA_setup();
+		WiFi_NTP_setup();   //ESP32 NOK
+		TelnetDebug.begin(wifi_cfg.APname);
+
+		debugMe("Hello World");
 
 
-	#ifndef ARTNET_DISABLED
+		#ifndef ARTNET_DISABLED
+			
+			if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable(); //WiFi_artnet_setup();
+
+		#endif
+
+		OSC_setup();
 		
-		WiFi_artnet_setup();
-	#endif
+		httpd_setup();
 
-	OSC_setup();
-	
-	httpd_setup();
-
-	WiFi_FFT_Setup();
-	
+		WiFi_FFT_Setup();
+	}
 }
 
 
@@ -887,17 +890,18 @@ void wifi_setup()
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
 {
-	ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
-	//yield();
-	//NTP_parse_response();	// get new packets and flush if not correct.
-	yield();
-	OSC_loop();
-	yield();
-	http_loop();
-	yield();
-	WiFi_FFT_handle_loop();
-	yield();
-	TelnetDebug.handle();
+
+		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
+		//yield();
+		//NTP_parse_response();	// get new packets and flush if not correct.
+		yield();
+		OSC_loop();
+		yield();
+		http_loop();
+		yield();
+		WiFi_FFT_handle_loop();
+		yield();
+		TelnetDebug.handle();
 
 }
 

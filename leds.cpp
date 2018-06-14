@@ -19,18 +19,14 @@
 #include "config_fs.h"
 #include "msgeq7_fft.h"
 
-#ifdef _MSC_VER
-	#include <FastLED\FastLED.h>
-	#include <RunningAverage\RunningAverage.h>
-	//#include <QueueArray\QueueArray.h>
-#else
+
 	#include <FastLED.h>
 	#include <RunningAverage.h>			// For Auto FFT
-	// <QueueArray.h>				// For buffering incoming FFT packets
-#endif
 
 
 
+	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
+	
 
 // *************** External Functions
 // from wifi-ota.cpp
@@ -91,9 +87,9 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 
 // ********************* LED Setup  FastLed
-	CRGBArray<NUM_LEDS> leds;			// The Led array!
+	CRGBArray<MAX_NUM_LEDS> leds;			// The Led array!    CRGBArray<NUM_LEDS> leds;
 	//CRGB leds[NUM_LEDS];
-	//CRGBSet leds_p(leds, NUM_LEDS);
+	//CRGBSet leds_p(leds, NUM_LEDS); led_cfg.NrLeds
 
 
 
@@ -130,7 +126,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 , 0,50,50 };			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_TYPE, NUM_LEDS ,50,50 };			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
 	{ 0,  0,  0,  1,  0 , 1 ,  0}  //0
@@ -208,7 +204,10 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 
 void LEDS_show()
 {	
-	FastLED.show();
+				//FastLED.show();
+			FastLED[0].showLeds(led_cfg.bri);
+			FastLED[1].showLeds(led_cfg.bri);
+			FastLED[2].showLeds(led_cfg.bri);
 }
 
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
@@ -216,7 +215,10 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 	leds[ledNr].r = color[0];
 	leds[ledNr].g = color[1];
 	leds[ledNr].b = color[2];
-	FastLED.show();
+	//FastLED.show();
+	FastLED[0].showLeds(led_cfg.bri);
+	FastLED[1].showLeds(led_cfg.bri);
+	FastLED[2].showLeds(led_cfg.bri);
 }
 
 
@@ -264,7 +266,7 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 #define SPARKING 120
 // Array of temperature readings at each simulation cell
 //static 
-	byte heat[NUM_LEDS];
+	byte heat[MAX_NUM_LEDS];
 
 
 	uint8_t LEDS_FFT_get_fire_cooling()
@@ -280,6 +282,8 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 
 void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror) //, bool mirrored)
 {
+
+	
 	uint8_t cooling = led_cfg.fire_cooling;
 	uint8_t sparking = led_cfg.fire_sparking;
 
@@ -434,8 +438,8 @@ void  LEDS_setall_color(uint8_t color = 0) {
 	//
 	switch(color) {
 
-		case 0: fill_solid(&(leds[0]), NUM_LEDS, CRGB(180, 180, 180));
-		case 1: fill_solid(&(leds[0]), NUM_LEDS, CRGB(0, 255, 0));
+		case 0: fill_solid(&(leds[0]), led_cfg.NrLeds, CRGB(180, 180, 180));
+		case 1: fill_solid(&(leds[0]), led_cfg.NrLeds, CRGB(0, 255, 0));
 
 	}
 
@@ -463,7 +467,7 @@ float LEDS_get_FPS()
 void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED)
 {
 	// copy a strip to somewhere else 
-	if (nr_LED != 0 && (nr_LED + start_LED <= NUM_LEDS))
+	if (nr_LED != 0 && (nr_LED + start_LED <= led_cfg.NrLeds))
 	{
 		if (nr_LED < 0)	leds((start_LED - nr_LED - 1), (start_LED)) = leds((ref_LED), (ref_LED - nr_LED - 1));
 		else			leds((start_LED), (start_LED + nr_LED - 1)) = leds((ref_LED), (ref_LED + nr_LED - 1));
@@ -553,7 +557,7 @@ void LED_G_bit_run()
 
 void LEDS_G_E_addGlitter(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *nr_leds)
 {	// Glitter effect origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= NUM_LEDS))
+	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
 	{
 		// leds(*start_led,*start_led+*nr_leds).fadeToBlackBy(chanceOfGlitter/2);
 		//leds(*start_led,*start_led+*nr_leds) =(CRGB::Black);
@@ -569,7 +573,7 @@ void LEDS_G_E_addGlitter(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *
 
 void LEDS_G_E_addGlitterRainbow(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *nr_leds)
 {	// Glitter effect origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= NUM_LEDS))
+	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
 	{
 		//leds(start_led,start_led+nr_leds).fadeToBlackBy(chanceOfGlitter);
 		//leds(start_led,start_led+nr_leds) =(CRGB::Black);
@@ -586,7 +590,7 @@ void LEDS_G_E_addGlitterRainbow(fract8 chanceOfGlitter, uint16_t *start_led, uin
 void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)		// sine dots speed = BPM
 {	// Make a dot  run  a sine wave over the leds normal speed = bpm additional leds = bpm +1
 	// origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= NUM_LEDS))
+	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
 	{
 		byte dothue = 0;
 		for (int i = 0; i < nr_dots; i++)
@@ -601,7 +605,7 @@ void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, ui
 
 void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
 {	// Make a dot  run  a SAW wave over the leds normal speed = bpm additional leds = bpm +1
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= NUM_LEDS))
+	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
 	{
 		byte dothue = 0;
 		for (int i = 0; i < nr_dots; i++)
@@ -620,7 +624,7 @@ void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, u
 void LEDS_G_E_Form_Fade_it(uint8_t fadyBy, uint16_t *Start_led, uint16_t *nr_leds)				// fade effect for form
 {	// Fade effect 
 
-	if (*nr_leds != 0 && (*nr_leds + *Start_led <= NUM_LEDS))
+	if (*nr_leds != 0 && (*nr_leds + *Start_led <= led_cfg.NrLeds))
 	{
 		leds(*Start_led, *Start_led + *nr_leds - 1).fadeToBlackBy(fadyBy);
 	}
@@ -683,7 +687,7 @@ void LEDS_G_pre_show_processing()
 		led_cnt.PotBriLast = bri;
 	}
 
-	FastLED.setBrightness(led_cfg.bri);
+	//FastLED.setBrightness(led_cfg.bri);  moved to show
 	
 	//debugMe(led_cfg.bri);
 	
@@ -872,7 +876,7 @@ void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_
 	byte mirror_div = 1;
 	byte mirror_add = 0;
 
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= NUM_LEDS))
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= led_cfg.NrLeds))
 	{
 
 		if (get_bool(BLEND_INVERT) == true)
@@ -952,7 +956,7 @@ void LEDS_pal_fill(boolean targetPaletteX, boolean currentBlending, uint8_t colo
 	byte mirror_div = 1;
 	byte mirror_add = 0;
 
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= NUM_LEDS))
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= led_cfg.NrLeds))
 	{
 
 		if (get_bool(BLEND_INVERT) == true)
@@ -1135,7 +1139,7 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 		{
 			int led = i + (internal_universe * 170);
 
-			if (led < NUM_LEDS) {
+			if (led < led_cfg.NrLeds) {
 				// Do something
 				//DBG_OUTPUT_PORT.print("fetch DMX frame led : ");
 				//DBG_OUTPUT_PORT.println(led);
@@ -1375,7 +1379,7 @@ void LEDS_FFT_fill_leds(CRGB color_result, uint16_t *Start_led, uint16_t *number
 
 void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *number_of_leds, boolean dir, uint8_t jd_speed, uint8_t nr_dots)
 {
-	if (0 != *number_of_leds && (*number_of_leds + *Start_led <= NUM_LEDS) )
+	if (0 != *number_of_leds && (*number_of_leds + *Start_led <= led_cfg.NrLeds) )
 	{
 		
 		for (int i = 0; i < nr_dots; i++)
@@ -1425,12 +1429,21 @@ void LEDS_setup()
 	 debugMe("in LED Setup");
 	 LEDS_MSGEQ7_setup();
 	 
+	FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	 debugMe("APA102 leds added on  DATA1+CLK");
+	FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	debugMe("WS2812 leds added on DATA3");
+	FastLED.addLeds<SK6822, LED_DATA_4_PIN>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
+	debugMe("SK6822 leds added on DATA4");
 
 
+
+/*
 	switch(led_cfg.ledType)
 	{
 		case 0:
-			FastLED.addLeds<APA102, LED_DATA_PIN, LED_CLK_PIN, BGR>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
+			FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
+			//FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
 			 debugMe("APA102 leds added");
 		break;
 		
@@ -1449,7 +1462,7 @@ void LEDS_setup()
 
 	}
 
-	
+*/	
 	for (int i = 0; i < NR_PALETTS; i++) 
 	{
 #ifdef BLEND_PATTERN
@@ -1479,6 +1492,9 @@ void LEDS_setup()
 		//led_cfg.max_bri = 255;
 
 
+	led_cnt.PotBriLast = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	led_cnt.PotFPSLast = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+
 	debugMe("end LEDS setup");
 }
 
@@ -1489,7 +1505,7 @@ void LEDS_loop()
 	unsigned long currentT = micros();
 
 	#ifndef ARTNET_DISABLED
-		WiFi_artnet_loop();  //  fetshing data 
+		if (get_bool(ARTNET_ENABLE)) WiFi_artnet_loop();  //  fetshing data 
 	#endif
 
 
@@ -1500,10 +1516,6 @@ void LEDS_loop()
 			
 			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
 			yield();
-
-				
-			 
-
 		
 		{
 			//debugMe("IN LED LOOP - disabled fft");
@@ -1537,7 +1549,7 @@ void LEDS_loop()
 			LEDS_G_pre_show_processing();
 			yield();
 			//debugMe("pre leds SHOW");
-			FastLED.show();
+			LEDS_show();
 			yield();
 		//	write_bool(UPDATE_LEDS, false);
 		//}
