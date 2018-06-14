@@ -323,13 +323,21 @@ void	FS_wifi_write(uint8_t conf_nr)
 	else  // it opens
 	{
 		conf_file.println("Main Wifi Config for ESP.");
-		conf_file.println("W = Wifi: 0= Client 1 = Access point : name and APname : SSID : Password: 0= DHCP 1= static IP : ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN, WIFI_POWER 0= 0ff 1 = On ");
-		conf_file.print(String("[W:" + String(get_bool(WIFI_MODE))));		// Wifi
-		conf_file.print(String(":" + String(wifi_cfg.APname)));
+		conf_file.println("b = Wifi-booleans: Wifi Power 0=0ff, 1=on: Mode 0= Client 1 = Access point : 0= DHCP 1= static IP: OTA Update 1=on : HTTP Server 1=on: ");
+		conf_file.print(String("[b:" 	+ String(get_bool(WIFI_POWER))));
+		conf_file.print(String(":" 		+ String(get_bool(WIFI_MODE))));		// Wifi
+		conf_file.print(String(":"	 	+ String(get_bool(STATIC_IP_ENABLED))));
+		conf_file.print(String(":" 		+ String(get_bool(OTA_SERVER))));
+		conf_file.print(String(":" 		+ String(get_bool(HTTP_ENABLED))));
+
+		conf_file.println("] ");
+
+
+		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN");
+		conf_file.print(String("[w:" + String(wifi_cfg.APname)));
+		conf_file.print(String(":" + String(wifi_cfg.APpassword)));
 		conf_file.print(String(":" + String(wifi_cfg.ssid)));
 		conf_file.print(String(":" + String(wifi_cfg.pwd)));
-
-		conf_file.print(String(":" + String(get_bool(STATIC_IP_ENABLED))));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[0])));
 		conf_file.print(String("." + String(wifi_cfg.ipStaticLocal[1])));
@@ -353,7 +361,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 
 		conf_file.print(String(":" + String(wifi_cfg.ntp_fqdn)));
 
-		conf_file.print(String(":" + String(get_bool(WIFI_POWER))));
+		
 
 		
 
@@ -385,6 +393,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		//debugMe("File-opened");
 
 		memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));  // reset them to 0
+		memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
 		memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
 		memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
 		memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
@@ -400,16 +409,26 @@ boolean FS_wifi_read(uint8_t conf_nr)
 			type = conf_file.read();
 			character = conf_file.read(); // go past the first ":" after the type
 
-			if (type == 'W')
+			if (type == 'b')   // wifi booleans
+
 			{
-				debugMe("wifimode");
-				debugMe(get_bool(WIFI_MODE));
+				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));
 				write_bool(WIFI_MODE, get_bool_conf_value(conf_file, &character));
-				debugMe(get_bool(WIFI_MODE));
-				//wifiMode = get_bool_conf_value(conf_file, &character);
-				//if (wifiMode == 1) wifiMode ='1';
+				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));
+				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
+				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
+
+				
+			}
+
+			else if (type == 'w')   // Changed to 'w' from W' beacuse of new bools settings
+			{
+	
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.APname, settingValue.length() + 1);
+
+				settingValue = get_string_conf_value(conf_file, &character);
+				settingValue.toCharArray(wifi_cfg.APpassword, settingValue.length() + 1);
 
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.ssid, settingValue.length() + 1);
@@ -417,7 +436,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.pwd, settingValue.length() + 1);
 
-				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));
+				
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipStaticLocal[i] = get_IP_conf_value(conf_file, &character);
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipSubnet[i] = get_IP_conf_value(conf_file, &character);
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDGW[i] = get_IP_conf_value(conf_file, &character);
@@ -426,12 +445,11 @@ boolean FS_wifi_read(uint8_t conf_nr)
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.ntp_fqdn, settingValue.length() + 1);
 				
-				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));
 				
-				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End				
+				
+								
 			}
-			//if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
-			while ((conf_file.available())) character = conf_file.read();   // goto End
+			while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End
 
 		}
 		
@@ -506,9 +524,10 @@ boolean FS_artnet_read(uint8_t conf_nr)
 				artnet_cfg.startU =			get_int_conf_value(conf_file, &character);
 				artnet_cfg.numU =			get_int_conf_value(conf_file, &character);
 
-				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End				
+							
 			}
-			while ((conf_file.available())) character = conf_file.read();   // goto End
+			while ((conf_file.available()) && (character != ']')) character = conf_file.read();
+		
 
 		}
 		conf_file.close();
@@ -635,10 +654,12 @@ void FS_play_conf_write(uint8_t conf_nr)
 			}
 
 			conf_file.println("] ");
-
-
-
 		}
+
+		conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
+		conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
+		conf_file.print(String(":"	 + String(get_bool(FFT_AUTO)))); 
+		conf_file.println("] ");
 
 
 		conf_file.close();
@@ -686,7 +707,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.g			= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.b			= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_bri		= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		if (in_int != 0) led_cfg.pal_fps     = uint8_t(constrain(in_int, 0, MAX_PAL_FPS));
+				in_int = get_int_conf_value(conf_file, &character);		if (in_int != 0) led_cfg.pal_fps     = uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
 				write_bool(BLEND_INVERT, get_bool_conf_value(conf_file, &character));
 				write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
 				in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.Scale = uint16_t(constrain(in_int, 0, 500));
@@ -792,6 +813,13 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 
 			}
 			
+			else if (type == 'T')			// FFT settings to load in play config
+			{
+					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));		
+			}
+
+
 
 			while ((conf_file.available()) && (character != ']')) 
 			{  // fo to end
@@ -844,17 +872,14 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.NrLeds)));
 		conf_file.println("] ");
 
-		conf_file.println(F("B = Device Bool Config 0=false 1= true : Debug : Arduino OTA : HTTP Server : FFT enabled : FFT Master : FFT Auto : Debug Telnet : FFT Master Send out UDP MC : WIFI_POWER 0=off "));
-		conf_file.print(String("[B:" + String(get_bool(DEBUG_OUT))));		
-		conf_file.print(String(":" + String(get_bool(OTA_SERVER))));
-		conf_file.print(String(":" + String(get_bool(HTTP_ENABLED))));
-		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));
-		conf_file.print(String(":" + String(get_bool(FFT_MASTER))));
-		
-		conf_file.print(String(":" + String(get_bool(FFT_AUTO))));
+		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug :: FFT enabled : FFT Master : FFT Auto : Debug Telnet : FFT Master Send out UDP MC : WIFI_POWER 0=off "));
+		conf_file.print(String("[b:" + String(get_bool(DEBUG_OUT))));	
 		conf_file.print(String(":" + String(get_bool(DEBUG_TELNET))));
+		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));
+		conf_file.print(String(":" + String(get_bool(FFT_MASTER))));	
+		conf_file.print(String(":" + String(get_bool(FFT_AUTO))));		
 		conf_file.print(String(":" + String(get_bool(FFT_MASTER_SEND))));
-		conf_file.print(String(":" + String(get_bool(WIFI_POWER))));
+
 		conf_file.println(F("] "));
 		
 		
@@ -911,18 +936,16 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds = uint8_t(constrain(in_int, 0,680));
 
 				}
-				else if (type == 'B')
+				else if (type == 'b')
 				{
 					// debugMe("in B");
 					write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
-					write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
-					write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
+					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
-					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
-					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
+					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));					
 					write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
-					write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));
+
 
 				}
 				else
@@ -946,8 +969,9 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 	}
 	else
+	{
 		debugMe("NO BOOLS File");
-
+	}
 
 	return false;
 }

@@ -281,6 +281,8 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 
 void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror) //, bool mirrored)
 {
+
+	
 	uint8_t cooling = led_cfg.fire_cooling;
 	uint8_t sparking = led_cfg.fire_sparking;
 

@@ -82,25 +82,20 @@ void load_bool()
 	//debugMe("PAST_BOOL_LOAD");
 	if (!FS_Bools_read(0))
 	{
-		debugMe("Loading default BOOLS");
+		debugMe("Loading default device config");
 		led_cfg.ledType = DEF_LED_TYPE;
 		led_cfg.max_bri = DEF_MAX_BRI;
 		led_cfg.startup_bri = DEF_MAX_BRI;
+		led_cfg.NrLeds = NUM_LEDS ;
 
 		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
-		write_bool(OTA_SERVER, DEF_OTA_SERVER);
-		write_bool(HTTP_ENABLED, DEF_HTTP_ENABLED);
+		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_ENABLE, DEF_FFT_ENABLE);
 		write_bool(FFT_MASTER, DEF_FFT_MASTER);
-		write_bool(FFT_AUTO, DEF_AUTO_FFT);
-		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
+		write_bool(FFT_AUTO, DEF_AUTO_FFT);	
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
-		write_bool(WIFI_POWER, DEF_WIFI_POWER);
 
-		//write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
-		//write_bool(WIFI_MODE, DEF_WIFI_MODE);
-		//write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
-
+		if (WRITE_CONF_AT_INIT) FS_Bools_write(0);
 	}
 	else debugMe("Bools Loaded from SPIFFS!");
 

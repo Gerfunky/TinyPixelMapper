@@ -247,6 +247,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 	{
 		// the main artnet loop  calback set to leds function with show
 		if (get_bool(ARTNET_ENABLE)== true) artnet.read();
+
 	}
 
 	void WiFi_artnet_Load_Vars()
@@ -277,16 +278,16 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 
 	}
 
-	
 
-	void WiFi_artnet_setup()
+	/*void WiFi_artnet_setup()
 	{
 
 		//the Artnet setup 
 		if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable();
 
 
-	}
+	}  */
+
 #endif
 
 // basic WiFi
@@ -296,40 +297,49 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 {
 	// load the wifi vaiables
 
-	// Clean out the Wifi cha arrays
+	// Clean out the Wifi char arrays
 	memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));
+	memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
 	memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
 	memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
 	memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
 
-	//if (FS_wifi_read(0) == false)		// Get the config of disk,  on fail load defaults.
-	if (false == false)		// Get the config of disk,  on fail load defaults.
+
+	
+	if (!FS_wifi_read(0))		// Get the config of disk,  on fail load defaults.
+	//if (false == false)		// Get the config of disk,  on fail load defaults.
 	{
 		debugMe("Loading WifiSetup Defaults");
 		//load the defaults
 		String def_APname = DEF_AP_NAME;
+		String def_APpassword = DEF_AP_PASSWD;
 		String def_ssid = DEF_SSID;
 		String def_pwd = DEF_WIFI_PWD;
 		String def_ntp_fqdn = DEF_NTP_SERVER;
 
 		def_APname.toCharArray(wifi_cfg.APname, def_APname.length() + 1);
+		def_APpassword.toCharArray(wifi_cfg.APpassword,def_APpassword.length() +1);
 		def_ssid.toCharArray(wifi_cfg.ssid, def_ssid.length() + 1);
 		def_pwd.toCharArray(wifi_cfg.pwd, def_pwd.length() + 1);
 		def_ntp_fqdn.toCharArray(wifi_cfg.ntp_fqdn, def_ntp_fqdn.length() + 1);
 
+		write_bool(WIFI_POWER, DEF_WIFI_POWER);
+		write_bool(OTA_SERVER, DEF_OTA_SERVER);
+		write_bool(HTTP_ENABLED, DEF_HTTP_ENABLED);
 		write_bool(WIFI_MODE, DEF_WIFI_MODE);
 		write_bool(STATIC_IP_ENABLED, DEF_STATIC_IP_ENABLED);
+
 		wifi_cfg.ipStaticLocal = DEF_IP_LOCAL;
 		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
 		wifi_cfg.ipDGW = DEF_IP_DGW;
 		wifi_cfg.ipDNS = DEF_DNS;
 
-
+		if (WRITE_CONF_AT_INIT) FS_wifi_write(0);
 	}
 
 
 		// Set the Static IP if static ip is selected.
-		if (get_bool(STATIC_IP_ENABLED) == true)
+		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE) == 0)   // if were static and a wifi client, configure the wifi connection
 			if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS))
 				debugMe("WiFi: Client config Static IP FAILED ");
 	
@@ -558,7 +568,7 @@ if (digitalRead(BTN_PIN) == false )
 		if (get_bool(WIFI_MODE) == false)
 		{
 			
-			uint8_t con_try = 1;
+			uint8_t con_try = 2;
 
 			if (get_bool(DEBUG_OUT) == true)
 			{
@@ -624,7 +634,7 @@ if (digitalRead(BTN_PIN) == false )
 			}
 
 		}
-		/*	
+		// /*	
 		else  // wifimode AP
 			{
 
@@ -632,7 +642,7 @@ if (digitalRead(BTN_PIN) == false )
 				//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
 
 				WiFi.mode(WIFI_AP);
-				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+				WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
 
 				delay(50);
 				debugMe("Start AP mode");
@@ -875,7 +885,8 @@ void wifi_setup()
 
 		#ifndef ARTNET_DISABLED
 			
-			WiFi_artnet_setup();
+			if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable(); //WiFi_artnet_setup();
+
 		#endif
 
 		OSC_setup();

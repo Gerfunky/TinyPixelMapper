@@ -20,21 +20,25 @@
 // DEFAULT settings if not loaded from the SPIFFS
 	#define DEF_WIFI_POWER true
 	#define DEF_DEBUG_OUT true				// serial debugging
-	#define DEF_WIFI_MODE false				// false = client
+
 	#define DEF_OTA_SERVER true				// enable the OTA server ?
-	#define DEF_STATIC_IP_ENABLED false		// set static ip for startup  ?
+
 	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
 	#define DEF_ARTNET_ENABLE false			// enable Artnet  ?
 	#define DEF_AUTO_FFT true				// enalbe auto FFT ?
 	#define DEF_DEBUG_TELNET true			// debug to TELNET?
 	#define DEF_FFT_MASTER_SEND false		//  if in master mode send out the UDP Multicast packets?
 
+	#define WRITE_CONF_AT_INIT false 		// write bools/wifi def conf to SPIFFS on load if not available.
+
 // Wifi
 	// DEFAULT setting if no config is loaded from the SPIFFS
 	#define DEF_AP_NAME			"TinyPixelMapperT"				// AP / Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
-	#define DEF_WIFI_PWD		"love4all"		// PW for wifi Client
-	#define DEF_AP_PASSWD		"love4all"					// PW for AP mode   !!! no OSC config yet STATIC !!!!
+	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
+	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
+	#define DEF_WIFI_MODE 		false							// false = client
+	#define DEF_STATIC_IP_ENABLED false							// set static ip for startup  ?
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
@@ -73,7 +77,7 @@
 		//#define FASTLED_ALLOW_INTERRUPTS 0
 		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
-		#define NUM_LEDS		340 //680 //321 //642 //490 //640 // 320
+		#define NUM_LEDS		170 //340 //680 //321 //642 //490 //640 // 320
 		#define MAX_NUM_LEDS   680
 
 		#define DEF_MAX_BRI 255		// the default max bri

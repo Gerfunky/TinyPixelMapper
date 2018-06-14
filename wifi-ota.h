@@ -17,12 +17,14 @@
 		char		pwd[32];			// the Wifi client Password
 		char		ssid[32];			// the Wifi client SSID
 		char		APname[32];			// the Hostname & AP mode SSID
+		char		APpassword[32];		// The AP password
 		IPAddress	ipStaticLocal;		// the configured Static IP-address
 		IPAddress	ipSubnet;			// for Static IP the Subnet
 		IPAddress	ipDGW;				// for Static IP the DGW
 		IPAddress	ipDNS;				// for Static IP the  DNS server 
 		IPAddress	ipNTP;				// What NTP server to use in IP 
-		char		ntp_fqdn[24];		// what NTP server to use in FQDN
+		char		ntp_fqdn[24];		// what NTP server to use in FQDN#
+
 	};
 
 
@@ -72,7 +74,7 @@
 
 #ifndef ARTNET_DISABLED
 	void WiFi_artnet_enable();
-	void WiFi_artnet_setup();
+	//void WiFi_artnet_setup();
 	void WiFi_artnet_loop();
 #endif
 
