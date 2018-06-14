@@ -83,10 +83,10 @@ void load_bool()
 	if (!FS_Bools_read(0))
 	{
 		debugMe("Loading default device config");
-		led_cfg.ledType = DEF_LED_TYPE;
-		led_cfg.max_bri = DEF_MAX_BRI;
-		led_cfg.startup_bri = DEF_MAX_BRI;
-		led_cfg.NrLeds = NUM_LEDS ;
+		led_cfg.ledType = constrain(DEF_LED_TYPE, 0, 2);
+		led_cfg.max_bri = constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.startup_bri = constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.NrLeds = constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
 
 		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);

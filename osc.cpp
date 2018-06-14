@@ -18,25 +18,11 @@
 
 //#define OSC_MC_SERVER_DISABLED
 
-
-
-#ifdef _MSC_VER
-#ifdef ESP8266
-	#include <ESP8266WiFi\src\WiFiUdp.h>
-	#include <ESP8266WiFi\src\ESP8266WiFi.h>
-#endif
-#ifdef ESP32
-	
-#endif
-
-	#include <OSC\OSCMessage.h>
-	#include <OSC\OSCBundle.h>
-	#include <OSC\OSCData.h>
-	#include <QueueArray\QueueArray.h>
-
-#else
+		#define OSC_BUNDLE_SEND_COUNT 16				// how many OSC messages to send in one bundle.
+		#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from osc
 
 	#include <WiFiUdp.h>
+
 #ifdef ESP8266
 	#include <ESP8266WiFi.h>
 #endif
@@ -47,12 +33,12 @@
 	#include <OSCBundle.h>
 	#include <OSCData.h>
 	#include <QueueArray.h>
-#endif
 
-#include "tools.h"								// include the Tools enums for reading and writing bools
-#include "wifi-ota.h"
-#include "config_fs.h"
-#include "httpd.h"
+
+	#include "tools.h"								// include the Tools enums for reading and writing bools
+	#include "wifi-ota.h"
+	#include "config_fs.h"
+	#include "httpd.h"
 
 
 // External Variables/ Structures

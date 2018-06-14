@@ -1,19 +1,7 @@
 
 #include "config_TPM.h"
 
-#ifdef _MSC_VER   
-		#include <WiFi\src\WiFi.h>
 
-		#include <ArduinoOTA\src\ArduinoOTA.h>
-		#include <WiFi\src\WiFiUdp.h>
-		#include <RemoteDebug\RemoteDebug.h>
-		#include <time.h>
-
-	#ifndef ARTNET_DISABLED 
-		#include <Artnet\Artnet.h>
-	#endif
-	
-#else 
 	#include <WiFi.h>	
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
@@ -25,7 +13,7 @@
 		#include <Artnet.h>
 	#endif
 	
-#endif
+
 
 
 
@@ -311,11 +299,11 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 	{
 		debugMe("Loading WifiSetup Defaults");
 		//load the defaults
-		String def_APname = DEF_AP_NAME;
-		String def_APpassword = DEF_AP_PASSWD;
-		String def_ssid = DEF_SSID;
-		String def_pwd = DEF_WIFI_PWD;
-		String def_ntp_fqdn = DEF_NTP_SERVER;
+		String def_APname 		= DEF_AP_NAME;
+		String def_APpassword 	= DEF_AP_PASSWD;
+		String def_ssid 		= DEF_SSID;
+		String def_pwd 			= DEF_WIFI_PWD;
+		String def_ntp_fqdn 	= DEF_NTP_SERVER;
 
 		def_APname.toCharArray(wifi_cfg.APname, def_APname.length() + 1);
 		def_APpassword.toCharArray(wifi_cfg.APpassword,def_APpassword.length() +1);
@@ -568,7 +556,7 @@ if (digitalRead(BTN_PIN) == false )
 		if (get_bool(WIFI_MODE) == false)
 		{
 			
-			uint8_t con_try = 2;
+			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
 
 			if (get_bool(DEBUG_OUT) == true)
 			{

@@ -25,7 +25,8 @@
 
 
 
-
+	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
+	
 
 // *************** External Functions
 // from wifi-ota.cpp
@@ -1491,6 +1492,9 @@ void LEDS_setup()
 		//led_cfg.max_bri = 255;
 
 
+	led_cnt.PotBriLast = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	led_cnt.PotFPSLast = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+
 	debugMe("end LEDS setup");
 }
 
@@ -1512,10 +1516,6 @@ void LEDS_loop()
 			
 			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
 			yield();
-
-				
-			 
-
 		
 		{
 			//debugMe("IN LED LOOP - disabled fft");

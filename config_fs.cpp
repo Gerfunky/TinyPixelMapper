@@ -558,7 +558,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 	else {   // yeah its open
 
 		conf_file.println("Play Config.");
-		conf_file.println("L = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : FFT Auto : fft scale");
+		conf_file.println("L = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : FFT Auto : fft scale : Global Bri");
 
 			conf_file.print(String("[L:" + String(led_cfg.fire_cooling)));
 			conf_file.print(String(":" + String(led_cfg.fire_sparking)));
@@ -570,6 +570,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
 			conf_file.print(String(":" + String(get_bool(FFT_AUTO))));
 			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
+			conf_file.print(String(":" + String(led_cfg.bri)));
 			conf_file.println("] ");
 
 			conf_file.println("s = Strips Config : Start Led : Nr Leds : Start Index : index add Led : index add frame : rest is on off selection ");
@@ -703,14 +704,15 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			{
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.fire_cooling		= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.fire_sparking		= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.r			= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.g			= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.b			= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_bri		= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		if (in_int != 0) led_cfg.pal_fps     = uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.r					= uint8_t(constrain(in_int, 0, 255));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.g					= uint8_t(constrain(in_int, 0, 255));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.b					= uint8_t(constrain(in_int, 0, 255));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_bri				= uint8_t(constrain(in_int, 0, 255));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_fps     		= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
 				write_bool(BLEND_INVERT, get_bool_conf_value(conf_file, &character));
 				write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
 				in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.Scale = uint16_t(constrain(in_int, 0, 500));
+				in_int = get_int_conf_value(conf_file, &character);		led_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
 				// debugMe(led_cfg.max_bri);
 			}
 			else if (type == 's')
@@ -933,7 +935,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri = uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds = uint8_t(constrain(in_int, 0,680));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds = uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
 
 				}
 				else if (type == 'b')

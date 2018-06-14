@@ -8,9 +8,29 @@
 #endif
 
 
-// Structures
-#define POT_SENSE_DEF 4
 
+// defines , DO NOT CHANGE!!!!
+
+		#define MAX_NUM_LEDS   680  			// what is the max it can be set to in the config   
+		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
+
+
+		#define MAX_FADE_VALUE 90			// maximum for FADE effect on each frame in  amount 0-255 
+		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
+		#define MAX_GLITTER_VALUE 255		// max glitter value
+
+		#define MAX_PAL_FPS 88				// maximum FPS 
+
+		#define BMP_MAX_TIME 3000				
+
+		#define MAX_INDEX_LONG 4096			// must stay under this number!
+
+		// Strip/Form settings do not change!!! 
+		#define NR_FORM_PARTS	16				// how many forms? default 16
+		#define NR_STRIPS		32				// how many strips  default 32
+		#define NR_PALETTS 		2				// how many pallets do we have = 2
+
+// Structures
 	struct led_controls_struct
 	{
 		uint8_t PotBriLast;
