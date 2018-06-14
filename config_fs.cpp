@@ -697,15 +697,15 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				strip_no = get_int_conf_value(conf_file, &character);
 				
 				// debugMe(get_int_conf_value(conf_file, &character));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].start_led = constrain(in_int, 0, NUM_LEDS);
-				//part[strip_no].start_led = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, NUM_LEDS));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].nr_leds = constrain(in_int, 0, NUM_LEDS);
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);
+				//part[strip_no].start_led = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds));
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].nr_leds = constrain(in_int, 0,led_cfg.NrLeds);
 				
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_start = in_int;
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add = in_int; 	
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add_pal = in_int;
 
-				//part[strip_no].nr_leds = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, NUM_LEDS - part[strip_no].start_led));
+				//part[strip_no].nr_leds = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds - part[strip_no].start_led));
 				//part[strip_no].index_start = uint8_t(get_int_conf_value(conf_file, &character));
 				//part[strip_no].index_add = get_int_conf_value(conf_file, &character);
 				//part[strip_no].index_add_pal = uint8_t(get_int_conf_value(conf_file, &character));
@@ -731,8 +731,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				//in_int = get_int_conf_value(conf_file, &character);
 
 
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].start_led = constrain(in_int, 0, NUM_LEDS);
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].nr_leds = constrain(in_int, 0, NUM_LEDS - form_part[strip_no].start_led);
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].nr_leds = constrain(in_int, 0, led_cfg.NrLeds - form_part[strip_no].start_led);
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_start = in_int ;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add_pal = in_int;
@@ -755,9 +755,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			else if (type == 'c')
 			{
 			strip_no = get_int_conf_value(conf_file, &character);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , NUM_LEDS);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , NUM_LEDS - copy_leds[strip_no].start_led);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , NUM_LEDS);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , led_cfg.NrLeds);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , led_cfg.NrLeds - copy_leds[strip_no].start_led);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , led_cfg.NrLeds);
 			bitWrite(copy_leds_mode[get_strip_menu_bit(strip_no)], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 
 
@@ -837,7 +837,7 @@ void FS_Bools_write(uint8_t conf_nr)
 	else  // it opens
 	{
 		conf_file.println(F("Main Config for ESP. 0 = off,  1 = on"));
-		conf_file.println(F("D = Device Config : LED Tyoe 0=APA102 1=WS2812b 2=SK6822 : max bri : Startup bri"));
+		conf_file.println(F("D = Device Config :!!! CHANGE DATA1+2 = APA102, Data3 = ws2812, Data 4 = SK6822 ( OLD = LED Type 0=APA102 1=WS2812b 2=SK6822 on Data1) setting = not used@the moment: max bri : Startup bri : Nr of Leds (Max 680)"));
 		conf_file.print(String("[D:"	+ String(led_cfg.ledType)));
 		conf_file.print(String(":"		+ String(led_cfg.max_bri)));
 		conf_file.print(String(":"		+ String(led_cfg.startup_bri)));

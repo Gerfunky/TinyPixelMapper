@@ -781,7 +781,7 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int) 
 				{
 					case 0:
-						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
+						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, led_cfg.NrLeds - part[strip_int + bit_int * 8].nr_leds);
 						break;
 					case 1:
 						if (strip_int !=0 )
@@ -790,7 +790,7 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 							part[strip_int + bit_int * 8].start_led = part[ 7  + (bit_int- 1) * 8].start_led + part[7 + (bit_int-1) * 8].nr_leds;
 					break;
 					case 2:
-						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].nr_leds);
+						part[strip_int + bit_int * 8].start_led = constrain(part[strip_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, led_cfg.NrLeds - part[strip_int + bit_int * 8].nr_leds);
 						break;
 				}
 			outvalue = float(part[strip_int + bit_int * 8].start_led);
@@ -802,10 +802,10 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int) 
 				{
 					case 0:
-						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
+						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, led_cfg.NrLeds - part[strip_int + bit_int * 8].start_led);
 						break;
 					case 2:
-						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, NUM_LEDS - part[strip_int + bit_int * 8].start_led);
+						part[strip_int + bit_int * 8].nr_leds = constrain(part[strip_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, led_cfg.NrLeds - part[strip_int + bit_int * 8].start_led);
 						break;
 				}
 			outvalue = float(part[strip_int + bit_int * 8].nr_leds);
@@ -1074,7 +1074,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				case 0:
 					//form_part[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
 
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				case 1:
 					if (form_int != 0)
@@ -1085,7 +1085,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 				case 2:
 					//form_part[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -1100,10 +1100,10 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int)
 				{
 				case 0:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].start_led);
 					break;
 				case 2:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].start_led);
 					break;
 				}
 
@@ -1441,10 +1441,10 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (select_mode_int) {
 				case 0:
 					//copy_leds[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
-					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led -  osc_miltiply_get(), 0, NUM_LEDS - copy_leds[select_bit_int + z * 8].nr_leds);
+					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led -  osc_miltiply_get(), 0, led_cfg.NrLeds - copy_leds[select_bit_int + z * 8].nr_leds);
 					break;
 				case 2:
-					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led +  osc_miltiply_get(), 0, NUM_LEDS + copy_leds[select_bit_int + z * 8].nr_leds);
+					copy_leds[select_bit_int + z * 8].start_led = constrain(copy_leds[select_bit_int + z * 8].start_led +  osc_miltiply_get(), 0, led_cfg.NrLeds + copy_leds[select_bit_int + z * 8].nr_leds);
 					//copy_leds[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
 					break;
 				}
@@ -1460,10 +1460,10 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (select_mode_int) {
 				case 0:
 					//copy_leds[select_bit_int + z * 8].nr_leds -=  osc_miltiply_get();
-					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds -  osc_miltiply_get(), -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS - copy_leds[select_bit_int + z * 8].start_led);
+					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds -  osc_miltiply_get(), -led_cfg.NrLeds + copy_leds[select_bit_int + z * 8].start_led, led_cfg.NrLeds - copy_leds[select_bit_int + z * 8].start_led);
 					break;
 				case 2:
-					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds +  osc_miltiply_get(), -NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led, NUM_LEDS + copy_leds[select_bit_int + z * 8].start_led);
+					copy_leds[select_bit_int + z * 8].nr_leds = constrain(copy_leds[select_bit_int + z * 8].nr_leds +  osc_miltiply_get(), -led_cfg.NrLeds + copy_leds[select_bit_int + z * 8].start_led, led_cfg.NrLeds + copy_leds[select_bit_int + z * 8].start_led);
 					//copy_leds[select_bit_int + z * 8].nr_leds +=  osc_miltiply_get();
 					break;
 				}
@@ -1479,11 +1479,11 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 				switch (select_mode_int) {
 				case 0:
 					//copy_leds[select_bit_int + z * 8].Ref_LED -=  osc_miltiply_get();
-					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED -  osc_miltiply_get(), 0, NUM_LEDS);
+					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED -  osc_miltiply_get(), 0, led_cfg.NrLeds);
 					break;
 				case 2:
 					//copy_leds[select_bit_int + z * 8].Ref_LED +=  osc_miltiply_get();
-					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED +  osc_miltiply_get(), 0, NUM_LEDS);
+					copy_leds[select_bit_int + z * 8].Ref_LED = constrain(copy_leds[select_bit_int + z * 8].Ref_LED +  osc_miltiply_get(), 0, led_cfg.NrLeds);
 					break;
 				}
 

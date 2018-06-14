@@ -74,7 +74,7 @@
 		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 		#define NUM_LEDS		340 //680 //321 //642 //490 //640 // 320
-
+		#define MAX_NUM_LEDS   680
 
 		#define DEF_MAX_BRI 255		// the default max bri
 		#define DEF_BRI 100			// the deault Bri
