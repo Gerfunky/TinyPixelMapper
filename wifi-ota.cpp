@@ -532,10 +532,7 @@ void WiFi_Start_Network()
 		// setup the wifi network old version from EPS8266
 if (digitalRead(BTN_PIN) == false )
 	{
-					//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
-
-
-
+				WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
 				WiFi.mode(WIFI_AP);
 				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
 

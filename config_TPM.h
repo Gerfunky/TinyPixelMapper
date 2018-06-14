@@ -13,7 +13,7 @@
 //#define OSC_MC_SERVER_DISABLED
 
 
-#define DEF_BOOT_DEBUGING  true  // Set to true to get Debuging info on serial port during boot. else set to false  
+#define DEF_BOOT_DEBUGING  false  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
 #define DEF_SERIAL_PORT Serial
 
@@ -23,11 +23,11 @@
 
 // General booleans
 
-	#define DEF_DEBUG_OUT true				// serial debugging
-	#define DEF_DEBUG_TELNET true			// debug to TELNET?
-	#define DEF_OTA_SERVER true				// enable the OTA server ?
-	#define DEF_HTTP_ENABLED true			// enable the HTTP server ?
-	#define WRITE_CONF_AT_INIT false 		// write bools/wifi def conf to SPIFFS on load if not available.
+	#define DEF_DEBUG_OUT 		true			// serial debugging
+	#define DEF_DEBUG_TELNET 	true			// debug to TELNET?
+	#define DEF_OTA_SERVER 		true			// enable the OTA server ?
+	#define DEF_HTTP_ENABLED 	true			// enable the HTTP server ?
+	#define WRITE_CONF_AT_INIT false 			// write bools/wifi def conf to SPIFFS on load if not available.
 
 // Wifi
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
