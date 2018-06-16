@@ -80,7 +80,7 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
-	if (!FS_Bools_read(0))
+	//if (!FS_Bools_read(0))
 	{
 		debugMe("Loading default device config");
 		led_cfg.ledType = constrain(DEF_LED_TYPE, 0, 2);
@@ -97,7 +97,7 @@ void load_bool()
 
 		if (WRITE_CONF_AT_INIT) FS_Bools_write(0);
 	}
-	else debugMe("Bools Loaded from SPIFFS!");
+	//else debugMe("Bools Loaded from SPIFFS!");
 
 	//debugMe("http Server load = " + String(get_bool(HTTP_ENABLED)));
 	
