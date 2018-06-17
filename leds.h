@@ -11,7 +11,7 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   680  			// what is the max it can be set to in the config   
+		#define MAX_NUM_LEDS   170*4 //680  			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 
@@ -19,7 +19,7 @@
 		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
 		#define MAX_GLITTER_VALUE 255		// max glitter value
 
-		#define MAX_PAL_FPS 88				// maximum FPS 
+		#define MAX_PAL_FPS 100				// maximum FPS 
 
 		#define BMP_MAX_TIME 3000				
 
@@ -58,10 +58,21 @@
 		uint8_t 		bpm;				// BPM , used to time the pallete to a bpm
 		unsigned long 	bpm_lastT;			// timing for BMP
 		unsigned long 	bpm_diff;			// 
-		uint8_t 		ledType;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
+		uint8_t 		ledMode;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
 		uint16_t 		NrLeds;				// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+		uint8_t 		Play_Nr ;			// What sequenca are we in.
+		uint16_t		Data1NrLeds;		// Nr of leds for data1;
+		uint16_t		Data1StartLed;		// Start led for data1;
+		uint16_t		Data2NrLeds;		// Nr of leds for data2;
+		uint16_t		Data2StartLed;		// Start led for data2;
+		uint16_t		Data3NrLeds;		// Nr of leds for data3;
+		uint16_t		Data3StartLed;		// Start led for data3;
+		uint16_t		Data4NrLeds;		// Nr of leds for data4;
+		uint16_t		Data4StartLed;		// Start led for data4;
+		
+		
 	
 
 	};

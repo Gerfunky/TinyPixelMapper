@@ -603,7 +603,7 @@ void osc_strips_G_toggle_rec(OSCMessage &msg, int addrOffset) {
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	float outvalue = 0;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -1054,13 +1054,13 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		}
 
 		if (address[0] == 'S' && address[1] == 'L') {
-			if ((get_bool(OSC_EDIT) == true) && (form_int + bit_int != 0))
+			if ((get_bool(OSC_EDIT) == true) )
 				switch (option_int)
 				{
 				case 0:
 					//form_part[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
 
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].nr_leds);
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				case 1:
 					if (form_int != 0)
@@ -1071,7 +1071,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 				case 2:
 					//form_part[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].nr_leds);
+					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
@@ -1082,14 +1082,14 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		}
 
 		if (address[0] == 'N' && address[1] == 'L') {
-			if ((get_bool(OSC_EDIT) == true) && (form_int + bit_int != 0))
+			if ((get_bool(OSC_EDIT) == true) )
 				switch (option_int)
 				{
 				case 0:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
 					break;
 				case 2:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, led_cfg.NrLeds - form_part[form_int + bit_int * 8].start_led);
+					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
 					break;
 				}
 
@@ -2421,6 +2421,7 @@ void osc_DS_refresh()
 			osc_queu_MSG_float(String("/DS/TNdebug"), float(get_bool(DEBUG_TELNET)));
 
 
+			osc_queu_MSG_float(String("/DS/WP"), float(get_bool(WIFI_POWER))); 
 			osc_queu_MSG_float(String("/DS/WAP"), float(get_bool(WIFI_MODE)));  //debugMe(get_bool(WIFI_MODE));
 			osc_send_MSG_String("/DS/SSID", String(wifi_cfg.ssid));
 			osc_send_MSG_String("/DS/WPW", String(wifi_cfg.pwd));
@@ -2445,7 +2446,7 @@ void osc_DS_refresh()
 			osc_send_out_float_MSG_buffer();   // send out some of it and yield
 			yield();
 
-			switch (led_cfg.ledType)
+			switch (led_cfg.ledMode)
 			{
 			case 0:
 				osc_queu_MSG_float("/DS/ledType/1/1", 1);
@@ -2463,6 +2464,11 @@ void osc_DS_refresh()
 				osc_queu_MSG_float("/DS/ledType/3/1", 1);
 				break;
 			}
+
+			osc_queu_MSG_float("/DS/data/1/1", get_bool(DATA1_ENABLE));
+			osc_queu_MSG_float("/DS/data/2/1", get_bool(DATA2_ENABLE));
+			osc_queu_MSG_float("/DS/data/3/1", get_bool(DATA3_ENABLE));
+			osc_queu_MSG_float("/DS/data/4/1", get_bool(DATA4_ENABLE));
 
 		
 
@@ -2740,7 +2746,8 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 	
 	
 	// OSC MESSAGE :/m/multipl/?/1
-	if (bool(msg.getFloat(0)) == true) {
+	if (bool(msg.getFloat(0)) == true) 
+	{
 		String select_mode_string;
 		// String select_bit_string;
 		char address[10];
@@ -2768,25 +2775,123 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 		if (bool(msg.getFloat(0)) == true) {
 			switch (select_mode_int) {
 			case 1:
-				led_cfg.ledType = 0;
+				led_cfg.ledMode = 0;
 				osc_queu_MSG_float("/DS/ledType/1/1", 1);
 				osc_queu_MSG_float("/DS/ledType/2/1", 0);
 				osc_queu_MSG_float("/DS/ledType/3/1", 0);
+				osc_queu_MSG_float("/DS/ledType/4/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 0);
+				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
 			case 2:
-				led_cfg.ledType = 1;
+				led_cfg.ledMode = 1;
 				osc_queu_MSG_float("/DS/ledType/1/1", 0);
 				osc_queu_MSG_float("/DS/ledType/2/1", 1);
 				osc_queu_MSG_float("/DS/ledType/3/1", 0);
+				osc_queu_MSG_float("/DS/ledType/4/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 0);
+				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
 			case 3:
-				led_cfg.ledType = 2;
+				led_cfg.ledMode = 2;
 				osc_queu_MSG_float("/DS/ledType/1/1", 0);
 				osc_queu_MSG_float("/DS/ledType/2/1", 0);
 				osc_queu_MSG_float("/DS/ledType/3/1", 1);
+				osc_queu_MSG_float("/DS/ledType/4/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 0);
+				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
+			case 4:
+				led_cfg.ledMode = 3;
+				osc_queu_MSG_float("/DS/ledType/1/1", 0);
+				osc_queu_MSG_float("/DS/ledType/2/1", 0);
+				osc_queu_MSG_float("/DS/ledType/3/1", 0);
+				osc_queu_MSG_float("/DS/ledType/4/1", 1);
+				osc_queu_MSG_float("/DS/ledType/5/1", 0);
+				osc_queu_MSG_float("/DS/ledType/6/1", 0);
+				break;
+			case 5:
+				led_cfg.ledMode =4 ;
+				osc_queu_MSG_float("/DS/ledType/1/1", 0);
+				osc_queu_MSG_float("/DS/ledType/2/1", 0);
+				osc_queu_MSG_float("/DS/ledType/3/1", 0);
+				osc_queu_MSG_float("/DS/ledType/4/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 1);
+				osc_queu_MSG_float("/DS/ledType/6/1", 0);
+				break;	
+			case 6:
+				led_cfg.ledMode =5 ;
+				osc_queu_MSG_float("/DS/ledType/1/1", 0);
+				osc_queu_MSG_float("/DS/ledType/2/1", 0);
+				osc_queu_MSG_float("/DS/ledType/3/1", 0);
+				osc_queu_MSG_float("/DS/ledType/4/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 0);
+				osc_queu_MSG_float("/DS/ledType/6/1", 1);
+				break;	
+			}
+		} // end switch
+
+		  //outbuffer = String("/multipl/1/1");
+
+
+
+	} // end  new msg
+
+}
+
+void osc_DS_led_data_on(OSCMessage &msg, int addrOffset) 
+{		// OSC IN Device settings led type 1collum 3 rows
+	
+	
+	// OSC MESSAGE :/m/multipl/?/1
+	//if (bool(msg.getFloat(0)) == true) 
+	{
+		String select_mode_string;
+		// String select_bit_string;
+		char address[10];
+		//debugMe("T3");
+		
+		bool switch_bool = false;
+
+		msg.getAddress(address, addrOffset + 1);
+		debugMe(String(address));
+		for (byte i = 0; i < sizeof(address); i++) {
+			if (address[i] == '/') {
+				switch_bool = true;
 
 			}
+			else if (switch_bool == false) {
+				select_mode_string = select_mode_string + address[i];
+
+			}
+
+		}
+
+		int select_mode_int = select_mode_string.toInt();
+
+		//boolean value = bool(msg.getFloat(0));
+		//if (bool(msg.getFloat(0)) == true) 
+		{
+			switch (select_mode_int) 
+			{
+			case 1:
+				write_bool(DATA1_ENABLE,bool(msg.getFloat(0)));
+				break;
+			case 2:
+				write_bool(DATA2_ENABLE,bool(msg.getFloat(0)));
+
+				break;
+			case 3:
+				write_bool(DATA3_ENABLE,bool(msg.getFloat(0)));
+				break;
+			case 4:
+				write_bool(DATA4_ENABLE,bool(msg.getFloat(0)));
+				break;	
+			}
+			osc_queu_MSG_float("/DS/data/1/1", get_bool(DATA1_ENABLE));
+			osc_queu_MSG_float("/DS/data/2/1", get_bool(DATA2_ENABLE));
+			osc_queu_MSG_float("/DS/data/3/1", get_bool(DATA3_ENABLE));
+			osc_queu_MSG_float("/DS/data/4/1", get_bool(DATA4_ENABLE));
 		} // end switch
 
 		  //outbuffer = String("/multipl/1/1");
@@ -2820,7 +2925,7 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	if (msg.fullMatch("/TNdebug", addrOffset))			{ write_bool(DEBUG_TELNET, bool(msg.getFloat(0))); }
 	if (msg.fullMatch("/ESIP", addrOffset))			{ osc_send_MSG_String("/DS/INFO", String("Static IP : " + String(bool(msg.getFloat(0)))));	write_bool(STATIC_IP_ENABLED, bool(msg.getFloat(0))); }
 	if (msg.fullMatch("/WAP", addrOffset))			{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
-
+	if (msg.fullMatch("/WP", addrOffset))			{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}
 
 	if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); osc_send_MSG_String("/DS/INFO", String("IP saved")); }
 	if (msg.fullMatch("/BSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_Bools_write(0); osc_send_MSG_String("/DS/INFO", String("Settings saved")); }
@@ -2855,6 +2960,7 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 
 	debugMe("T2");
 	msg.route("/ledType", osc_DS_led_type, addrOffset);
+	msg.route("/data", osc_DS_led_data_on, addrOffset);
 	debugMe("TXXX");
 
 	//debugMe("DS routing END");

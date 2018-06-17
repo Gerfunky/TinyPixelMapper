@@ -177,7 +177,7 @@ boolean FS_FFT_read(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".fft.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
-	if (conf_file) {
+	if (conf_file && !conf_file.isDirectory()) {
 
 		char character;
 		String settingName;
@@ -253,7 +253,7 @@ void FS_FFT_write(uint8_t conf_nr)
 
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file) 
+	if (!conf_file && !conf_file.isDirectory()) 
 	{
 		Serial.println("fft file creation failed");
 	}
@@ -316,7 +316,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file)
+	if (!conf_file && !conf_file.isDirectory())
 	{
 		 debugMe("Cant write Main Conf file");
 	}
@@ -381,7 +381,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".wifi.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
-	if (conf_file)
+	if (conf_file && !conf_file.isDirectory())
 	{
 		 debugMe("Loading Wifi conf " + addr);
 		char character;
@@ -471,7 +471,7 @@ void	FS_artnet_write(uint8_t conf_nr)
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file)
+	if (!conf_file  && !conf_file.isDirectory)
 	{
 		 debugMe("Cant write  artnet Conf file");
 	}
@@ -498,7 +498,10 @@ boolean FS_artnet_read(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".artnet.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
-	if (conf_file)
+	if (!conf_file && !conf_file.isDirectory()) {
+		 debugMe("artnet file read failed");
+	}
+	else 
 	{
 		 debugMe("Opening " + addr);
 		char character;
@@ -539,6 +542,26 @@ boolean FS_artnet_read(uint8_t conf_nr)
 }
 #endif
 
+
+boolean FS_check_Conf_Available(uint8_t play_NR)
+{
+	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
+	File conf_file = SPIFFS.open(addr,"r"); 
+
+	if(conf_file.available() && conf_file.isDirectory() == false) 
+	{ //exists and its a file 
+		if (!conf_file.isDirectory())
+		debugMe("BoolTrue");
+		conf_file.close();
+
+		return true;
+	}
+	
+	conf_file.close();
+	return false;
+}
+
+
 //play conf
 void FS_play_conf_write(uint8_t conf_nr) 
 {
@@ -552,7 +575,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file) {
+	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("play file creation failed");
 	}
 	else {   // yeah its open
@@ -676,7 +699,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 	 debugMe("READ Conf " + addr);
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
-	if (conf_file)
+	if (conf_file && !conf_file.isDirectory())
 	{
 
 		char character;
@@ -754,8 +777,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				//in_int = get_int_conf_value(conf_file, &character);
 
 
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].nr_leds = constrain(in_int, 0, led_cfg.NrLeds - form_part[strip_no].start_led);
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_part[strip_no].start_led);
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_start = in_int ;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add_pal = in_int;
@@ -860,7 +883,7 @@ void FS_Bools_write(uint8_t conf_nr)
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file)
+	if (!conf_file && !conf_file.isDirectory())
 	{
 		 debugMe("Cant write bool Conf file");
 	}
@@ -868,10 +891,18 @@ void FS_Bools_write(uint8_t conf_nr)
 	{
 		conf_file.println(F("Main Config for ESP. 0 = off,  1 = on"));
 		conf_file.println(F("D = Device Config :!!! CHANGE DATA1+2 = APA102, Data3 = ws2812, Data 4 = SK6822 ( OLD = LED Type 0=APA102 1=WS2812b 2=SK6822 on Data1) setting = not used@the moment: max bri : Startup bri : Nr of Leds (Max 680)"));
-		conf_file.print(String("[D:"	+ String(led_cfg.ledType)));
+		conf_file.print(String("[D:"	+ String(led_cfg.ledMode)));
 		conf_file.print(String(":"		+ String(led_cfg.max_bri)));
 		conf_file.print(String(":"		+ String(led_cfg.startup_bri)));
 		conf_file.print(String(":"		+ String(led_cfg.NrLeds)));
+		conf_file.print(String(":"		+ String(led_cfg.Data1NrLeds)));
+		conf_file.print(String(":"		+ String(led_cfg.Data1StartLed)));
+		conf_file.print(String(":"		+ String(led_cfg.Data2NrLeds)));
+		conf_file.print(String(":"		+ String(led_cfg.Data2StartLed)));
+		conf_file.print(String(":"		+ String(led_cfg.Data3NrLeds)));
+		conf_file.print(String(":"		+ String(led_cfg.Data3StartLed)));
+		conf_file.print(String(":"		+ String(led_cfg.Data4NrLeds)));
+		conf_file.print(String(":"		+ String(led_cfg.Data4StartLed)));
 		conf_file.println("] ");
 
 		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug :: FFT enabled : FFT Master : FFT Auto : Debug Telnet : FFT Master Send out UDP MC : WIFI_POWER 0=off "));
@@ -881,6 +912,10 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(FFT_MASTER))));	
 		conf_file.print(String(":" + String(get_bool(FFT_AUTO))));		
 		conf_file.print(String(":" + String(get_bool(FFT_MASTER_SEND))));
+		conf_file.print(String(":" + String(get_bool(DATA1_ENABLE))));
+		conf_file.print(String(":" + String(get_bool(DATA2_ENABLE))));
+		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
+		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
 
 		conf_file.println(F("] "));
 		
@@ -907,7 +942,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 		File conf_file = SPIFFS.open(addr, "r");
 		delay(100);
 
-		if (conf_file)
+		if (conf_file&& !conf_file.isDirectory())
 		{
 			debugMe("in file");
 			char character;
@@ -932,10 +967,18 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				if (type == 'D')
 				{
 					int in_int = 0;
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledType = uint8_t(constrain(in_int, 0, 2));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri = uint8_t(constrain(in_int, 0, 255));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri = uint8_t(constrain(in_int, 0, 255));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds = uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 		= uint8_t(constrain(in_int, 0, 2));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 		= uint8_t(constrain(in_int, 0, 255));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 	= uint8_t(constrain(in_int, 0, 255));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 			= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data2StartLed));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
 
 				}
 				else if (type == 'b')
@@ -947,6 +990,10 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));					
 					write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
+					write_bool(DATA1_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(DATA2_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(DATA3_ENABLE, get_bool_conf_value(conf_file, &character));
+					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 
 
 				}
@@ -968,7 +1015,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 			
 		}
 
-
+		conf_file.close();
 	}
 	else
 	{

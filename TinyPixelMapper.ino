@@ -51,7 +51,7 @@ void setup()
 void loop() 
 {
 
-	if (get_bool(WIFI_POWER)) wifi_loop();
+	if (get_bool(WIFI_POWER_ON_BOOT)) wifi_loop();
 	LEDS_loop();
 
 } // end loop

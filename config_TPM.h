@@ -9,9 +9,9 @@
 // settings where the name starts with DEF will only be loaded if there are no setting on the SPIFFS
 
 
-//#define ARTNET_DISABLED 				// disables artnet, wont be compiled 
+#define ARTNET_DISABLED 				// disables artnet, wont be compiled 
 //#define OSC_MC_SERVER_DISABLED
-
+#define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
 
 #define DEF_BOOT_DEBUGING  false  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
@@ -27,13 +27,13 @@
 	#define DEF_DEBUG_TELNET 	true			// debug to TELNET?
 	#define DEF_OTA_SERVER 		true			// enable the OTA server ?
 	#define DEF_HTTP_ENABLED 	true			// enable the HTTP server ?
-	#define WRITE_CONF_AT_INIT false 			// write bools/wifi def conf to SPIFFS on load if not available.
+	#define WRITE_CONF_AT_INIT 	true 			// write bools/wifi def conf to SPIFFS on load if not available.
 
 // Wifi
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
-	#define DEF_WIFI_MODE 		false							// false = client  , true = AP
+	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 
-	#define DEF_AP_NAME			"TinyPixelMapperT"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
@@ -59,7 +59,7 @@
 	#define DEF_FFT_IP_MULTICAST	{239, 0, 0, 57}			//  Multicast IP address to send the FFT data to
 	#define DEF_FFT_SLAVE_PORT		431						// Multicast DEST port for FFT packets
 	#define DEF_FFT_MASTER_PORT		432						// Multicast source port to send from
-	#define DEF_FFT_ENABLE			true					// enalbe FFT from start?
+	#define DEF_FFT_ENABLE			false					// enalbe FFT from start?
 	#define DEF_FFT_MASTER			false					// set the node to Master mode?
 	#define DEF_AUTO_FFT 			true					// enalbe auto FFT ?
 	#define DEF_FFT_MASTER_SEND		false					//  if in master mode send out the UDP Multicast packets?
@@ -69,9 +69,45 @@
 // FastLed Defines
 		//#define FASTLED_ESP8266_RAW_PIN_ORDER		// Set Raw pin order not NodeMCU fake pins!!! 
 
-		#define DEF_LED_TYPE    0	// 1					// led type 1 = WS2812b, 0 = APA102 , 2= SK6822
-															// Changed to multioutput Data1 + clock = APA102 , data3 = WS2812, data4 = SK6822
-															
+
+		/* DEF_LED_MODE:
+							This select the way the controller outputs are setup!
+							in Line mode they are serial. So set the Nr of leds correctly and the correct starled for that output.
+							in Mirror mode all start al led 0 and do the same.
+							This is loaded at boot!
+
+						Type : Mode   : led_type  
+							0: Mirror :     MIX : Data1 + CLk 1 = APA102 ; Data3 = WS2812 ; Data4 = SK8622
+							5: Line	  :	    MIX : Data1 + CLk 1 = APA102 ; Data3 = WS2812 ; Data4 = SK8622
+							1: Line   :  APA102 : Data1+CLK & Data3+Data4(clk) = APA102
+							2: Mirror :  APA102 : Data1+CLK & Data3+Data4(clk) = APA102
+							3: Line   : WS2812b : Data1 to Data4 = WS2812b
+							4: Mirror : WS2812b : Data1 to Data4 = WS2812b
+							
+		*/
+		#define DEF_LED_MODE    0
+														
+
+		#define NUM_LEDS		170*4		// NR of leds for mirror mode.												
+		#define DEF_DATA1_START_NR 0
+		#define DEF_DATA1_NR_LEDS  340 //170*4
+		#define DEF_DATA2_START_NR 0
+		#define DEF_DATA2_NR_LEDS  10 //170*4
+		#define DEF_DATA3_START_NR 50
+		#define DEF_DATA3_NR_LEDS  340 //170*4
+		#define DEF_DATA4_START_NR 0
+		#define DEF_DATA4_NR_LEDS  5 //170*4
+		
+		#define DEF_DATA1_ENABLE true
+		#define DEF_DATA2_ENABLE false
+		#define DEF_DATA3_ENABLE true
+		#define DEF_DATA4_ENABLE false
+
+
+		#define DEF_PLAY_MODE 0 
+
+		#define DEF_FIRE_SPARKING 50
+		#define DEF_FIRE_COOLING 30 
 
 		#define LED_DATA_PIN    18 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
@@ -79,10 +115,10 @@
 		#define LED_DATA_3_PIN  19							// DATA 3 PIN = WS2812 
 		#define LED_DATA_4_PIN  17							// DATA 4 PIN = SK6822 
 
-		#define NUM_LEDS		170 		
+			
 
 		#define DEF_MAX_BRI 255		// the default max bri
-		#define DEF_BRI 100			// the deault Bri
+		#define DEF_BRI 240			// the deault Bri
 
 
 
@@ -92,8 +128,8 @@
 
 
 
-		//#define FASTLED_ALLOW_INTERRUPTS 0
-		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
+		#define FASTLED_ALLOW_INTERRUPTS 0
+		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 
 // END FastLed Defines

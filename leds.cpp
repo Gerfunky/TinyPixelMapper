@@ -62,7 +62,7 @@ extern artnet_struct artnet_cfg;
 
 	//QueueArray <uint8_t> FFT_fifo;
 	//uint8_t	fft_fps;
-	fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1 };
+	fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
 	byte fft_menu[3] = { 3,7,200 };
 
 //#define FFT_FIFO_COUNT_0_8_NR_PACKETS 35 //28 //35
@@ -126,7 +126,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_TYPE, NUM_LEDS ,50,50 };			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR };			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
 	{ 0,  0,  0,  1,  0 , 1 ,  0}  //0
@@ -204,10 +204,11 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 
 void LEDS_show()
 {	
-				//FastLED.show();
-			FastLED[0].showLeds(led_cfg.bri);
-			FastLED[1].showLeds(led_cfg.bri);
-			FastLED[2].showLeds(led_cfg.bri);
+			FastLED.setBrightness(led_cfg.bri);
+			FastLED.show();
+			//FastLED[0].showLeds(led_cfg.bri);
+			//FastLED[1].showLeds(led_cfg.bri);
+			//FastLED[2].showLeds(led_cfg.bri);
 }
 
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
@@ -215,10 +216,7 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 	leds[ledNr].r = color[0];
 	leds[ledNr].g = color[1];
 	leds[ledNr].b = color[2];
-	//FastLED.show();
-	FastLED[0].showLeds(led_cfg.bri);
-	FastLED[1].showLeds(led_cfg.bri);
-	FastLED[2].showLeds(led_cfg.bri);
+	LEDS_show();
 }
 
 
@@ -435,18 +433,19 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 void  LEDS_setall_color(uint8_t color = 0) {
 
-	//
+	// set all leds to a color
+	// 0 = white 50%
+	// 1 = green 50%
+	// 2 = black
+
 	switch(color) {
 
-		case 0: fill_solid(&(leds[0]), led_cfg.NrLeds, CRGB(180, 180, 180));
-		case 1: fill_solid(&(leds[0]), led_cfg.NrLeds, CRGB(0, 255, 0));
-
+		case 0: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(180, 180, 180)); break;
+		case 1: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(0, 127, 0)); break;
+		case 2: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(0, 0, 0));break;
+		default: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(180, 180, 180)); break;	
 	}
-
-
-	
-	
-
+	debugMe("Setall Leds to : " + String(color));	
 }
 
 void LEDS_fadeout()
@@ -1421,7 +1420,7 @@ void LEDS_FFT_check_leds(CRGB color_result)
 	}
 
 }
-
+ 
 
 void LEDS_setup()
 {	// the main led setup function
@@ -1429,13 +1428,55 @@ void LEDS_setup()
 	 debugMe("in LED Setup");
 	 LEDS_MSGEQ7_setup();
 	 
-	FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
-	 debugMe("APA102 leds added on  DATA1+CLK");
-	FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
-	debugMe("WS2812 leds added on DATA3");
-	FastLED.addLeds<SK6822, LED_DATA_4_PIN>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
-	debugMe("SK6822 leds added on DATA4");
+	switch(led_cfg.ledMode)
+	{
+		case 0:
+			debugMe("mix mode Mirror");
+			if(get_bool(DATA1_ENABLE)){ FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>	(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("Mode Mix-Mirror - APA102 leds added on  DATA1+CLK");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>			(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>					(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+		break;
 
+		case 1:
+			debugMe("APA102 mode line");
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); }
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); }
+
+			
+		break;
+		case 2:
+			debugMe("APA102 mode Mirror");
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+DATA2(clk)");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3-DATA4(clk)");}
+			
+		break;
+		case 3:
+			debugMe("Mode LINE: WS2812b leds added on  DATA1 to DATA4");
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.Data1StartLed, led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA1 on");}
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA2 on");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA3 on");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA4 on");}
+		break;
+		case 4:
+		debugMe("ws2812 mode Mirror");
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("Mode Mirror: WS2812b leds added on  DATA1 to DATA4");}
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);}
+		break;
+		case 5:
+		debugMe("mix mode Line");
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.Data3StartLed, uint16_t(constrain(led_cfg.Data3NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>                (leds, led_cfg.Data4StartLed, uint16_t(constrain(led_cfg.Data4NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+		break;
+		default:
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>                (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+		break;
+
+	}
 
 
 /*
@@ -1511,6 +1552,7 @@ void LEDS_loop()
 
 	if (currentT > led_cfg.update_time  && get_bool(ARTNET_ENABLE) == false )
 	{
+
 			
 			CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
 			
@@ -1553,6 +1595,29 @@ void LEDS_loop()
 			yield();
 		//	write_bool(UPDATE_LEDS, false);
 		//}
+		bool Btn_state = digitalRead(BTN_PIN);
+		 if(Btn_state != get_bool(BTN_LASTSTATE))
+		 {
+			 	debugMe("Change BTN ");
+			 	write_bool(BTN_LASTSTATE, Btn_state);
+				 if (Btn_state == false )
+				 {
+					 if(FS_check_Conf_Available(led_cfg.Play_Nr +1 ))
+					 {
+					 	FS_play_conf_read(led_cfg.Play_Nr +1);
+						 led_cfg.Play_Nr++;
+						 debugMe("in +1");
+					 }
+					else{
+							FS_play_conf_read(0);
+							led_cfg.Play_Nr = 0;
+					}
+						
+
+				 }
+
+
+		 } 
 	}
 
 
