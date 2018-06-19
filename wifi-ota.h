@@ -24,6 +24,7 @@
 		IPAddress	ipDNS;				// for Static IP the  DNS server 
 		IPAddress	ipNTP;				// What NTP server to use in IP 
 		char		ntp_fqdn[24];		// what NTP server to use in FQDN#
+		uint8_t		wifiChannel; 		// what channel to run wifi on.
 
 	};
 

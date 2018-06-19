@@ -1434,7 +1434,7 @@ void LEDS_setup()
 			debugMe("mix mode Mirror");
 			if(get_bool(DATA1_ENABLE)){ FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>	(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("Mode Mix-Mirror - APA102 leds added on  DATA1+CLK");}
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>			(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>					(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>			(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
 
 		case 1:
@@ -1453,31 +1453,31 @@ void LEDS_setup()
 		case 3:
 			debugMe("Mode LINE: WS2812b leds added on  DATA1 to DATA4");
 			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.Data1StartLed, led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA1 on");}
-			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA2 on");}
-			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA3 on");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, BGR>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA4 on");}
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA2 on");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA3 on");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA4 on");}
 		break;
 		case 4:
 		debugMe("ws2812 mode Mirror");
 			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("Mode Mirror: WS2812b leds added on  DATA1 to DATA4");}
-			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
-			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);}
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, GRB>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);}
 		break;
 		case 5:
 		debugMe("mix mode Line");
 			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.Data3StartLed, uint16_t(constrain(led_cfg.Data3NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>                (leds, led_cfg.Data4StartLed, uint16_t(constrain(led_cfg.Data4NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>           (leds, led_cfg.Data4StartLed, uint16_t(constrain(led_cfg.Data4NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
 		default:
-			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK");}
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("APA102 leds added on  DATA1+CLK");}
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN>                (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN,GRB>            (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
 
 	}
-
+	debugMe("LED_MODE = " + String(led_cfg.ledMode));
 
 /*
 	switch(led_cfg.ledType)

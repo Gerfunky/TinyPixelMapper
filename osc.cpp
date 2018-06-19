@@ -2432,6 +2432,17 @@ void osc_DS_refresh()
 			osc_queu_MSG_float("/DS/ANUL", float(artnet_cfg.numU));
 			osc_queu_MSG_float("/DS/ANE", float(get_bool(ARTNET_ENABLE)));
 
+			osc_queu_MSG_float("/DS/NL/0", float(led_cfg.NrLeds));
+			osc_queu_MSG_float("/DS/NL/1", float(led_cfg.Data1NrLeds));
+			osc_queu_MSG_float("/DS/NL/2", float(led_cfg.Data2NrLeds));
+			osc_queu_MSG_float("/DS/NL/3", float(led_cfg.Data3NrLeds));
+			osc_queu_MSG_float("/DS/NL/4", float(led_cfg.Data4NrLeds));
+
+			osc_queu_MSG_float("/DS/SL/1", float(led_cfg.Data1StartLed));
+			osc_queu_MSG_float("/DS/SL/2", float(led_cfg.Data2StartLed));
+			osc_queu_MSG_float("/DS/SL/3", float(led_cfg.Data3StartLed));
+			osc_queu_MSG_float("/DS/SL/4", float(led_cfg.Data4StartLed));
+
 			//FFT
 			osc_queu_MSG_float("/DS/fft_master", float(get_bool(FFT_MASTER)));
 			osc_queu_MSG_float("/DS/fft_enable", float(get_bool(FFT_ENABLE)));
@@ -2446,23 +2457,35 @@ void osc_DS_refresh()
 			osc_send_out_float_MSG_buffer();   // send out some of it and yield
 			yield();
 
+			osc_queu_MSG_float("/DS/ledType/1/1", 0);
+			osc_queu_MSG_float("/DS/ledType/2/1", 0);
+			osc_queu_MSG_float("/DS/ledType/3/1", 0);
+			osc_queu_MSG_float("/DS/ledType/4/1", 0);
+			osc_queu_MSG_float("/DS/ledType/5/1", 0);
+			osc_queu_MSG_float("/DS/ledType/6/1", 0);
+
 			switch (led_cfg.ledMode)
 			{
 			case 0:
 				osc_queu_MSG_float("/DS/ledType/1/1", 1);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
 				break;
 			case 1:
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
 				osc_queu_MSG_float("/DS/ledType/2/1", 1);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
 				break;
 			case 2:
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
 				osc_queu_MSG_float("/DS/ledType/3/1", 1);
 				break;
+			case 3:;
+				osc_queu_MSG_float("/DS/ledType/4/1", 1);
+			break;	
+			case 4:
+			osc_queu_MSG_float("/DS/ledType/1/1", 0);
+				osc_queu_MSG_float("/DS/ledType/5/1", 1);
+			break;
+			case 5:
+				osc_queu_MSG_float("/DS/ledType/6/1", 1);
+			break;
+			
 			}
 
 			osc_queu_MSG_float("/DS/data/1/1", get_bool(DATA1_ENABLE));
@@ -2470,7 +2493,8 @@ void osc_DS_refresh()
 			osc_queu_MSG_float("/DS/data/3/1", get_bool(DATA3_ENABLE));
 			osc_queu_MSG_float("/DS/data/4/1", get_bool(DATA4_ENABLE));
 
-		
+
+		osc_multiply_send();
 
 		//debugMe(wifi_cfg.ipStaticLocal[i]);
 
@@ -2770,62 +2794,38 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 		}
 
 		int select_mode_int = select_mode_string.toInt();
-
+		osc_queu_MSG_float("/DS/ledType/1/1", 0);		
+		osc_queu_MSG_float("/DS/ledType/2/1", 0);
+		osc_queu_MSG_float("/DS/ledType/3/1", 0);
+		osc_queu_MSG_float("/DS/ledType/4/1", 0);
+		osc_queu_MSG_float("/DS/ledType/5/1", 0);
+		osc_queu_MSG_float("/DS/ledType/6/1", 0);
 
 		if (bool(msg.getFloat(0)) == true) {
 			switch (select_mode_int) {
 			case 1:
 				led_cfg.ledMode = 0;
 				osc_queu_MSG_float("/DS/ledType/1/1", 1);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
-				osc_queu_MSG_float("/DS/ledType/4/1", 0);
-				osc_queu_MSG_float("/DS/ledType/5/1", 0);
-				osc_queu_MSG_float("/DS/ledType/6/1", 0);
+
 				break;
 			case 2:
 				led_cfg.ledMode = 1;
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
 				osc_queu_MSG_float("/DS/ledType/2/1", 1);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
-				osc_queu_MSG_float("/DS/ledType/4/1", 0);
-				osc_queu_MSG_float("/DS/ledType/5/1", 0);
-				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
 			case 3:
 				led_cfg.ledMode = 2;
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
 				osc_queu_MSG_float("/DS/ledType/3/1", 1);
-				osc_queu_MSG_float("/DS/ledType/4/1", 0);
-				osc_queu_MSG_float("/DS/ledType/5/1", 0);
-				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
 			case 4:
 				led_cfg.ledMode = 3;
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
 				osc_queu_MSG_float("/DS/ledType/4/1", 1);
-				osc_queu_MSG_float("/DS/ledType/5/1", 0);
-				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;
 			case 5:
 				led_cfg.ledMode =4 ;
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
-				osc_queu_MSG_float("/DS/ledType/4/1", 0);
 				osc_queu_MSG_float("/DS/ledType/5/1", 1);
-				osc_queu_MSG_float("/DS/ledType/6/1", 0);
 				break;	
 			case 6:
 				led_cfg.ledMode =5 ;
-				osc_queu_MSG_float("/DS/ledType/1/1", 0);
-				osc_queu_MSG_float("/DS/ledType/2/1", 0);
-				osc_queu_MSG_float("/DS/ledType/3/1", 0);
-				osc_queu_MSG_float("/DS/ledType/4/1", 0);
-				osc_queu_MSG_float("/DS/ledType/5/1", 0);
 				osc_queu_MSG_float("/DS/ledType/6/1", 1);
 				break;	
 			}
@@ -2837,6 +2837,215 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 
 	} // end  new msg
 
+}
+
+
+void osc_DS_DATA_NL_in(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/s/AN/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[4];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	msg.getAddress(address, addrOffset - 4, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 1);		// get the address for row / collum
+
+
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//debugMe("row: " + String(row) + " col: " + String(collum));
+	if (bool(msg.getFloat(0)) == true) 
+	switch (collum)
+	{
+	case 0:		// DATA1 NL
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data1NrLeds = constrain(led_cfg.Data1NrLeds-  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data1StartLed);
+				break;
+			case 2:
+				led_cfg.Data1NrLeds = constrain(led_cfg.Data1NrLeds +  osc_miltiply_get(), 0,  MAX_NUM_LEDS-led_cfg.Data1StartLed);
+			break;
+		}
+		osc_queu_MSG_float("/DS/NL/1", float(led_cfg.Data1NrLeds));
+		break;
+
+	case 1:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data2NrLeds = constrain(led_cfg.Data2NrLeds-  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data2StartLed);
+				break;
+			case 2:
+				led_cfg.Data2NrLeds = constrain(led_cfg.Data2NrLeds +  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data2StartLed);
+			break;
+		}
+		osc_queu_MSG_float("/DS/NL/2", float(led_cfg.Data2NrLeds));
+	break;
+	case 2:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data3NrLeds = constrain(led_cfg.Data3NrLeds-  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data3StartLed);
+				break;
+			case 2:
+				led_cfg.Data3NrLeds = constrain(led_cfg.Data3NrLeds +  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data3StartLed);
+			break;
+		}
+		osc_queu_MSG_float("/DS/NL/3", float(led_cfg.Data3NrLeds));
+	break;
+	case 3:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data4NrLeds = constrain(led_cfg.Data4NrLeds-  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data4StartLed);
+				break;
+			case 2:
+				led_cfg.Data4NrLeds = constrain(led_cfg.Data4NrLeds +  osc_miltiply_get(), 0, MAX_NUM_LEDS-led_cfg.Data4StartLed);
+			break;
+		}
+		osc_queu_MSG_float("/DS/NL/4", float(led_cfg.Data4NrLeds));
+	break;
+	case 4:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.NrLeds = constrain(led_cfg.NrLeds-  osc_miltiply_get(), 0, MAX_NUM_LEDS);
+				break;
+			case 2:
+				led_cfg.NrLeds = constrain(led_cfg.NrLeds +  osc_miltiply_get(), 0, MAX_NUM_LEDS);
+			break;
+		}
+		osc_queu_MSG_float("/DS/NL/0", float(led_cfg.NrLeds));
+	break;
+	}
+}
+
+void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/s/AN/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[4];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	msg.getAddress(address, addrOffset - 4, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 1);		// get the address for row / collum
+
+
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//debugMe("row: " + String(row) + " col: " + String(collum));
+	if (bool(msg.getFloat(0)) == true) 	
+	switch (collum)
+	{
+	case 0:		// DATA1 NL
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data1StartLed = constrain(led_cfg.Data1StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data1NrLeds );
+				break;
+			case 2:
+				led_cfg.Data1StartLed = constrain(led_cfg.Data1StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data1NrLeds );
+			break;
+		}
+		osc_queu_MSG_float("/DS/SL/1", float(led_cfg.Data1StartLed));
+		break;
+
+	case 1:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data2StartLed = constrain(led_cfg.Data2StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data2NrLeds);
+				break;
+			case 2:
+				led_cfg.Data2StartLed = constrain(led_cfg.Data2StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data2NrLeds);
+			break;
+		}
+		osc_queu_MSG_float("/DS/SL/2", float(led_cfg.Data2StartLed));
+	break;
+	case 2:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data3StartLed = constrain(led_cfg.Data3StartLed -  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data3NrLeds);
+				break;
+			case 2:
+				led_cfg.Data3StartLed = constrain(led_cfg.Data3StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data3NrLeds);
+			break;
+		}
+		debugMe("in2");
+		osc_queu_MSG_float("/DS/SL/3", float(led_cfg.Data3StartLed));
+	break;
+		case 3:		// artnet NR universes
+		switch (row)
+		{
+			case 0:
+				led_cfg.Data4StartLed = constrain(led_cfg.Data4StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data4NrLeds);
+				break;
+			case 2:
+				led_cfg.Data4StartLed = constrain(led_cfg.Data4StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data4NrLeds);
+			break;
+		}
+		osc_queu_MSG_float("/DS/SL/4", float(led_cfg.Data4StartLed));
+	break;
+	
+	}
 }
 
 void osc_DS_led_data_on(OSCMessage &msg, int addrOffset) 
@@ -2868,7 +3077,7 @@ void osc_DS_led_data_on(OSCMessage &msg, int addrOffset)
 		}
 
 		int select_mode_int = select_mode_string.toInt();
-
+		select_mode_int = select_mode_int-1;
 		//boolean value = bool(msg.getFloat(0));
 		//if (bool(msg.getFloat(0)) == true) 
 		{
@@ -2962,6 +3171,11 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	msg.route("/ledType", osc_DS_led_type, addrOffset);
 	msg.route("/data", osc_DS_led_data_on, addrOffset);
 	debugMe("TXXX");
+
+
+	msg.route("/LNL", osc_DS_DATA_NL_in, addrOffset);
+	msg.route("/LSL", osc_DS_DATA_SL_in, addrOffset);
+
 
 	//debugMe("DS routing END");
 }

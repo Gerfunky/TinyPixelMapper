@@ -6,6 +6,7 @@
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
 	#include <ArduinoOTA.h>
+#	include <DNSServer.h>
 
 	#include "time.h"
 	#include <RemoteDebug.h> 
@@ -28,7 +29,7 @@
 
 
 RemoteDebug TelnetDebug;
-
+DNSServer dnsServer;
 
 // wifi
 wifi_Struct wifi_cfg;
@@ -322,6 +323,7 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
 		wifi_cfg.ipDGW = DEF_IP_DGW;
 		wifi_cfg.ipDNS = DEF_DNS;
+		wifi_cfg.wifiChannel = constrain(DEF_WIFI_CHANNEL,1,12);
 
 		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON) FS_wifi_write(0);
 	}
@@ -550,7 +552,9 @@ if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 				}
 				if(btn_read == false )
 				{
-					WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
+					WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel);
+					if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
+
 					write_bool(WIFI_POWER,true);
 					write_bool(WIFI_POWER_ON_BOOT, true);
 					debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));
@@ -559,6 +563,7 @@ if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 					{
 	
 						 WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
+						 if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
 						 debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
 					}
 
@@ -888,6 +893,9 @@ void wifi_setup()
 		
 		httpd_setup();
 
+		if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "*", wifi_cfg.ipStaticLocal);// WiFi.localIP());
+		else dnsServer.start(53, "*", IPAddress(192, 168, 4, 1));// WiFi.localIP());
+
 		WiFi_FFT_Setup();
 	}
 }
@@ -909,6 +917,7 @@ void wifi_loop()
 		WiFi_FFT_handle_loop();
 		yield();
 		TelnetDebug.handle();
+		 dnsServer.processNextRequest();
 
 }
 

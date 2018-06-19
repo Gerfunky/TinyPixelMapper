@@ -333,11 +333,12 @@ void	FS_wifi_write(uint8_t conf_nr)
 		conf_file.println("] ");
 
 
-		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN");
+		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l");
 		conf_file.print(String("[w:" + String(wifi_cfg.APname)));
 		conf_file.print(String(":" + String(wifi_cfg.APpassword)));
 		conf_file.print(String(":" + String(wifi_cfg.ssid)));
 		conf_file.print(String(":" + String(wifi_cfg.pwd)));
+		conf_file.print(String(":" + String(wifi_cfg.wifiChannel)));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipStaticLocal[0])));
 		conf_file.print(String("." + String(wifi_cfg.ipStaticLocal[1])));
@@ -360,6 +361,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 		conf_file.print(String("." + String(wifi_cfg.ipDNS[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ntp_fqdn)));
+		conf_file.print(String(":" + String(wifi_cfg.wifiChannel)));
 
 		
 
@@ -436,7 +438,8 @@ boolean FS_wifi_read(uint8_t conf_nr)
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.pwd, settingValue.length() + 1);
 
-				
+				uint8_t in_int = get_int_conf_value(conf_file, &character);	wifi_cfg.wifiChannel = uint8_t(constrain(in_int, 1, 12));
+
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipStaticLocal[i] = get_IP_conf_value(conf_file, &character);
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipSubnet[i] = get_IP_conf_value(conf_file, &character);
 				for (uint8_t i = 0; i < 4; i++) wifi_cfg.ipDGW[i] = get_IP_conf_value(conf_file, &character);
@@ -967,7 +970,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				if (type == 'D')
 				{
 					int in_int = 0;
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 		= uint8_t(constrain(in_int, 0, 2));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 		= uint8_t(constrain(in_int, 0, 5));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 		= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 	= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 			= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));

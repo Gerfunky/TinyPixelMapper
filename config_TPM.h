@@ -33,7 +33,7 @@
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
 	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 
-	#define DEF_AP_NAME			"TinyPixelMapper1"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperT"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
@@ -42,6 +42,8 @@
 	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
+
+	#define DEF_WIFI_CHANNEL    1								// the wifi channel 1-12
 
 	#define DEF_DNS				{172,16,222,1}					// DNS server
 	#define DEF_NTP_SERVER		"0.at.pool.ntp.org"				//"0.at.pool.ntp.org"	 // only FQDN's  no ip!! 	
@@ -88,7 +90,7 @@
 		#define DEF_LED_MODE    0
 														
 
-		#define NUM_LEDS		170*4		// NR of leds for mirror mode.												
+		#define NUM_LEDS		352 //w170*4		// NR of leds for mirror mode.												
 		#define DEF_DATA1_START_NR 0
 		#define DEF_DATA1_NR_LEDS  340 //170*4
 		#define DEF_DATA2_START_NR 0
@@ -96,9 +98,9 @@
 		#define DEF_DATA3_START_NR 50
 		#define DEF_DATA3_NR_LEDS  340 //170*4
 		#define DEF_DATA4_START_NR 0
-		#define DEF_DATA4_NR_LEDS  5 //170*4
+		#define DEF_DATA4_NR_LEDS  340 //170*4
 		
-		#define DEF_DATA1_ENABLE true
+		#define DEF_DATA1_ENABLE false
 		#define DEF_DATA2_ENABLE false
 		#define DEF_DATA3_ENABLE true
 		#define DEF_DATA4_ENABLE false
