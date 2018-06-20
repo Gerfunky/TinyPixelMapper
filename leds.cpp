@@ -14,6 +14,7 @@
 
 #include "config_TPM.h"    // Load the main config
 #include "leds.h"
+
 #include "tools.h"
 #include "wifi-ota.h"
 #include "config_fs.h"
@@ -23,7 +24,7 @@
 	#include <FastLED.h>
 	#include <RunningAverage.h>			// For Auto FFT
 
-
+#include "led_fx.h"
 
 	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 	
@@ -83,7 +84,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 };   
 
 
-
+CRGB leds_FFT_history[ MAX_NUM_LEDS];
 
 
 // ********************* LED Setup  FastLed
@@ -224,210 +225,6 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 // ************* FUNCTIONS
 
 
-// Fire2012 by Mark Kriegsman, July 2012
-// as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
-////   Modded to acept vaiabled for strip / form selection
-////	
-// This basic one-dimensional 'fire' simulation works roughly as follows:
-// There's a underlying array of 'heat' cells, that model the temperature
-// at each point along the line.  Every cycle through the simulation, 
-// four steps are performed:
-//  1) All cells cool down a little bit, losing heat to the air
-//  2) The heat from each cell drifts 'up' and diffuses a little
-//  3) Sometimes randomly new 'sparks' of heat are added at the bottom
-//  4) The heat from each cell is rendered as a color into the leds array
-//     The heat-to-color mapping uses a black-body radiation approximation.
-//
-// Temperature is in arbitrary units from 0 (cold black) to 255 (white hot).
-//
-// This simulation scales it self a bit depending on NUM_LEDS; it should look
-// "OK" on anywhere from 20 to 100 LEDs without too much tweaking. 
-//
-// I recommend running this simulation at anywhere from 30-100 frames per second,
-// meaning an interframe delay of about 10-35 milliseconds.
-//
-// Looks best on a high-density LED setup (60+ pixels/meter).
-//
-//
-// There are two main parameters you can play with to control the look and
-// feel of your fire: COOLING (used in step 1 above), and SPARKING (used
-// in step 3 above).
-//
-// COOLING: How much does the air cool as it rises?
-// Less cooling = taller flames.  More cooling = shorter flames.
-// Default 55, suggested range 20-100 
-#define COOLING  55
-
-// SPARKING: What chance (out of 255) is there that a new spark will be lit?
-// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-// Default 120, suggested range 50-200.
-#define SPARKING 120
-// Array of temperature readings at each simulation cell
-//static 
-	byte heat[MAX_NUM_LEDS];
-
-
-	uint8_t LEDS_FFT_get_fire_cooling()
-	{
-		return COOLING * 2;
-	}
-	uint8_t LEDS_FFT_get_fire_sparking()
-	{
-		return SPARKING  *2 ;
-
-	}
-
-
-void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror) //, bool mirrored)
-{
-
-	
-	uint8_t cooling = led_cfg.fire_cooling;
-	uint8_t sparking = led_cfg.fire_sparking;
-
-	/*if (true == get_bool(FFT_ENABLE))
-	{
-		cooling = LEDS_FFT_get_fire_cooling();
-		sparking = LEDS_FFT_get_fire_sparking();
-
-	} */
-
-	if (true == mirror)
-	{
-		uint16_t NR_leds_M = Nr_leds / 2;
-		if (isODDnumber(Nr_leds) == true) 
-		{
-			Nr_leds = Nr_leds / 2 +1;								// for the outer pass were just doing the mirror here	
-			
-		}
-		else
-		{
-			Nr_leds = NR_leds_M;
-			
-		}
-
-		uint16_t start_led_M = (start_led + Nr_leds);
-
-		//uint16_t start_led_M = (start_led + Nr_leds /2  );
-		//uint16_t NR_leds_M = Nr_leds / 2; 
-		
-
-		// Step 1.  Cool down every cell a little
-		for (int i = start_led_M; i < start_led_M + NR_leds_M; i++) {
-			heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NR_leds_M) + 2));
-		}
-
-		// Step 2.  Heat from each cell drifts 'up' and diffuses a little
-		if (true == reversed)
-		{
-			for (int k = (start_led_M + NR_leds_M - 1); k >= (start_led_M + 2); k--) {
-				heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
-			}
-		}
-		else
-		{
-			for (int k = (start_led_M); k < (start_led_M + NR_leds_M - 3); k++) {
-				heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3;
-			}
-		}
-		// Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-		// needs to spark at every strip / form start if selected
-		if (true == reversed)
-		{
-			if (random8() < sparking) {
-				int y = random8(7) + start_led_M;
-				heat[y] = qadd8(heat[y], random8(160, 255));
-			}
-		}
-		else
-		{
-			if (random8() < sparking) {
-				int y = -(random8(7)) + start_led_M + NR_leds_M - 1;
-				heat[y] = qadd8(heat[y], random8(160, 255));
-			}
-		}
-		// Step 4.  Map from heat cells to LED colors
-		for (int j = start_led_M; j < NR_leds_M + start_led_M; j++) {
-			// Scale the heat value from 0-255 down to 0-240
-			// for best results with color palettes.
-			byte colorindex = scale8(heat[j], 240);
-			//CRGB color = HeatColor(heat[j]);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
-			int pixelnumber;
-			/*if (reversed) {
-			pixelnumber = (Nr_leds + start_led - 1) - j;
-			}
-			else */
-			{
-				pixelnumber = j;
-			}
-			leds[pixelnumber] = color;
-		}
-
-	}
-	//else
-	{	
-		// Step 1.  Cool down every cell a little
-		for (int i = start_led; i < start_led + Nr_leds; i++) {
-			heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / Nr_leds) + 2));
-		}
-
-
-
-		// Step 2.  Heat from each cell drifts 'up' and diffuses a little
-		if (false == reversed)
-		{
-			for (int k = (start_led + Nr_leds - 1); k >= (start_led + 2) ; k--) {
-				heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
-			}
-		}
-		else 
-		{
-			for (int k = (start_led ); k < (start_led + Nr_leds -3); k++) {
-				heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3;
-			}
-		}
-		// Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-		// needs to spark at every strip / form start if selected
-		if (false == reversed)
-		{
-			if (random8() < sparking) {
-				int y = random8(7) + start_led;
-				heat[y] = qadd8(heat[y], random8(160, 255));
-			}
-		}
-		else
-		{
-				if (random8() < sparking) {
-					int y = -(random8(7)) + start_led + Nr_leds - 1;
-					heat[y] = qadd8(heat[y], random8(160, 255));
-				}
-		}
-		// Step 4.  Map from heat cells to LED colors
-		for (int j = start_led; j < Nr_leds + start_led; j++) {
-			// Scale the heat value from 0-255 down to 0-240
-			// for best results with color palettes.
-			//CRGB color = HeatColor(heat[j]);
-			byte colorindex = scale8(heat[j], 240);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
-			int pixelnumber;
-			/*if (reversed) {
-				pixelnumber = (Nr_leds + start_led - 1) - j;
-			}
-			else */ 
-			{
-				pixelnumber = j;
-			} 
-			leds[pixelnumber] = color;
-		}
-
-	}
-}
-
-
-
-
-
 
 // END Fire
 
@@ -466,7 +263,7 @@ float LEDS_get_FPS()
 void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED)
 {
 	// copy a strip to somewhere else 
-	if (nr_LED != 0 && (nr_LED + start_LED <= led_cfg.NrLeds))
+	if (nr_LED != 0 && (nr_LED + start_LED <= MAX_NUM_LEDS))
 	{
 		if (nr_LED < 0)	leds((start_LED - nr_LED - 1), (start_LED)) = leds((ref_LED), (ref_LED - nr_LED - 1));
 		else			leds((start_LED), (start_LED + nr_LED - 1)) = leds((ref_LED), (ref_LED + nr_LED - 1));
@@ -554,81 +351,6 @@ void LED_G_bit_run()
 //	}
 //}
 
-void LEDS_G_E_addGlitter(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *nr_leds)
-{	// Glitter effect origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
-	{
-		// leds(*start_led,*start_led+*nr_leds).fadeToBlackBy(chanceOfGlitter/2);
-		//leds(*start_led,*start_led+*nr_leds) =(CRGB::Black);
-		if (random8() < chanceOfGlitter)
-		{
-			leds[*start_led + (random16(*nr_leds))] += CRGB::White;
-		}
-
-		// Serial.print("G");	
-	}
-}
-
-
-void LEDS_G_E_addGlitterRainbow(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *nr_leds)
-{	// Glitter effect origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
-	{
-		//leds(start_led,start_led+nr_leds).fadeToBlackBy(chanceOfGlitter);
-		//leds(start_led,start_led+nr_leds) =(CRGB::Black);
-		/*if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Red;
-		if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Blue;
-		if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Green; */
-
-		if (random8() < chanceOfGlitter) leds[*start_led + (random16(*nr_leds))] += CHSV(random8(), 255, random8());
-		
-		//if (random8() < chanceOfGlitter / 4) leds[*start_led + (random16(*nr_leds))] += CRGB::White;
-	}
-}
-
-void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)		// sine dots speed = BPM
-{	// Make a dot  run  a sine wave over the leds normal speed = bpm additional leds = bpm +1
-	// origional code from  FastLed library examples DemoReel100
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
-	{
-		byte dothue = 0;
-		for (int i = 0; i < nr_dots; i++)
-		{
-			if (reversed == true)	leds[beatsin16(i + *jd_speed, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					leds[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			dothue += (255 / nr_dots);
-		}
-		
-	}
-}
-
-void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
-{	// Make a dot  run  a SAW wave over the leds normal speed = bpm additional leds = bpm +1
-	if (*nr_leds != 0 && (*nr_leds + *start_led <= led_cfg.NrLeds))
-	{
-		byte dothue = 0;
-		for (int i = 0; i < nr_dots; i++)
-		{
-			//leds[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			if (reversed == true) 	leds[map(beat16(i + *jd_speed),0 , 65535, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					leds[map(beat16(i + *jd_speed), 0, 65535, *start_led , *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			dothue += (255 / nr_dots);
-		}
-
-	}
-}
-
-
-
-void LEDS_G_E_Form_Fade_it(uint8_t fadyBy, uint16_t *Start_led, uint16_t *nr_leds)				// fade effect for form
-{	// Fade effect 
-
-	if (*nr_leds != 0 && (*nr_leds + *Start_led <= led_cfg.NrLeds))
-	{
-		leds(*Start_led, *Start_led + *nr_leds - 1).fadeToBlackBy(fadyBy);
-	}
-}
-
 
 void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do it
 {	// main routing function for effects
@@ -641,7 +363,9 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 		{
 			if (form_part[i + (z * 8)].nr_leds != 0)  // only run if we actualy have leds to do 
 			{										 // fade first so that we only fade the new effects on next go
-				if (bitRead(form_menu[z][_M_FADE_], i) == true)           LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
+			//form_part[i + (y * 8)].fade_value, MAX_FADE_VALUE)
+				//if (bitRead(form_menu[z][_M_FADE_], i) == true)           LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
+				if (form_part[i + (z * 8)].fade_value != 0 )         	  LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 
 				if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
@@ -875,7 +599,7 @@ void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_
 	byte mirror_div = 1;
 	byte mirror_add = 0;
 
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= led_cfg.NrLeds))
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= MAX_NUM_LEDS))
 	{
 
 		if (get_bool(BLEND_INVERT) == true)
@@ -955,7 +679,7 @@ void LEDS_pal_fill(boolean targetPaletteX, boolean currentBlending, uint8_t colo
 	byte mirror_div = 1;
 	byte mirror_add = 0;
 
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= led_cfg.NrLeds))
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= MAX_NUM_LEDS))
 	{
 
 		if (get_bool(BLEND_INVERT) == true)
@@ -1138,7 +862,7 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 		{
 			int led = i + (internal_universe * 170);
 
-			if (led < led_cfg.NrLeds) {
+			if (led < MAX_NUM_LEDS) {
 				// Do something
 				//DBG_OUTPUT_PORT.print("fetch DMX frame led : ");
 				//DBG_OUTPUT_PORT.println(led);
@@ -1376,9 +1100,26 @@ void LEDS_FFT_fill_leds(CRGB color_result, uint16_t *Start_led, uint16_t *number
 	}
 }
 
+void LEDS_FFT_history_run(CRGB color_result)
+{
+
+	for (int i = MAX_NUM_LEDS -1  ; i > 0  ; i--) 
+		{
+					leds_FFT_history[i] = leds_FFT_history[i - 1];	
+					
+		}
+
+	leds_FFT_history[0] = color_result;
+	//for (int i = 0 ; i < 3 ; i++)	
+	//debugMe(String(leds_FFT_history[i].red)); 
+		//debugMe(String(leds_FFT_history[i].red) + " : "  + String(leds_FFT_history[i].green) + " : " + String(leds_FFT_history[i].blue) + " x " + i );
+ 
+	
+}
+
 void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *number_of_leds, boolean dir, uint8_t jd_speed, uint8_t nr_dots)
 {
-	if (0 != *number_of_leds && (*number_of_leds + *Start_led <= led_cfg.NrLeds) )
+	if (0 != *number_of_leds && (*number_of_leds + *Start_led <= MAX_NUM_LEDS) )
 	{
 		
 		for (int i = 0; i < nr_dots; i++)
@@ -1393,6 +1134,83 @@ void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *numb
 
 }
 
+void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror)
+{
+		// form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i));
+
+	//debugMe("s:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
+	
+	byte mirror_div = 1;
+	byte mirror_add = 0;
+			if (mirror == true) 
+			{
+				mirror_div = 2;
+				if (isODDnumber(nr_leds) == true) 
+				{
+					mirror_add = 1; // dosmething
+				}
+			}
+	
+	if(nr_leds != 0)
+	{
+		if(!reversed)
+		{	
+			
+			for(uint16_t led_num = start_led; led_num < start_led + nr_leds/ mirror_div  + mirror_add  ; led_num ++ )
+			{
+				/*
+				leds[led_num].red = constrain(leds[led_num].red 	- leds_FFT_history[led_num - start_led  ].red, 0, 255) ;
+				leds[led_num].blue = constrain(leds[led_num].blue 	- leds_FFT_history[led_num - start_led].blue, 0, 255) ;
+				leds[led_num].green = constrain(leds[led_num].green - leds_FFT_history[led_num - start_led].green, 0, 255) ;
+				*/
+
+				leds[led_num].red 	= constrain(leds_FFT_history[led_num - start_led  ].red - leds[led_num].red , 0, 255) ;
+				leds[led_num].blue 	= constrain(leds_FFT_history[led_num - start_led].blue	- leds[led_num].blue , 0, 255) ;
+				leds[led_num].green = constrain(leds_FFT_history[led_num - start_led].green - leds[led_num].green , 0, 255) ;
+
+				//debugMe("nr:");
+				if (mirror == true) LEDS_Copy_strip(start_led + nr_leds / 2 + mirror_add , -nr_leds / 2 , start_led);	
+			}
+
+
+
+		}
+		else
+		{
+			
+			
+			//for(uint16_t led_num = start_led + nr_leds -1  ; led_num >= start_led   ; led_num -- ) 
+			//for(uint16_t led_num = start_led + nr_leds/ mirror_div - 1 + mirror_add  ; led_num >= start_led  ; led_num-- )  
+			//for(uint16_t led_num = start_led   ; led_num < start_led+ nr_leds ; led_num++ )
+			//for(uint16_t led_num = start_led + (nr_leds/mirror_div)  + mirror_add  ; led_num > start_led  ; led_num-- )  
+			for(uint16_t led_num = start_led   ; led_num < start_led + (nr_leds/mirror_div)  + mirror_add  ; led_num++ ) 
+			{
+
+				
+				/*
+				leds[led_num].red = constrain(leds[led_num].red     - leds_FFT_history[ nr_leds - (led_num - start_led) ].red, 0, 255) ;
+				leds[led_num].blue = constrain(leds[led_num].blue   - leds_FFT_history[ nr_leds - (led_num - start_led) ].blue, 0, 255) ;
+				leds[led_num].green = constrain(leds[led_num].green - leds_FFT_history[ nr_leds - (led_num - start_led) ].green, 0, 255) ;
+				*/
+				leds[led_num].red =   constrain(leds_FFT_history[ nr_leds/mirror_div + mirror_add - (led_num - start_led) ].red - leds[led_num].red , 0, 255) ;
+				leds[led_num].blue =  constrain(leds_FFT_history[ nr_leds/mirror_div + mirror_add - (led_num - start_led) ].blue - leds[led_num].blue , 0, 255) ;
+				leds[led_num].green = constrain(leds_FFT_history[ nr_leds/mirror_div + mirror_add - (led_num - start_led) ].green - leds[led_num].green, 0, 255) ;
+				//uint16_t led_seq = led_num - start_led;
+
+				//leds[led_num].red = constrain(leds[led_num].red + leds_FFT_history[  nr_leds - led_seq  ].red, 0, 255) ;
+				//leds[led_num].blue = constrain(leds[led_num].blue + leds_FFT_history[ nr_leds - led_seq].blue, 0, 255) ;
+				//leds[led_num].green = constrain(leds[led_num].green + leds_FFT_history[ nr_leds - led_seq].green, 0, 255) ;
+			//debugMe("e:");
+			if (mirror == true) LEDS_Copy_strip(start_led + nr_leds / 2  , -(nr_leds + mirror_add) / 2, start_led);	
+			}
+
+
+
+		}
+	
+	}	
+	//debugMe("e:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
+}
 
 void LEDS_FFT_check_leds(CRGB color_result)
 {	// check if FFT is selected and then send it to the leds
@@ -1403,18 +1221,20 @@ void LEDS_FFT_check_leds(CRGB color_result)
 		{
 			for (byte i = 0; i < 8; i++) 
 			{ 	
-			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true)		
-				LEDS_FFT_fill_leds(color_result, &part[i + (z * 8)].start_led, &part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_ONE_COLOR_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i));
-			
+			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == false )		
+							LEDS_FFT_fill_leds(color_result, &part[i + (z * 8)].start_led, &part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_ONE_COLOR_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i));
+			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == true ) 		LEDS_FFT_pal_mix(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_],i));
 			}	
 		}
 		for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
 		{
 			for (byte i = 0; i < 8; i++) 
 			{
-				if (bitRead(form_menu[z][_M_AUDIO_], i) == true)		LEDS_FFT_fill_leds(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i));   //, form_part[i + ( z * 8 ) ].ref_led) ;
+				if (bitRead(form_menu[z][_M_AUDIO_], i) == true  && bitRead(form_menu[z][_M_STRIP_], i) == false )			LEDS_FFT_fill_leds(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i));   //, form_part[i + ( z * 8 ) ].ref_led) ;
+				if (bitRead(form_menu[z][_M_AUDIO_], i) == true  && bitRead(form_menu[z][_M_STRIP_], i) == true )  			LEDS_FFT_pal_mix(form_part[i + (z * 8)].start_led,form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_],i ) );
 				//if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true) ramdom_audio_dot(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
 				if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)    LEDS_FFT_running_dot(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].juggle_nr_dots);
+				
 			}
 		}
 	}
@@ -1554,10 +1374,8 @@ void LEDS_loop()
 	{
 
 			
-			CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
+
 			
-			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
-			yield();
 		
 		{
 			//debugMe("IN LED LOOP - disabled fft");
@@ -1574,6 +1392,11 @@ void LEDS_loop()
 				LEDS_pal_routing();
 			}
 
+			CRGB color_result = LEDS_FFT_process();  // Get the color from the FFT data
+			
+			LEDS_FFT_history_run( color_result);
+			LEDS_FFT_check_leds(color_result);      // send the color to the leds.
+			yield();
 			/*
 			uint8_t buffer;
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory

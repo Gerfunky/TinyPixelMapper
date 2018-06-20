@@ -746,9 +746,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				strip_no = get_int_conf_value(conf_file, &character);
 				
 				// debugMe(get_int_conf_value(conf_file, &character));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
 				//part[strip_no].start_led = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].nr_leds = constrain(in_int, 0,led_cfg.NrLeds);
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].nr_leds = constrain(in_int, 0,MAX_NUM_LEDS);
 				
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_start = in_int;
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add = in_int; 	
@@ -804,9 +804,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			else if (type == 'c')
 			{
 			strip_no = get_int_conf_value(conf_file, &character);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , led_cfg.NrLeds);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , led_cfg.NrLeds - copy_leds[strip_no].start_led);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , led_cfg.NrLeds);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , MAX_NUM_LEDS);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , MAX_NUM_LEDS - copy_leds[strip_no].start_led);
+			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , MAX_NUM_LEDS);
 			bitWrite(copy_leds_mode[get_strip_menu_bit(strip_no)], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 
 
