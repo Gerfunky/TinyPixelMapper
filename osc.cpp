@@ -62,7 +62,11 @@
 	extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
 	extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
 	extern byte fft_menu[3];
+	extern byte fft_data_menu[3];
+	extern byte fft_data_bri;
 	extern fft_led_cfg_struct fft_led_cfg;
+	extern uint8_t fft_bin_autoTrigger;
+	extern byte fft_data_fps;
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
 
@@ -909,16 +913,22 @@ void osc_forms_send(byte y) {
 
 		for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
 		{
-			osc_queu_MSG_float(String("/form/T/" + String(y) + "/" + String(z + 1) + "/" + String(i + 1)), float(bitRead(form_menu[y][z], i)));
-
+			if(z < 16) 							osc_queu_MSG_float(String("/form/T/" + String(y) + "/" + String(z + 1) + "/" + String(i + 1)), float(bitRead(form_menu[y][z], i)));
+			else if(z < 28)						osc_queu_MSG_float(String("/form/F/" + String(y) + "/" + String(z + 1 -16) + "/" + String(i + 1)), float(bitRead(form_menu[y][z], i)));
+			else if(z < _M_NR_FORM_OPTIONS_)	osc_queu_MSG_float(String("/form/X/" + String(y) + "/" + String(z + 1 -28) + "/" + String(i + 1)), float(bitRead(form_menu[y][z], i)));
 		}
 		//debugMe(String("for 1 done"), true);
 		
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_part[i + (y * 8)].start_led));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_part[i + (y * 8)].nr_leds));
 
-		osc_queu_MSG_float(String("/form/FA/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].fade_value, MAX_FADE_VALUE));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/FAL/" + String(i + 1)), float(form_part[i + (y * 8)].fade_value));
+
+		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].fade_value, MAX_FADE_VALUE));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/FFL/" + String(i + 1)), float(form_part[i + (y * 8)].fade_value));
+		
+		osc_queu_MSG_float(String("/form/FA/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].FX_level, 255));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/FAL/" + String(i + 1)), float(form_part[i + (y * 8)].FX_level));
+		
 		osc_queu_MSG_float(String("/form/GL/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].glitter_value, MAX_GLITTER_VALUE));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/GLL/" + String(i + 1)), float(form_part[i + (y * 8)].glitter_value));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/JDL/" + String(i + 1)), float(form_part[i + (y * 8)].juggle_nr_dots));
@@ -1180,10 +1190,15 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 
 	if (address[0] == 'F' && address[1] == 'A') 
 	{
+		form_part[select_mode_int + z * 8].FX_level = (msg.getFloat(0) * 255);  //byte(msg.getFloat(0) * 255);
+		outvalue = float(form_part[select_mode_int + z * 8].FX_level);
+	}
+
+	if (address[0] == 'F' && address[1] == 'F') 
+	{
 		form_part[select_mode_int + z * 8].fade_value = (msg.getFloat(0) * MAX_FADE_VALUE);  //byte(msg.getFloat(0) * 255);
 		outvalue = float(form_part[select_mode_int + z * 8].fade_value);
 	}
-
 
 
 
@@ -1203,7 +1218,7 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 	if (address[0] == 'J' && address[1] == 'S') 
 	{
 
-		form_part[select_mode_int + z * 8].juggle_speed = msg.getFloat(0) * MAX_JD_SPEED_VALUE;  //byte(msg.getFloat(0) * 255);
+		form_part[select_mode_int + z * 8].juggle_speed = constrain(msg.getFloat(0) * MAX_JD_SPEED_VALUE, 0, MAX_JD_SPEED_VALUE);  //byte(msg.getFloat(0) * 255);
 
 																								 //outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
@@ -1250,15 +1265,15 @@ void osc_forms_toggle_rec(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/
 
 	for (byte i = 0; i < sizeof(address); i++) {
 		if (address[i] == '/') {
-			switch_bool = true;
+			switch_bool = true;  
 
 		}
 		else if (switch_bool == false) {
-			option_string = option_string + address[i];
+			option_string = option_string + address[i];   // row
 
 		}
 		else
-			form_string = form_string + address[i];
+			form_string = form_string + address[i];      // col
 
 	}
 
@@ -1271,6 +1286,111 @@ void osc_forms_toggle_rec(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/
 
 }
 
+void osc_forms_toggle_rec_fx(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/row/collum 
+{															
+				// :/bit/option/form
+				// recive OSC message for STRIPS
+				// OSC MESSAGE :/form/f?/   T/?/?
+
+				//DBG_OUTPUT_PORT.println("lol"); 
+
+				//byte addrOffset = 7+6+1 ;																				
+
+	String bit_string;
+	String option_string;
+	String form_string;
+
+	int bit_int;
+	int option_int;
+	int form_int;
+
+	char address[6];
+	bool switch_bool = false;
+
+	msg.getAddress(address, addrOffset + 1, 1);
+	bit_string = bit_string + address[0];
+
+
+	msg.getAddress(address, addrOffset + 3);
+	//DBG_OUTPUT_PORT.println(address);
+
+	for (byte i = 0; i < sizeof(address); i++) {
+		if (address[i] == '/') {
+			switch_bool = true;  
+
+		}
+		else if (switch_bool == false) {
+			option_string = option_string + address[i];   // row
+
+		}
+		else
+			form_string = form_string + address[i];      // col
+
+	}
+
+	bit_int = bit_string.toInt();
+	option_int = option_string.toInt() - 1;
+	form_int = form_string.toInt() - 1;
+
+	option_int = option_int + 16;
+
+	bitWrite(form_menu[bit_int][option_int], form_int, bool(msg.getFloat(0)));
+
+}
+
+void osc_forms_toggle_rec_fx2(OSCMessage &msg, int addrOffset) // OSC: /form/T:/bit/row/collum 
+{															
+				// :/bit/option/form
+				// recive OSC message for STRIPS
+				// OSC MESSAGE :/form/f?/   T/?/?
+
+				//DBG_OUTPUT_PORT.println("lol"); 
+
+				//byte addrOffset = 7+6+1 ;																				
+
+	String bit_string;
+	String option_string;
+	String form_string;
+
+	int bit_int;
+	int option_int;
+	int form_int;
+
+	char address[6];
+	bool switch_bool = false;
+
+	msg.getAddress(address, addrOffset + 1, 1);
+	bit_string = bit_string + address[0];
+
+
+	msg.getAddress(address, addrOffset + 3);
+	//DBG_OUTPUT_PORT.println(address);
+
+	for (byte i = 0; i < sizeof(address); i++) {
+		if (address[i] == '/') {
+			switch_bool = true;  
+
+		}
+		else if (switch_bool == false) {
+			option_string = option_string + address[i];   // row
+
+		}
+		else
+			form_string = form_string + address[i];      // col
+
+	}
+
+	bit_int = bit_string.toInt();
+	option_int = option_string.toInt() - 1;
+	form_int = form_string.toInt() - 1;
+
+	option_int = option_int + 28;
+
+	bitWrite(form_menu[bit_int][option_int], form_int, bool(msg.getFloat(0)));
+
+}
+
+
 void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
 	debugMe("in Form Routing");
@@ -1280,6 +1400,8 @@ void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 
 	//toggle buttons 
 	msg.route("/T", osc_forms_toggle_rec, addrOffset);			// form menu toggles
+	msg.route("/F", osc_forms_toggle_rec_fx, addrOffset);			// form menu toggles
+	msg.route("/X", osc_forms_toggle_rec_fx2, addrOffset);			// form menu toggles
 														//msg.route("/f1/T",  osc_rec_forms, addrOffset);
 
 														// push buttons
@@ -1293,6 +1415,7 @@ void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 
 	// Faders
 	msg.route("/FA", osc_forms_fader_rec, addrOffset);	// Fade
+	msg.route("/FF", osc_forms_fader_rec, addrOffset);	// Fade
 	msg.route("/GL", osc_forms_fader_rec, addrOffset);	// glitter
 	msg.route("/JS", osc_forms_fader_rec, addrOffset);	// juggle speed
 
@@ -1617,7 +1740,7 @@ void  osc_fft_send_info() {
 		addr = String("/fft/fader/" + String(i+1));
 		addr.toCharArray(addr_char, 13);
 		bundle_out.add(addr_char).add(osc_byte_tofloat(fft_data[i].trigger));*/
-
+	
 
 		for (uint8_t z = 0; z < 3; z++)
 		{
@@ -1625,11 +1748,15 @@ void  osc_fft_send_info() {
 			/*addr = String("/fft/tg/" + String(z) + "/" + String(i+1) + "/1");
 			addr.toCharArray(addr_char, 14);
 			bundle_out.add(addr_char).add(float(bitRead(fft_menu[z], i)));*/
+			osc_queu_MSG_float(String("/fft/FD/" + String(z) + "/" + String(i + 1) + "/1"), float(bitRead(fft_data_menu[z], i)));
+			
 		}
-
+		osc_queu_MSG_float(String("/fft/FB/0/" + String(i + 1) + "/1"), float(bitRead(fft_data_bri, i)));
+		osc_queu_MSG_float(String("/fft/FT/0/" + String(i + 1) + "/1"), float(bitRead(fft_bin_autoTrigger, i)));
+		osc_queu_MSG_float(String("/fft/FS/0/" + String(i + 1) + "/1"), float(bitRead(fft_data_fps, i)));
+	
 
 	}
-
 
 
 
@@ -1818,10 +1945,289 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 	bitWrite(fft_menu[select_bit], row, value);
 
 	msg.getAddress(address, 0);
+
+
+
+
+
+
 #ifndef OSC_MC_SERVER_DISABLED
 	if (address[1] != 'x')
 		osc_mc_send(String("/x/fft/tga/" + String(select_bit)), byte(fft_menu[select_bit]));
 #endif
+
+	//outbuffer = String("/fft/tg/" + String(select_bit) + "" + String() );
+	//osc_send_MSG(outbuffer, outvalue);
+
+}
+
+
+void osc_fft_rec_toggleData(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/fft/tg/z/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[14];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	String outbuffer = "/s/ANL";		// OSC return address
+	float outvalue;						// return value to labels
+
+	String out_add_label;				// address label
+
+	memset(address, 0, sizeof(address));
+
+	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+	
+	debugMe(address);
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
+													//DBG_OUTPUT_PORT.println(address);
+	debugMe(address);
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
+	boolean value = msg.getFloat(0);
+	//bitWrite(fft_menu[select_bit], collum, bool(msg.getFloat(0));
+	bitWrite(fft_data_menu[select_bit], row, value);
+
+	msg.getAddress(address, 0);
+
+
+
+
+
+
+//#ifndef OSC_MC_SERVER_DISABLED
+//	if (address[1] != 'x')
+//		osc_mc_send(String("/x/fft/tga/" + String(select_bit)), byte(fft_menu[select_bit]));
+//#endif
+
+	//outbuffer = String("/fft/tg/" + String(select_bit) + "" + String() );
+	//osc_send_MSG(outbuffer, outvalue);
+
+}
+
+void osc_fft_rec_toggleBri(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/fft/tg/z/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[14];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	String outbuffer = "/s/ANL";		// OSC return address
+	float outvalue;						// return value to labels
+
+	String out_add_label;				// address label
+
+	memset(address, 0, sizeof(address));
+
+	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+	
+	debugMe(address);
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
+													//DBG_OUTPUT_PORT.println(address);
+	debugMe(address);
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
+	boolean value = msg.getFloat(0);
+	//bitWrite(fft_menu[select_bit], collum, bool(msg.getFloat(0));
+	bitWrite(fft_data_bri, row, value);
+
+	msg.getAddress(address, 0);
+
+
+//#ifndef OSC_MC_SERVER_DISABLED
+//	if (address[1] != 'x')
+//		osc_mc_send(String("/x/fft/tga/" + String(select_bit)), byte(fft_menu[select_bit]));
+//#endif
+
+	//outbuffer = String("/fft/tg/" + String(select_bit) + "" + String() );
+	//osc_send_MSG(outbuffer, outvalue);
+
+}
+
+void osc_fft_rec_toggleAutoTrigger(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/fft/tg/z/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[14];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	String outbuffer = "/s/ANL";		// OSC return address
+	float outvalue;						// return value to labels
+
+	String out_add_label;				// address label
+
+	memset(address, 0, sizeof(address));
+
+	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+	
+	debugMe(address);
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
+													//DBG_OUTPUT_PORT.println(address);
+	debugMe(address);
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
+	boolean value = msg.getFloat(0);
+	//bitWrite(fft_menu[select_bit], collum, bool(msg.getFloat(0));
+	bitWrite(fft_bin_autoTrigger, row, value);
+
+	msg.getAddress(address, 0);
+
+
+//#ifndef OSC_MC_SERVER_DISABLED
+//	if (address[1] != 'x')
+//		osc_mc_send(String("/x/fft/tga/" + String(select_bit)), byte(fft_menu[select_bit]));
+//#endif
+
+	//outbuffer = String("/fft/tg/" + String(select_bit) + "" + String() );
+	//osc_send_MSG(outbuffer, outvalue);
+
+}
+
+void osc_fft_rec_toggleFPS(OSCMessage &msg, int addrOffset)
+{
+	// OSC MESSAGE :/fft/tg/z/Row/collum  
+
+	String collum_string;
+	String row_string;
+	char address[14];					// to pick info aut of the msg address
+										//char address_out[20];	
+	int select_bit = 0;
+	String select_bit_string;
+	bool switch_bool = false;			// for toggels to get row and collum
+
+	//String outbuffer = "/s/ANL";		// OSC return address
+	//float outvalue;						// return value to labels
+
+	//String out_add_label;				// address label
+
+	memset(address, 0, sizeof(address));
+
+	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
+	select_bit_string = select_bit_string + address[0];
+	select_bit = select_bit_string.toInt();
+	
+	debugMe(address);
+	memset(address, 0, sizeof(address));				// rest the address to blank
+
+
+	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
+													//DBG_OUTPUT_PORT.println(address);
+	debugMe(address);
+	for (byte i = 0; i < sizeof(address); i++)
+	{
+		if (address[i] == '/') {
+			switch_bool = true;
+		}
+		else if (switch_bool == false)
+		{
+			row_string = row_string + address[i];
+		}
+		else
+			collum_string = collum_string + address[i];
+	}
+
+	int row = row_string.toInt() - 1;
+	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+
+	memset(address, 0, sizeof(address));
+	byte msg_size = msg.size();
+
+	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
+	boolean value = msg.getFloat(0);
+	//bitWrite(fft_menu[select_bit], collum, bool(msg.getFloat(0));
+	bitWrite(fft_data_fps, row, value);
+
+	msg.getAddress(address, 0);
+
+
+//#ifndef OSC_MC_SERVER_DISABLED
+//	if (address[1] != 'x')
+//		osc_mc_send(String("/x/fft/tga/" + String(select_bit)), byte(fft_menu[select_bit]));
+//#endif
 
 	//outbuffer = String("/fft/tg/" + String(select_bit) + "" + String() );
 	//osc_send_MSG(outbuffer, outvalue);
@@ -1936,9 +2342,17 @@ void osc_fft_routing(OSCMessage &msg, int addrOffset) {
 	
 	msg.route("/tg", osc_fft_rec_toggleRGB, addrOffset);
 	
+	msg.route("/FD", osc_fft_rec_toggleData, addrOffset);
+
+	msg.route("/FB", osc_fft_rec_toggleBri, addrOffset);
+
+	msg.route("/FT", osc_fft_rec_toggleAutoTrigger, addrOffset);
+
+	msg.route("/FS", osc_fft_rec_toggleFPS, addrOffset);
 
 	if (bool(msg.getFloat(0)) == true)
 	{
+
 		msg.route("/AT", osc_fft_rec_toggle, addrOffset);
 		msg.route("/save", osc_fft_save, addrOffset);
 		msg.route("/load", osc_fft_load, addrOffset);

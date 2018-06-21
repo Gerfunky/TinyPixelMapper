@@ -140,6 +140,7 @@
 			int		rotate;				// ???
 		  uint8_t	index_add_pal;		// ???
 		  uint16_t	indexLong;
+		  uint8_t 	FX_level;			//
 	  };
 
 
@@ -154,9 +155,9 @@
 	  };
 
 
-#define _M_NR_OPTIONS_     8			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  16			// Nr of options for forms 
-	  enum strip_options {
+#define _M_NR_OPTIONS_     10			// hass less options compared to forms!!
+#define _M_NR_FORM_OPTIONS_  32			// Nr of options for forms 
+	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
 		  _M_AUDIO_REVERSED = 1,
 		  _M_STRIP_ = 2,				// Display Strip
@@ -174,6 +175,47 @@
 		  _M_SAW_DOT_ = 13,				// Saw wave dots
 		  _M_TEST_FX = 14,
 		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
+	  }; */
+
+	  enum strip_options {
+		  _M_AUDIO_REVERSED 	= 0,
+		  _M_AUDIO_ 			= 1,				// Display FFT
+		  _M_AUDIO_PAL_MASK		= 2,			// use the pallete to mask the fft data or +-
+		  _M_AUDIO_SUB_FROM_FFT = 3,		//  add or subtract the pallete from the FFT data
+		  _M_MIRROR_OUT_ 		= 4,			// Mirror it
+		  _M_ONE_COLOR_ 		= 5,			// Make all the leds show one color
+		  _M_STRIP_				= 6,				// Display Strip
+		  _M_REVERSED_ 			= 7,				// reversed mode
+		  
+		  _M_PALETTE_			= 8,				// Pallete 0 or 1
+		  _M_BLEND_ 			= 9,				// Fade or Hard Blend
+		  _M_FX_MASK			= 10,
+		  _M_FX_SUBTRACT		= 11,				// add the FX channel to the leds
+		  _M_FX1_ON  			= 12,			// 
+		  _M_AUDIO_FX2  		= 13,			//
+		  _M_AUDIO_FX3  		= 14,			//
+		  _M_AUDIO_FX4  		= 15,			// 
+		  
+		  _M_GLITTER_FROM_FFT_DATA1 = 16, 
+		  _M_RBOW_GLITTER_ 		= 17,			// Random Glitter
+		  _M_GLITTER_			= 18,				// White Glitter
+		  _M_JUGGLE_ 			= 19,				// Sine wave dots
+		  _M_SAW_DOT_ 			= 20,				// Saw wave dots
+		  _M_FIRE_				= 21,				// Fire animation
+		  _M_FIRE_PAL			= 22,				// Fire animation
+		  _M_AUDIO_DOT_ 		= 23,			// 
+
+		  _M_AUDIO_FX5  		= 24,			//
+		  _M_AUDIO_FX6  		= 25,			//
+		  _M_AUDIO_FX7  		= 26,			//
+		  _M_AUDIO_FX8  		= 27,			//
+		  _M_AUDIO_FX9  		= 28,			//
+		  _M_AUDIO_FX10  		= 29,			//
+		  _M_AUDIO_FX11  		= 30,			//
+		  _M_AUDIO_FX12  		= 31,			//
+		  
+		  
+
 	  };
 
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET

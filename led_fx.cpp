@@ -249,8 +249,9 @@ void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, ui
 		byte dothue = 0;
 		for (int i = 0; i < nr_dots; i++)
 		{
-			if (reversed == true)	led_FX_out[beatsin16(i + *jd_speed, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			//if (reversed == true)	led_FX_out[beatsin16(i + *jd_speed, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			//else
+            					led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
 			dothue += (255 / nr_dots);
 		}
 		

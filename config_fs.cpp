@@ -37,9 +37,12 @@
 	extern fft_led_cfg_struct fft_led_cfg;
 	extern fft_data_struct fft_data[7];
 	extern byte fft_menu[3];
+	extern byte fft_data_menu[3];
+	extern byte fft_data_bri;
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-
+	extern uint8_t fft_bin_autoTrigger;
+	extern byte fft_data_fps;
 
 
 
@@ -634,13 +637,16 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_part[form].index_add_pal)));
 
 			conf_file.print(String(":" + String(form_part[form].fade_value)));
+			conf_file.print(String(":" + String(form_part[form].FX_level)));
 			conf_file.print(String(":" + String(form_part[form].scroll_speed)));
 			conf_file.print(String(":" + String(form_part[form].glitter_value)));
 			conf_file.print(String(":" + String(form_part[form].juggle_nr_dots)));
 			conf_file.print(String(":" + String(form_part[form].juggle_speed)));
 			conf_file.print(String(":" + String(form_part[form].rotate)));
+			
 
 			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
+			
 			conf_file.println("] ");
 
 		} 
@@ -679,7 +685,13 @@ void FS_play_conf_write(uint8_t conf_nr)
 			{
 				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
 			}
-
+			for (int color = 0; color < 3; color++)
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_menu[color]), bin))));
+			}
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_bri), bin))));
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_bin_autoTrigger), bin))));
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
 			conf_file.println("] ");
 		}
 
@@ -787,10 +799,11 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add_pal = in_int;
 
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fade_value = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].FX_level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].scroll_speed = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].glitter_value = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_nr_dots = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_speed = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].rotate = in_int;
 
 
@@ -837,8 +850,13 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				{
 					bitWrite(fft_menu[color], bit_no, get_bool_conf_value(conf_file, &character));
 				}
-
-
+				for (uint8_t color = 0; color < 3; color++)
+				{
+					bitWrite(fft_data_menu[color], bit_no, get_bool_conf_value(conf_file, &character));
+				}
+				bitWrite(fft_data_bri, bit_no, get_bool_conf_value(conf_file, &character));
+				bitWrite(fft_bin_autoTrigger, bit_no, get_bool_conf_value(conf_file, &character));
+				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
 			
 			else if (type == 'T')			// FFT settings to load in play config
