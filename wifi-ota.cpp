@@ -553,8 +553,8 @@ if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 				if(btn_read == false )
 				{
 					WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel);
-					if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
-
+					//if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
+					write_bool(STATIC_IP_ENABLED,false);
 					write_bool(WIFI_POWER,true);
 					write_bool(WIFI_POWER_ON_BOOT, true);
 					debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));

@@ -89,6 +89,7 @@
 		uint8_t value;			// actual value
 		uint8_t avarage;
 		uint8_t autoFFT;
+		
 	};
 
 	struct fft_led_cfg_struct
@@ -154,22 +155,25 @@
 
 
 #define _M_NR_OPTIONS_     8			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  14			// Nr of options for forms 
+#define _M_NR_FORM_OPTIONS_  16			// Nr of options for forms 
 	  enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
-		  _M_MIRROR_OUT_ = 1,			// Mirror it 
+		  _M_AUDIO_REVERSED = 1,
 		  _M_STRIP_ = 2,				// Display Strip
-		  _M_REVERSED_ = 3,				// reversed mode
-		  _M_PALETTE_ = 4,				// Pallete 0 or 1
-		  _M_BLEND_ = 5,				// Fade or Hard Blend
-		  _M_ONE_COLOR_ = 6,			// Make all the leds show one color
-		  _M_FIRE_	= 7,
-		  _M_FADE_ = 8,					// Fade the leds by amount
+  		  _M_REVERSED_ = 3,				// reversed mode
+		  _M_MIRROR_OUT_ = 4,			// Mirror it
+		  _M_PALETTE_ = 5,				// Pallete 0 or 1
+		  _M_BLEND_ = 6,				// Fade or Hard Blend
+		  _M_ONE_COLOR_ = 7,			// Make all the leds show one color
+		  _M_FIRE_	= 8,				// Fire animation
+		  //_M_FADE_ = 8,				// Fade the leds by amount
 		  _M_RBOW_GLITTER_ = 9,			// Random Glitter
 		  _M_GLITTER_ = 10,				// White Glitter
 		  _M_AUDIO_DOT_ = 11,			// Audio Glitter
 		  _M_JUGGLE_ = 12,				// Sine wave dots
 		  _M_SAW_DOT_ = 13,				// Saw wave dots
+		  _M_TEST_FX = 14,
+		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
 	  };
 
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
@@ -203,6 +207,10 @@
 	  void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
 	  uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
 	  void LEDS_show(); 																		//wifi-ota
+	 void LEDS_PAL_invert(uint8_t pal );
+	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
+
+
 
 
 #endif

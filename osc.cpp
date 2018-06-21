@@ -1873,7 +1873,7 @@ void osc_fft_rec_fader(OSCMessage &msg, int addrOffset) {
 		osc_mc_send(String("/x/fft/fader/" + String(fader_no + 1)), outvalue / 255);
 #endif		
 	}
-
+	
 }
 
 
@@ -2179,7 +2179,7 @@ void osc_master_routing(OSCMessage &msg, int addrOffset)
 
 		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); }   // global_blend_switch = bool(msg.getFloat(0));
 
-		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); }
+		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));}
 		//if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
 		if (msg.fullMatch("/FPS", addrOffset))			osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));
 
@@ -2393,6 +2393,9 @@ void osc_pal_routing(OSCMessage &msg, int addrOffset) {
 	msg.route("/1", osc_rec_pal_fader, addrOffset);
 	debugMe("pal3");
 	
+	if (msg.fullMatch("/inv/0", addrOffset) && bool(msg.getFloat(0)) == true) {LEDS_PAL_invert(0) ; osc_send_pal_info(0); }
+	if (msg.fullMatch("/inv/1", addrOffset) && bool(msg.getFloat(0)) == true) {LEDS_PAL_invert(1) ; osc_send_pal_info(1); }
+
 	msg.route("/load", osc_rec_pal_load, addrOffset);
 	debugMe("pal4");
 	//DBG_OUTPUT_PORT.println("yeah");      

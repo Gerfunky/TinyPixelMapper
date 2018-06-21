@@ -5,7 +5,7 @@
 extern led_cfg_struct led_cfg;
 extern CRGBArray<MAX_NUM_LEDS> leds;
 extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];	
-
+extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
 
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
@@ -77,6 +77,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 
 	if (true == mirror)
 	{
+        
 		uint16_t NR_leds_M = Nr_leds / 2;
 		if (isODDnumber(Nr_leds) == true) 
 		{
@@ -144,7 +145,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			}
-			leds[pixelnumber] = color;
+			led_FX_out[pixelnumber] = color;
 		}
 
 	}
@@ -201,7 +202,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			} 
-			leds[pixelnumber] = color;
+			led_FX_out[pixelnumber] = color;
 		}
 
 	}
@@ -216,7 +217,7 @@ void LEDS_G_E_addGlitter(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *
 		//leds(*start_led,*start_led+*nr_leds) =(CRGB::Black);
 		if (random8() < chanceOfGlitter)
 		{
-			leds[*start_led + (random16(*nr_leds))] += CRGB::White;
+			led_FX_out[*start_led + (random16(*nr_leds))] += CRGB::White;
 		}
 
 		// Serial.print("G");	
@@ -230,13 +231,13 @@ void LEDS_G_E_addGlitterRainbow(fract8 chanceOfGlitter, uint16_t *start_led, uin
 	{
 		//leds(start_led,start_led+nr_leds).fadeToBlackBy(chanceOfGlitter);
 		//leds(start_led,start_led+nr_leds) =(CRGB::Black);
-		/*if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Red;
-		if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Blue;
-		if (random8() < chanceOfGlitter / 3) leds[*start_led + (random16(*nr_leds))] += CRGB::Green; */
+		/*if (random8() < chanceOfGlitter / 3) led_FX_out[*start_led + (random16(*nr_leds))] += CRGB::Red;
+		if (random8() < chanceOfGlitter / 3) led_FX_out[*start_led + (random16(*nr_leds))] += CRGB::Blue;
+		if (random8() < chanceOfGlitter / 3) led_FX_out[*start_led + (random16(*nr_leds))] += CRGB::Green; */
 
-		if (random8() < chanceOfGlitter) leds[*start_led + (random16(*nr_leds))] += CHSV(random8(), 255, random8());
+		if (random8() < chanceOfGlitter) led_FX_out[*start_led + (random16(*nr_leds))] += CHSV(random8(), 255, random8());
 		
-		//if (random8() < chanceOfGlitter / 4) leds[*start_led + (random16(*nr_leds))] += CRGB::White;
+		//if (random8() < chanceOfGlitter / 4) led_FX_out[*start_led + (random16(*nr_leds))] += CRGB::White;
 	}
 }
 
@@ -248,8 +249,8 @@ void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, ui
 		byte dothue = 0;
 		for (int i = 0; i < nr_dots; i++)
 		{
-			if (reversed == true)	leds[beatsin16(i + *jd_speed, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					leds[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			if (reversed == true)	led_FX_out[beatsin16(i + *jd_speed, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			else					led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
 			dothue += (255 / nr_dots);
 		}
 		
@@ -263,9 +264,9 @@ void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, u
 		byte dothue = 0;
 		for (int i = 0; i < nr_dots; i++)
 		{
-			//leds[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			if (reversed == true) 	leds[map(beat16(i + *jd_speed),0 , 65535, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					leds[map(beat16(i + *jd_speed), 0, 65535, *start_led , *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			//led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			if (reversed == true) 	led_FX_out[map(beat16(i + *jd_speed),0 , 65535, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			else					led_FX_out[map(beat16(i + *jd_speed), 0, 65535, *start_led , *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
 			dothue += (255 / nr_dots);
 		}
 
@@ -279,10 +280,98 @@ void LEDS_G_E_Form_Fade_it(uint8_t fadyBy, uint16_t *Start_led, uint16_t *nr_led
 
 	if (*nr_leds != 0 && (*nr_leds + *Start_led <= MAX_NUM_LEDS))
 	{
-		leds(*Start_led, *Start_led + *nr_leds - 1).fadeToBlackBy(fadyBy);
+		//leds(*Start_led, *Start_led + *nr_leds - 1).fadeToBlackBy(fadyBy);
+        led_FX_out(*Start_led, *Start_led + *nr_leds - 1).fadeToBlackBy(fadyBy);
 	}
 }
 
 
 
+void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *number_of_leds, boolean dir, uint8_t jd_speed, uint8_t nr_dots)
+{
+	if (0 != *number_of_leds && (*number_of_leds + *Start_led <= MAX_NUM_LEDS) )
+	{
+		
+		for (int i = 0; i < nr_dots; i++)
+		{
+			//leds[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			if (dir == true) 	led_FX_out[map(beat16(i + jd_speed),0 , 65535, *Start_led + *number_of_leds - 1, *Start_led)] = color_result;
+			else				led_FX_out[map(beat16(i + jd_speed), 0, 65535, *Start_led, *Start_led + *number_of_leds - 1)] = color_result;
+			
+		}
 
+	}
+
+}
+
+
+
+
+//------------- From mikeieee
+
+
+
+void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
+{          // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
+
+   static int16_t dist = random8();
+  //FastLED.setBrightness(255);
+  for(int i = StartLed ; i < StartLed+NrLeds ; i++) {                                      // Just ONE loop to fill up the LED array as all of the pixels change.
+    uint8_t index = inoise8(i*xscale, dist+i*yscale) % 255; 
+    //uint8_t index2 = inoise8(i*xscale, dist-i*yscale) % 255;    // Get a value from the noise function. I'm using both x and y axis.
+    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+    //led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index2, 255, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+
+  }
+  
+  dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
+  if (mirror == true) 
+  {
+	    byte mirror_add = 0;
+			       
+        if (isODDnumber(NrLeds) == true) 
+        {
+            mirror_add = 1; // dosmething
+        }
+		
+        //LEDS_Copy_strip(StartLed + NrLeds / 2  , -(NrLeds + mirror_add) / 2, StartLed);                                                                     // In some sketches, I've used millis() instead of an incremented counter. Works a treat.
+  }
+
+} // shimmer()
+
+
+
+void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend = true) 
+{  
+    TBlendType currentBlendingTB;
+    if (get_bool(BLEND_INVERT) == true)
+			blend = !blend;
+		if (blend == true)
+			currentBlendingTB = LINEARBLEND;
+		else
+			currentBlendingTB = NOBLEND;
+
+  //FastLED.setBrightness(255);// just moving along one axis = "lavalamp effect"
+
+  uint8_t scale = 100;                                       // the "zoom factor" for the noise
+
+  for (uint16_t i = StartLed; i < StartLed+NrLeds; i++) 
+  {
+
+    uint16_t shift_x = millis() / 10;                         // x as a function of time
+    uint16_t shift_y = 0;
+
+    uint32_t real_x = (i + shift_x) * scale;                  // calculate the coordinates within the noise field
+    uint32_t real_y = (i + shift_y) * scale;                  // based on the precalculated positions
+    uint32_t real_z = 4223;
+    
+    uint8_t noise = inoise16(real_x, real_y, real_z) >> 8;    // get the noise data and scale it down
+    uint8_t trip = -4;
+    uint8_t index = sin8(noise*trip);                            // map led color based on noise data
+    uint8_t bri   = noise;
+
+    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, bri, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+    //leds2[i] = ColorFromPalette(currentPalette, index, bri, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+  }
+  
+} // noise16_2()
