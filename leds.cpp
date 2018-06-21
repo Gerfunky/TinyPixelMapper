@@ -365,7 +365,7 @@ void LEDS_FX_run_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, boo
 {
 	
 
-
+StripFormOn = true;
 
 
 	if(nr_leds != 0)
@@ -478,8 +478,7 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 				if (form_part[i + (z * 8)].nr_leds != 0)  // only run if we actualy have leds to do 
 				{										 // fade first so that we only fade the new effects on next go
 					boolean trigger = false;
-				//form_part[i + (y * 8)].fade_value, MAX_FADE_VALUE)
-					//if (bitRead(form_menu[z][_M_FADE_], i) == true)           LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
+				
 					if (form_part[i + (z * 8)].fade_value != 0 )         	  { LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); }
 
 					if (bitRead(form_menu[z][_M_AUDIO_FX2], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
@@ -510,6 +509,14 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 
 				}
 			}
+			else
+			{
+					for (byte i = 0; i < 8; i++)
+						if (form_part[i + (z * 8)].nr_leds != 0)  // only run if we actualy have leds to do 
+							if (form_part[i + (z * 8)].fade_value != 0 )         	 
+								 { LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); }
+
+			}
 
 		}
 	}
@@ -532,7 +539,7 @@ void LEDS_G_pre_show_processing()
 	// run the effects and set the brightness.
 
 	//LEDS_G_master_rgb_faders();
-LEDS_G_form_effectsRouting();
+    LEDS_G_form_effectsRouting();
 	//LED_G_bit_run();
 
 	
@@ -1665,7 +1672,7 @@ void LEDS_loop()
 			else
 				led_cfg.update_time = currentT + (1000000 / map( fft_color_fps,  0 ,255 , led_cfg.pal_fps, MAX_PAL_FPS )) ;
 
-
+			leds.fadeToBlackBy(255);
 				
 			//write_bool(UPDATE_LEDS, true);
 
