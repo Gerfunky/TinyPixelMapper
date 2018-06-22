@@ -2265,7 +2265,8 @@ void osc_fft_rec_fader(OSCMessage &msg, int addrOffset) {
 	int fader_no = fader_no_string.toInt() - 1;
 	memset(address, 0, sizeof(address));
 
-	fft_data[fader_no].trigger = byte(msg.getFloat(0) * 255);
+	if (!bitRead(fft_bin_autoTrigger, fader_no))							// only update if auto is off
+		fft_data[fader_no].trigger = constrain(byte(msg.getFloat(0) * 255), 0 , 255);
 
 
 	if (address_out[1] != 'x')				// dont send out reply if incoimming from master 

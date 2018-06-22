@@ -201,12 +201,15 @@
 		  _M_GLITTER_			= 18,				// White Glitter
 		  _M_JUGGLE_ 			= 19,				// Sine wave dots
 		  _M_SAW_DOT_ 			= 20,				// Saw wave dots
-		  _M_FIRE_				= 21,				// Fire animation
-		  _M_FIRE_PAL			= 22,				// Fire animation
-		  _M_AUDIO_DOT_ 		= 23,			// 
+		  _M_AUDIO_FX5  		= 21,			//
+		  _M_AUDIO_FX6  		= 22,			//
+		  
+		  
+		  _M_FIRE_				= 23,				// Fire animation
+		  _M_FIRE_PAL			= 24,				// Fire animation
+		  _M_AUDIO_DOT_ 		= 25,			// 
 
-		  _M_AUDIO_FX5  		= 24,			//
-		  _M_AUDIO_FX6  		= 25,			//
+		  
 		  _M_AUDIO_FX7  		= 26,			//
 		  _M_AUDIO_FX8  		= 27,			//
 		  _M_AUDIO_FX9  		= 28,			//

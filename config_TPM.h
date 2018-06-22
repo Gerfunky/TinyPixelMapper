@@ -11,7 +11,7 @@
 
 #define ARTNET_DISABLED 				// disables artnet, wont be compiled 
 //#define OSC_MC_SERVER_DISABLED
-#define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
+#define OVERWRITE_INIT_CONF_ON	true		//Overwrite, wifi, device and led settings to defaut
 
 #define DEF_BOOT_DEBUGING  false  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
@@ -33,7 +33,7 @@
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
 	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 
-	#define DEF_AP_NAME			"TinyPixelMapperT"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperManu"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
@@ -100,7 +100,7 @@
 		#define DEF_DATA4_START_NR 0
 		#define DEF_DATA4_NR_LEDS  340 //170*4
 		
-		#define DEF_DATA1_ENABLE false
+		#define DEF_DATA1_ENABLE true
 		#define DEF_DATA2_ENABLE false
 		#define DEF_DATA3_ENABLE true
 		#define DEF_DATA4_ENABLE false
