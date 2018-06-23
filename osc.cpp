@@ -973,7 +973,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	int bit_int;
 	int option_int;
 	int form_int;
-	char address[4];
+	char address[5];
 	//char address_out[20];
 	bool switch_bool = false;
 
@@ -999,11 +999,11 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 		}
 		else if (switch_bool == false) {
-			option_string = option_string + address[i];
+			option_string = option_string + address[i];   // first part
 
 		}
 		else
-			form_string = form_string + address[i];
+			form_string = form_string + address[i];    //second part
 
 	}
 	bit_int = bit_string.toInt();
@@ -1047,7 +1047,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 		}
 
-		if (address[0] == 'I' && address[1] == 'F') {
+		else if (address[0] == 'I' && address[1] == 'F') {
 			switch (option_int) {
 			case 0:
 				form_part[form_int + bit_int * 8].index_add_pal -=  osc_miltiply_get();
@@ -1063,7 +1063,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 		}
 
-		if (address[0] == 'S' && address[1] == 'L') {
+		else  if (address[0] == 'S' && address[1] == 'L') {
 			if ((get_bool(OSC_EDIT) == true) )
 				switch (option_int)
 				{
@@ -1091,7 +1091,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 		}
 
-		if (address[0] == 'N' && address[1] == 'L') {
+		else  if (address[0] == 'N' && address[1] == 'L') {
 			if ((get_bool(OSC_EDIT) == true) )
 				switch (option_int)
 				{
@@ -1107,7 +1107,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 		}
 
-		if (address[0] == 'J' && address[1] == 'D') {
+		else if (address[0] == 'J' && address[1] == 'D') {
 			switch (option_int) {
 			case 0:
 				form_part[form_int + bit_int * 8].juggle_nr_dots--;
@@ -1122,8 +1122,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
-
-		if (address[0] == 'R' && address[1] == 'F') 
+		else if (address[0] == 'R' && address[1] == 'F') 
 		{
 			if (get_bool(OSC_EDIT) == true)
 				if (form_part[form_int + bit_int * 8].nr_leds != 0) 
@@ -1144,11 +1143,42 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
-		debugMe("Form-Presend-response");
+
+
+		
+		
+				// no else since other osc send 
+		if (address[0] == 'M' && address[1] == 'A') 
+		{
+
+				debugMe(bit_int , true );
+				debugMe(option_int , true );
+				debugMe(form_int , true );
+
+				//form_menu[bit_int][option_int] = ~form_menu[bit_int][option_int];
+				
+				for (uint8_t formX = bit_int * 8 ; formX < (bit_int+1) * 8  ; formX++ )
+				{
+				if (form_part[formX].nr_leds != 0) 
+				{
+					debugMe(formX , true );
+					boolean trun_value = !bitRead(form_menu[bit_int][option_int], formX- 8*bit_int);
+
+					bitWrite(form_menu[bit_int][option_int], formX - 8*bit_int, trun_value ) ;
+				
+				outbuffer = String("/form/T/" + String(bit_int) + "/" + String(option_int+1) + "/" + String(formX- 8*bit_int + 1));
+				osc_queu_MSG_float(outbuffer, bitRead(form_menu[bit_int][option_int], formX- 8*bit_int));
+				}
+				}  
+			
+		}
+		else
 		{
 			outbuffer = String("/form/f" + String(bit_int) + "/" + String(address) + "L/" + String(form_int + 1));
 			osc_queu_MSG_float(outbuffer, outvalue);
+
 		}
+		
 	}
 
 }
@@ -1403,7 +1433,7 @@ void osc_forms_routing(OSCMessage &msg, int addrOffset) {
 	msg.route("/F", osc_forms_toggle_rec_fx, addrOffset);			// form menu toggles
 	msg.route("/X", osc_forms_toggle_rec_fx2, addrOffset);			// form menu toggles
 														//msg.route("/f1/T",  osc_rec_forms, addrOffset);
-
+	msg.route("/MA", osc_forms_config_rec, addrOffset);
 														// push buttons
 	msg.route("/SI", osc_forms_config_rec, addrOffset);	// Start Index
 	msg.route("/IA", osc_forms_config_rec, addrOffset);	// Index Add led
