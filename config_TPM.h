@@ -11,7 +11,7 @@
 
 #define ARTNET_DISABLED 				// disables artnet, wont be compiled 
 //#define OSC_MC_SERVER_DISABLED
-#define OVERWRITE_INIT_CONF_ON	true		//Overwrite, wifi, device and led settings to defaut
+#define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
 
 #define DEF_BOOT_DEBUGING  false  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
@@ -33,13 +33,13 @@
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
 	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 
-	#define DEF_AP_NAME			"TinyPixelMapperManu"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapper2"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
 	#define DEF_STATIC_IP_ENABLED true							// set static ip for startup  ?
-	#define DEF_IP_LOCAL		{172,16,222,31}					// Static IP
+	#define DEF_IP_LOCAL		{172,16,222,34}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
 
@@ -87,7 +87,7 @@
 							4: Mirror : WS2812b : Data1 to Data4 = WS2812b
 							
 		*/
-		#define DEF_LED_MODE    0
+		#define DEF_LED_MODE    4
 														
 
 		#define NUM_LEDS		352 //w170*4		// NR of leds for mirror mode.												

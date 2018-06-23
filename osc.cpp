@@ -3495,7 +3495,7 @@ void osc_DS_led_data_on(OSCMessage &msg, int addrOffset)
 		}
 
 		int select_mode_int = select_mode_string.toInt();
-		select_mode_int = select_mode_int-1;
+		//select_mode_int = select_mode_int-1;
 		//boolean value = bool(msg.getFloat(0));
 		//if (bool(msg.getFloat(0)) == true) 
 		{
@@ -3503,22 +3503,28 @@ void osc_DS_led_data_on(OSCMessage &msg, int addrOffset)
 			{
 			case 1:
 				write_bool(DATA1_ENABLE,bool(msg.getFloat(0)));
+				debugMe("Data1-toggle");
 				break;
 			case 2:
 				write_bool(DATA2_ENABLE,bool(msg.getFloat(0)));
-
+				debugMe("Data2-toggle");
 				break;
 			case 3:
 				write_bool(DATA3_ENABLE,bool(msg.getFloat(0)));
+				debugMe("Data3-toggle");
 				break;
 			case 4:
+				debugMe("Data4-toggle");
 				write_bool(DATA4_ENABLE,bool(msg.getFloat(0)));
 				break;	
+			default:
+				
+				break;
 			}
-			osc_queu_MSG_float("/DS/data/1/1", get_bool(DATA1_ENABLE));
-			osc_queu_MSG_float("/DS/data/2/1", get_bool(DATA2_ENABLE));
-			osc_queu_MSG_float("/DS/data/3/1", get_bool(DATA3_ENABLE));
-			osc_queu_MSG_float("/DS/data/4/1", get_bool(DATA4_ENABLE));
+			//osc_queu_MSG_float("/DS/data/1/1", get_bool(DATA1_ENABLE));
+			//osc_queu_MSG_float("/DS/data/2/1", get_bool(DATA2_ENABLE));
+			//osc_queu_MSG_float("/DS/data/3/1", get_bool(DATA3_ENABLE));
+			//osc_queu_MSG_float("/DS/data/4/1", get_bool(DATA4_ENABLE));
 		} // end switch
 
 		  //outbuffer = String("/multipl/1/1");
