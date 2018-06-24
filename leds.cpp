@@ -481,9 +481,10 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 				
 					if (form_part[i + (z * 8)].fade_value != 0 )         	  { LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); }
 
-					if (bitRead(form_menu[z][_M_AUDIO_FX2], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
-					if (bitRead(form_menu[z][_M_AUDIO_FX3], i) == true)			{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].glitter_value , form_part[i + (z * 8)].fade_value  ); trigger = true ;  }
-					
+					if (bitRead(form_menu[z][_M_AUDIO_FX2], i) == true)         { noise16_2_pallete(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX3], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)			{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].glitter_value , form_part[i + (z * 8)].fade_value  ); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX5], i) == true) 		{ FX_noise_fill(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds) ; trigger = true ;  }
 
 					if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value    , &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitter( fft_color_result_data[0]    , &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);   trigger = true;     }
 
@@ -669,7 +670,7 @@ void LEDS_pal_advance()
 			form_part[i].indexLong = form_part[i].indexLong - MAX_INDEX_LONG;
 	}
 
-	
+
 }
 
 void LEDS_pal_reset_index() 

@@ -17,5 +17,8 @@ void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *numb
 //void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
 void LEDS_G_E_shimmer( uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, uint16_t xscale , uint16_t yscale , uint8_t beater );         // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
 void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend) ;
+void noise16_2_pallete(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend) ;
 
+//void FX_noise_fill(uint16_t StartLed, uint16_t NrLeds , uint8_t octaves ,uint16_t x, int scale ,  uint8_t hue_octaves , uint16_t hue_x, int hue_scale, uint16_t time );
+void FX_noise_fill(uint16_t StartLed, uint16_t NrLeds , uint8_t octaves = 10,uint16_t x = 100, int scale = 100,  uint8_t hue_octaves =100 , uint16_t hue_x = 20, int hue_scale = 1, uint16_t time = 0  );
 #endif

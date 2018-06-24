@@ -7,8 +7,9 @@
 	#include "arduino.h"
 #endif
 
-	
-
+//#include <FastLED.h>	
+	//#include <pixeltypes.h>
+	//#include "pixeltypes.h"
 
 // defines , DO NOT CHANGE!!!!
 
@@ -24,7 +25,7 @@
 
 		#define BMP_MAX_TIME 3000				
 
-		#define MAX_INDEX_LONG 4096			// must stay under this number!
+		#define MAX_INDEX_LONG 4096 //6			// must stay under this number!
 
 		// Strip/Form settings do not change!!! 
 		#define NR_FORM_PARTS	16				// how many forms? default 16
@@ -254,7 +255,7 @@
 	  void LEDS_show(); 																		//wifi-ota
 	 void LEDS_PAL_invert(uint8_t pal );
 	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
-
+	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 
 
 

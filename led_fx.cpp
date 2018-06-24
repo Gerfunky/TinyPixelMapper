@@ -7,6 +7,11 @@ extern CRGBArray<MAX_NUM_LEDS> leds;
 extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];	
 extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
 
+
+extern CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
+
+
+
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
 ////   Modded to acept vaiabled for strip / form selection
@@ -372,7 +377,75 @@ void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror,
     uint8_t bri   = noise;
 
     led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, bri, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+
     //leds2[i] = ColorFromPalette(currentPalette, index, bri, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
   
 } // noise16_2()
+
+
+
+void noise16_2_pallete(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend = true) 
+{  
+    TBlendType currentBlendingTB;
+    if (get_bool(BLEND_INVERT) == true)
+			blend = !blend;
+		if (blend == true)
+			currentBlendingTB = LINEARBLEND;
+		else
+			currentBlendingTB = NOBLEND;
+
+  //FastLED.setBrightness(255);// just moving along one axis = "lavalamp effect"
+
+  uint8_t scale = 10;                                       // the "zoom factor" for the noise
+
+  for (uint16_t i = StartLed; i < StartLed+NrLeds; i++) 
+  {
+
+    uint16_t shift_x = millis() /  50;                         // x as a function of time
+    uint16_t shift_y = 0;
+
+    uint32_t real_x = (i + shift_x) * scale;                  // calculate the coordinates within the noise field
+    uint32_t real_y = (i + shift_y) * scale;                  // based on the precalculated positions
+    uint32_t real_z = 42;
+    
+    //uint8_t noise_8 = inoise16(real_x, real_y, real_z)  >> 8;    // get the noise data and scale it down
+    uint8_t trip = 200;
+    //uint8_t index = sin8(noise_8*trip);                            // map led color based on noise data
+    //uint8_t bri   = noise_8;
+
+    //debugMe(trip);
+    uint16_t noise_16 = inoise16(real_x, real_y, real_z); 
+    uint16_t indexLongs =  map(sin16(noise_16*trip),-32767,32767,0,MAX_INDEX_LONG-1); 
+    uint8_t bri   = noise_16 >> 8 ;
+
+    if (MAX_INDEX_LONG <= indexLongs)
+			indexLongs = indexLongs - MAX_INDEX_LONG;
+
+
+
+    led_FX_out[i] = ColorFrom_LONG_Palette(pal, indexLongs, bri , currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+
+    //leds2[i] = ColorFromPalette(currentPalette, index, bri, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+  }
+  
+} // noise16_2()
+
+
+void FX_noise_fill(uint16_t StartLed, uint16_t NrLeds , uint8_t octaves ,uint16_t x, int scale ,  uint8_t hue_octaves , uint16_t hue_x, int hue_scale, uint16_t time )
+{
+     time = millis() / 10 ;
+    x = x+time;
+ 
+
+        fill_noise8(&led_FX_out[StartLed], NrLeds,  octaves,  x,  scale,  hue_octaves,  hue_x,  hue_scale,  time);
+
+       // led_FX_out[i] = inoise8(x + ioffset,y + joffset,z);
+    
+  
+  //z += speed;
+
+
+   // led_FX_out[i] = 
+
+} 
