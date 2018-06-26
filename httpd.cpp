@@ -31,9 +31,9 @@
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		//#include <WebServer.h>
-		#include <ESP32WebServer.h>
-		#include <FS.h>	
+		#include <WebServer.h>
+		//#include <ESP32WebServer.h>
+		//#include <FS.h>	
 		#include<SPIFFS.h>
 
 		//#include <ESP32httpUpdate.h>
@@ -56,26 +56,52 @@
 
 
 // Variables
-	ESP32WebServer  httpd(80);					// The Web Server 
+	WebServer  httpd(80);					// The Web Server 
 
 
 
 
 String httpd_getContentType(String filename) {
-	if (httpd.hasArg("download")) return "application/octet-stream";
-	else if (filename.endsWith(".htm")) return "text/html";
-	else if (filename.endsWith(".html")) return "text/html";
-	else if (filename.endsWith(".css")) return "text/css";
-	else if (filename.endsWith(".js")) return "application/javascript";
-	else if (filename.endsWith(".png")) return "image/png";
-	else if (filename.endsWith(".gif")) return "image/gif";
-	else if (filename.endsWith(".jpg")) return "image/jpeg";
-	else if (filename.endsWith(".ico")) return "image/x-icon";
-	else if (filename.endsWith(".xml")) return "text/xml";
-	else if (filename.endsWith(".pdf")) return "application/x-pdf";
-	else if (filename.endsWith(".zip")) return "application/x-zip";
-	else if (filename.endsWith(".gz")) return "application/x-gzip";
-	return "text/plain";
+  if (httpd.hasArg("download")) {
+    return "application/octet-stream";
+  } else if (filename.endsWith(".htm")) {
+    return "text/html";
+  } else if (filename.endsWith(".html")) {
+    return "text/html";
+  } else if (filename.endsWith(".css")) {
+    return "text/css";
+  } else if (filename.endsWith(".js")) {
+    return "application/javascript";
+  } else if (filename.endsWith(".png")) {
+    return "image/png";
+  } else if (filename.endsWith(".gif")) {
+    return "image/gif";
+  } else if (filename.endsWith(".jpg")) {
+    return "image/jpeg";
+  } else if (filename.endsWith(".ico")) {
+    return "image/x-icon";
+  } else if (filename.endsWith(".xml")) {
+    return "text/xml";
+  } else if (filename.endsWith(".pdf")) {
+    return "application/x-pdf";
+  } else if (filename.endsWith(".zip")) {
+    return "application/x-zip";
+  } else if (filename.endsWith(".gz")) {
+    return "application/x-gzip";
+  }
+  return "text/plain";
+}
+
+
+
+bool exists(String path){
+  bool yes = false;
+  File file = SPIFFS.open(path, "r");
+  if(!file.isDirectory()){
+    yes = true;
+  }
+  file.close();
+  return yes;
 }
 
 
@@ -102,39 +128,32 @@ bool httpd_handleFileRead(String path) {
 	}
 	return false;
 }
-
+File fsUploadFile;
 void httpd_handleFileUpload() {
-	File fsUploadFile;							// Variable to hold a file upload
-	if (httpd.uri() != "/edit") return;
-	HTTPUpload& upload = httpd.upload();
-	if (upload.status == UPLOAD_FILE_START) {
-		String filename = upload.filename;
-		if (!filename.startsWith("/")) filename = "/" + filename;
-              
-		debugMe("handleFileUpload Name: ",false);
-		debugMe(filename);
-            
-		fsUploadFile = SPIFFS.open(filename, "w");
-		
-	}
-	else if (upload.status == UPLOAD_FILE_WRITE) {
-		//DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
-		if (fsUploadFile)
-			fsUploadFile.write(upload.buf, upload.currentSize);
-	}
-	else if (upload.status == UPLOAD_FILE_END) {
-		if (fsUploadFile)
-			fsUploadFile.close();
-
-                 
-		debugMe("handleFileUpload Size: ",false);
-		debugMe(String(upload.totalSize));
-           
-	}
-} 
-
-
-
+  if (httpd.uri() != "/edit") {
+    return;
+  }
+  HTTPUpload& upload = httpd.upload();
+  if (upload.status == UPLOAD_FILE_START) {
+    String filename = upload.filename;
+    if (!filename.startsWith("/")) {
+      filename = "/" + filename;
+    }
+    debugMe("handleFileUpload Name: "); debugMe(filename);
+    fsUploadFile = SPIFFS.open(filename, "w");
+    filename = String();
+  } else if (upload.status == UPLOAD_FILE_WRITE) {
+    //DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
+    if (fsUploadFile) {
+      fsUploadFile.write(upload.buf, upload.currentSize);
+    }
+  } else if (upload.status == UPLOAD_FILE_END) {
+    if (fsUploadFile) {
+      fsUploadFile.close();
+    }
+    debugMe("handleFileUpload Size: "); debugMe(String(upload.totalSize));
+  }
+}
 
 
 
@@ -203,7 +222,6 @@ void httpd_handleFileList() {
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		//output += String(fileX.name());
 		output += String(fileX.name()).substring(1);
 		output += "\"}";
 		//debugMe(String(fileX.name()));
