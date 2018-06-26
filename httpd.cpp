@@ -115,7 +115,7 @@ void httpd_handleFileUpload() {
 		debugMe(filename);
             
 		fsUploadFile = SPIFFS.open(filename, "w");
-		filename = String();
+		
 	}
 	else if (upload.status == UPLOAD_FILE_WRITE) {
 		//DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
@@ -131,7 +131,10 @@ void httpd_handleFileUpload() {
 		debugMe(String(upload.totalSize));
            
 	}
-}
+} 
+
+
+
 
 
 
@@ -195,12 +198,13 @@ void httpd_handleFileList() {
 	while (fileX) {
 		//File entry = dir.open("r");
 		if (output != "[") output += ',';
-		bool isDir = fileX.isDirectory();
-		//bool isDir = false;
+		//bool isDir = fileX.isDirectory();
+		bool isDir = false;
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		output += String(fileX.name());
+		//output += String(fileX.name());
+		output += String(fileX.name()).substring(1);
 		output += "\"}";
 		//debugMe(String(fileX.name()));
 		fileX.close();
@@ -344,7 +348,7 @@ void httpd_handleRequestSettings()
 	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
 	httpd.on("/list", HTTP_GET, httpd_handleFileList);
 	//load editor
-	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
+	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.htm")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
 	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
 	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
 

@@ -594,7 +594,7 @@ if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 
 
 
-			//WiFi.mode(WIFI_STA);
+			WiFi.mode(WIFI_STA);
 			//delay(100);
 			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 			
