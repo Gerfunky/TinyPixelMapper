@@ -402,65 +402,9 @@ void osc_multipl_rec(OSCMessage &msg, int addrOffset)
 
 		}
 
-		//int select_mode_int = select_mode_string.toInt();
 		osc_cfg.conf_multiply = select_mode_string.toInt();
 		osc_multiply_send();
-		/*
-		if (bool(msg.getFloat(0)) == true)
-		{
-
-		switch (select_mode_int)
-		{
-		case 1:
-		osc_cfg.conf_multiply = 1;
-
-		break;
-		case 2:
-		osc_cfg.conf_multiply = 10;
-
-		break;
-		case 3:
-		osc_cfg.conf_multiply = 100;
-
-		break;
-		case 4:
-		osc_cfg.conf_multiply = 8;
-
-		break;
-		case 5:
-		osc_cfg.conf_multiply = 16;
-
-		break;
-		case 6:
-		osc_cfg.conf_multiply = 32;
-
-		break;
-		case 7:
-		osc_cfg.conf_multiply = 64;
-
-		break;
-		case 8:
-		osc_cfg.conf_multiply = 128;
-
-		break;
-		case 9:
-		osc_cfg.conf_multiply = 256;
-
-		break;
-		case 10:
-		osc_cfg.conf_multiply = 512;
-
-		break;
-		case 11:
-		osc_cfg.conf_multiply = 1000;
-
-		break;
-
-		}
-		} // end switch
-
-		//outbuffer = String("/multipl/1/1");
-		*/
+		
 
 
 	} // end  new msg
@@ -2622,7 +2566,7 @@ void osc_master_routing(OSCMessage &msg, int addrOffset)
         if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b		= byte(msg.getFloat(0)	* 255); osc_master_basic_reply("/m/b", led_cfg.b);}// osc_mc_send("/x/b" ,		master_rgb.b) ; }
 		if (msg.fullMatch("/palbri", addrOffset))		{ led_cfg.pal_bri = byte(msg.getFloat(0) * 255); osc_master_basic_reply("/m/palbri", led_cfg.pal_bri); }// osc_mc_send("/x/b" ,		master_rgb.b) ; }
 
-		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); }   // global_blend_switch = bool(msg.getFloat(0));
+		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); osc_queu_MSG_float("/m/blend", float(get_bool(BLEND_INVERT))    ); }  
 
 		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));}
 		//if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
@@ -2638,14 +2582,7 @@ void osc_master_routing(OSCMessage &msg, int addrOffset)
 
 }
 
-// Palletes
-// OSC pallet     MSG:/pal/?/
-/*		/pal/0/1/1-3	= modify pallete 0 , section 0 , RED - GREEN - BLUE
-/pal/0/1/RL		= RED lable pal 0 , section 0
 
-
-
-*/
 void osc_send_pal_info(uint8_t pal) {
 	// OSC MESSAGE OUT :/pal/?/?/1-3
 
@@ -2927,7 +2864,6 @@ void osc_DS_refresh()
 				osc_queu_MSG_float("/DS/ledType/4/1", 1);
 			break;	
 			case 4:
-			osc_queu_MSG_float("/DS/ledType/1/1", 0);
 				osc_queu_MSG_float("/DS/ledType/5/1", 1);
 			break;
 			case 5:
@@ -3448,6 +3384,9 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 			case 0:
 				led_cfg.Data1StartLed = constrain(led_cfg.Data1StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data1NrLeds );
 				break;
+			case 1:
+				led_cfg.Data1StartLed = 0;
+			break;
 			case 2:
 				led_cfg.Data1StartLed = constrain(led_cfg.Data1StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data1NrLeds );
 			break;

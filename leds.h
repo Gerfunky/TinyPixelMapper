@@ -17,7 +17,7 @@
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 
-		#define MAX_FADE_VALUE 90			// maximum for FADE effect on each frame in  amount 0-255 
+		#define MAX_FADE_VALUE 20 // 90 is to much			// maximum for FADE effect on each frame in  amount 0-255 
 		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
 		#define MAX_GLITTER_VALUE 255		// max glitter value
 
