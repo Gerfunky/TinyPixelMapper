@@ -32,6 +32,12 @@ enum GLOBAL_OPTIONS_ENUM
 	,DEBUG_TELNET		= 14	// Debug to telnet ?
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
 	,WIFI_POWER 		= 16    // enable WIFI power.
+	,BTN_LASTSTATE		= 17 	// what was the last bttn state
+	,DATA1_ENABLE		= 18
+	,DATA2_ENABLE		= 19
+	,DATA3_ENABLE		= 20
+	,DATA4_ENABLE		= 21
+	,WIFI_POWER_ON_BOOT = 22 // was wifi on on boot?
 	
 
 };

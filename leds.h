@@ -7,23 +7,25 @@
 	#include "arduino.h"
 #endif
 
-
+//#include <FastLED.h>	
+	//#include <pixeltypes.h>
+	//#include "pixeltypes.h"
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   680  			// what is the max it can be set to in the config   
+		#define MAX_NUM_LEDS   170*4 //680  			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 
-		#define MAX_FADE_VALUE 90			// maximum for FADE effect on each frame in  amount 0-255 
+		#define MAX_FADE_VALUE 20 // 90 is to much			// maximum for FADE effect on each frame in  amount 0-255 
 		#define MAX_JD_SPEED_VALUE 30		// maximum BPM for Juggle and SAW dots
 		#define MAX_GLITTER_VALUE 255		// max glitter value
 
-		#define MAX_PAL_FPS 88				// maximum FPS 
+		#define MAX_PAL_FPS 100				// maximum FPS 
 
 		#define BMP_MAX_TIME 3000				
 
-		#define MAX_INDEX_LONG 4096			// must stay under this number!
+		#define MAX_INDEX_LONG 4096 //6			// must stay under this number!
 
 		// Strip/Form settings do not change!!! 
 		#define NR_FORM_PARTS	16				// how many forms? default 16
@@ -58,10 +60,21 @@
 		uint8_t 		bpm;				// BPM , used to time the pallete to a bpm
 		unsigned long 	bpm_lastT;			// timing for BMP
 		unsigned long 	bpm_diff;			// 
-		uint8_t 		ledType;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
+		uint8_t 		ledMode;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
 		uint16_t 		NrLeds;				// how many leds total  not fully implemented TODO!!!
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
+		uint8_t 		Play_Nr ;			// What sequenca are we in.
+		uint16_t		Data1NrLeds;		// Nr of leds for data1;
+		uint16_t		Data1StartLed;		// Start led for data1;
+		uint16_t		Data2NrLeds;		// Nr of leds for data2;
+		uint16_t		Data2StartLed;		// Start led for data2;
+		uint16_t		Data3NrLeds;		// Nr of leds for data3;
+		uint16_t		Data3StartLed;		// Start led for data3;
+		uint16_t		Data4NrLeds;		// Nr of leds for data4;
+		uint16_t		Data4StartLed;		// Start led for data4;
+		
+		
 	
 
 	};
@@ -77,6 +90,7 @@
 		uint8_t value;			// actual value
 		uint8_t avarage;
 		uint8_t autoFFT;
+		
 	};
 
 	struct fft_led_cfg_struct
@@ -127,6 +141,7 @@
 			int		rotate;				// ???
 		  uint8_t	index_add_pal;		// ???
 		  uint16_t	indexLong;
+		  uint8_t 	FX_level;			//
 	  };
 
 
@@ -141,23 +156,70 @@
 	  };
 
 
-#define _M_NR_OPTIONS_     8			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  14			// Nr of options for forms 
-	  enum strip_options {
+#define _M_NR_OPTIONS_     10			// hass less options compared to forms!!
+#define _M_NR_FORM_OPTIONS_  32			// Nr of options for forms 
+	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
-		  _M_MIRROR_OUT_ = 1,			// Mirror it 
+		  _M_AUDIO_REVERSED = 1,
 		  _M_STRIP_ = 2,				// Display Strip
-		  _M_REVERSED_ = 3,				// reversed mode
-		  _M_PALETTE_ = 4,				// Pallete 0 or 1
-		  _M_BLEND_ = 5,				// Fade or Hard Blend
-		  _M_ONE_COLOR_ = 6,			// Make all the leds show one color
-		  _M_FIRE_	= 7,
-		  _M_FADE_ = 8,					// Fade the leds by amount
+  		  _M_REVERSED_ = 3,				// reversed mode
+		  _M_MIRROR_OUT_ = 4,			// Mirror it
+		  _M_PALETTE_ = 5,				// Pallete 0 or 1
+		  _M_BLEND_ = 6,				// Fade or Hard Blend
+		  _M_ONE_COLOR_ = 7,			// Make all the leds show one color
+		  _M_FIRE_	= 8,				// Fire animation
+		  //_M_FADE_ = 8,				// Fade the leds by amount
 		  _M_RBOW_GLITTER_ = 9,			// Random Glitter
 		  _M_GLITTER_ = 10,				// White Glitter
 		  _M_AUDIO_DOT_ = 11,			// Audio Glitter
 		  _M_JUGGLE_ = 12,				// Sine wave dots
 		  _M_SAW_DOT_ = 13,				// Saw wave dots
+		  _M_TEST_FX = 14,
+		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
+	  }; */
+
+	  enum strip_options {
+		  _M_AUDIO_REVERSED 	= 0,
+		  _M_AUDIO_ 			= 1,				// Display FFT
+		  _M_AUDIO_PAL_MASK		= 2,			// use the pallete to mask the fft data or +-
+		  _M_AUDIO_SUB_FROM_FFT = 3,		//  add or subtract the pallete from the FFT data
+		  _M_MIRROR_OUT_ 		= 4,			// Mirror it
+		  _M_ONE_COLOR_ 		= 5,			// Make all the leds show one color
+		  _M_STRIP_				= 6,				// Display Strip
+		  _M_REVERSED_ 			= 7,				// reversed mode
+		  
+		  _M_PALETTE_			= 8,				// Pallete 0 or 1
+		  _M_BLEND_ 			= 9,				// Fade or Hard Blend
+		  _M_FX_MASK			= 10,
+		  _M_FX_SUBTRACT		= 11,				// add the FX channel to the leds
+		  _M_FX1_ON  			= 12,			// 
+		  _M_AUDIO_FX2  		= 13,			//
+		  _M_AUDIO_FX3  		= 14,			//
+		  _M_AUDIO_FX4  		= 15,			// 
+		  
+		  _M_GLITTER_FROM_FFT_DATA1 = 16, 
+		  _M_RBOW_GLITTER_ 		= 17,			// Random Glitter
+		  _M_GLITTER_			= 18,				// White Glitter
+		  _M_JUGGLE_ 			= 19,				// Sine wave dots
+		  _M_SAW_DOT_ 			= 20,				// Saw wave dots
+		  _M_AUDIO_FX5  		= 21,			//
+		  _M_AUDIO_FX6  		= 22,			//
+		  
+		  
+		  _M_FIRE_				= 23,				// Fire animation
+		  _M_FIRE_PAL			= 24,				// Fire animation
+		  _M_AUDIO_DOT_ 		= 25,			// 
+
+		  
+		  _M_AUDIO_FX7  		= 26,			//
+		  _M_AUDIO_FX8  		= 27,			//
+		  _M_AUDIO_FX9  		= 28,			//
+		  _M_AUDIO_FX10  		= 29,			//
+		  _M_AUDIO_FX11  		= 30,			//
+		  _M_AUDIO_FX12  		= 31,			//
+		  
+		  
+
 	  };
 
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
@@ -191,6 +253,10 @@
 	  void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
 	  uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
 	  void LEDS_show(); 																		//wifi-ota
+	 void LEDS_PAL_invert(uint8_t pal );
+	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
+	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
+
 
 
 #endif

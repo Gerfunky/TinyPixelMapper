@@ -26,6 +26,7 @@ void FS_setup_SPIFFS();
 	void FS_Bools_write(uint8_t conf_nr);			// osc.cpp
 	void FS_osc_delete_all_saves();					//osc.cpp
 	boolean FS_play_conf_read(uint8_t conf_nr);		//osc.cpp  , leds.cpp
+	boolean FS_check_Conf_Available(uint8_t play_NR); // leds.cpp
 	void FS_play_conf_write(uint8_t conf_nr);		//osc.cpp
 	void FS_FFT_write(uint8_t conf_nr);				//osc.cpp
 	boolean FS_FFT_read(uint8_t conf_nr);			// wifi-ota.cpp , osc.cpp , leds.cpp

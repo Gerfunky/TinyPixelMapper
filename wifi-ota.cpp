@@ -6,6 +6,7 @@
 	#include <WiFiUdp.h>
 	//#include <WiFiAP.h>
 	#include <ArduinoOTA.h>
+#	include <DNSServer.h>
 
 	#include "time.h"
 	#include <RemoteDebug.h> 
@@ -28,7 +29,7 @@
 
 
 RemoteDebug TelnetDebug;
-
+DNSServer dnsServer;
 
 // wifi
 wifi_Struct wifi_cfg;
@@ -294,7 +295,7 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 
 
 	
-	if (!FS_wifi_read(0))		// Get the config of disk,  on fail load defaults.
+	if (!FS_wifi_read(0) || OVERWRITE_INIT_CONF_ON )		// Get the config of disk,  on fail load defaults.
 	//if (false == false)		// Get the config of disk,  on fail load defaults.
 	{
 		debugMe("Loading WifiSetup Defaults");
@@ -312,6 +313,7 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 		def_ntp_fqdn.toCharArray(wifi_cfg.ntp_fqdn, def_ntp_fqdn.length() + 1);
 
 		write_bool(WIFI_POWER, DEF_WIFI_POWER);
+		
 		write_bool(OTA_SERVER, DEF_OTA_SERVER);
 		write_bool(HTTP_ENABLED, DEF_HTTP_ENABLED);
 		write_bool(WIFI_MODE, DEF_WIFI_MODE);
@@ -321,10 +323,11 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 		wifi_cfg.ipSubnet = DEF_IP_SUBNET;
 		wifi_cfg.ipDGW = DEF_IP_DGW;
 		wifi_cfg.ipDNS = DEF_DNS;
+		wifi_cfg.wifiChannel = constrain(DEF_WIFI_CHANNEL,1,12);
 
-		if (WRITE_CONF_AT_INIT) FS_wifi_write(0);
+		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON) FS_wifi_write(0);
 	}
-
+	write_bool(WIFI_POWER_ON_BOOT, get_bool(WIFI_POWER));
 
 		// Set the Static IP if static ip is selected.
 		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE) == 0)   // if were static and a wifi client, configure the wifi connection
@@ -530,22 +533,45 @@ void WiFi_Start_Network_X()
 void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
-if (digitalRead(BTN_PIN) == false )
+boolean btn_read = 	digitalRead(BTN_PIN); 	
+if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 	{
-					//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
+				//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
+				
+				
+				
+				
+				
+				if (btn_read == false || get_bool(WIFI_POWER) )
+				{
+					LEDS_setall_color(1);
+					LEDS_show();
+					WiFi.mode(WIFI_AP);
+					delay(100);
 
+				}
+				if(btn_read == false )
+				{
+					WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel);
+					//if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
+					write_bool(STATIC_IP_ENABLED,false);
+					write_bool(WIFI_POWER,true);
+					write_bool(WIFI_POWER_ON_BOOT, true);
+					debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));
+				}
+				else if(get_bool(WIFI_POWER))
+					{
+	
+						 WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
+						 if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
+						 debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
+					}
 
-
-				WiFi.mode(WIFI_AP);
-				WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
-
-				delay(50);
-				debugMe("Start AP mode");	
-
-				LEDS_setall_color(1);
+				
+				delay(500);
+				LEDS_setall_color(2);
 				LEDS_show();
-				delay(1000);
-				write_bool(WIFI_POWER,true);
+				
 
 	}
 	else {	
@@ -622,20 +648,6 @@ if (digitalRead(BTN_PIN) == false )
 			}
 
 		}
-		// /*	
-		else  // wifimode AP
-			{
-
-
-				//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
-
-				WiFi.mode(WIFI_AP);
-				WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
-
-				delay(50);
-				debugMe("Start AP mode");
-			} //*/
-		
 	
 
 /*	
@@ -881,6 +893,9 @@ void wifi_setup()
 		
 		httpd_setup();
 
+		if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "*", wifi_cfg.ipStaticLocal);// WiFi.localIP());
+		else dnsServer.start(53, "*", IPAddress(192, 168, 4, 1));// WiFi.localIP());
+
 		WiFi_FFT_Setup();
 	}
 }
@@ -902,6 +917,7 @@ void wifi_loop()
 		WiFi_FFT_handle_loop();
 		yield();
 		TelnetDebug.handle();
+		 dnsServer.processNextRequest();
 
 }
 

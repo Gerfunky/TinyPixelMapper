@@ -80,13 +80,27 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
-	if (!FS_Bools_read(0))
+	if (!FS_Bools_read(0) || OVERWRITE_INIT_CONF_ON )
 	{
 		debugMe("Loading default device config");
-		led_cfg.ledType = constrain(DEF_LED_TYPE, 0, 2);
-		led_cfg.max_bri = constrain(DEF_MAX_BRI, 1, 255);
-		led_cfg.startup_bri = constrain(DEF_MAX_BRI, 1, 255);
-		led_cfg.NrLeds = constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
+		led_cfg.ledMode 		= constrain(DEF_LED_MODE, 0, 5);
+		led_cfg.max_bri 		= constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.startup_bri 	= constrain(DEF_MAX_BRI, 1, 255);
+		led_cfg.NrLeds			= constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
+		led_cfg.Data1NrLeds 	= constrain(DEF_DATA1_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA1_START_NR);
+		led_cfg.Data1StartLed 	= constrain(DEF_DATA1_START_NR, 0, MAX_NUM_LEDS) ;
+		led_cfg.Data2NrLeds 	= constrain(DEF_DATA2_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA2_START_NR);
+		led_cfg.Data2StartLed 	= constrain(DEF_DATA2_START_NR, 0, MAX_NUM_LEDS) ;
+		led_cfg.Data3NrLeds 	= constrain(DEF_DATA3_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA3_START_NR);
+		led_cfg.Data3StartLed 	= constrain(DEF_DATA3_START_NR, 0, MAX_NUM_LEDS) ;
+		led_cfg.Data4NrLeds 	= constrain(DEF_DATA4_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA4_START_NR);
+		led_cfg.Data4StartLed 	= constrain(DEF_DATA4_START_NR, 0, MAX_NUM_LEDS) ;
+		
+		write_bool(DATA1_ENABLE,DEF_DATA1_ENABLE);
+		write_bool(DATA2_ENABLE,DEF_DATA2_ENABLE);
+		write_bool(DATA3_ENABLE,DEF_DATA3_ENABLE);
+		write_bool(DATA4_ENABLE,DEF_DATA4_ENABLE);
+		
 
 		write_bool(DEBUG_OUT, DEF_DEBUG_OUT);
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
@@ -95,9 +109,9 @@ void load_bool()
 		write_bool(FFT_AUTO, DEF_AUTO_FFT);	
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
 
-		if (WRITE_CONF_AT_INIT) FS_Bools_write(0);
+		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON ) FS_Bools_write(0);
 	}
-	else debugMe("Bools Loaded from SPIFFS!");
+	//else debugMe("Bools Loaded from SPIFFS!");
 
 	//debugMe("http Server load = " + String(get_bool(HTTP_ENABLED)));
 	
