@@ -3400,6 +3400,9 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 			case 0:
 				led_cfg.Data2StartLed = constrain(led_cfg.Data2StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data2NrLeds);
 				break;
+			case 1:
+					led_cfg.Data2StartLed = led_cfg.Data1NrLeds;
+				break;
 			case 2:
 				led_cfg.Data2StartLed = constrain(led_cfg.Data2StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data2NrLeds);
 			break;
@@ -3412,18 +3415,24 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 			case 0:
 				led_cfg.Data3StartLed = constrain(led_cfg.Data3StartLed -  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data3NrLeds);
 				break;
+			case 1:
+					led_cfg.Data3StartLed = led_cfg.Data1NrLeds + led_cfg.Data2NrLeds;
+				break;
 			case 2:
 				led_cfg.Data3StartLed = constrain(led_cfg.Data3StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data3NrLeds);
 			break;
 		}
-		debugMe("in2");
-		osc_queu_MSG_float("/DS/SL/3", float(led_cfg.Data3StartLed));
-	break;
-		case 3:		// artnet NR universes
+			debugMe("in2");
+			osc_queu_MSG_float("/DS/SL/3", float(led_cfg.Data3StartLed));
+		break;
+	case 3:		// artnet NR universes
 		switch (row)
 		{
 			case 0:
 				led_cfg.Data4StartLed = constrain(led_cfg.Data4StartLed-  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data4NrLeds);
+				break;
+			case 1:
+					led_cfg.Data4StartLed = led_cfg.Data1NrLeds + led_cfg.Data2NrLeds + led_cfg.Data3NrLeds;
 				break;
 			case 2:
 				led_cfg.Data4StartLed = constrain(led_cfg.Data4StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data4NrLeds);
