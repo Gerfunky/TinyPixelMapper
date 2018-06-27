@@ -31,9 +31,9 @@
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		#include <WebServer.h>
-		//#include <ESP32WebServer.h>
-		//#include <FS.h>	
+		//#include <WebServer.h>
+		#include <ESP32WebServer.h>
+		#include <FS.h>	
 		#include<SPIFFS.h>
 
 		//#include <ESP32httpUpdate.h>
@@ -56,8 +56,8 @@
 
 
 // Variables
-	WebServer  httpd(80);					// The Web Server 
-
+	//WebServer  httpd(80);					// The Web Server 
+	ESP32WebServer httpd(80);	
 
 
 
@@ -112,7 +112,7 @@ bool httpd_handleFileRead(String path) {
 	if (path.endsWith("/")) path += "index.html";
 	debugMe("handleFileRead: " + path);
 
-	String contentType = httpd_getContentType(path);
+	String contentType = httpd_getContentType(path);	
 	String pathWithGz = path + ".gz";
 	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
 		if (SPIFFS.exists(pathWithGz))
@@ -192,6 +192,60 @@ void httpd_handleFileCreate() {
 	httpd.send(200, "text/plain", "");
 	path = String();
 }
+
+
+
+void httpd_handlecConfFileList() {
+	String path = "/";
+
+	if (httpd.hasArg("dir")) 
+		path = httpd.arg("dir");
+	
+ 
+	 debugMe("handleCONFFileList: " + path);
+
+	File dir = SPIFFS.open(path);
+
+	path = String();
+
+	String output = "[";
+
+	File fileX = dir.openNextFile();
+
+	debugMe(String(fileX.name()));
+
+	if( String(fileX.name()).startsWith("/conf/"))
+	while (fileX) {
+		//File entry = dir.open("r");
+		if (output != "[") output += ',';
+		//bool isDir = fileX.isDirectory();
+		bool isDir = false;
+		output += "{\"type\":\"";
+		output += (isDir) ? "dir" : "file";
+		output += "\",\"name\":\"";
+		output += String(fileX.name()).substring(1);
+		output += "\"}";
+		//debugMe(String(fileX.name()));
+		fileX.close();
+		fileX = dir.openNextFile();
+		debugMe(String(fileX.name()));
+		//dir.close();
+	}
+
+	dir.close();
+
+
+	output += "]";
+	httpd.send(200, "text/json", output);
+	//debugMe(output);
+}
+
+
+
+
+
+
+
 
 void httpd_handleFileList() {
 	String path = "/";
@@ -364,7 +418,8 @@ void httpd_handleRequestSettings()
 	
 
 	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
-	httpd.on("/list", HTTP_GET, httpd_handleFileList);
+	httpd.on("/list", HTTP_GET, httpd_handlecConfFileList); 
+	httpd.on("/listall", HTTP_GET, httpd_handleFileList);
 	//load editor
 	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.htm")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
 	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
