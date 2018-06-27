@@ -13,28 +13,27 @@
 
 
 
-#ifdef _MSC_VER  
-
-	#ifdef ESP32
-		#include<WiFi\src\WiFi.h>
-		//#include <HTTPClient.h>
-		#include<ESPmDNS\src\ESPmDNS.h>
-		#include<SPIFFS\src\SPIFFS.h>
-		#include<FS\src\FS.h>
-		#include <WebServer-esp32\src\WebServer.h>
-	#endif
-
-
-#else
-
 	#ifdef ESP32
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		//#include <WebServer.h>
-		#include <ESP32WebServer.h>
-		#include <FS.h>	
+		
+		
+
 		#include<SPIFFS.h>
+
+#ifndef PLATFORMIO
+		#include <WebServer.h>
+		WebServer  httpd(80);					// The Web Server 
+	#else 
+		#include <FS.h>	
+		#include <ESP32WebServer.h>		
+		ESP32WebServer httpd(80);
+
+#endif
+		#include <Update.h>
+
+
 
 		//#include <ESP32httpUpdate.h>
 		//#include <Update.h>
@@ -42,8 +41,6 @@
 	#endif
 
 
-#endif
- 
 
 // ********* Externals
 	#include "tools.h"						// for bools reading/writing
@@ -56,8 +53,8 @@
 
 
 // Variables
-	//WebServer  httpd(80);					// The Web Server 
-	ESP32WebServer httpd(80);	
+	
+		
 
 
 
@@ -212,23 +209,26 @@ void httpd_handlecConfFileList() {
 
 	File fileX = dir.openNextFile();
 
-	debugMe(String(fileX.name()));
+	
 
-	if( String(fileX.name()).startsWith("/conf/"))
+	
 	while (fileX) {
-		//File entry = dir.open("r");
-		if (output != "[") output += ',';
-		//bool isDir = fileX.isDirectory();
-		bool isDir = false;
-		output += "{\"type\":\"";
-		output += (isDir) ? "dir" : "file";
-		output += "\",\"name\":\"";
-		output += String(fileX.name()).substring(1);
-		output += "\"}";
-		//debugMe(String(fileX.name()));
-		fileX.close();
-		fileX = dir.openNextFile();
-		debugMe(String(fileX.name()));
+		if( String(fileX.name()).startsWith("/conf/"))
+		{
+			//File entry = dir.open("r");
+			if (output != "[") output += ',';
+			//bool isDir = fileX.isDirectory();
+			bool isDir = false;
+			output += "{\"type\":\"";
+			output += (isDir) ? "dir" : "file";
+			output += "\",\"name\":\"";
+			output += String(fileX.name()).substring(1);
+			output += "\"}";
+			debugMe(String(fileX.name()));
+		}
+			fileX.close();
+			fileX = dir.openNextFile();
+		
 		//dir.close();
 	}
 
@@ -369,7 +369,13 @@ void httpd_handleRequestSettings()
 	// Setup Handlers
 	
 	/*handling uploading firmware file */
-	/*
+	
+	httpd.on("/update", HTTP_GET, []() { 
+		httpd.sendHeader("Connection", "close");
+      	httpd.send(200, "text/html",  "<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");
+    });
+
+
 	httpd.on("/update", HTTP_POST, []() {
 		httpd.sendHeader("Connection", "close");
 		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
