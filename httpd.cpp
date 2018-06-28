@@ -13,28 +13,24 @@
 
 
 
-#ifdef _MSC_VER  
-
-	#ifdef ESP32
-		#include<WiFi\src\WiFi.h>
-		//#include <HTTPClient.h>
-		#include<ESPmDNS\src\ESPmDNS.h>
-		#include<SPIFFS\src\SPIFFS.h>
-		#include<FS\src\FS.h>
-		#include <WebServer-esp32\src\WebServer.h>
-	#endif
-
-
-#else
-
 	#ifdef ESP32
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		//#include <WebServer.h>
-		#include <ESP32WebServer.h>
-		#include <FS.h>	
 		#include<SPIFFS.h>
+
+#ifndef PLATFORMIO
+		#include <WebServer.h>
+		WebServer  httpd(80);					// The Web Server 
+	#else 
+		#include <FS.h>	
+		#include <ESP32WebServer.h>		
+		ESP32WebServer httpd(80);
+
+#endif
+		#include <Update.h>
+
+
 
 		//#include <ESP32httpUpdate.h>
 		//#include <Update.h>
@@ -42,8 +38,6 @@
 	#endif
 
 
-#endif
- 
 
 // ********* Externals
 	#include "tools.h"						// for bools reading/writing
@@ -56,26 +50,52 @@
 
 
 // Variables
-	ESP32WebServer  httpd(80);					// The Web Server 
-
+	
+		
 
 
 
 String httpd_getContentType(String filename) {
-	if (httpd.hasArg("download")) return "application/octet-stream";
-	else if (filename.endsWith(".htm")) return "text/html";
-	else if (filename.endsWith(".html")) return "text/html";
-	else if (filename.endsWith(".css")) return "text/css";
-	else if (filename.endsWith(".js")) return "application/javascript";
-	else if (filename.endsWith(".png")) return "image/png";
-	else if (filename.endsWith(".gif")) return "image/gif";
-	else if (filename.endsWith(".jpg")) return "image/jpeg";
-	else if (filename.endsWith(".ico")) return "image/x-icon";
-	else if (filename.endsWith(".xml")) return "text/xml";
-	else if (filename.endsWith(".pdf")) return "application/x-pdf";
-	else if (filename.endsWith(".zip")) return "application/x-zip";
-	else if (filename.endsWith(".gz")) return "application/x-gzip";
-	return "text/plain";
+  if (httpd.hasArg("download")) {
+    return "application/octet-stream";
+  } else if (filename.endsWith(".htm")) {
+    return "text/html";
+  } else if (filename.endsWith(".html")) {
+    return "text/html";
+  } else if (filename.endsWith(".css")) {
+    return "text/css";
+  } else if (filename.endsWith(".js")) {
+    return "application/javascript";
+  } else if (filename.endsWith(".png")) {
+    return "image/png";
+  } else if (filename.endsWith(".gif")) {
+    return "image/gif";
+  } else if (filename.endsWith(".jpg")) {
+    return "image/jpeg";
+  } else if (filename.endsWith(".ico")) {
+    return "image/x-icon";
+  } else if (filename.endsWith(".xml")) {
+    return "text/xml";
+  } else if (filename.endsWith(".pdf")) {
+    return "application/x-pdf";
+  } else if (filename.endsWith(".zip")) {
+    return "application/x-zip";
+  } else if (filename.endsWith(".gz")) {
+    return "application/x-gzip";
+  }
+  return "text/plain";
+}
+
+
+
+bool exists(String path){
+  bool yes = false;
+  File file = SPIFFS.open(path, "r");
+  if(!file.isDirectory()){
+    yes = true;
+  }
+  file.close();
+  return yes;
 }
 
 
@@ -86,7 +106,7 @@ bool httpd_handleFileRead(String path) {
 	if (path.endsWith("/")) path += "index.html";
 	debugMe("handleFileRead: " + path);
 
-	String contentType = httpd_getContentType(path);
+	String contentType = httpd_getContentType(path);	
 	String pathWithGz = path + ".gz";
 	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
 		if (SPIFFS.exists(pathWithGz))
@@ -102,35 +122,31 @@ bool httpd_handleFileRead(String path) {
 	}
 	return false;
 }
-
+File fsUploadFile;
 void httpd_handleFileUpload() {
-	File fsUploadFile;							// Variable to hold a file upload
-	if (httpd.uri() != "/edit") return;
-	HTTPUpload& upload = httpd.upload();
-	if (upload.status == UPLOAD_FILE_START) {
-		String filename = upload.filename;
-		if (!filename.startsWith("/")) filename = "/" + filename;
-              
-		debugMe("handleFileUpload Name: ",false);
-		debugMe(filename);
-            
-		fsUploadFile = SPIFFS.open(filename, "w");
-		filename = String();
-	}
-	else if (upload.status == UPLOAD_FILE_WRITE) {
-		//DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
-		if (fsUploadFile)
-			fsUploadFile.write(upload.buf, upload.currentSize);
-	}
-	else if (upload.status == UPLOAD_FILE_END) {
-		if (fsUploadFile)
-			fsUploadFile.close();
-
-                 
-		debugMe("handleFileUpload Size: ",false);
-		debugMe(String(upload.totalSize));
-           
-	}
+  if (httpd.uri() != "/edit") {
+    return;
+  }
+  HTTPUpload& upload = httpd.upload();
+  if (upload.status == UPLOAD_FILE_START) {
+    String filename = upload.filename;
+    if (!filename.startsWith("/")) {
+      filename = "/" + filename;
+    }
+    debugMe("handleFileUpload Name: "); debugMe(filename);
+    fsUploadFile = SPIFFS.open(filename, "w");
+    filename = String();
+  } else if (upload.status == UPLOAD_FILE_WRITE) {
+    //DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
+    if (fsUploadFile) {
+      fsUploadFile.write(upload.buf, upload.currentSize);
+    }
+  } else if (upload.status == UPLOAD_FILE_END) {
+    if (fsUploadFile) {
+      fsUploadFile.close();
+    }
+    debugMe("handleFileUpload Size: "); debugMe(String(upload.totalSize));
+  }
 }
 
 
@@ -171,6 +187,63 @@ void httpd_handleFileCreate() {
 	path = String();
 }
 
+
+
+void httpd_handlecConfFileList() {
+	String path = "/";
+
+	if (httpd.hasArg("dir")) 
+		path = httpd.arg("dir");
+	
+ 
+	 debugMe("handleCONFFileList: " + path);
+
+	File dir = SPIFFS.open(path);
+
+	path = String();
+
+	String output = "[";
+
+	File fileX = dir.openNextFile();
+
+	
+
+	
+	while (fileX) {
+		if( String(fileX.name()).startsWith("/conf/"))
+		{
+			//File entry = dir.open("r");
+			if (output != "[") output += ',';
+			//bool isDir = fileX.isDirectory();
+			bool isDir = false;
+			output += "{\"type\":\"";
+			output += (isDir) ? "dir" : "file";
+			output += "\",\"name\":\"";
+			output += String(fileX.name()).substring(1);
+			output += "\"}";
+			debugMe(String(fileX.name()));
+		}
+			fileX.close();
+			fileX = dir.openNextFile();
+		
+		//dir.close();
+	}
+
+	dir.close();
+
+
+	output += "]";
+	httpd.send(200, "text/json", output);
+	//debugMe(output);
+}
+
+
+
+
+
+
+
+
 void httpd_handleFileList() {
 	String path = "/";
 
@@ -195,12 +268,12 @@ void httpd_handleFileList() {
 	while (fileX) {
 		//File entry = dir.open("r");
 		if (output != "[") output += ',';
-		bool isDir = fileX.isDirectory();
-		//bool isDir = false;
+		//bool isDir = fileX.isDirectory();
+		bool isDir = false;
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		output += String(fileX.name());
+		output += String(fileX.name()).substring(1);
 		output += "\"}";
 		//debugMe(String(fileX.name()));
 		fileX.close();
@@ -293,7 +366,13 @@ void httpd_handleRequestSettings()
 	// Setup Handlers
 	
 	/*handling uploading firmware file */
-	/*
+	
+	httpd.on("/update", HTTP_GET, []() { 
+		httpd.sendHeader("Connection", "close");
+      	httpd.send(200, "text/html",  "<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");
+    });
+
+
 	httpd.on("/update", HTTP_POST, []() {
 		httpd.sendHeader("Connection", "close");
 		httpd.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
@@ -342,9 +421,10 @@ void httpd_handleRequestSettings()
 	
 
 	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
-	httpd.on("/list", HTTP_GET, httpd_handleFileList);
+	httpd.on("/list", HTTP_GET, httpd_handlecConfFileList); 
+	httpd.on("/listall", HTTP_GET, httpd_handleFileList);
 	//load editor
-	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.html")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
+	httpd.on("/edit", HTTP_GET, []() { if (!httpd_handleFileRead("/edit.htm")) httpd.send(404, "text/plain", "edit_FileNotFound"); });
 	httpd.on("/edit", HTTP_DELETE, httpd_handleFileDelete);
 	httpd.on("/edit", HTTP_POST, []() { httpd.send(200, "text/plain", ""); }, httpd_handleFileUpload);
 

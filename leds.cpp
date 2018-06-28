@@ -27,7 +27,62 @@
 #include "led_fx.h"
 
 	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
-	
+
+
+// -- The core to run FastLED.show()
+#define FASTLED_SHOW_CORE 0
+
+// -- Task handles for use in the notifications
+static TaskHandle_t FastLEDshowTaskHandle = 0;
+static TaskHandle_t userTaskHandle = 0;
+
+
+/** show() for ESP32
+ *  Call this function instead of FastLED.show(). It signals core 0 to issue a show, 
+ *  then waits for a notification that it is done.
+ */
+void FastLEDshowESP32()
+{
+    if (userTaskHandle == 0) {
+        // -- Store the handle of the current task, so that the show task can
+        //    notify it when it's done
+        userTaskHandle = xTaskGetCurrentTaskHandle();
+
+        // -- Trigger the show task
+        xTaskNotifyGive(FastLEDshowTaskHandle);
+
+        // -- Wait to be notified that it's done
+        const TickType_t xMaxBlockTime = pdMS_TO_TICKS( 200 );
+        ulTaskNotifyTake(pdTRUE, xMaxBlockTime);
+        userTaskHandle = 0;
+    }
+}
+
+/** show Task
+ *  This function runs on core 0 and just waits for requests to call FastLED.show()
+ */
+void FastLEDshowTask(void *pvParameters)
+{
+    // -- Run forever...
+    for(;;) {
+        // -- Wait for the trigger
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        // -- Do the show (synchronously)
+        FastLED.show();
+
+        // -- Notify the calling task
+        xTaskNotifyGive(userTaskHandle);
+    }
+}
+
+
+
+
+
+
+
+
 
 // *************** External Functions
 // from wifi-ota.cpp
@@ -215,7 +270,8 @@ void LEDS_show()
 				FastLED.setBrightness(qadd8(led_cfg.bri,fft_color_result_bri));
 			else
 				FastLED.setBrightness(led_cfg.bri);
-			FastLED.show();
+			 FastLEDshowESP32();
+			//FastLED.show();
 			//FastLED[0].showLeds(led_cfg.bri);
 			//FastLED[1].showLeds(led_cfg.bri);
 			//FastLED[2].showLeds(led_cfg.bri);
@@ -1627,6 +1683,13 @@ void LEDS_setup()
 
 
 	led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
+
+	uint8_t core = xPortGetCoreID();
+    debugMe("Main code running on core " + String(core));
+
+    // -- Create the FastLED show task
+    xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
+
 
 	if (FS_play_conf_read(0) == false)				
 	{
