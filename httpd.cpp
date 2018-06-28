@@ -17,9 +17,6 @@
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
-		
-		
-
 		#include<SPIFFS.h>
 
 #ifndef PLATFORMIO
