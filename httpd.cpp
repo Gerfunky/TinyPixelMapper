@@ -1,39 +1,32 @@
 /*
 		Here we Have the Web Server (httpd) and the update client over http 
 
-		Credit where credit is due: Some parts of the code taken from : .... TODO 
-
 		the html files are located in the data subfolder and need to be sent in with 
-		ESP8266 Sketch Data Upload howto = HTTP:// ....... TODO
+		ESP8266/ESP32 Sketch Data Upload.  
+		update server over HTTP 
 
 
 */
 
-#include "config_TPM.h"
-
-
-
+	#include "config_TPM.h"
 	#ifdef ESP32
 		#include <WiFi.h>	
 		#include <HTTPClient.h>
 		#include <ESPmDNS.h>
 		#include<SPIFFS.h>
 
-#ifndef PLATFORMIO
-		#include <WebServer.h>
-		WebServer  httpd(80);					// The Web Server 
-	#else 
-		#include <FS.h>	
-		#include <ESP32WebServer.h>		
-		ESP32WebServer httpd(80);
+		#ifndef PLATFORMIO
+			#include <WebServer.h>
+			WebServer  httpd(80);					// The Web Server 
+		#else 
+			#include <FS.h>	
+			#include <ESP32WebServer.h>		
+			ESP32WebServer httpd(80);
 
-#endif
+		#endif
 		#include <Update.h>
 
-
-
 		//#include <ESP32httpUpdate.h>
-		//#include <Update.h>
 		//#include <WiFiClient.h>
 	#endif
 
@@ -87,7 +80,7 @@ String httpd_getContentType(String filename) {
 }
 
 
-
+/*
 bool exists(String path){
   bool yes = false;
   File file = SPIFFS.open(path, "r");
@@ -96,7 +89,7 @@ bool exists(String path){
   }
   file.close();
   return yes;
-}
+} */
 
 
 bool httpd_handleFileRead(String path) {
