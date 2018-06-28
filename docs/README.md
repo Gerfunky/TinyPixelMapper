@@ -12,11 +12,11 @@ Ther are 2 main modes: Artnet and Normal.
 
 In the Artnet mode it becomes a ARTNET node on the network. (hardcoded to 4 universes max, no mapping at the moment)
 
-In Normal mode it playes Palletes or takes an input from a MIC that is connected to a MSGEQ7 chip to get FFT data to fill the leds. You have the option to Mask the pallete over the FFT data or add/subtract it. Same for FX data.
+In Normal mode it playes Palletes or takes an input from a MIC that is connected to a MSGEQ7 chip to get FFT data to fill the leds.
 
 You can configre Strips or Forms(a collection of strips).
 
-There are effects that can be added to each Form, Strips only do FFT data or Palletes.
+There are effects that can be added to each strip/form.
 
 It should work with any ESP32 it was designed on a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
 
@@ -33,9 +33,12 @@ A basic PCB design is ready and will be posted after the Betatesters are done wi
 
 The PCB has 2 variable resistors, one for Brightness and the other for FPS. One button, if the button is pressed during boot the unit will go into AP mode with a hardcoded AP password (love4all) even if wifi is disabled in the configuration.
 
-All configurations are saved to the SPIFFS. And can be edited over HTTP once the editor is working again on the ESP32 (problem in the esp core/fix is tested and working).
+All configurations are saved to the SPIFFS. And can be edited over HTTP once the editor is working again on the ESP32.
 
-Some of the newest settings are still missing from the OSC configuration.
+Some of the newest settings are still missing from the OSC configuration, like WIFI_POWER so you can let it run without wifi.
+
+APA102 leds are not working 100% on the ESP32 still trying to figure it out.
+
 
 
 ## Required Library's
@@ -67,13 +70,17 @@ Some of the newest settings are still missing from the OSC configuration.
 TODO in wiki ?
 
 ## Configuration
-The configuration is done in the config_TPM.h settings loaded from the SPIFFS will have a huger priority than what is hardcoded in this file. Only use it for initial setup.
+The configuration is done in the config_TPM.h
 
 
 ## Where we need help
-We need a real APP. Im am getting to the limits of what we can do with TouchOSC. OSC will always be available so that its possible to use a midi-keyboard to play with the TinyPixelMapper
+the editor under http://ip.address/edit takes to long to load.
+a nice fast loading editor is in the works. (old editor not working on ESP32) 
 
 
+## Credit where credit is due
+We used code sniblets from:
+TODO
 
 ## Donation Box
 TODO
