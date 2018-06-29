@@ -3,7 +3,7 @@
 
 		the html files are located in the data subfolder and need to be sent in with 
 		ESP8266/ESP32 Sketch Data Upload.  
-		update server over HTTP 
+		update server over HTTP test
 
 
 */
@@ -15,15 +15,15 @@
 		#include <ESPmDNS.h>
 		#include<SPIFFS.h>
 
-		#ifndef PLATFORMIO
+		//#ifndef PLATFORMIO
 			#include <WebServer.h>
 			WebServer  httpd(80);					// The Web Server 
-		#else 
-			#include <FS.h>	
-			#include <ESP32WebServer.h>		
-			ESP32WebServer httpd(80);
+		//#else 
+		//	#include <FS.h>	
+		//	#include <ESP32WebServer.h>		
+		//	ESP32WebServer httpd(80);
 
-		#endif
+		//#endif
 		#include <Update.h>
 
 		//#include <ESP32httpUpdate.h>
@@ -42,10 +42,9 @@
 	extern wifi_Struct wifi_cfg;			// link to wifi variable wifi_cfg
 
 
-// Variables
+// static serv from progmem. https://github.com/Gheotic/ESP-HTML-Compressor
 	
-		
-
+	
 
 
 String httpd_getContentType(String filename) {
@@ -413,6 +412,9 @@ void httpd_handleRequestSettings()
 	});
 	
 
+
+
+
 	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
 	httpd.on("/list", HTTP_GET, httpd_handlecConfFileList); 
 	httpd.on("/listall", HTTP_GET, httpd_handleFileList);
@@ -429,6 +431,10 @@ void httpd_handleRequestSettings()
 	httpd.on("/APname", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.APname);   });
 	httpd.on("/reset", HTTP_GET, []() { httpd.send(200, "text/plain", "Rebooting"); ESP.restart();   });
 	
+
+
+	//httpd.on("/js/ace.js", HTTP_GET, []() { httpd.send(200, "text/javascript", data_ace_js);  });
+
 
 
 

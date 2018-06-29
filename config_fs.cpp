@@ -219,8 +219,8 @@ boolean FS_FFT_read(uint8_t conf_nr)
 
 				for (uint8_t i = 0; i < 4; i++) fft_ip_cfg.IP_multi[i] = get_int_conf_value(conf_file, &character);
 
-				//write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
-				//write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character)) ;
+				write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
+				write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character)) ;
 				fft_ip_cfg.port_master		= get_int_conf_value(conf_file, &character);
 				fft_ip_cfg.port_slave		= get_int_conf_value(conf_file, &character);
 
@@ -911,7 +911,7 @@ void FS_Bools_write(uint8_t conf_nr)
 	else  // it opens
 	{
 		conf_file.println(F("Main Config for ESP. 0 = off,  1 = on"));
-		conf_file.println(F("D = Device Config :!!! CHANGE DATA1+2 = APA102, Data3 = ws2812, Data 4 = SK6822 ( OLD = LED Type 0=APA102 1=WS2812b 2=SK6822 on Data1) setting = not used@the moment: max bri : Startup bri : Nr of Leds (Max 680)"));
+		conf_file.println(F("D = Device Config :Led Mode: max bri : Startup bri : Nr of Leds (Max 680): Data1 Nr Leds: Data1 StartLed: Data2 ....-> data4 Startled"));
 		conf_file.print(String("[D:"	+ String(led_cfg.ledMode)));
 		conf_file.print(String(":"		+ String(led_cfg.max_bri)));
 		conf_file.print(String(":"		+ String(led_cfg.startup_bri)));
@@ -926,7 +926,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.Data4StartLed)));
 		conf_file.println("] ");
 
-		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug :: FFT enabled : FFT Master : FFT Auto : Debug Telnet : FFT Master Send out UDP MC : WIFI_POWER 0=off "));
+		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC  "));
 		conf_file.print(String("[b:" + String(get_bool(DEBUG_OUT))));	
 		conf_file.print(String(":" + String(get_bool(DEBUG_TELNET))));
 		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));

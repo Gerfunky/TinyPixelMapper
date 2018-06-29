@@ -838,10 +838,10 @@ void osc_strips_routing(OSCMessage &msg, int addrOffset) {
 	msg.route("/NL",	osc_strips_settings_rec, addrOffset);
 	msg.route("/GO",	osc_strips_G_toggle_rec, addrOffset);
 
-	if (msg.fullMatch("/s0/refresh",		addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_toggle_send(0); osc_strips_toggle_send(1); }
-	if (msg.fullMatch("/s2/refresh",		addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_toggle_send(2); osc_strips_toggle_send(3); }
-	if (msg.fullMatch("/s0/conf_refesh",	addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_settings_send(0); osc_strips_settings_send(1); }
-	if (msg.fullMatch("/s2/conf_refesh",	addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_settings_send(2); osc_strips_settings_send(3); }
+	if (msg.fullMatch("/s0/refresh",		addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_toggle_send(0); osc_strips_toggle_send(1);  osc_strips_toggle_send(2); osc_strips_toggle_send(3); }
+	//if (msg.fullMatch("/s2/refresh",		addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_toggle_send(2); osc_strips_toggle_send(3); }
+	if (msg.fullMatch("/s0/conf_refesh",	addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_settings_send(0); osc_strips_settings_send(1);  osc_strips_settings_send(2); osc_strips_settings_send(3);}
+	//if (msg.fullMatch("/s2/conf_refesh",	addrOffset) && bool(msg.getFloat(0)) == true) { osc_strips_settings_send(2); osc_strips_settings_send(3); }
 }
 
 
