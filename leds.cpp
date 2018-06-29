@@ -12,19 +12,20 @@
 // make a new color creator from fft! 
 // add fire animation link it to FFT if possible!  
 
-#include "config_TPM.h"    // Load the main config
-#include "leds.h"
+	#include "config_TPM.h"    // Load the main config
+	#include "leds.h"
 
-#include "tools.h"
-#include "wifi-ota.h"
-#include "config_fs.h"
-#include "msgeq7_fft.h"
+	#include "tools.h"
+	#include "wifi-ota.h"
+	#include "config_fs.h"
+	#include "msgeq7_fft.h"
 
 
 	#include <FastLED.h>
+	#include "led_fx.h"
 	#include <RunningAverage.h>			// For Auto FFT
+	#include <QueueArray.h>	   			// For buffering incoming FFT packets
 
-#include "led_fx.h"
 
 	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 
@@ -116,13 +117,13 @@ CRGB GlobalColor_result;
 
 	// FFT
 
-	//QueueArray <uint8_t> FFT_fifo;
-	//uint8_t	fft_fps;
+	QueueArray <uint8_t> FFT_fifo;
+	uint8_t	fft_fps;
 	fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
-	byte fft_menu[3] = { 3,7,200 };
-	byte fft_data_menu[3] = { 3,7,200 };
-	byte fft_data_bri = 0;
-	byte fft_data_fps = 0;
+	byte fft_menu[3] = { 3,7,200 };			// 3 fft data bins for RGB 
+	byte fft_data_menu[3] = { 3,7,200 };   // 3 fft data bins for effects
+	byte fft_data_bri = 0;	// howmuch to add to bri based on fft data 	
+	byte fft_data_fps = 0;   // howmuch to add to the FPS based on FFT data selected.
 
 //#define FFT_FIFO_COUNT_0_8_NR_PACKETS 35 //28 //35
 //#define FFT_FIFO_COUNT_0_9_NR_PACKETS 28 //21 //28
@@ -299,13 +300,15 @@ void  LEDS_setall_color(uint8_t color = 0) {
 	// 0 = white 50%
 	// 1 = green 50%
 	// 2 = black
+	// 3 = red 50%
 
 	switch(color) {
 
-		case 0: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(180, 180, 180)); break;
-		case 1: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(0, 127, 0)); break;
-		case 2: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(0, 0, 0));break;
-		default: fill_solid(&(leds[0]), MAX_NUM_LEDS, CRGB(180, 180, 180)); break;	
+		case 0: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(180, 	180, 	180));	break;
+		case 1: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(0,		127, 	0));	break;
+		case 2: fill_solid(&(leds[0]), MAX_NUM_LEDS,	CRGB(0,		0, 		0));	break;
+		case 3: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(127, 	0, 		0));	break;
+	   default: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(180,	180, 	180)); break;	
 	}
 	debugMe("Setall Leds to : " + String(color));	
 }
@@ -419,9 +422,7 @@ void LED_G_bit_run()
 void LEDS_FX_run_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror , boolean StripFormOn, boolean subrtact_mode = false , boolean mask= true, uint8_t fx_level = 255 )
 
 {
-	
-
-StripFormOn = true;
+	StripFormOn = true;
 
 
 	if(nr_leds != 0)
@@ -537,17 +538,15 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 				
 					if (form_part[i + (z * 8)].fade_value != 0 )         	  { LEDS_G_E_Form_Fade_it(form_part[i + (z * 8)].fade_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); }
 
-					if (bitRead(form_menu[z][_M_AUDIO_FX2], i) == true)         { noise16_2_pallete(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
-					if (bitRead(form_menu[z][_M_AUDIO_FX3], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
-					if (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)			{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].glitter_value , form_part[i + (z * 8)].fade_value  ); trigger = true ;  }
-					if (bitRead(form_menu[z][_M_AUDIO_FX5], i) == true) 		{ FX_noise_fill(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds) ; trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX2], i) == true)         { noise16_2_pallete(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX3], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, 			form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)			{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i) , form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].glitter_value , form_part[i + (z * 8)].fade_value  ); trigger = true ;  }
+					if (bitRead(form_menu[z][_M_AUDIO_FX5], i) == true) 		{ FX_noise_fill(form_part[i + (z * 8)].start_led, 		form_part[i + (z * 8)].nr_leds) ; trigger = true ;  }
 
-					if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value    , &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitter( fft_color_result_data[0]    , &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);   trigger = true;     }
-
-					if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitterRainbow( fft_color_result_data[0] , &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); trigger = true;}
+					if (bitRead(form_menu[z][_M_GLITTER_], i) == true)        { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitter(form_part[i + (z * 8)].glitter_value    , 		&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitter( fft_color_result_data[0]    , 		&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);  trigger = true;     }
+					if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitterRainbow( fft_color_result_data[0] , 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); trigger = true;}
 					
-					if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         { LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i)); trigger = true;}
-					// TODO check above was rebooting for no reason on some selection
+					if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         { LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i)); trigger = true;}
 					if (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)        { LEDS_G_E_juggle2(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));trigger = true; }
 					
 					if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)     { LEDS_FFT_running_dot(GlobalColor_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].juggle_nr_dots); trigger = true; }
@@ -1058,12 +1057,6 @@ boolean LEDS_pal_check_bit()
 
 
 
-//void LEDS_pal_run()
-//{
-//
-//
-//
-//}
 
 // Artnet
 void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
@@ -1094,7 +1087,8 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 		
 	}
 	yield();
-	FastLED.show();
+	FastLEDshowESP32();
+	//FastLED.show();
 	yield();
 }
 
@@ -1103,14 +1097,14 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 
 // ********************* FFT Functions
 
-/*
+
 void LEDS_FFT_enqueue(uint8_t invalue)
 {	// put the invalue into the FFT buffer
 	
 	FFT_fifo.enqueue(invalue);
 
 }
-*/
+
 
 
 uint8_t LEDS_FFT_get_value(uint8_t bit)
@@ -1644,31 +1638,6 @@ void LEDS_setup()
 	}
 	debugMe("LED_MODE = " + String(led_cfg.ledMode));
 
-/*
-	switch(led_cfg.ledType)
-	{
-		case 0:
-			FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); //, DATA_RATE_MHZ(6) //, DATA_RATE_MHZ(12)
-			//FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);
-			 debugMe("APA102 leds added");
-		break;
-		
-		case 1:
-			FastLED.addLeds<WS2812, LED_DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-			 debugMe("WS2812B leds added");
-		break;
-		case 2:
-			FastLED.addLeds<SK6822, LED_DATA_PIN>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-			 debugMe("SK6822 leds added");
-		break;
-		default:
-			FastLED.addLeds<WS2812, LED_DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-			 debugMe("WS2812B leds added");
-		break;
-
-	}
-
-*/	
 	for (int i = 0; i < NR_PALETTS; i++) 
 	{
 #ifdef BLEND_PATTERN
@@ -1682,7 +1651,7 @@ void LEDS_setup()
 	LEDS_pal_cur[1] = myRedAndGreenPalette_p;
 
 
-	led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
+	//led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
 
 	uint8_t core = xPortGetCoreID();
     debugMe("Main code running on core " + String(core));
@@ -1697,15 +1666,9 @@ void LEDS_setup()
 
 	}
 	LEDS_pal_reset_index();
-	
-		//led_cfg.r = 255;
-		//led_cfg.g = 255;
-		//led_cfg.b = 255;
-		//led_cfg.bri = 255;
-		//led_cfg.max_bri = 255;
 
 
-	led_cnt.PotBriLast = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+	led_cnt.PotBriLast = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;			//get the initial potti status so that when we load the config the possis wont override it.
 	led_cnt.PotFPSLast = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 
 	debugMe("end LEDS setup");
@@ -1722,23 +1685,16 @@ void LEDS_loop()
 	#endif
 
 
-	if (currentT > led_cfg.update_time  && get_bool(ARTNET_ENABLE) == false )
+	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_ENABLE) )
 	{
-
-			
-
-			
-		
 		{
 			//debugMe("IN LED LOOP - disabled fft");
 			if(fft_data_fps == 0)
 				led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
 			else
-				led_cfg.update_time = currentT + (1000000 / map( fft_color_fps,  0 ,255 , led_cfg.pal_fps, MAX_PAL_FPS )) ;
+				led_cfg.update_time = currentT + (1000000 / map( fft_color_fps,  0 ,255 , led_cfg.pal_fps, MAX_PAL_FPS )) ;     // if we are adding FFT data to FPS speed 
 
-			leds.fadeToBlackBy(255);
-				
-			//write_bool(UPDATE_LEDS, true);
+			leds.fadeToBlackBy(255);				// fade the whole led array to black so that we can add from different sources amd mix it up!
 
 			if (LEDS_pal_check_bit() == true)
 			{
@@ -1757,13 +1713,14 @@ void LEDS_loop()
 				LEDS_FFT_check_leds(GlobalColor_result);      // send the color to the leds.
 				yield();
 			}
-			/*
-			uint8_t buffer;
+			
+			
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
 			{
-				 debugMe("dequing overflow");
-				buffer = FFT_fifo.dequeue();
-			} */
+				uint8_t buffer = FFT_fifo.dequeue();
+				debugMe("dequing overflow");
+				buffer = 0;
+			} 
 
 		}
 

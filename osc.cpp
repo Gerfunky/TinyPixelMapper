@@ -422,20 +422,20 @@ void osc_rec_artnet_info(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[4];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	float outvalue = 0;						// return value to labels
 
 	String out_add_label;				// address label
 
 
 
 	msg.getAddress(address, addrOffset - 4, 1);					// get the select-bit info	
-	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit_string = select_bit_string + address[0];
+	//select_bit = select_bit_string.toInt();
 
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
@@ -460,7 +460,7 @@ void osc_rec_artnet_info(OSCMessage &msg, int addrOffset)
 	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//debugMe("row: " + String(row) + " col: " + String(collum));
 
@@ -551,7 +551,7 @@ void osc_strips_G_toggle_rec(OSCMessage &msg, int addrOffset) {
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue = 0;						// return value to labels
+	//float outvalue = 0;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -586,7 +586,7 @@ void osc_strips_G_toggle_rec(OSCMessage &msg, int addrOffset) {
 
 	//debugMe(address);
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//debugMe("row: " + String(row) + " col: " + String(collum));
 
@@ -653,9 +653,9 @@ void osc_strips_settings_rec(OSCMessage &msg, int addrOffset) {
 	msg.getAddress(address, addrOffset - 2, 2);
 
 
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
-	char full_addr[msg_size + 1 - 4];
+	//char full_addr[msg_size + 1 - 4];
 	//hmsg.getAddress(full_addr, 0, msg_size-4 ) ;
 
 	//full_addr[sizeof(full_addr)- 2] = 'X'; 
@@ -922,7 +922,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	bool switch_bool = false;
 
 	String outbuffer = "/form/fx/SIL/X";
-	float outvalue;
+	float outvalue =0;
 
 
 	memset(address, 0, sizeof(address));
@@ -1135,11 +1135,11 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 	String select_strip_addr;		// form NR
 									//String select_bit_string;
 	char address[3];
-	char address_out[20];
-	bool switch_bool = false;
+	//char address_out[20];
+	//bool switch_bool = false;
 	uint8_t z = 0;						// form NR in uint8_t
 	String outbuffer = "/form/fx/FA/X";
-	float outvalue;
+	float outvalue =0;
 
 	msg.getAddress(address, addrOffset + 1, 1);
 	select_strip_addr = select_strip_addr + address[0];
@@ -1160,7 +1160,7 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 
 	msg.getAddress(address, addrOffset - 2, 2);
 
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	if (address[0] == 'F' && address[1] == 'A') 
 	{
@@ -1468,11 +1468,11 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 	String select_strip_addr;
 	String select_bit_string;
 	char address[3];
-	char address_out[20];
+	//char address_out[20];
 	bool switch_bool = false;
 	byte z = 0;
 	String outbuffer = "/copy/c?/SIL/X";
-	float outvalue;
+	float outvalue = 0;
 
 	msg.getAddress(address, addrOffset - 4, 1);
 	select_strip_addr = select_strip_addr + address[0];
@@ -1508,9 +1508,9 @@ void osc_copy_settings_rec(OSCMessage &msg, int addrOffset) {
 	/*DBG_OUTPUT_PORT.println(select_mode_int);
 	DBG_OUTPUT_PORT.println("--"); */
 
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
-	char full_addr[msg_size + 1 - 4];
+	//char full_addr[msg_size + 1 - 4];
 	//hmsg.getAddress(full_addr, 0, msg_size-4 ) ;
 
 	//full_addr[sizeof(full_addr)- 2] = 'X'; 
@@ -1620,7 +1620,7 @@ void osc_copy_toggle_rec(OSCMessage &msg, int addrOffset) {
 	}
 
 	int select_bit_int = select_bit_string.toInt() - 1;
-	int select_mode_int = select_mode_string.toInt() - 1;
+	//int select_mode_int = select_mode_string.toInt() - 1;
 
 
 
@@ -1667,13 +1667,21 @@ void osc_fft_rec_toggle_byte(OSCMessage &msg, int addrOffset)
 	msg.getAddress(address, addrOffset + 1, 1);
 	byte fft_bit = String(address).toInt();
 
+	switch(fft_bit)
+	{
+		case 0:  fft_menu[0] = byte(msg.getInt(0)); break;
+		case 1:  fft_menu[1] = byte(msg.getInt(0)); break;
+		case 2:  fft_menu[2] = byte(msg.getInt(0)); break;
+
+	}
+/*
 	if (address[0] == '0')
 		fft_menu[0] = byte(msg.getInt(0));
 	else if (address[0] == '1')
 		fft_menu[1] = byte(msg.getInt(0));
 	else if (address[0] == '2')
 		fft_menu[2] = byte(msg.getInt(0));
-
+*/
 }
 
 
@@ -1780,12 +1788,12 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[4];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ATMXL";		// OSC return address
-	float outvalue;						// return value to labels
+	float outvalue = 0;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -1819,7 +1827,7 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 	int collum = collum_string.toInt() - 1;  // 
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	debugMe("row: " + String(row) + " col: " + String(collum));
 
@@ -1877,7 +1885,7 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	//float outvalue = 0;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -1908,10 +1916,10 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 	}
 
 	int row = row_string.toInt() - 1;
-	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+	//int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
 	boolean value = msg.getFloat(0);
@@ -1949,7 +1957,7 @@ void osc_fft_rec_toggleData(OSCMessage &msg, int addrOffset)
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	//float outvalue;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -1980,10 +1988,10 @@ void osc_fft_rec_toggleData(OSCMessage &msg, int addrOffset)
 	}
 
 	int row = row_string.toInt() - 1;
-	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+	//int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
 	boolean value = msg.getFloat(0);
@@ -1991,11 +1999,6 @@ void osc_fft_rec_toggleData(OSCMessage &msg, int addrOffset)
 	bitWrite(fft_data_menu[select_bit], row, value);
 
 	msg.getAddress(address, 0);
-
-
-
-
-
 
 //#ifndef OSC_MC_SERVER_DISABLED
 //	if (address[1] != 'x')
@@ -2015,12 +2018,12 @@ void osc_fft_rec_toggleBri(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[14];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	//float outvalue;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -2028,7 +2031,7 @@ void osc_fft_rec_toggleBri(OSCMessage &msg, int addrOffset)
 
 	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit = select_bit_string.toInt();
 	
 	debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
@@ -2051,10 +2054,10 @@ void osc_fft_rec_toggleBri(OSCMessage &msg, int addrOffset)
 	}
 
 	int row = row_string.toInt() - 1;
-	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+	//int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
 	boolean value = msg.getFloat(0);
@@ -2082,12 +2085,12 @@ void osc_fft_rec_toggleAutoTrigger(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[14];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	String outbuffer = "/s/ANL";		// OSC return address
-	float outvalue;						// return value to labels
+	//float outvalue =0;						// return value to labels
 
 	String out_add_label;				// address label
 
@@ -2095,7 +2098,7 @@ void osc_fft_rec_toggleAutoTrigger(OSCMessage &msg, int addrOffset)
 
 	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit = select_bit_string.toInt();
 	
 	debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
@@ -2118,10 +2121,10 @@ void osc_fft_rec_toggleAutoTrigger(OSCMessage &msg, int addrOffset)
 	}
 
 	int row = row_string.toInt() - 1;
-	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+	//int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
 	boolean value = msg.getFloat(0);
@@ -2149,7 +2152,7 @@ void osc_fft_rec_toggleFPS(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[14];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
@@ -2162,7 +2165,7 @@ void osc_fft_rec_toggleFPS(OSCMessage &msg, int addrOffset)
 
 	msg.getAddress(address, addrOffset + 1, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit = select_bit_string.toInt();
 	
 	debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
@@ -2185,10 +2188,10 @@ void osc_fft_rec_toggleFPS(OSCMessage &msg, int addrOffset)
 	}
 
 	int row = row_string.toInt() - 1;
-	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
+	//int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//DBG_OUTPUT_PORT.println("row: " + String(row) + " col: " + String(collum));
 	boolean value = msg.getFloat(0);
@@ -2587,7 +2590,7 @@ void osc_send_pal_info(uint8_t pal) {
 	// OSC MESSAGE OUT :/pal/?/?/1-3
 
 
-	byte outvalue = 0;
+	//byte outvalue = 0;
 
 
 	for (int i = 0; i < 16; i++) {
@@ -2637,7 +2640,7 @@ void osc_rec_pal_fader(OSCMessage &msg, int addrOffset) {
 	bool switch_bool = false;
 	uint8_t pal_no = 0;						// form NR in uint8_t
 	String outbuffer = "/pal/0/x/1-3";
-	float outvalue;
+	float outvalue = 0;
 
 	msg.getAddress(address, addrOffset - 1, 1);
 	pal_no_string = pal_no_string + address[0];
@@ -2670,45 +2673,36 @@ void osc_rec_pal_fader(OSCMessage &msg, int addrOffset) {
 	}
 
 	int fader_no = fader_no_string.toInt() - 1;
-	int pallete_option = pallete_option_string.toInt();  // Whit CRGB value in the pallete
+	int pallete_option = pallete_option_string.toInt();  // What CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
 
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 	String out_add_label;
 
 	switch (fader_no) 
 	{
 			case 0:
 				LEDS_pal_write(pal_no, pallete_option, 0, byte(msg.getFloat(0) * 255));
-				//LEDS_pal_cur[pal_no][pallete_option].r = byte(msg.getFloat(0) * 255);
-				outvalue = LEDS_pal_read(pal_no, pallete_option, 0 ); // [pal_no][pallete_option].r;
+				outvalue = LEDS_pal_read(pal_no, pallete_option, 0 );
 				out_add_label = "/RL";
-				//DBG_OUTPUT_PORT.println("RED");
 				break;
 
 			case 1:
 				LEDS_pal_write(pal_no, pallete_option, 1, byte(msg.getFloat(0) * 255));
 				outvalue = LEDS_pal_read(pal_no, pallete_option, 1 );
-				//LEDS_pal_cur[pal_no][pallete_option].g = byte(msg.getFloat(0) * 255);
-				//outvalue = LEDS_pal_cur[pal_no][pallete_option].g;
 				out_add_label = "/GL";
 				break;
 
 			case 2:
 				LEDS_pal_write(pal_no, pallete_option, 2, byte(msg.getFloat(0) * 255));
 				outvalue = LEDS_pal_read(pal_no, pallete_option, 2 );
-				//LEDS_pal_cur[pal_no][pallete_option].b = byte(msg.getFloat(0) * 255);
-				//outvalue = LEDS_pal_cur[pal_no][pallete_option].b;
 				out_add_label = "/BL";
 				break;
-	}
-
-	{
-		outbuffer = String("/pal/" + String(pal_no) + "/" + String(pallete_option) + out_add_label); //+ String(select_mode_int + 1));
-																									 //DBG_OUTPUT_PORT.println(outbuffer);
-		osc_queu_MSG_float(outbuffer, outvalue);
-	}
+	}	
+	outbuffer = String("/pal/" + String(pal_no) + "/" + String(pallete_option) + out_add_label); 
+	osc_queu_MSG_float(outbuffer, outvalue);
+	
 
 }
 
@@ -3010,13 +3004,13 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 		String option_string;
 		String byte_string;
 
-		int type_int;
+		//int type_int;
 		int option_int;
 		int byte_int;
 
 
 		char address[4];
-		char address_out[20];
+		//char address_out[20];
 		bool switch_bool = false;
 
 		String outbuffer = "/strips/sX/SIL/X";
@@ -3049,7 +3043,7 @@ void osc_DS_ip_in(OSCMessage &msg, int addrOffset)
 
 		}
 
-		type_int = type_string.toInt();
+		//type_int = type_string.toInt();
 		option_int = option_string.toInt() - 1;
 		byte_int = byte_string.toInt() - 1;
 
@@ -3232,13 +3226,13 @@ void osc_DS_DATA_NL_in(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[4];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	msg.getAddress(address, addrOffset - 4, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit = select_bit_string.toInt();
 
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
@@ -3263,7 +3257,7 @@ void osc_DS_DATA_NL_in(OSCMessage &msg, int addrOffset)
 	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//debugMe("row: " + String(row) + " col: " + String(collum));
 	if (bool(msg.getFloat(0)) == true) 
@@ -3341,13 +3335,13 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 	String row_string;
 	char address[4];					// to pick info aut of the msg address
 										//char address_out[20];	
-	int select_bit = 0;
+	//int select_bit = 0;
 	String select_bit_string;
 	bool switch_bool = false;			// for toggels to get row and collum
 
 	msg.getAddress(address, addrOffset - 4, 1);					// get the select-bit info	
 	select_bit_string = select_bit_string + address[0];
-	select_bit = select_bit_string.toInt();
+	//select_bit = select_bit_string.toInt();
 
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
@@ -3372,7 +3366,7 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 	int collum = collum_string.toInt() - 1;  // Whit CRGB value in the pallete
 
 	memset(address, 0, sizeof(address));
-	byte msg_size = msg.size();
+	//byte msg_size = msg.size();
 
 	//debugMe("row: " + String(row) + " col: " + String(collum));
 	if (bool(msg.getFloat(0)) == true) 	

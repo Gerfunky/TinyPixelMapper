@@ -4,6 +4,8 @@
 
 	#include <WiFi.h>	
 	#include <WiFiUdp.h>
+
+	#include "AsyncUDP.h"
 	//#include <WiFiAP.h>
 	#include <ArduinoOTA.h>
 #	include <DNSServer.h>
@@ -47,12 +49,17 @@ wifi_Struct wifi_cfg;
 #define NTP_LOCAL_PORT	2843	// 2 Invinity 4 Ever
 
 //the ntp deamon
-WiFiUDP ntp_udp;
-
+//WiFiUDP ntp_udp;
+AsyncUDP ntp_udp;
 
 // FFT data 
 WiFiUDP  FFT_master;
 WiFiUDP  FFT_slave;
+
+//AsyncUDP FFT_master;
+//AsyncUDP FFT_slave ;
+
+
 
 fft_ip_cfg_struct fft_ip_cfg;
 
@@ -533,55 +540,41 @@ void WiFi_Start_Network_X()
 void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
-boolean btn_read = 	digitalRead(BTN_PIN); 	
-if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
+	boolean btn_read = 	digitalRead(BTN_PIN); 	
+	if ( btn_read == BUTTON_DOWN  ||  get_bool(WIFI_MODE) == WIFI_ACCESSPOINT )			// if we push the button or wifi is set to ACCESS point
 	{
-				//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);   //wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS
-				
-				
-				
-				
-				
-				if (btn_read == false || get_bool(WIFI_POWER) )
-				{
-					LEDS_setall_color(1);
-					LEDS_show();
-					WiFi.mode(WIFI_AP);
-					delay(100);
+		LEDS_setall_color(1);
+		LEDS_show();
+		WiFi.mode(WIFI_AP);
+		delay(100);
 
-				}
-				if(btn_read == false )
-				{
-					WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel);
-					//if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
-					write_bool(STATIC_IP_ENABLED,false);
-					write_bool(WIFI_POWER,true);
-					write_bool(WIFI_POWER_ON_BOOT, true);
-					debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));
-				}
-				else if(get_bool(WIFI_POWER))
-					{
-	
-						 WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
-						 if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
-						 debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
-					}
-
-				
-				delay(500);
-				LEDS_setall_color(2);
-				LEDS_show();
-				
-
-	}
-	else {	
-	
-		debugMe("Starting Wifi Setup");
-		unsigned long currentT = millis();
-		
-		if (get_bool(WIFI_MODE) == false)
+		if(btn_read == BUTTON_DOWN )
 		{
-			
+			WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel); 
+			write_bool(STATIC_IP_ENABLED,false);
+			write_bool(WIFI_POWER,true);
+			write_bool(WIFI_POWER_ON_BOOT, true);
+			debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));
+		}
+		else if(get_bool(WIFI_POWER))
+			{
+				if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
+				WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
+				debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
+			}
+		delay(200);
+		LEDS_setall_color(2);
+		LEDS_show();
+	}
+	else
+	{	
+		debugMe("Starting Wifi Client Setup");
+		unsigned long currentT = millis();
+		LEDS_setall_color(3);
+		LEDS_show();
+
+		if (get_bool(WIFI_MODE) !=  WIFI_ACCESSPOINT)
+		{	
 			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
 
 			if (get_bool(DEBUG_OUT) == true)
@@ -591,105 +584,27 @@ if ( btn_read == false ||  get_bool(WIFI_MODE) == true)
 				debugMe(String("try : " + String(con_try) + "."));
 			}
 
-
-
-
 			WiFi.mode(WIFI_STA);
 			//delay(100);
 			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 			
-			//uint8_t try_led_counter = 0;
-			uint8_t led_color[3] = { 255,0,0 };
-
-			//LEDS_setall_color();
 
 			while (WiFi.status() != WL_CONNECTED)
 			{
-				
-						//static uint8_t led_color[3] = {0,0,0}
-							//led_color[3] con_try
-				//LEDS_setLED_show(try_led_counter, led_color);
-				//try_led_counter++;
-				delay(500);
-				
+				delay(500);	
 				debugMe(String("." + String(con_try) + "."), false);
 				if (millis() > currentT + WIFI_CLIENT_CONNECT_TIMEOUT * con_try)
 					break;
 
 			}
 			
- 
-
-			if(WiFi.status() != WL_CONNECTED)
-			{
-				led_color[0] = 0;
-				led_color[1] = 255; 
-
-				while (con_try <= WIFI_CLIENT_CONNECT_TRYS)
-				{
-						currentT = millis();
-						con_try++;
-						//debugMe(".");
-						debugMe(String("try : " + String(con_try)+ "."),false);
-						WiFi.reconnect();
-						delay(100);
-						while (WiFi.status() != WL_CONNECTED)
-						{
-							//LEDS_setLED_show(try_led_counter, led_color);
-							//try_led_counter++;
-
-							delay(500);
-							debugMe(String("."+ String(con_try) + "."),false);
-							if (millis() > currentT + WIFI_CLIENT_CONNECT_TIMEOUT * con_try )
-								break;
-						}
-						if (WiFi.status() == WL_CONNECTED) break;
-				}
-			}
-
+		LEDS_setall_color(2);
+		LEDS_show();
 		}
-	
-
-/*	
-		if (WiFi.status() != WL_CONNECTED)
-	{
-		WiFi.disconnect();
-		WiFi.mode(WIFI_AP);
-		WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD);
-	 /*
-		debugMe("setting AP settings");
-		if (!WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal-1, wifi_cfg.ipSubnet))
-			debugMe("WiFi: AP Config FAILED");
-		
-		//WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet);
-		delay(50);
-		WiFi.softAPsetHostname(wifi_cfg.APname);
-		//WiFi.softAP(wifi_cfg.APname);
-		
-
-		if (WiFi.softAP("test1", "12345678",0,5))// , DEF_AP_PASSWD);
-		{
-			debugMe("Starting Wifi Backup no Password");
-			debugMe("SSID : " + String(wifi_cfg.APname));
-		}
-		else
-			debugMe("Starting AP failed!");
-		//while(WiFi.status() != )
-		//*/
-//	}
-	//*/
-
-
-		//debugMe("");
 		debugMe("Wifi Signal Strength : " + String(WiFi.RSSI()));
-		//debugMe(WiFi.RSSI());  // test to get the Signal strength  returns a "long"
-		//debugMe(String("IP : "  + String(WiFi.localIP())) );
 	}
-		debugMe(String("IP : "),false);
-		debugMe(WiFi.localIP());
-		
-
-
+	debugMe(String("IP : "),false);
+	debugMe(WiFi.localIP());
 }
 
 
@@ -724,7 +639,7 @@ void WIFI_FFT_disable()
 	if (get_bool(FFT_MASTER) == true)
 		FFT_master.stop();
 	else FFT_slave.stop();
-	//if (get_bool(SLAVE_MODE) == true) 
+	 
 		
 	
 
@@ -779,7 +694,7 @@ void WIFI_FFT_slave_handle()
 			{
 				fft_led_cfg.fps = FFT_slave.read(); // Get the speed update  first byte
 				
-				//for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
+				for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
 				
 
    
@@ -798,17 +713,16 @@ void WIFI_FFT_master_send()
 	// The main FFT master send function
 	// send out the FFT multicast packets
 
-	if (get_bool(FFT_ENABLE) == true && true == get_bool(FFT_MASTER_SEND) )
-	{ // && (FFT_fifo.count() >= FFT_SEND_NR_PIXELS)  ) {
-										//CRGB fft_outdata; 
-										// Send a multicast packet to The Slave ESP servers.
+	if (get_bool(FFT_ENABLE) == true &&  get_bool(FFT_MASTER_SEND) == true  )
+	//&& (FFT_fifo.count() >= FFT_SEND_NR_PIXELS)  ) 
+	{
+		// Send a multicast packet to The Slave ESP servers.
 
-#ifdef ESP32
-		//FFT_master.beginMulticastPacket();
-#endif
-		//FFT_master.write(fft_led_cfg.fps);
-		//for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
-		//FFT_master.endPacket();
+		FFT_master.beginMulticastPacket();
+
+		FFT_master.write(fft_led_cfg.fps);
+		for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
+		FFT_master.endPacket();
 	}
 }
 
@@ -830,11 +744,12 @@ void WiFi_FFT_setup_vars()
 
 	if (FS_FFT_read(0) == false)
 	{
-		//write_bool(FFT_ENABLE, DEF_FFT_ENABLE);
-		//write_bool(FFT_MASTER, DEF_FFT_MASTER);
+		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
+		write_bool(FFT_MASTER, DEF_FFT_MASTER);
 		fft_ip_cfg.IP_multi		=  DEF_FFT_IP_MULTICAST;
 		fft_ip_cfg.port_slave	=  DEF_FFT_SLAVE_PORT;
 		fft_ip_cfg.port_master	=  DEF_FFT_MASTER_PORT;
+
 	}
 
 }

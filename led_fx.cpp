@@ -317,31 +317,40 @@ void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *numb
 
 
 
-void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
+void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
 {          // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
 
    static int16_t dist = random8();
-  //FastLED.setBrightness(255);
-  for(int i = StartLed ; i < StartLed+NrLeds ; i++) {                                      // Just ONE loop to fill up the LED array as all of the pixels change.
-    uint8_t index = inoise8(i*xscale, dist+i*yscale) % 255; 
-    //uint8_t index2 = inoise8(i*xscale, dist-i*yscale) % 255;    // Get a value from the noise function. I'm using both x and y axis.
-    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
-    //led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index2, 255, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+	byte mirror_add = 0;
 
+	if (mirror == true) 
+	{
+			
+					
+			if (isODDnumber(NrLeds) == true) 
+			{
+				mirror_add = 1; // dosmething
+			}
+	}
+		TBlendType currentBlendingTB;
+		if (get_bool(BLEND_INVERT) == true)
+				blend = !blend;
+			if (blend == true)
+				currentBlendingTB = LINEARBLEND;
+			else
+				currentBlendingTB = NOBLEND;
+
+
+
+
+  for(int i = StartLed ; i < StartLed + (NrLeds/(1+1*mirror_add)) ; i++)    // Just ONE loop to fill up the LED array as all of the pixels change.
+  {                                     
+    uint8_t index = inoise8(i*xscale, dist+i*yscale) % 255; 			 // Get a value from the noise function. I'm using both x and y axis. 
+    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
   
   dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
-  if (mirror == true) 
-  {
-	    byte mirror_add = 0;
-			       
-        if (isODDnumber(NrLeds) == true) 
-        {
-            mirror_add = 1; // dosmething
-        }
-		
-        //LEDS_Copy_strip(StartLed + NrLeds / 2  , -(NrLeds + mirror_add) / 2, StartLed);                                                                     // In some sketches, I've used millis() instead of an incremented counter. Works a treat.
-  }
+ 
 
 } // shimmer()
 

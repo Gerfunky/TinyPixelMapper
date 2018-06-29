@@ -14,8 +14,7 @@ void LEDS_G_E_addGlitterRainbow(fract8 chanceOfGlitter, uint16_t *start_led, uin
 void LEDS_G_E_addGlitter(fract8 chanceOfGlitter, uint16_t *start_led, uint16_t *nr_leds);
 void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *number_of_leds, boolean dir, uint8_t jd_speed, uint8_t nr_dots);
 
-//void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
-void LEDS_G_E_shimmer( uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, uint16_t xscale , uint16_t yscale , uint8_t beater );         // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
+void LEDS_G_E_shimmer( uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend,  uint16_t xscale , uint16_t yscale , uint8_t beater );         // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
 void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend) ;
 void noise16_2_pallete(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend) ;
 

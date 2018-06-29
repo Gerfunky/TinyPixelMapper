@@ -186,7 +186,7 @@ boolean FS_FFT_read(uint8_t conf_nr)
 		String settingName;
 		String settingValue;
 		char type;
-		int bin_no = 0;
+		//int bin_no = 0;
 		 debugMe("FFT_File-opened");
 
 		while (conf_file.available()) 
@@ -199,28 +199,14 @@ boolean FS_FFT_read(uint8_t conf_nr)
 
 			type = conf_file.read();
 			character = conf_file.read(); // go past the first ":"
-			
 
-			if (type == 'F') 
+			 if (type == 'I')
 			{
-				bin_no = get_int_conf_value(conf_file, &character);
-				fft_data[bin_no].trigger = get_int_conf_value(conf_file, &character);
-
-
-				for (uint8_t color = 0; color < 3; color++)
-				{
-					bitWrite(fft_menu[color], bin_no, get_bool_conf_value(conf_file, &character));
-				}
-
-
-			}		
-			else if (type == 'I')
-			{
-
-				for (uint8_t i = 0; i < 4; i++) fft_ip_cfg.IP_multi[i] = get_int_conf_value(conf_file, &character);
-
 				write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
 				write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character)) ;
+				for (uint8_t i = 0; i < 4; i++) fft_ip_cfg.IP_multi[i] = get_int_conf_value(conf_file, &character);
+
+
 				fft_ip_cfg.port_master		= get_int_conf_value(conf_file, &character);
 				fft_ip_cfg.port_slave		= get_int_conf_value(conf_file, &character);
 
@@ -264,55 +250,26 @@ void FS_FFT_write(uint8_t conf_nr)
 	{   // yeah its open
 
 		conf_file.println(title);
-
-		for (int bin = 0; bin < 7; bin++) 
-		{
-			conf_file.print(String("[F:" + String(bin)));
-
-			conf_file.print(String(":" + String(fft_data[bin].trigger)));
-
-			for (int color = 0; color < 3; color++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
-
-			}
-
-			conf_file.println("] ");
-
-		}
-
-
-		conf_file.print(String("[I:" + String(fft_ip_cfg.IP_multi[0])));
+		conf_file.print(String("FFT Settings I:  FFT Send enable =1 : FFT Master Mode = 1 : Multicast IP : Master Port : slave Port   "));
+		conf_file.print(String("[I:" + String(get_bool(FFT_MASTER_SEND))));
+		conf_file.print(String(":" + String(get_bool(FFT_MASTER))));
+		conf_file.print(String(":" + String(fft_ip_cfg.IP_multi[0])));
 		conf_file.print(String(":" + String(fft_ip_cfg.IP_multi[1])));
 		conf_file.print(String(":" + String(fft_ip_cfg.IP_multi[2])));
 		conf_file.print(String(":" + String(fft_ip_cfg.IP_multi[3])));
-
-		//conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));
-		//conf_file.print(String(":" + String(get_bool(FFT_MASTER))));
 		conf_file.print(String(":" + String(fft_ip_cfg.port_master)));
-		conf_file.print(String(":" + String(fft_ip_cfg.port_slave)));
-		
+		conf_file.print(String(":" + String(fft_ip_cfg.port_slave)));	
 		conf_file.println("] ");
-
-
-		//conf_file.println(  "END" );
 		conf_file.close();
-		
-		//conf_file.println("File_test. bri =" + String(led_brightness) + "HAHAHAH" );
-		//conf_file.write('A');
-
-		// 
-		// 0:
-
 	}
 	
-}
+} // end FS_FFT_write()
 
 
 
 
 // wifi
-void	FS_wifi_write(uint8_t conf_nr)
+void FS_wifi_write(uint8_t conf_nr)
 {
 	// write out the wifi config
 	String addr = String("/conf/" + String(conf_nr) + ".wifi.txt");
@@ -336,7 +293,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 		conf_file.println("] ");
 
 
-		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l");
+		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l : wifi channel 1-12");
 		conf_file.print(String("[w:" + String(wifi_cfg.APname)));
 		conf_file.print(String(":" + String(wifi_cfg.APpassword)));
 		conf_file.print(String(":" + String(wifi_cfg.ssid)));
@@ -377,7 +334,7 @@ void	FS_wifi_write(uint8_t conf_nr)
 	}	// end open conf file
 
 	
-}
+} // end FS_wifi_write()
 
 boolean FS_wifi_read(uint8_t conf_nr)
 {
@@ -465,7 +422,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 	else  debugMe("error opening " + addr);
 
 	return false;
-}
+} // end FS_wifi_read()
 
 //Artnet
 #ifndef ARTNET_DISABLED
@@ -477,7 +434,7 @@ void	FS_artnet_write(uint8_t conf_nr)
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
-	if (!conf_file  && !conf_file.isDirectory)
+	if (!conf_file  && !conf_file.isDirectory())
 	{
 		 debugMe("Cant write  artnet Conf file");
 	}
@@ -542,7 +499,7 @@ boolean FS_artnet_read(uint8_t conf_nr)
 		conf_file.close();
 		return true;
 	}	// end open conf file
-	else  debugMe("error opening " + addr);
+	
 
 	return false;
 }

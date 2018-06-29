@@ -9,7 +9,7 @@
 // settings where the name starts with DEF will only be loaded if there are no setting on the SPIFFS
 
 
-#define ARTNET_DISABLED 				// disables artnet, wont be compiled 
+//#define ARTNET_DISABLED 				// disables artnet, wont be compiled 
 //#define OSC_MC_SERVER_DISABLED
 #define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
 
@@ -140,7 +140,7 @@
 		#define POTI_BRI_PIN 39 	// For Brightness 
 		#define POTI_FPS_PIN 36 	// for speed
 		#define BTN_PIN 4 			// for a button 
-
+		#define BUTTON_DOWN		false 
 
 
 // OSC Defines

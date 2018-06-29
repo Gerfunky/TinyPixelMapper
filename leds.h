@@ -236,24 +236,24 @@
 
 // Functions
 
-	  void LEDS_loop();
-	  void LEDS_setup();
+	void LEDS_loop();
+	void LEDS_setup();
 
-	  float LEDS_get_FPS(); // osc.cpp
+	float LEDS_get_FPS(); // osc.cpp
 
-	  void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
-	  uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);				 // used in config_fs. osc.cpp
-	  void LEDS_pal_reset_index();															//osc.cpp
-	  void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);									//osc.cpp
+	void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
+	uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);				 // used in config_fs. osc.cpp
+	void LEDS_pal_reset_index();															//osc.cpp
+	void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);									//osc.cpp
 
-	  void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
-	  void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);  // wifi-ota
-	  void LEDS_fadeout();																		 // wifi-ota
-	  void LEDS_setall_color(uint8_t color);																	 // wifi-ota
-	  void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
-	  uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
-	  void LEDS_show(); 																		//wifi-ota
-	 void LEDS_PAL_invert(uint8_t pal );
+	void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
+	void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);  // wifi-ota
+	void LEDS_fadeout();																		 // wifi-ota
+	void LEDS_setall_color(uint8_t color);																	 // wifi-ota
+	void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
+	uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
+	void LEDS_show(); 																		//wifi-ota
+	void LEDS_PAL_invert(uint8_t pal );
 	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
 	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 

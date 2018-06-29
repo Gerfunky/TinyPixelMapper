@@ -11,6 +11,9 @@
 
 #include "IPAddress.h"
 
+#define WIFI_ACCESSPOINT true   // if the bool is true run accesspoint
+
+
 										// Wifi IP settings data stucture 
 	struct wifi_Struct 
 	{
