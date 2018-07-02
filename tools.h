@@ -37,7 +37,8 @@ enum GLOBAL_OPTIONS_ENUM
 	,DATA2_ENABLE		= 19
 	,DATA3_ENABLE		= 20
 	,DATA4_ENABLE		= 21
-	,WIFI_POWER_ON_BOOT = 22 // was wifi on on boot?
+	,WIFI_POWER_ON_BOOT = 22 	// was wifi on on boot?
+	,POT_DISABLE 		= 23  	// Disable HOW Pots BRI & FPS!
 	
 
 };

@@ -39,7 +39,7 @@
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
 	#define DEF_STATIC_IP_ENABLED true							// set static ip for startup  ?
-	#define DEF_IP_LOCAL		{172,16,222,34}					// Static IP
+	#define DEF_IP_LOCAL		{172,16,222,35}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
 
@@ -142,6 +142,7 @@
 		#define BTN_PIN 4 			// for a button 
 		#define BUTTON_DOWN		false 
 
+		#define DEF_DISABLE_HW_POTS  false 
 
 // OSC Defines
 		#define OSC_IPMULTI_	{239,0,0,58}			// the multicast IP we sent to to brodcast the FFT data

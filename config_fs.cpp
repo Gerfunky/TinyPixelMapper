@@ -883,7 +883,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.Data4StartLed)));
 		conf_file.println("] ");
 
-		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC  "));
+		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
 		conf_file.print(String("[b:" + String(get_bool(DEBUG_OUT))));	
 		conf_file.print(String(":" + String(get_bool(DEBUG_TELNET))));
 		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));
@@ -894,6 +894,8 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DATA2_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
+		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
+
 
 		conf_file.println(F("] "));
 		
@@ -972,7 +974,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA2_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA3_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
-
+					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
 
 				}
 				else

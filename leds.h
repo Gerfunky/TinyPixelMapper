@@ -13,7 +13,7 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   170*4 //680  			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
+		#define MAX_NUM_LEDS   (170*4)  // = 680  = 4 universes			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 

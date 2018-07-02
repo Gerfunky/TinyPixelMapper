@@ -14,7 +14,7 @@
 // use tool.h to read and write
   
 
-uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00000001, B00000000 };  //{ B00001111, B00000000 };
+uint8_t global_options[NR_GLOBAL_OPTIONS_BYTES] = { B00000001, B00000000, B00000000 };  //{ B00001111, B00000000 };
 
 
 extern led_cfg_struct led_cfg;
@@ -108,6 +108,8 @@ void load_bool()
 		write_bool(FFT_MASTER, DEF_FFT_MASTER);
 		write_bool(FFT_AUTO, DEF_AUTO_FFT);	
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
+
+		write_bool(POT_DISABLE,DEF_DISABLE_HW_POTS);
 
 		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON ) FS_Bools_write(0);
 	}

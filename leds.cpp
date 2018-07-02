@@ -598,32 +598,33 @@ void LEDS_G_pre_show_processing()
     LEDS_G_form_effectsRouting();
 	//LED_G_bit_run();
 
-	
-	//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
-	uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
-	if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
+	if(!get_bool(POT_DISABLE))
 	{
-		led_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
-		led_cnt.PotBriLast = bri;
-	}
+		//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
+		uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
+		if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
+		{
+			led_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
+			led_cnt.PotBriLast = bri;
+		}
 
-	//FastLED.setBrightness(led_cfg.bri);  moved to show
-	
-	//debugMe(led_cfg.bri);
-	
-	
+		//FastLED.setBrightness(led_cfg.bri);  moved to show
+		
+		//debugMe(led_cfg.bri);
+		
+		
 
-	uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
-	
-	//led_cfg.pal_fps = fps /4;
-	///*
-	if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
-	{
-		led_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
-		led_cnt.PotFPSLast = fps;
-	}
+		uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
+		
+		//led_cfg.pal_fps = fps /4;
+		///*
+		if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
+		{
+			led_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
+			led_cnt.PotFPSLast = fps;
+		}
 	//Serial.println(fps);  
-
+	}
 	
 	//LED_G_bit_run();
 		//= led_cfg.max_br * led_cfg.bri / 255
