@@ -1011,6 +1011,11 @@ void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color , uint8_t value)
 
 }
 
+
+
+
+
+
 uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color)
 {	// read the color info for 1 color in a pallete
 	switch(color)

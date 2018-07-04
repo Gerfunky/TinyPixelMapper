@@ -565,6 +565,9 @@ void WiFi_Start_Network()
 		delay(200);
 		LEDS_setall_color(2);
 		LEDS_show();
+		debugMe("IP:",false);
+		if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal);
+		else debugMe("192.168.4.1");
 	}
 	else
 	{	
@@ -808,8 +811,8 @@ void wifi_setup()
 		
 		httpd_setup();
 
-		if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "*", wifi_cfg.ipStaticLocal);// WiFi.localIP());
-		else dnsServer.start(53, "*", IPAddress(192, 168, 4, 1));// WiFi.localIP());
+		if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "tpm", wifi_cfg.ipStaticLocal);// WiFi.localIP());
+		else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
 
 		WiFi_FFT_Setup();
 	}

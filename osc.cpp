@@ -3576,6 +3576,192 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	//debugMe("DS routing END");
 }
 
+//-------------- OPEN STage Controll
+
+/*
+void osc_STCmaster_routing(OSCMessage &msg, int addrOffset)
+{
+
+		msg.route("/load", osc_master_conf_play_load, addrOffset);
+		msg.route("/save", osc_master_conf_play_save, addrOffset);
+
+		if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)		osc_master_settings_send();
+
+		if (msg.fullMatch("/bri",addrOffset))			{ led_cfg.bri	= byte(msg.getFloat(0)	* 255); osc_master_basic_reply("/m/bri",led_cfg.bri);}// osc_mc_send("/x/bri",		led_brightness);}
+        if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r		= byte(msg.getFloat(0)	* 255); osc_master_basic_reply("/m/r", led_cfg.r);}// osc_mc_send("/x/r",		master_rgb.r);}
+        if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g		= byte(msg.getFloat(0)	* 255); osc_master_basic_reply("/m/g", led_cfg.g);}// osc_mc_send("/x/g",		master_rgb.g);}
+        if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b		= byte(msg.getFloat(0)	* 255); osc_master_basic_reply("/m/b", led_cfg.b);}// osc_mc_send("/x/b" ,		master_rgb.b) ; }
+		if (msg.fullMatch("/palbri", addrOffset))		{ led_cfg.pal_bri = byte(msg.getFloat(0) * 255); osc_master_basic_reply("/m/palbri", led_cfg.pal_bri); }// osc_mc_send("/x/b" ,		master_rgb.b) ; }
+
+		if (msg.fullMatch("/blend", addrOffset))		{ write_bool(BLEND_INVERT, bool(msg.getFloat(0))); osc_queu_MSG_float("/m/blend", float(get_bool(BLEND_INVERT))    ); }  
+
+		if (msg.fullMatch("/ups", addrOffset))		{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_master_basic_reply("/m/ups", led_cfg.pal_fps); osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));}
+		//if (msg.fullMatch("/fftups", addrOffset)) { fft_led_cfg.fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/m/fftupsl", float(fft_led_cfg.fps)); yield();  comms_S_FPS(fft_led_cfg.fps); }
+		if (msg.fullMatch("/FPS", addrOffset))			osc_queu_MSG_float("/m/FPSL", float(LEDS_get_FPS()));
+
+		if (msg.fullMatch("/fire/cool", addrOffset)) { led_cfg.fire_cooling = constrain(byte(msg.getFloat(0)), 20, 100); osc_queu_MSG_float("/m/fire/coolL", float(led_cfg.fire_cooling)); }
+		if (msg.fullMatch("/fire/spark", addrOffset)) { led_cfg.fire_sparking = constrain(byte(msg.getFloat(0)), 20, 100); osc_queu_MSG_float("/m/fire/sparkL", float(led_cfg.fire_sparking)); }
+		
+
+		if (msg.fullMatch("/bpm/enabled", addrOffset))	write_bool(BPM_COUNTER, bool(msg.getFloat(0)));
+		msg.route("/bpm/toggle",						osc_master_bpm_toggle, addrOffset);
+		msg.route("/bpm/man",							osc_master_bpm_manual, addrOffset);
+
+}
+*/
+
+
+void osc_StC_master_routing(OSCMessage &msg, int addrOffset) 
+{
+		debugMe("in master routing");
+		
+		// debugMe(string(msg.getOSCData(0)));
+
+
+		//debugMe(msg.getFloat(1));
+			if (msg.fullMatch("/bri",addrOffset))		{ led_cfg.bri	= uint8_t(msg.getInt(0)); }; //   osc_queu_MSG_float("/ostc/m/bril", float(led_cfg.bri  ));  }
+			if (msg.fullMatch("/palbri",addrOffset))	{ led_cfg.pal_bri	= uint8_t(msg.getInt(0)); }
+			if (msg.fullMatch("/fps",addrOffset))		{ led_cfg.pal_fps	= uint8_t(msg.getInt(0)); }
+			if (msg.fullMatch("/r",addrOffset))			{ led_cfg.r	= uint8_t(msg.getInt(0)); }
+			if (msg.fullMatch("/g",addrOffset))			{ led_cfg.g	= uint8_t(msg.getInt(0)); }
+			if (msg.fullMatch("/b",addrOffset))			{ led_cfg.b	= uint8_t(msg.getInt(0)); }
+
+
+			//msg.route("/m", osc_StC_Master_routing, addrOffset);
+
+
+
+
+
+		debugMe(led_cfg.bri);
+		debugMe(uint8_t(msg.getInt(0)));	
+		//debugMe(String(msg.getType(0)));
+		//debugMe(String(msg.isInt(0)));
+
+}
+
+
+
+
+void osc_StC_pal_rec(OSCMessage &msg, int addrOffset) {
+	// OSC MESSAGE :/pal/?/?/1-3   
+
+	String color_no_string;		// color  NR
+	String pal_no_string;		// Pallete NO
+	char address[5];
+	
+	
+	uint8_t pal_no = 0;						// form NR in uint8_t
+	//String outbuffer = "/pal/0/x/1-3";
+	float outvalue = 0;
+
+	msg.getAddress(address, addrOffset - 1, 1);
+	pal_no_string = pal_no_string + address[0];
+	pal_no = pal_no_string.toInt();
+
+	memset(address, 0, sizeof(address));
+	msg.getAddress(address, addrOffset + 1);
+
+	for (byte i = 0; i < sizeof(address); i++) 
+	{
+			color_no_string = color_no_string + address[i];
+
+	}
+
+	
+	int color_no = color_no_string.toInt();  // What CRGB value in the pallete
+
+	//debugMe(pal_no);
+	//debugMe(color_no);
+
+	LEDS_pal_write(pal_no, color_no, 0, uint8_t(msg.getInt(0)));
+	LEDS_pal_write(pal_no, color_no, 1, uint8_t(msg.getInt(1)));
+	LEDS_pal_write(pal_no, color_no, 2, uint8_t(msg.getInt(2)));
+
+}
+
+
+
+
+
+
+
+
+void osc_StC_pal_routing(OSCMessage &msg, int addrOffset) 
+{
+
+debugMe("in par routing");
+	msg.route("/0", osc_StC_pal_rec, addrOffset) ; 
+	msg.route("/1", osc_StC_pal_rec, addrOffset) ;
+
+}
+
+
+
+void osc_StC_menu_master_ref()
+{
+	osc_queu_MSG_float("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
+	osc_queu_MSG_float("/ostc/master/r", 		led_cfg.r);
+	osc_queu_MSG_float("/ostc/master/g", 		led_cfg.g);
+	osc_queu_MSG_float("/ostc/master/b", 		led_cfg.b);
+	osc_queu_MSG_float("/ostc/master/palbri", 	led_cfg.pal_bri);
+	osc_queu_MSG_float("/ostc/master/fps", 		led_cfg.pal_fps);
+	//osc_queu_MSG_float("/ostc/masterfftups", fft_led_cfg.fps, MAX_PAL_FPS));
+
+	
+
+	//osc_queu_MSG_float("/m/fire/coolL", float(led_cfg.fire_cooling));
+	//osc_queu_MSG_float("/m/fire/sparkL", float(led_cfg.fire_sparking));
+
+	osc_queu_MSG_float("/ostc/blend", float(get_bool(BLEND_INVERT))); 
+	yield();
+
+
+}
+
+void osc_StC_menu_routing(OSCMessage &msg, int addrOffset) 
+{
+	
+	switch( uint8_t(msg.getInt(0)))
+	{
+		case 0: osc_StC_menu_master_ref();
+
+
+	}
+
+
+}
+
+
+
+
+void osc_StC_routing(OSCMessage &msg, int addrOffset) 
+{
+	debugMe("in ostc");
+		if(msg.isBlob(0)) debugMe("BLOB");
+		if(msg.isBoolean(0)) debugMe("bool");
+		if(msg.isChar(0)) debugMe("char");
+		if(msg.isInt(0)) debugMe("int");
+		if(msg.isFloat(0)) debugMe("float");
+		if(msg.isDouble(0)) debugMe("double");
+		if(msg.isString(0)) debugMe("string");
+
+		if(msg.isTime(0)) debugMe("string");
+		if(msg.hasError()) debugMe("ERROR");
+
+	
+	msg.route("/menu", 		osc_StC_menu_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
+	msg.route("/master", 	osc_StC_master_routing,	addrOffset);   // Routing for MASTER TAB -  Open Stage Controll
+	msg.route("/pal", 		osc_StC_pal_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
+
+
+	if (msg.fullMatch("/blend",addrOffset))			{ write_bool(BLEND_INVERT, bool(msg.getInt(0)));   ;  }
+
+}
+
+
+
+//-------------- END OPEN STage Controll
 
 
 // Main OSC loop
@@ -3607,6 +3793,10 @@ void OSC_loop()
 			oscMSG.getAddress(address);
 			debugMe(address);
 
+
+
+
+			oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Controll
 
 			oscMSG.route("/m", osc_master_routing);
 			oscMSG.route("/DS", osc_device_settings_routing);
