@@ -513,15 +513,23 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 
 	if(conf_file.available() && conf_file.isDirectory() == false) 
 	{ //exists and its a file 
-		if (!conf_file.isDirectory())
-		debugMe("BoolTrue");
 		conf_file.close();
-
 		return true;
 	}
 	
 	conf_file.close();
 	return false;
+}
+
+
+void FS_play_conf_clear(uint8_t conf_nr) 
+{
+	String addr = String("/conf/"+ String(conf_nr) + ".conf.txt");
+	debugMe("deleted save " + String(conf_nr));
+	
+	File conf_file = SPIFFS.open(addr, "w");
+	if (conf_file && !conf_file.isDirectory())		SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt");
+	
 }
 
 
@@ -661,6 +669,9 @@ void FS_play_conf_write(uint8_t conf_nr)
 		conf_file.close();
 	}
 }
+
+
+
 
 
 boolean FS_play_conf_read(uint8_t conf_nr) 

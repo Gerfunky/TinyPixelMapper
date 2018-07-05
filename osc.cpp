@@ -21,6 +21,8 @@
 		#define OSC_BUNDLE_SEND_COUNT 16				// how many OSC messages to send in one bundle.
 		#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from osc
 
+		#define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
+
 	#include <WiFiUdp.h>
 
 #ifdef ESP8266
@@ -115,6 +117,57 @@ float osc_byte_tofloat(byte value, uint8_t max_value = 255) {
 
 	return float_out;
 }
+
+
+void osc_send_MSG_led(String addr_string , uint8_t  state =0 )    // set a led to a color  0 = black , 1 = red, 2 = green, 3 = blue, 4 = white
+{
+	char address_out[30];
+	addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
+
+	IPAddress ip_out(osc_server.remoteIP());
+	OSCMessage msg_out(address_out);
+
+	switch(state)
+	{
+		case 0:   // black 
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(0));
+		break;
+
+		case 1:  // red
+			msg_out.add(uint8_t(255));
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(0));
+		break;
+
+		case 2:   // green 
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(255));
+			msg_out.add(uint8_t(0));
+		break;
+
+		case 3:   // blue 
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(0));
+			msg_out.add(uint8_t(255));
+		break;
+
+		case 4:   // white 
+			msg_out.add(uint8_t(255));
+			msg_out.add(uint8_t(255));
+			msg_out.add(uint8_t(255));
+		break;
+
+	}
+
+	msg_out.send(osc_server);
+	osc_server.endPacket();
+	msg_out.empty();
+
+}
+
+
 
 void osc_queu_MSG_float(String addr_string, float value) {
 	IPAddress ip_out(osc_server.remoteIP());
@@ -3610,6 +3663,23 @@ void osc_STCmaster_routing(OSCMessage &msg, int addrOffset)
 }
 */
 
+void osc_StC_master_conf_routing(OSCMessage &msg, int addrOffset) 
+{
+	
+	if (boolean(msg.getInt(1)))
+	{
+		uint8_t conf_NR = (uint8_t(msg.getInt(0)));
+
+		if 			(msg.fullMatch("/save",addrOffset))		{ FS_play_conf_write(conf_NR);  osc_send_MSG_led(String("/ostc/master/conf/led/"+String(conf_NR)  ), 2); }
+		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);  }
+		else if 	(msg.fullMatch("/clear",addrOffset))	{ FS_play_conf_clear(conf_NR);  osc_send_MSG_led(String("/ostc/master/conf/led/"+String(conf_NR)  ), 1); }
+
+	}
+
+
+}
+
+
 
 void osc_StC_master_routing(OSCMessage &msg, int addrOffset) 
 {
@@ -3617,15 +3687,22 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		
 		// debugMe(string(msg.getOSCData(0)));
 
+			msg.route("/conf", osc_StC_master_conf_routing, addrOffset);
 
 		//debugMe(msg.getFloat(1));
-			if (msg.fullMatch("/bri",addrOffset))		{ led_cfg.bri	= uint8_t(msg.getInt(0)); }; //   osc_queu_MSG_float("/ostc/m/bril", float(led_cfg.bri  ));  }
-			if (msg.fullMatch("/palbri",addrOffset))	{ led_cfg.pal_bri	= uint8_t(msg.getInt(0)); }
-			if (msg.fullMatch("/fps",addrOffset))		{ led_cfg.pal_fps	= uint8_t(msg.getInt(0)); }
-			if (msg.fullMatch("/r",addrOffset))			{ led_cfg.r	= uint8_t(msg.getInt(0)); }
-			if (msg.fullMatch("/g",addrOffset))			{ led_cfg.g	= uint8_t(msg.getInt(0)); }
-			if (msg.fullMatch("/b",addrOffset))			{ led_cfg.b	= uint8_t(msg.getInt(0)); }
+			if 		(msg.fullMatch("/bri",addrOffset))		{ led_cfg.bri	= uint8_t(msg.getInt(0)); } //   osc_queu_MSG_float("/ostc/m/bril", float(led_cfg.bri  ));  }
+			else if (msg.fullMatch("/palbri",addrOffset))	{ led_cfg.pal_bri	= uint8_t(msg.getInt(0)); }
+			else if (msg.fullMatch("/fps",addrOffset))		{ led_cfg.pal_fps	= uint8_t(msg.getInt(0)); }
+			else if (msg.fullMatch("/r",addrOffset))		{ led_cfg.r	= uint8_t(msg.getInt(0)); }
+			else if (msg.fullMatch("/g",addrOffset))		{ led_cfg.g	= uint8_t(msg.getInt(0)); }
+			else if (msg.fullMatch("/b",addrOffset))		{ led_cfg.b	= uint8_t(msg.getInt(0)); }
+			
 
+			
+
+			//msg.route("/save", osc_StC_master_save, addrOffset);
+			//msg.route("/load", osc_StC_master_save, addrOffset);
+			//msg.route("/clear", osc_StC_master_save, addrOffset);
 
 			//msg.route("/m", osc_StC_Master_routing, addrOffset);
 
@@ -3643,7 +3720,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 
 
 
-void osc_StC_pal_rec(OSCMessage &msg, int addrOffset) {
+void osc_StC_pal_rec(OSCMessage &msg, int addrOffset)
+ {
 	// OSC MESSAGE :/pal/?/?/1-3   
 
 	String color_no_string;		// color  NR
@@ -3690,7 +3768,7 @@ void osc_StC_pal_rec(OSCMessage &msg, int addrOffset) {
 void osc_StC_pal_routing(OSCMessage &msg, int addrOffset) 
 {
 
-debugMe("in par routing");
+	debugMe("in par routing");
 	msg.route("/0", osc_StC_pal_rec, addrOffset) ; 
 	msg.route("/1", osc_StC_pal_rec, addrOffset) ;
 
@@ -3707,13 +3785,27 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_float("/ostc/master/palbri", 	led_cfg.pal_bri);
 	osc_queu_MSG_float("/ostc/master/fps", 		led_cfg.pal_fps);
 	//osc_queu_MSG_float("/ostc/masterfftups", fft_led_cfg.fps, MAX_PAL_FPS));
+	osc_queu_MSG_float("/ostc/blend", float(get_bool(BLEND_INVERT))); 
+
+
+	for(uint8_t confNr = 0; confNr < OSC_CONF_MAX_SAVES ; confNr++)  		// update leds to show what confs are saved
+	{
+		if(FS_check_Conf_Available(confNr))
+			{
+				osc_send_MSG_led(String("/ostc/master/conf/led/"+String(confNr)  ), 2);
+			}
+			else
+			{
+				osc_send_MSG_led(String("/ostc/master/conf/led/"+String(confNr)  ), 1);
+			}
+	}
 
 	
 
 	//osc_queu_MSG_float("/m/fire/coolL", float(led_cfg.fire_cooling));
 	//osc_queu_MSG_float("/m/fire/sparkL", float(led_cfg.fire_sparking));
 
-	osc_queu_MSG_float("/ostc/blend", float(get_bool(BLEND_INVERT))); 
+	
 	yield();
 
 
