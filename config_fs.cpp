@@ -511,12 +511,15 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
 	File conf_file = SPIFFS.open(addr,"r"); 
 
-	if(conf_file.available() && conf_file.isDirectory() == false) 
+	//if (SPIFFS.exists(addr)) debugMe("its there");
+	//else debugMe("Ohh no where is it");
+	if(conf_file && conf_file.isDirectory() == false) 
 	{ //exists and its a file 
-		conf_file.close();
+		//conf_file.close();
+		debugMe("return true");
 		return true;
 	}
-	
+	//debugMe("return false");
 	conf_file.close();
 	return false;
 }
@@ -530,7 +533,7 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	File conf_file = SPIFFS.open(addr, "w");
 	if (conf_file && !conf_file.isDirectory())		SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt");
 	
-}
+}	
 
 
 //play conf

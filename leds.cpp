@@ -649,6 +649,11 @@ boolean LEDS_checkIfAudioSelected()
 }
 
 
+uint8_t getrand8()
+{
+return random8();
+
+}
 
 // palletes
 
@@ -679,9 +684,10 @@ const TProgmemPalette16 myRedAndGreenPalette_p PROGMEM =
 void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
 {
 	// load a pallete from the default (FastLed)
-
+	debugMe("Load pal" + String(pal_menu));
 	switch (pal_menu)
 	{
+	case 0: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;	
 	case 1: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
 	case 2: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
 	case 3: LEDS_pal_cur[pal_no] = CloudColors_p; break;

@@ -257,7 +257,7 @@
 	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
 	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 
-
+	uint8_t getrand8() ;  // returns a random number from 0-255 
 
 #endif
 
