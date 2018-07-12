@@ -28,7 +28,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,OSC_MC_SEND		= 10	// send OSC to slave OSC devices ?
 	,UPDATE_LEDS		= 11	// 
 	,BPM_COUNTER		= 12	// Pallete BPM mode ?
-	,FFT_AUTO			= 13	// Auto FFT mode ?
+	,FFT_OSTC_VIZ		= 13	// send FFT data to Open Stage Controll for analisys ?
 	,DEBUG_TELNET		= 14	// Debug to telnet ?
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
 	,WIFI_POWER 		= 16    // enable WIFI power.
@@ -38,7 +38,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,DATA3_ENABLE		= 20
 	,DATA4_ENABLE		= 21
 	,WIFI_POWER_ON_BOOT = 22 	// was wifi on on boot?
-	,POT_DISABLE 		= 23  	// Disable HOW Pots BRI & FPS!
+	,POT_DISABLE 		= 23  	// Disable HW Pots BRI & FPS!
 	
 
 };

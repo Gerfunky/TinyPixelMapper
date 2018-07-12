@@ -555,7 +555,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 	else {   // yeah its open
 
 		conf_file.println("Play Config.");
-		conf_file.println("L = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : FFT Auto : fft scale : Global Bri");
+		conf_file.println("L = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
 
 			conf_file.print(String("[L:" + String(led_cfg.fire_cooling)));
 			conf_file.print(String(":" + String(led_cfg.fire_sparking)));
@@ -565,7 +565,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(led_cfg.pal_bri)));
 			conf_file.print(String(":" + String(led_cfg.pal_fps)));	
 			conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
-			conf_file.print(String(":" + String(get_bool(FFT_AUTO))));
+			conf_file.print(String(":" + String(0 )));
 			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
 			conf_file.print(String(":" + String(led_cfg.bri)));
 			conf_file.println("] ");
@@ -663,10 +663,10 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
-		conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
-		conf_file.print(String(":"	 + String(get_bool(FFT_AUTO)))); 
-		conf_file.println("] ");
+		//conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
+		//conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
+		//conf_file.print(String(":"	 + String(get_bool(FFT_AUTO)))); 
+		//conf_file.println("] ");
 
 
 		conf_file.close();
@@ -719,7 +719,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_bri				= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.pal_fps     		= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
 				write_bool(BLEND_INVERT, get_bool_conf_value(conf_file, &character));
-				write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
+				in_int = get_int_conf_value(conf_file, &character);	 // SPARE !!!! write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
 				in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.Scale = uint16_t(constrain(in_int, 0, 500));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
 				// debugMe(led_cfg.max_bri);
@@ -830,11 +830,11 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
 			
-			else if (type == 'T')			// FFT settings to load in play config
-			{
-					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
-					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));		
-			}
+			//else if (type == 'T')			// FFT settings to load in play config
+			//{
+			//		write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
+			//		write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));		
+			//}
 
 
 
@@ -902,7 +902,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DEBUG_TELNET))));
 		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(FFT_MASTER))));	
-		conf_file.print(String(":" + String(get_bool(FFT_AUTO))));		
+		conf_file.print(String(":" + String(0 )));  // SPARE!!!!		
 		conf_file.print(String(":" + String(get_bool(FFT_MASTER_SEND))));
 		conf_file.print(String(":" + String(get_bool(DATA1_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA2_ENABLE))));
@@ -982,7 +982,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_MASTER, get_bool_conf_value(conf_file, &character));
-					write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));					
+					get_bool_conf_value(conf_file, &character) ; // SPARE!!!!!!!!!!!      ///write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));					
 					write_bool(FFT_MASTER_SEND, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA1_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA2_ENABLE, get_bool_conf_value(conf_file, &character));

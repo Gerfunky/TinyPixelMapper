@@ -33,6 +33,10 @@
 // -- The core to run FastLED.show()
 #define FASTLED_SHOW_CORE 0
 
+
+	extern  void osc_StC_FFT_vizIt();
+
+
 // -- Task handles for use in the notifications
 static TaskHandle_t FastLEDshowTaskHandle = 0;
 static TaskHandle_t userTaskHandle = 0;
@@ -96,9 +100,9 @@ CRGB GlobalColor_result;
 
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
-	uint8_t FFT_stage1_sample_count = 0;			// used to count the samples in FFT Stage 1  for pulling into Stage 2
+	uint8_t FFT_stage1_sample_count = 0;		    	// used to count the samples in FFT Stage 1  for pulling into Stage 2
 	#define FFT_AVERAGE_SAMPLES 30 //60					// How many samples to take for the FFT average = Stage 1
-	RunningAverage fft_bin0(FFT_AVERAGE_SAMPLES);	// Buffers for the FFT values
+	RunningAverage fft_bin0(FFT_AVERAGE_SAMPLES);	   // Buffers for the FFT values
 	RunningAverage fft_bin1(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin2(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin3(FFT_AVERAGE_SAMPLES);
@@ -108,7 +112,7 @@ CRGB GlobalColor_result;
 
 	#define FFT_AVERAGE_SAMPLES_STAGE2 10						// How many  samples to take in Stage 2 auto FFT average
 	RunningAverage fft_bin0stage2(FFT_AVERAGE_SAMPLES_STAGE2);	// Buffers for auto FFT Stage 2
-	RunningAverage fft_bin1stage2(FFT_AVERAGE_SAMPLES_STAGE2);
+	RunningAverage fft_bin1stage2(FFT_AVERAGE_SAMPLES_STAGE2);	// one stage to is keppt every second. so with 10 samples we have an average+max of the last 10 seconds.
 	RunningAverage fft_bin2stage2(FFT_AVERAGE_SAMPLES_STAGE2);
 	RunningAverage fft_bin3stage2(FFT_AVERAGE_SAMPLES_STAGE2);
 	RunningAverage fft_bin4stage2(FFT_AVERAGE_SAMPLES_STAGE2);
@@ -133,13 +137,13 @@ CRGB GlobalColor_result;
 
 fft_data_struct fft_data[7] =   // FFT data Sructure 
 { 
-	 { 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
-	,{ 0,0,0,100,0,0,0 }
+	 {100,0,0,0,0 }
+	,{100,0,0,0,0 }
+	,{100,0,0,0,0 }
+	,{100,0,0,0,0 }
+	,{100,0,0,0,0 }
+	,{100,0,0,0,0 }
+	,{100,0,0,0,0 }
 };   
 
 
@@ -265,10 +269,17 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 };
 
 
+
+uint8_t LEDS_get_real_bri()
+{
+
+	return qadd8(led_cfg.bri,fft_color_result_bri ); 
+}
+
 void LEDS_show()
 {	
 			if(fft_data_bri != 0)
-				FastLED.setBrightness(qadd8(led_cfg.bri,fft_color_result_bri));
+				FastLED.setBrightness(LEDS_get_real_bri() );
 			else
 				FastLED.setBrightness(led_cfg.bri);
 			 FastLEDshowESP32();
@@ -1117,7 +1128,11 @@ void LEDS_FFT_enqueue(uint8_t invalue)
 
 }
 
-
+uint8_t LEDS_FFT_get_MAX_value(uint8_t bit)
+{
+	// return the FFT value for the specified bit
+	return fft_data[bit].max;
+}
 
 uint8_t LEDS_FFT_get_value(uint8_t bit)
 {
@@ -1172,9 +1187,27 @@ void LEDS_FFT_calc_avarage()
 	fft_data[4].avarage = fft_bin4.getFastAverage();
 	fft_data[5].avarage = fft_bin5.getFastAverage();
 	fft_data[6].avarage = fft_bin6.getFastAverage();
-	
 
-	if (get_bool(FFT_AUTO))
+
+	/*fft_data[0].max = fft_bin0.GetMaxInBuffer();
+	fft_data[1].max = fft_bin1.GetMaxInBuffer();
+	fft_data[2].max = fft_bin2.GetMaxInBuffer();
+	fft_data[3].max = fft_bin3.GetMaxInBuffer();
+	fft_data[4].max = fft_bin4.GetMaxInBuffer();
+	fft_data[5].max = fft_bin5.GetMaxInBuffer();
+	fft_data[6].max = fft_bin6.GetMaxInBuffer();
+	*/
+
+	fft_data[0].max = fft_bin0stage2.GetMaxInBuffer();
+	fft_data[1].max = fft_bin1stage2.GetMaxInBuffer();
+	fft_data[2].max = fft_bin2stage2.GetMaxInBuffer();
+	fft_data[3].max = fft_bin3stage2.GetMaxInBuffer();
+	fft_data[4].max = fft_bin4stage2.GetMaxInBuffer();
+	fft_data[5].max = fft_bin5stage2.GetMaxInBuffer();
+	fft_data[6].max = fft_bin6stage2.GetMaxInBuffer();
+
+
+	//if (get_bool(FFT_AUTO))
 	{
 	 FFT_stage1_sample_count++;
 	 LEDS_FFT_auto();
@@ -1563,6 +1596,21 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, bo
 	//debugMe("e:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
 }
 
+
+uint8_t LEDS_FFT_get_color_result(uint8_t color )
+{
+	switch(color)
+	{
+		case 0: return GlobalColor_result.red; break; 
+		case 1: return GlobalColor_result.green; break; 
+		case 2: return GlobalColor_result.blue; break; 
+
+	}
+
+	return 0;
+}
+
+
 void LEDS_FFT_check_leds(CRGB color_result)
 {	// check if FFT is selected and then send it to the leds
 
@@ -1683,6 +1731,7 @@ void LEDS_setup()
 	led_cnt.PotBriLast = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;			//get the initial potti status so that when we load the config the possis wont override it.
 	led_cnt.PotFPSLast = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 
+	fft_led_cfg.update_time = micros();
 	debugMe("end LEDS setup");
 }
 
@@ -1770,6 +1819,17 @@ void LEDS_loop()
 
 
 		 } 
+
+		 if (get_bool(FFT_OSTC_VIZ) && currentT >= fft_led_cfg.update_time ) 
+		 {
+
+			fft_led_cfg.update_time = currentT + (1000000 / DEF_VIZ_UPDATE_TIME_FPS);	 
+			 
+			 osc_StC_FFT_vizIt(); 
+			 //debugMe("vizzit");
+
+
+		}
 	}
 
 

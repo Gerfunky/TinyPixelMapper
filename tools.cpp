@@ -106,7 +106,7 @@ void load_bool()
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_ENABLE, DEF_FFT_ENABLE);
 		write_bool(FFT_MASTER, DEF_FFT_MASTER);
-		write_bool(FFT_AUTO, DEF_AUTO_FFT);	
+		//write_bool(FFT_AUTO, DEF_AUTO_FFT);	
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
 
 		write_bool(POT_DISABLE,DEF_DISABLE_HW_POTS);

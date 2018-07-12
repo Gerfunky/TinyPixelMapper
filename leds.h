@@ -83,24 +83,26 @@
 
 	struct fft_data_struct 
 	{
-		uint8_t bin_on_red;		// bits select what bin to trigger on
-		uint8_t bin_on_green;		// bits select what bin to trigger on 
-		uint8_t bin_on_blue;		// bits select what bin to trigger on
+		//uint8_t bin_on_red;		// bits select what bin to trigger on
+		//uint8_t bin_on_green;		// bits select what bin to trigger on 
+		//uint8_t bin_on_blue;		// bits select what bin to trigger on
 		uint8_t trigger;		// trigger value
 		uint8_t value;			// actual value
 		uint8_t avarage;
 		uint8_t autoFFT;
+		uint8_t max;
 		
 	};
 
 	struct fft_led_cfg_struct
 	{
-		unsigned long	update_time;		// when to update again
+		unsigned long	update_time;		// when to update again forFFT vis in Open stage controll
 		float			adjuster;			// an adjuster for the timing of the FFT_FPS
-		uint8_t			fps;				// FFT FPS
+		uint8_t			fps;				// FFT
 		uint8_t			fftAutoMax;			// FFT Auto mode maximum trigger
 		uint8_t			fftAutoMin;			// FFT Auto mode minimum trigger
 		uint16_t			Scale;
+		uint8_t 		viz_fps;
 
 
 	};
@@ -258,6 +260,9 @@
 	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 
 	uint8_t getrand8() ;  // returns a random number from 0-255 
+	uint8_t LEDS_get_real_bri();   // gets the real BRi including fft shift
+	uint8_t LEDS_FFT_get_color_result(uint8_t color );   // Get the FFT color result 0= red 1= green 2 = blue
+
 
 #endif
 
