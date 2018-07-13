@@ -111,6 +111,11 @@
 		#define DEF_FIRE_SPARKING 50
 		#define DEF_FIRE_COOLING 30 
 
+		#define FIRE_COOLING_MAX 100
+		#define FIRE_COOLING_MIN 20
+		#define FIRE_SPARKING_MIN 50
+		#define FIRE_SPARKING_MAX 200
+
 		#define LED_DATA_PIN    18 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
@@ -133,7 +138,7 @@
 		#define FASTLED_ALLOW_INTERRUPTS 0
 		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
-		#define DEF_VIZ_UPDATE_TIME_FPS 12
+		#define DEF_VIZ_UPDATE_TIME_FPS 3
 
 // END FastLed Defines
 

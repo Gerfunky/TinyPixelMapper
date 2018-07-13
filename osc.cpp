@@ -3909,7 +3909,57 @@ void osc_StC_menu_audio_ref()
 
 }	
 
-		
+
+
+void osc_oStC_menu_master_wifi_ref()
+{
+		osc_queu_MSG_int("/ostc/master/wifi/mode", 	get_bool(WIFI_MODE) );
+		osc_queu_MSG_int("/ostc/master/wifi/dhcp", 	get_bool(STATIC_IP_ENABLED) );
+		osc_queu_MSG_int("/ostc/master/wifi/power", get_bool(WIFI_POWER) );
+
+		osc_queu_MSG_int("/ostc/master/wifi/http", 		get_bool(HTTP_ENABLED)) ;
+		osc_queu_MSG_int("/ostc/master/wifi/serial", 	get_bool(DEBUG_OUT)) ;
+		osc_queu_MSG_int("/ostc/master/wifi/telnet", 	get_bool(DEBUG_TELNET)) ;
+
+
+		osc_send_MSG_String("/ostc/master/wifi/name", 	String(wifi_cfg.APname));
+		osc_send_MSG_String("/ostc/master/wifi/appwd", 	String(wifi_cfg.APpassword));
+		osc_send_MSG_String("/ostc/master/wifi/pwd", 	String(wifi_cfg.pwd));
+		osc_send_MSG_String("/ostc/master/wifi/ssid", 	String(wifi_cfg.ssid));
+		osc_send_MSG_String("/ostc/master/wifi/ntp", 	String(wifi_cfg.ntp_fqdn));
+
+		osc_queu_MSG_int("/ostc/master/wifi/ip1", 	wifi_cfg.ipStaticLocal[0]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/ip2", 	wifi_cfg.ipStaticLocal[1]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/ip3", 	wifi_cfg.ipStaticLocal[2]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/ip4", 	wifi_cfg.ipStaticLocal[3]) ;
+
+		osc_queu_MSG_int("/ostc/master/wifi/sn1", 	wifi_cfg.ipSubnet[0]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/sn2", 	wifi_cfg.ipSubnet[1]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/sn3", 	wifi_cfg.ipSubnet[2]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/sn4", 	wifi_cfg.ipSubnet[3]) ;
+
+		osc_queu_MSG_int("/ostc/master/wifi/gw1", 	wifi_cfg.ipDGW[0]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/gw2", 	wifi_cfg.ipDGW[1]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/gw3", 	wifi_cfg.ipDGW[2]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/gw4", 	wifi_cfg.ipDGW[3]) ;
+
+		osc_queu_MSG_int("/ostc/master/wifi/dns1", 	wifi_cfg.ipDNS[0]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/dns2", 	wifi_cfg.ipDNS[1]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/dns3", 	wifi_cfg.ipDNS[2]) ;
+		osc_queu_MSG_int("/ostc/master/wifi/dns4", 	wifi_cfg.ipDNS[3]) ;
+
+
+
+
+
+
+
+
+
+
+
+
+}	
 
 
 void osc_StC_menu_master_ref()
@@ -3941,14 +3991,17 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
 	
 	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
-	osc_queu_MSG_int("/ostc/master/fireCool", led_cfg.fire_cooling );
-	osc_queu_MSG_int("/ostc/master/fireSpark",led_cfg.fire_sparking );
+	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
+	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
+
+
+	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
 
 
 	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
 	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
-
-	yield();
+	osc_oStC_menu_master_wifi_ref();
+	//yield();
 
 
 }
@@ -4253,11 +4306,50 @@ void osc_StC_master_conf_routing(OSCMessage &msg, int addrOffset)
 	{
 		uint8_t conf_NR = (uint8_t(msg.getInt(0)));
 		//debugMe(conf_NR);
-		if 			(msg.fullMatch("/save",addrOffset))		{ FS_play_conf_write(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)  ), 0,255,0); }
+		if 			(msg.fullMatch("/save",addrOffset))		{ FS_play_conf_write(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 0,255,0); }
 		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);  }
 		else if 	(msg.fullMatch("/clear",addrOffset))	{ FS_play_conf_clear(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 255,0,0); }
 		
 	}
+
+
+}
+
+void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset) 
+{
+		if(!msg.isString(0) )
+		{
+			if 			(msg.fullMatch("/ip1",addrOffset))		{ wifi_cfg.ipStaticLocal[0] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip2",addrOffset))		{ wifi_cfg.ipStaticLocal[1] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip3",addrOffset))		{ wifi_cfg.ipStaticLocal[2] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip4",addrOffset))		{ wifi_cfg.ipStaticLocal[4] = uint8_t(msg.getInt(0));}
+			
+			else if 	(msg.fullMatch("/sn1",addrOffset))		{ wifi_cfg.ipSubnet[0] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/sn2",addrOffset))		{ wifi_cfg.ipSubnet[1] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/sn3",addrOffset))		{ wifi_cfg.ipSubnet[2] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/sn4",addrOffset))		{ wifi_cfg.ipSubnet[3] = uint8_t(msg.getInt(0));}
+
+			else if 	(msg.fullMatch("/gw1",addrOffset))		{ wifi_cfg.ipDGW[0] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/gw2",addrOffset))		{ wifi_cfg.ipDGW[1] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/gw3",addrOffset))		{ wifi_cfg.ipDGW[2] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/gw4",addrOffset))		{ wifi_cfg.ipDGW[3] = uint8_t(msg.getInt(0));}
+
+			else if 	(msg.fullMatch("/dns1",addrOffset))		{ wifi_cfg.ipDNS[0] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/dns2",addrOffset))		{ wifi_cfg.ipDNS[1] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/dns3",addrOffset))		{ wifi_cfg.ipDNS[2] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/dns4",addrOffset))		{ wifi_cfg.ipDNS[3] = uint8_t(msg.getInt(0));}
+		}
+		else	// it is a string
+		{ 
+		int length=msg.getDataLength(0);
+
+		if   	(msg.fullMatch("/name",addrOffset))		{ memset(wifi_cfg.APname, 0, 	 	sizeof(wifi_cfg.APname)		);    	msg.getString( 0,	wifi_cfg.APname,  		length ) ;  }
+		else if (msg.fullMatch("/appwd",addrOffset))	{ memset(wifi_cfg.APpassword, 0, 	sizeof(wifi_cfg.APpassword)	);  	msg.getString( 0,	wifi_cfg.APpassword,	length ) ;  }
+		else if (msg.fullMatch("/pwd",addrOffset))		{ memset(wifi_cfg.pwd, 0, 			sizeof(wifi_cfg.pwd)		); 		msg.getString( 0,	wifi_cfg.pwd, 		 	length ) ;  }
+		else if (msg.fullMatch("/ssid",addrOffset))		{ memset(wifi_cfg.ssid, 0, 			sizeof(wifi_cfg.ssid)		); 		msg.getString( 0,	wifi_cfg.ssid,  		length ) ;  }
+		else if (msg.fullMatch("/ntp",addrOffset))		{ memset(wifi_cfg.ntp_fqdn, 0, 		sizeof(wifi_cfg.ntp_fqdn)	);   	msg.getString( 0,	wifi_cfg.ntp_fqdn,  	length ) ;  }
+
+		} // end String
 
 
 }
@@ -4268,23 +4360,15 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 {
 		//debugMe("in master routing");
 		
-		// debugMe(string(msg.getOSCData(0)));
-
-			msg.route("/conf", osc_StC_master_conf_routing, addrOffset);
-
-		//debugMe(msg.getFloat(1));
-			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri	= uint8_t(msg.getInt(0)); } //   osc_queu_MSG_float("/ostc/m/bril", float(led_cfg.bri  ));  }
-			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri	= uint8_t(msg.getInt(0)); }
-			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps	= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS); }
-			else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r	= uint8_t(msg.getInt(0)); }
-			else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g	= uint8_t(msg.getInt(0)); }
-			else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b	= uint8_t(msg.getInt(0)); }
+			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
+			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri	= constrain(uint8_t(msg.getInt(0)), 0, 255); }
+			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps	= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  		osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    }
+			else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r	= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
+			else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g	= constrain(uint8_t(msg.getInt(0)), 0, 255); }
+			else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b	= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
 			else if (msg.fullMatch("/conn",addrOffset))				{ osc_StC_menu_master_ref(); }
-			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ led_cfg.fire_cooling = uint8_t(msg.getInt(0))   ;}
-			else if (msg.fullMatch("/fireSpark",addrOffset))		{ led_cfg.fire_sparking = uint8_t(msg.getInt(0))   ;}
-
-
-
+			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ led_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
+			else if (msg.fullMatch("/fireSpark",addrOffset))		{ led_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
 
 			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.Data1StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
 			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.Data2StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
@@ -4311,10 +4395,20 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			
 			else if (msg.fullMatch("/data/save",addrOffset))		{ FS_Bools_write(0) ;}
 			else if (msg.fullMatch("/data/boot",addrOffset))		{ ESP.restart(); }
-			//else if (msg.fullMatch("/data/csl/4",addrOffset))
 
-			else if (msg.fullMatch("/loadsave",addrOffset) && boolean(msg.getInt(0)) == true ) 	{ osc_StC_menu_master_loadsave();}
+			else if (msg.fullMatch("/data/maxbri",addrOffset))		{ led_cfg.max_bri = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
+
 			
+
+			else if (msg.fullMatch("/conf/loadsave",addrOffset) && boolean(msg.getInt(0)) == true ) 	{ osc_StC_menu_master_loadsave();}
+			
+
+			else   // route it
+			{
+				msg.route("/conf", osc_StC_master_conf_routing, addrOffset);
+				msg.route("/wifi", osc_StC_master_wifi_routing, addrOffset);
+
+			}
 
 }
 
