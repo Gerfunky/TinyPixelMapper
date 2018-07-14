@@ -122,6 +122,7 @@
 		#define LED_DATA_3_PIN  19							// DATA 3 PIN = WS2812 
 		#define LED_DATA_4_PIN  17							// DATA 4 PIN = SK6822 
 
+		#define DEF_APA102_DATARATE 4
 			
 
 		#define DEF_MAX_BRI 255		// the default max bri

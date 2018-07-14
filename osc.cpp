@@ -3866,6 +3866,7 @@ void osc_StC_menu_form_ref()
 						case _M_FX_3_SIN: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/3sin" , 	formNr,		(bitRead(form_menu[bit][_M_FX_3_SIN], 	real_formNr)));  		break;
 						case _M_FX_SIN_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/sinpal" , 	formNr,		(bitRead(form_menu[bit][_M_FX_SIN_PAL], 	real_formNr)));  		break;
 						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIMMER], 	real_formNr)));  		break;
+						case _M_FX_SHIM_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/palshim" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIM_PAL], 	real_formNr)));  		break;
 
 					} // endd switch
 			} // end NR form options
@@ -3882,6 +3883,10 @@ void osc_StC_menu_form_ref()
 
 		osc_queu_MSG_int("/ostc/form/fx/dotnum/" + String(formNr), form_part[formNr].juggle_nr_dots );
 		osc_queu_MSG_int("/ostc/form/fx/dotbpm/" + String(formNr), form_part[formNr].juggle_speed );
+
+		osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_part[formNr].fx_shim_xscale );
+		osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_part[formNr].fx_shim_yscale );
+		osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_part[formNr].fx_shim_beater );
 
 		}		
 }
@@ -4053,6 +4058,7 @@ void osc_StC_menu_master_ref()
 
 
 	osc_queu_MSG_int("/ostc/master/data/mode", 		led_cfg.ledMode);
+	osc_queu_MSG_int("/ostc/master/data/aparate", 	led_cfg.apa102data_rate);
 	osc_queu_MSG_int("/ostc/master/data/select/1", 	get_bool(DATA1_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/2", 	get_bool(DATA2_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
@@ -4254,6 +4260,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if		(msg.fullMatch("/fx/firepal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_PAL], form_nr,	bool(msg.getInt(1)));  ;}
 
 		else if		(msg.fullMatch("/fx/shimmer",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIMMER], form_nr,	bool(msg.getInt(1)));  ;}
+		else if		(msg.fullMatch("/fx/palshim",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_PAL], form_nr,	bool(msg.getInt(1)));  ;}
 
 		else if		(msg.fullMatch("/fx/3sin",addrOffset))				{ bitWrite(form_menu[bit_int][_M_FX_3_SIN], form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/sinpal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_3_SIN], form_nr,	bool(msg.getInt(1)));  ;}
@@ -4300,6 +4307,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 		else if (	(msg.match("/fx/dotnum",addrOffset))	
 				||	(msg.match("/fx/dotbpm",addrOffset))
+				|| 	(msg.match("/fx/shm_ys",addrOffset))
+				|| 	(msg.match("/fx/shm_xs",addrOffset))
+				|| 	(msg.match("/fx/shm_bt",addrOffset))
 				)		
 		{
 						char address[5] ;
@@ -4313,7 +4323,11 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						sel_form_no = form_no_string.toInt();  // What CRGB value in the pallete
 
 						if  		(msg.match("/fx/dotnum",addrOffset))  	form_part[sel_form_no].juggle_nr_dots = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/fx/dotbpm",addrOffset))  	form_part[sel_form_no].juggle_speed = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/fx/dotbpm",addrOffset))  	form_part[sel_form_no].juggle_speed = uint8_t(msg.getInt(0))	;
+
+						else if  	(msg.match("/fx/shm_xs",addrOffset))  	form_part[sel_form_no].fx_shim_xscale = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fx/shm_ys",addrOffset))  	form_part[sel_form_no].fx_shim_yscale = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fx/shm_bt",addrOffset))  	form_part[sel_form_no].fx_shim_beater = uint8_t(msg.getInt(0))	; 
 		}
 
 
@@ -4506,6 +4520,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ; }
 
 			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = bool(msg.getInt(0) )  ;}
+			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}
 
 			
 			else if (msg.fullMatch("/data/save",addrOffset))		{ FS_Bools_write(0) ;}

@@ -73,6 +73,7 @@
 		uint16_t		Data3StartLed;		// Start led for data3;
 		uint16_t		Data4NrLeds;		// Nr of leds for data4;
 		uint16_t		Data4StartLed;		// Start led for data4;
+		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		
 		
 	
@@ -103,6 +104,7 @@
 		uint8_t			fftAutoMin;			// FFT Auto mode minimum trigger
 		uint16_t			Scale;
 		uint8_t 		viz_fps;
+
 
 
 	};
@@ -146,9 +148,9 @@
 		  uint16_t	indexLong;
 		  uint8_t 	FX_level;			//
 		  uint8_t 	fft_offset;			//
-		  uint8_t   placeholder1;
-		  uint8_t   placeholder2;
-		  uint8_t   placeholder3;
+		  uint8_t   fx_shim_xscale;
+		  uint8_t   fx_shim_yscale;
+		  uint8_t   fx_shim_beater;
 
 
 	  };
@@ -211,7 +213,7 @@
 		  _M_FX_SUBTRACT		= 11,				// add the FX channel to the leds
 		  _M_FX1_ON  			= 12,			// 
 		  _M_FX_SHIMMER  		= 13,			//
-		  _M_AUDIO_FX3  		= 14,			//
+		  _M_FX_SHIM_PAL  		= 14,			//
 		  _M_AUDIO_FX4  		= 15,			// 
 		  
 		  _M_GLITTER_FROM_FFT_DATA1 = 16, 
