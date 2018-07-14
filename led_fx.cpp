@@ -9,8 +9,8 @@ extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array.
 
 
 extern CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
-
-
+//extern CRGB ColorFromPalette( const TProgmemRGBPalette32& pal, uint8_t index, uint8_t brightness, TBlendType blendType);
+extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
 
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
@@ -458,3 +458,59 @@ void FX_noise_fill(uint16_t StartLed, uint16_t NrLeds , uint8_t octaves ,uint16_
    // led_FX_out[i] = 
 
 } 
+
+
+int wave1=0;                                                  // Current phase is calculated.
+int wave2=0;
+int wave3=0;
+
+//uint8_t mul1 = 7;                                            // Frequency, thus the distance between waves
+//uint8_t mul2 = 6;
+//uint8_t mul3 = 9;
+
+void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean mirror,   boolean blend , uint8_t distance ) 
+{
+ 
+ 
+
+  wave1 += beatsin8(1,-4,4);
+  wave2 += beatsin8(5,-2,2);
+  wave3 += beatsin8(2,-1, 1);
+debugMe(distance);
+
+  for (uint16_t i = StartLed; i < StartLed+NrLeds; i++) 
+  {
+ 
+    uint8_t tmp = sin8(distance*i + wave1) + sin8(distance*i + wave2) + sin8(distance*i + wave3);
+
+    led_FX_out[i] = myColorFromPalette(pallete, tmp, 255,blend);
+    
+  }
+ //m++;
+} 
+/*
+
+void two_sin() 
+{
+  FastLED.setBrightness(255);
+
+    thisdir ? thisphase += beatsin8(thisspeed, 2, 10) : thisphase -= beatsin8(thisspeed, 2, 10);
+    thatdir ? thatphase += beatsin8(thisspeed, 2, 10) : thatphase -= beatsin8(thatspeed, 2, 10);
+    thishue += thisrot;                                        // Hue rotation is fun for thiswave.
+    thathue += thatrot;                                        // It's also fun for thatwave.
+  
+  for (int k=0; k<NUM_LEDS-1; k++) {
+    int thisbright = qsuba(cubicwave8((k*allfreq)+thisphase), thiscutoff);      // qsub sets a minimum value called thiscutoff. If < thiscutoff, then bright = 0. Otherwise, bright = 128 (as defined in qsub)..
+    int thatbright = qsuba(cubicwave8((k*allfreq)+128+thatphase), thatcutoff);  // This wave is 180 degrees out of phase (with the value of 128).
+
+    leds1[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
+    leds1[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
+    leds2[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
+    leds2[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
+  }
+     nscale8(leds1,NUM_LEDS,fadeval);
+     nscale8(leds2,NUM_LEDS,fadeval);
+     
+} // two_sin()
+
+*/

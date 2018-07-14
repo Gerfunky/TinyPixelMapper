@@ -126,6 +126,7 @@
                     uint8_t index ;			// the index position
 					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition
 					uint16_t index_long; 
+					uint8_t 	fft_offset;			//
 	};
 
 	  struct form_Part_FL_Struct 
@@ -144,6 +145,20 @@
 		  uint8_t	index_add_pal;		// ???
 		  uint16_t	indexLong;
 		  uint8_t 	FX_level;			//
+		  uint8_t 	fft_offset;			//
+		  uint8_t   placeholder1;
+		  uint8_t   placeholder2;
+		  uint8_t   placeholder3;
+
+
+	  };
+
+	  struct form_fx_test_val
+	  {
+		  uint8_t 	val_0;
+		  uint8_t 	val_1;
+		  uint8_t 	val_2;
+
 	  };
 
 
@@ -195,7 +210,7 @@
 		  _M_FX_MASK			= 10,
 		  _M_FX_SUBTRACT		= 11,				// add the FX channel to the leds
 		  _M_FX1_ON  			= 12,			// 
-		  _M_AUDIO_FX2  		= 13,			//
+		  _M_FX_SHIMMER  		= 13,			//
 		  _M_AUDIO_FX3  		= 14,			//
 		  _M_AUDIO_FX4  		= 15,			// 
 		  
@@ -213,12 +228,12 @@
 		  _M_AUDIO_DOT_ 		= 25,			// 
 
 		  
-		  _M_AUDIO_FX7  		= 26,			//
-		  _M_AUDIO_FX8  		= 27,			//
+		  _M_AUDIO_MIRROR  		= 26,			//
+		  _M_AUDIO_ONECOLOR		= 27,			//
 		  _M_AUDIO_FX9  		= 28,			//
 		  _M_AUDIO_FX10  		= 29,			//
-		  _M_AUDIO_FX11  		= 30,			//
-		  _M_AUDIO_FX12  		= 31,			//
+		  _M_FX_SIN_PAL  		= 30,			//
+		  _M_FX_3_SIN	  		= 31,			//
 		  
 		  
 

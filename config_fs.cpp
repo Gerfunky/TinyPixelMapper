@@ -516,7 +516,7 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 	if(conf_file && conf_file.isDirectory() == false) 
 	{ //exists and its a file 
 		//conf_file.close();
-		debugMe("return true");
+		//debugMe("return true");
 		return true;
 	}
 	//debugMe("return false");
@@ -530,9 +530,10 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	String addr = String("/conf/"+ String(conf_nr) + ".conf.txt");
 	debugMe("deleted save " + String(conf_nr));
 	
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = SPIFFS.open(addr, "r");
 	if (conf_file && !conf_file.isDirectory())		SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt");
 	
+	conf_file.close();
 }	
 
 
@@ -590,6 +591,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 				conf_file.print(String(":" + String(get_bool_byte(uint8_t(global_strip_opt[get_strip_menu_bit(strip)][setting_x]), strip))));
 			}
 
+			conf_file.print(String(":" + String(part[strip].fft_offset)));
+
 			conf_file.println("] ");
 
 		}
@@ -612,9 +615,12 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_part[form].juggle_speed)));
 			conf_file.print(String(":" + String(form_part[form].rotate)));
 			
+			
 
 			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
 			
+			conf_file.print(String(":" + String(form_part[form].fft_offset)));
+
 			conf_file.println("] ");
 
 		} 
@@ -736,6 +742,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_start = in_int;
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add = in_int; 	
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add_pal = in_int;
+				
 
 				//part[strip_no].nr_leds = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds - part[strip_no].start_led));
 				//part[strip_no].index_start = uint8_t(get_int_conf_value(conf_file, &character));
@@ -753,6 +760,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				{
 					bitWrite(global_strip_opt[get_strip_menu_bit(strip_no)][setting_x], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 				}
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_offset = in_int;
+
 				// debugMe(strip_no,false);
 				// debugMe(" . ", false);
 				// debugMe(part[strip_no].start_led);
@@ -776,13 +785,14 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_nr_dots = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].rotate = in_int;
+				
 
 
 				for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) {
 					bitWrite(form_menu[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 				}
 
-
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_offset = in_int;
 
 			} 
 			else if (type == 'c')
