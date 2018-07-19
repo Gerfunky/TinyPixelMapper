@@ -1569,131 +1569,137 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed
 
 	//debugMe("s:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
 	
-	
 
-	byte mirror_div = 1;
-	byte mirror_add = 0;
-			if (fft_mirror == true) 
-			{
-				mirror_div = 2;
-				if (isODDnumber(nr_leds) == true) 
-				{
-					mirror_add = 1; // dosmething
-				}
-			}
 	
 	if(nr_leds != 0)
 	{
 
 		for(uint16_t led_num = start_led; led_num < start_led + nr_leds  ; led_num ++ )
 		{
-			if(onecolor)
-			{
-					leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-					leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-					leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );		
-
-			}
-			else
-			{
+			
+			
 				if(!fft_reversed)  // = forward
 				{	
 						if(!mask)
 						{
 							if(subrtact_mode)
 							{
-								if(!fft_mirror)
+								if(onecolor)
 								{
-									leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-									leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-									leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
+										leds[led_num].red 	= qsub8(leds_FFT_history[0 + fft_offset ].red,	  leds[led_num].red  	);	
+										leds[led_num].green = qsub8(leds_FFT_history[0 + fft_offset ].green,  leds[led_num].green );
+										leds[led_num].blue 	= qsub8(leds_FFT_history[0 + fft_offset ].blue,	  leds[led_num].blue  );		
+
 								}
-								else // mirror fft
-								{
-									if(led_num <= start_led + nr_leds/2)
+								else
+								{	
+
+									if(!fft_mirror)
 									{
 										leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
 										leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
 										leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-
 									}
-									else
+									else // mirror fft
 									{
-										uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-										leds[led_num].red 	= qsub8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
-										leds[led_num].green = qsub8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qsub8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
-									}
-										
+										if(led_num <= start_led + nr_leds/2)
+										{
+											leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
+											leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
+											leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
 
+										}
+										else
+										{
+											uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
+											leds[led_num].red 	= qsub8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
+											leds[led_num].green = qsub8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
+											leds[led_num].blue 	= qsub8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
+										}
+											
+
+									}				
 								}
-
 
 							}  // end subtract
 							else
 							{
-								if(!fft_mirror)
+								if(onecolor)
 								{
-									leds[led_num].red 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-									leds[led_num].green = qadd8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-									leds[led_num].blue 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
+										leds[led_num].red 	= qadd8(leds_FFT_history[0 + fft_offset ].red,	  leds[led_num].red  	);	
+										leds[led_num].green = qadd8(leds_FFT_history[0 + fft_offset ].green,  leds[led_num].green );
+										leds[led_num].blue 	= qadd8(leds_FFT_history[0 + fft_offset ].blue,	  leds[led_num].blue  );		
+
 								}
 								else
 								{
-										if(led_num <= start_led + nr_leds/2)
+
+
+									if(!fft_mirror)
 									{
 										leds[led_num].red 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
 										leds[led_num].green = qadd8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
 										leds[led_num].blue 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-
 									}
 									else
 									{
-										uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-										leds[led_num].red 	= qadd8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
-										leds[led_num].green = qadd8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qadd8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
-									}
+											if(led_num <= start_led + nr_leds/2)
+										{
+											leds[led_num].red 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
+											leds[led_num].green = qadd8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
+											leds[led_num].blue 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
 
+										}
+										else
+										{
+											uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
+											leds[led_num].red 	= qadd8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
+											leds[led_num].green = qadd8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
+											leds[led_num].blue 	= qadd8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
+										}
+
+									}
 								}
 							}
 
-							//leds[led_num].red 	= constrain(leds_FFT_history[led_num - start_led  ].red - leds[led_num].red , 0, 255) ;
-							//leds[led_num].blue 	= constrain(leds_FFT_history[led_num - start_led].blue	- leds[led_num].blue , 0, 255) ;
-							//leds[led_num].green = constrain(leds_FFT_history[led_num - start_led].green - leds[led_num].green , 0, 255) ;
-
-							//debugMe("nr:");
+						
 						}
 						else	// were masking
 						{
-								//leds[led_num].red 	= constrain(leds_FFT_history[led_num - start_led  ].red, 	0,	leds[led_num].red  	);	
-								//leds[led_num].green = constrain(leds_FFT_history[led_num - start_led  ].green, 	0,leds[led_num].green );
-								//leds[led_num].blue 	= constrain(leds_FFT_history[led_num - start_led  ].blue,	0,	leds[led_num].blue  );
-
-							if(!fft_mirror)
+							if(onecolor)
 							{
-								leds[led_num].red 	= map(leds_FFT_history[led_num - start_led + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
-								leds[led_num].green = map(leds_FFT_history[led_num - start_led + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
-								leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );	
+									leds[led_num].red 	= map(leds_FFT_history[ 0 + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
+									leds[led_num].green = map(leds_FFT_history[ 0 + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
+									leds[led_num].blue 	= map(leds_FFT_history[ 0 + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );		
+
 							}
 							else
 							{
-								if(led_num <= start_led + nr_leds/2)
-									{
+
+								if(!fft_mirror)
+								{
 									leds[led_num].red 	= map(leds_FFT_history[led_num - start_led + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
 									leds[led_num].green = map(leds_FFT_history[led_num - start_led + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
-									leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );
-									}
+									leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );	
+								}
 								else
 								{
-									uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-									leds[led_num].red 	= map(leds_FFT_history[hist_led_num  ].red, 	0, 255, 0, leds[led_num].red  	);	
-									leds[led_num].green = map(leds_FFT_history[hist_led_num ].green, 	0, 255, 0, leds[led_num].green );
-									leds[led_num].blue 	= map(leds_FFT_history[hist_led_num ].blue,		0, 255, 0, leds[led_num].blue  );
+									if(led_num <= start_led + nr_leds/2)
+										{
+										leds[led_num].red 	= map(leds_FFT_history[led_num - start_led + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
+										leds[led_num].green = map(leds_FFT_history[led_num - start_led + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
+										leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );
+										}
+									else
+									{
+										uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
+										leds[led_num].red 	= map(leds_FFT_history[hist_led_num  ].red, 	0, 255, 0, leds[led_num].red  	);	
+										leds[led_num].green = map(leds_FFT_history[hist_led_num ].green, 	0, 255, 0, leds[led_num].green );
+										leds[led_num].blue 	= map(leds_FFT_history[hist_led_num ].blue,		0, 255, 0, leds[led_num].blue  );
+									}
+
 								}
-
 							}
-
 						}				
 
 
@@ -1701,42 +1707,55 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed
 				else  // reversed
 				{
 					
-					//for(uint16_t led_num = start_led   ; led_num < start_led + nr_leds   ; led_num++ ) 
+					
 					{
 
 						if(!mask)
 						{
 							if(subrtact_mode)
 							{
-								if(!fft_mirror)
+
+
+								if(onecolor)
 								{
-									leds[led_num].red =       qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,leds[led_num].red   ) ;
-									leds[led_num].green  =    qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green,leds[led_num].green   ) ;
-									leds[led_num].blue  =     qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,leds[led_num].blue  ) ;
+										leds[led_num].red =       qsub8(leds_FFT_history[ 0 + fft_offset ].red,leds[led_num].red   ) ;
+										leds[led_num].green  =    qsub8(leds_FFT_history[ 0 + fft_offset ].green,leds[led_num].green   ) ;
+										leds[led_num].blue  =     qsub8(leds_FFT_history[ 0 + fft_offset ].blue,leds[led_num].blue  ) ;		
+
 								}
 								else
 								{
-
-									if(led_num <= start_led + nr_leds/2)
+									if(!fft_mirror)
 									{
-										uint16_t hist_led_num =  nr_leds/2 - (led_num - start_led) + fft_offset;
-										leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
-										leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
-										leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
-
+										leds[led_num].red =       qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,leds[led_num].red   ) ;
+										leds[led_num].green  =    qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green,leds[led_num].green   ) ;
+										leds[led_num].blue  =     qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,leds[led_num].blue  ) ;
 									}
-									else{
-										uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;
-										leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
-										leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
-										leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
+									else
+									{
+
+										if(led_num <= start_led + nr_leds/2)
+										{
+											uint16_t hist_led_num =  nr_leds/2 - (led_num - start_led) + fft_offset;
+											leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
+											leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
+											leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
+
+										}
+										else{
+											uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;
+											leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
+											leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
+											leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
+										}
 									}
 								}
 				
 							}
-							else
+							else // revadd
 							{
-								if(!fft_mirror) 	leds[led_num] += leds_FFT_history[ nr_leds - (led_num - start_led) ]; 
+								if		(onecolor)  	leds[led_num] += leds_FFT_history[ 0  + fft_offset ]; 
+								else if(!fft_mirror) 	leds[led_num] += leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ]; 
 
 								else
 								{
@@ -1752,39 +1771,48 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed
 						} // end mask
 						else
 						{
-							if(!fft_mirror) 
+							if(onecolor)
 							{
-								leds[led_num].red =       map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
-								leds[led_num].green  =    map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green, 0,255,0, leds[led_num].green   ) ;
-								leds[led_num].blue  =     map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
+									leds[led_num].red =       map(leds_FFT_history[ 0 + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
+									leds[led_num].green  =    map(leds_FFT_history[ 0 + fft_offset ].green,  0,255,0, leds[led_num].green   ) ;
+									leds[led_num].blue  =     map(leds_FFT_history[ 0 + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;	
+
 							}
 							else
 							{
-								if(led_num <= start_led + nr_leds/2)
+								if(!fft_mirror) 
 								{
-									leds[led_num].red =       map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
-									leds[led_num].green  =    map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].green,  0,255,0, leds[led_num].green   ) ;
-									leds[led_num].blue  =     map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
+									leds[led_num].red =       map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
+									leds[led_num].green  =    map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green, 0,255,0, leds[led_num].green   ) ;
+									leds[led_num].blue  =     map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
 								}
 								else
 								{
-									uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;		
-									leds[led_num].red =       map(leds_FFT_history[ hist_led_num ].red,	  	0,255,0, leds[led_num].red   ) ;
-									leds[led_num].green  =    map(leds_FFT_history[ hist_led_num ].green,	0,255,0, leds[led_num].green   ) ;
-									leds[led_num].blue  =     map(leds_FFT_history[ hist_led_num ].blue, 	0,255,0, leds[led_num].blue  ) ;
-								}
+									if(led_num <= start_led + nr_leds/2)
+									{
+										leds[led_num].red =       map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
+										leds[led_num].green  =    map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].green,  0,255,0, leds[led_num].green   ) ;
+										leds[led_num].blue  =     map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
+									}
+									else
+									{
+										uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;		
+										leds[led_num].red =       map(leds_FFT_history[ hist_led_num ].red,	  	0,255,0, leds[led_num].red   ) ;
+										leds[led_num].green  =    map(leds_FFT_history[ hist_led_num ].green,	0,255,0, leds[led_num].green   ) ;
+										leds[led_num].blue  =     map(leds_FFT_history[ hist_led_num ].blue, 	0,255,0, leds[led_num].blue  ) ;
+									}
 
 
-							} 
+								} 
 
-							
+							}							
 						}
 
 						
 					}
 				}
 
-			}	// end not onecolor
+			
 		}	// end for loop
 	
 	} // ent != 0 nrleds	
@@ -2001,6 +2029,7 @@ void LEDS_setup()
 	led_cnt.PotFPSLast = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 
 	fft_led_cfg.update_time = micros();
+	fft_led_cfg.viz_fps = DEF_VIZ_UPDATE_TIME_FPS ;
 	debugMe("end LEDS setup");
 }
 

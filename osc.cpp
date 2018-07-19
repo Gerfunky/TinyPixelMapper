@@ -4036,15 +4036,8 @@ void osc_oStC_menu_master_wifi_ref()
 }	
 
 
-void osc_StC_menu_master_ref()
+void osc_StC_menu_master_ledcfg_ref()
 {
-	osc_queu_MSG_int("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
-	osc_queu_MSG_int("/ostc/master/r", 			led_cfg.r);
-	osc_queu_MSG_int("/ostc/master/g", 			led_cfg.g);
-	osc_queu_MSG_int("/ostc/master/b", 			led_cfg.b);
-	osc_queu_MSG_int("/ostc/master/palbri", 	led_cfg.pal_bri);
-	osc_queu_MSG_int("/ostc/master/fps", 		led_cfg.pal_fps);
-	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 
 	osc_queu_MSG_int("/ostc/master/data/sl/1", 		led_cfg.Data1StartLed);
 	osc_queu_MSG_int("/ostc/master/data/nl/1", 		led_cfg.Data1NrLeds);
@@ -4063,7 +4056,21 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/2", 	get_bool(DATA2_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
-	
+
+
+
+}
+
+void osc_StC_menu_master_ref()
+{
+	osc_queu_MSG_int("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
+	osc_queu_MSG_int("/ostc/master/r", 			led_cfg.r);
+	osc_queu_MSG_int("/ostc/master/g", 			led_cfg.g);
+	osc_queu_MSG_int("/ostc/master/b", 			led_cfg.b);
+	osc_queu_MSG_int("/ostc/master/palbri", 	led_cfg.pal_bri);
+	osc_queu_MSG_int("/ostc/master/fps", 		led_cfg.pal_fps);
+	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
+
 	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
 	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
 	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
@@ -4101,6 +4108,8 @@ void osc_StC_menu_master_loadsave()
 			 //	yield();
 			}
 	}
+	
+
 
 
 }
@@ -4423,7 +4432,7 @@ void osc_StC_master_conf_routing(OSCMessage &msg, int addrOffset)
 		uint8_t conf_NR = (uint8_t(msg.getInt(0)));
 		//debugMe(conf_NR);
 		if 			(msg.fullMatch("/save",addrOffset))		{ FS_play_conf_write(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 0,255,0); }
-		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);  }
+		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);   LEDS_pal_reset_index();  }
 		else if 	(msg.fullMatch("/clear",addrOffset))	{ FS_play_conf_clear(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 255,0,0); }
 		
 	}
@@ -4490,6 +4499,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		
 			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
 			else if (msg.fullMatch("/conn",addrOffset))				{ osc_StC_menu_master_ref(); }
+			else if (msg.fullMatch("/ledcfg/ref",addrOffset))		{ osc_StC_menu_master_ledcfg_ref(); }
 
 			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    }
 			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); }
@@ -4515,11 +4525,12 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/select/3",addrOffset))	{ write_bool(DATA3_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/4",addrOffset))	{ write_bool(DATA4_ENABLE, bool(msg.getInt(0) )) ; }
 
-			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.Data2StartLed =  led_cfg.Data1NrLeds ; }
-			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.Data3StartLed =  led_cfg.Data2NrLeds + led_cfg.Data2StartLed ; }
-			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ; }
+			
+			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.Data2StartLed =  led_cfg.Data1NrLeds ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.Data2StartLed);}   
+			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.Data3StartLed =  led_cfg.Data2NrLeds + led_cfg.Data2StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.Data3StartLed); }
+			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.Data4StartLed);}
 
-			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = bool(msg.getInt(0) )  ;}
+			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = uint8_t(msg.getInt(0) )  ;}
 			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}
 
 			

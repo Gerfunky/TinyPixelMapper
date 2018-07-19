@@ -977,13 +977,13 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 	= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 			= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data2StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
 
 				}
