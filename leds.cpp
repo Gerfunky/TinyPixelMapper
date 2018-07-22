@@ -1582,7 +1582,7 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed
 				{	
 						if(!mask)
 						{
-							if(subrtact_mode)
+							if(!subrtact_mode)
 							{
 								if(onecolor)
 								{
@@ -1862,7 +1862,145 @@ void LEDS_FFT_check_leds(CRGB color_result)
 
 }
  
-#define datarate 4
+void LEDS_load_default_play_conf()
+{
+
+
+	led_cfg.bri					= 255;
+	led_cfg.fire_cooling		= DEF_FIRE_COOLING ;
+	led_cfg.fire_sparking		= DEF_FIRE_SPARKING ;
+	led_cfg.r					= 255;
+	led_cfg.g					= 255;
+	led_cfg.b					= 255;
+	led_cfg.pal_bri				= 255;
+	led_cfg.pal_fps     		= 255;
+	
+	fft_led_cfg.Scale = 0;
+
+	
+
+	uint8_t strip_no = 0;
+				
+
+	part[strip_no].start_led = 0;
+
+	part[strip_no].nr_leds = MAX_NUM_LEDS;
+				
+	part[strip_no].index_start = 0;
+	part[strip_no].index_add = 64; 	
+	part[strip_no].index_add_pal = 32;
+	part[strip_no].fft_offset = 0;
+				
+
+	//bitWrite(strip_menu[0][_M_STRIP_],0, true);
+	uint8_t form_nr = 0;
+
+	form_part[form_nr].start_led = 0;
+	form_part[form_nr].nr_leds = MAX_NUM_LEDS;
+	form_part[form_nr].index_start = 0 ;
+	form_part[form_nr].index_add = 64;
+	form_part[form_nr].index_add_pal = 32;
+
+	form_part[form_nr].fade_value = 1;
+	form_part[form_nr].FX_level = 255;
+	form_part[form_nr].glitter_value = 20;
+	form_part[form_nr].juggle_nr_dots = 2;
+	form_part[form_nr].juggle_speed = 10;
+	form_part[form_nr].fft_offset = 0;
+
+
+	bitWrite(form_menu[0][_M_STRIP_],0, true);
+	bitWrite(form_menu[0][_M_AUDIO_],0, true);
+	bitWrite(form_menu[0][_M_AUDIO_SUB_FROM_FFT],0, false);
+
+
+
+
+	
+	uint8_t bin = 0; // loe bin 
+	bitWrite(fft_menu[0], bin, true);			// RED
+	bitWrite(fft_menu[1], bin, false);			// GREEN
+	bitWrite(fft_menu[2], bin, false);			// BLUE
+
+	bitWrite(fft_data_bri, 			bin, true);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, true);
+
+	
+	bin++;  // bin1
+
+	bitWrite(fft_menu[0], bin, true);
+	bitWrite(fft_menu[1], bin, false);
+	bitWrite(fft_menu[2], bin, false);
+
+	bitWrite(fft_data_bri, 			bin, true);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, true);
+
+
+	bin++; // bin2
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, true);
+	bitWrite(fft_menu[2], bin, false);
+
+	bitWrite(fft_data_bri, 			bin, false);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, false);
+
+	bin++; // bin3
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, true);
+	bitWrite(fft_menu[2], bin, false);
+
+	bitWrite(fft_data_bri, 			bin, false);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, false);			
+
+	bin++; // bin4
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, true);
+	bitWrite(fft_menu[2], bin, false);
+
+	bitWrite(fft_data_bri, 			bin, false);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, false);
+
+	bin++; // bin5
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, true);
+	bitWrite(fft_menu[2], bin, false);
+
+	bitWrite(fft_data_bri, 			bin, false);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, false);
+
+	bin++; // bin6
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, false);
+	bitWrite(fft_menu[2], bin, true);
+
+	bitWrite(fft_data_bri, 			bin, false);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, false);
+
+	bin++; // bin7
+
+	bitWrite(fft_menu[0], bin, false);
+	bitWrite(fft_menu[1], bin, false);
+	bitWrite(fft_menu[2], bin, true);
+
+	bitWrite(fft_data_bri, 			bin, true);
+	bitWrite(fft_bin_autoTrigger,	bin, true);
+	bitWrite(fft_data_fps, 			bin, true);
+
+}
+
+
 void LEDS_setup()
 {	// the main led setup function
 	// add the correct type of led
@@ -1987,7 +2125,7 @@ void LEDS_setup()
 			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>           (leds, led_cfg.Data4StartLed, uint16_t(constrain(led_cfg.Data4NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
 		default:
-			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(datarate)>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("APA102 leds added on  DATA1+CLK");}
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("APA102 leds added on  DATA1+CLK");}
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
 			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN,GRB>            (leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
@@ -2019,7 +2157,14 @@ void LEDS_setup()
 
 	if (FS_play_conf_read(0) == false)				
 	{
-		form_menu[0][_M_STRIP_] = 1;
+		LEDS_load_default_play_conf();
+
+		//form_menu[0][_M_STRIP_] = 1;
+
+
+
+
+
 
 	}
 	LEDS_pal_reset_index();

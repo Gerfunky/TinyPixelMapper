@@ -17,6 +17,12 @@
 
 
 
+#define MAX_NR_SAVES 16
+
+
+
+
+
 
 // ***************** External Structures
 	#include "wifi-ota.h"
@@ -48,6 +54,75 @@
 
 
 //**************** Functions 
+
+uint8_t confStatus[2] = {0,0};			// to hold the save ststus so we dont need to read from flash
+
+// Play conf - keep save status in memory so we dont have to ready every time (interrups led playback)
+
+
+boolean FS_get_PalyConfSatatus(uint8_t play_NR)
+{
+
+	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
+	File conf_file = SPIFFS.open(addr,"r"); 
+
+	//if (SPIFFS.exists(addr)) debugMe("its there");
+	//else debugMe("Ohh no where is it");
+	if(conf_file && conf_file.isDirectory() == false) 
+	{ //exists and its a file 
+		//conf_file.close();
+		//debugMe("return true");
+		return true;
+	}
+	//debugMe("return false");
+	conf_file.close();
+	return false;
+
+}
+
+
+
+
+
+
+void FS_load_PlayConf_status()
+{
+
+
+	for(uint8_t bit_nr = 0; bit_nr < sizeof(confStatus); bit_nr++)
+	{
+			for(uint8_t conf_nr = 0; conf_nr < 8; conf_nr++)
+			{
+				
+				bitWrite(confStatus[bit_nr], conf_nr, FS_get_PalyConfSatatus( (8*bit_nr) + conf_nr   ) );
+
+			}
+
+	}
+
+}
+
+
+
+boolean FS_check_Conf_Available(uint8_t play_NR)
+{
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = play_NR;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+	return_bool = bitRead(confStatus[byte_nr], bit_nr);
+
+	return return_bool;
+
+}
+
+
+
 
 
 // Reading Conf values from file.
@@ -506,34 +581,31 @@ boolean FS_artnet_read(uint8_t conf_nr)
 #endif
 
 
-boolean FS_check_Conf_Available(uint8_t play_NR)
-{
-	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
-	File conf_file = SPIFFS.open(addr,"r"); 
-
-	//if (SPIFFS.exists(addr)) debugMe("its there");
-	//else debugMe("Ohh no where is it");
-	if(conf_file && conf_file.isDirectory() == false) 
-	{ //exists and its a file 
-		//conf_file.close();
-		//debugMe("return true");
-		return true;
-	}
-	//debugMe("return false");
-	conf_file.close();
-	return false;
-}
-
 
 void FS_play_conf_clear(uint8_t conf_nr) 
 {
 	String addr = String("/conf/"+ String(conf_nr) + ".conf.txt");
 	debugMe("deleted save " + String(conf_nr));
 	
-	File conf_file = SPIFFS.open(addr, "r");
-	if (conf_file && !conf_file.isDirectory())		SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt");
+	//File conf_file = SPIFFS.open(addr, "w");
+	//if (conf_file && !conf_file.isDirectory())	
+	{	if( SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt") )  debugMe("deleted save realy"); else debugMe("haha"); }
 	
-	conf_file.close();
+
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = conf_nr;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+
+
+	bitWrite(confStatus[byte_nr], bit_nr, false);
+
+	//conf_file.close();
 }	
 
 
@@ -1109,7 +1181,7 @@ void FS_setup_SPIFFS()
 	}
 	delay(100);
 	load_bool();
-
+	FS_load_PlayConf_status();
 	
 
 
