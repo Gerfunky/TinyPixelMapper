@@ -10,6 +10,13 @@
 #endif
 
 
+
+#define MAX_NR_SAVES 16
+
+
+
+
+
 // Public function
 void FS_setup_SPIFFS();
 
@@ -38,7 +45,7 @@ void FS_setup_SPIFFS();
 #endif
 
 	boolean FS_Bools_read(uint8_t conf_nr);			// Tools
-
+	boolean FS_get_PalyConfSatatus(uint8_t bit_nr);
 
 #endif
 

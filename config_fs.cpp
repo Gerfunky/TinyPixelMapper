@@ -18,6 +18,12 @@
 
 
 
+
+
+
+
+
+
 // ***************** External Structures
 	#include "wifi-ota.h"
 	extern wifi_Struct wifi_cfg;
@@ -44,10 +50,79 @@
 	extern uint8_t fft_bin_autoTrigger;
 	extern byte fft_data_fps;
 
-
+	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 
 
 //**************** Functions 
+
+uint8_t confStatus[2] = {0,0};			// to hold the save ststus so we dont need to read from flash
+
+// Play conf - keep save status in memory so we dont have to ready every time (interrups led playback)
+
+
+boolean FS_get_PalyConfSatatus(uint8_t play_NR)
+{
+
+	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
+	File conf_file = SPIFFS.open(addr,"r"); 
+
+	//if (SPIFFS.exists(addr)) debugMe("its there");
+	//else debugMe("Ohh no where is it");
+	if(conf_file && conf_file.isDirectory() == false) 
+	{ //exists and its a file 
+		//conf_file.close();
+		//debugMe("return true");
+		return true;
+	}
+	//debugMe("return false");
+	conf_file.close();
+	return false;
+
+}
+
+
+
+
+
+
+void FS_load_PlayConf_status()
+{
+
+
+	for(uint8_t bit_nr = 0; bit_nr < sizeof(confStatus); bit_nr++)
+	{
+			for(uint8_t conf_nr = 0; conf_nr < 8; conf_nr++)
+			{
+				
+				bitWrite(confStatus[bit_nr], conf_nr, FS_get_PalyConfSatatus( (8*bit_nr) + conf_nr   ) );
+
+			}
+
+	}
+
+}
+
+
+
+boolean FS_check_Conf_Available(uint8_t play_NR)
+{
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = play_NR;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+	return_bool = bitRead(confStatus[byte_nr], bit_nr);
+
+	return return_bool;
+
+}
+
+
+
 
 
 // Reading Conf values from file.
@@ -76,7 +151,7 @@ int	get_int_conf_value(File myFile, char *character)
 
 	if (*character != ']') {
 		*character = myFile.read();
-		while ((myFile.available()) && (*character != ':') && *character != ']') {
+		while ((myFile.available()) && (*character != ':')  && (*character != '.') && *character != ']') {
 			settingValue = settingValue + *character;
 			*character = myFile.read();
 		}
@@ -506,34 +581,31 @@ boolean FS_artnet_read(uint8_t conf_nr)
 #endif
 
 
-boolean FS_check_Conf_Available(uint8_t play_NR)
-{
-	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
-	File conf_file = SPIFFS.open(addr,"r"); 
-
-	//if (SPIFFS.exists(addr)) debugMe("its there");
-	//else debugMe("Ohh no where is it");
-	if(conf_file && conf_file.isDirectory() == false) 
-	{ //exists and its a file 
-		//conf_file.close();
-		//debugMe("return true");
-		return true;
-	}
-	//debugMe("return false");
-	conf_file.close();
-	return false;
-}
-
 
 void FS_play_conf_clear(uint8_t conf_nr) 
 {
 	String addr = String("/conf/"+ String(conf_nr) + ".conf.txt");
 	debugMe("deleted save " + String(conf_nr));
 	
-	File conf_file = SPIFFS.open(addr, "r");
-	if (conf_file && !conf_file.isDirectory())		SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt");
+	//File conf_file = SPIFFS.open(addr, "w");
+	//if (conf_file && !conf_file.isDirectory())	
+	{	if( SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt") )  debugMe("deleted save realy"); else debugMe("haha"); }
 	
-	conf_file.close();
+
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = conf_nr;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+
+
+	bitWrite(confStatus[byte_nr], bit_nr, false);
+
+	//conf_file.close();
 }	
 
 
@@ -840,6 +912,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
 			
+			
 			//else if (type == 'T')			// FFT settings to load in play config
 			//{
 			//		write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
@@ -863,6 +936,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 		}
 		// close the file:
 		conf_file.close();
+
+		led_cfg.Play_Nr = conf_nr; 
+		LEDS_pal_reset_index();
 		return true;
 	}
 	else
@@ -920,7 +996,17 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
+		conf_file.println("] ");
 
+
+		conf_file.println(F("S = Sequencer on: Conf ON . time in min : ... to conf 15 "));
+		conf_file.print(String("[S:" + String(get_bool(SEQUENCER_ON))));
+		
+		for(uint8_t confNr = 0; confNr < MAX_NR_SAVES; confNr++)
+		{
+			conf_file.print(String(":" + String(LEDS_get_sequencer(confNr ))));
+			conf_file.print(String("." + String(play_conf_time_min[confNr])));
+		}
 
 		conf_file.println(F("] "));
 		
@@ -977,13 +1063,13 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 	= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 			= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data1StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data2StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data2StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data3StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
 
 				}
@@ -1002,6 +1088,17 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
 
+				}
+				else if (type == 'S')
+				{
+					write_bool(SEQUENCER_ON, get_bool_conf_value(conf_file, &character));
+					for(uint8_t confNr = 0; confNr < MAX_NR_SAVES; confNr++)
+					{
+						int in_int = 0;
+
+						LEDS_write_sequencer(confNr , get_int_conf_value	(conf_file, &character)) ;
+						in_int = get_int_conf_value(conf_file, &character);	 	play_conf_time_min[confNr] = in_int;		
+					}
 				}
 				else
 					debugMe("NO_TYPE");
@@ -1109,7 +1206,7 @@ void FS_setup_SPIFFS()
 	}
 	delay(100);
 	load_bool();
-
+	FS_load_PlayConf_status();
 	
 
 

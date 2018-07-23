@@ -19,7 +19,7 @@
 
 //#define OSC_MC_SERVER_DISABLED
 
-		#define OSC_BUNDLE_SEND_COUNT 38				// how many OSC messages to send in one bundle.
+		#define OSC_BUNDLE_SEND_COUNT 30				// how many OSC messages to send in one bundle.
 		#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from touchosc
 
 		#define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
@@ -78,6 +78,8 @@
 	extern uint8_t fft_color_fps;
 
 	extern form_fx_test_val form_fx_test;
+
+	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
 
@@ -3938,6 +3940,32 @@ void osc_StC_menu_strip_ref()
 		}		
 }
 
+
+void osc_StC_FFT_vizIt()
+{
+	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
+	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
+	osc_queu_MSG_int("/ostc/audio/sum/bri", 	fft_color_result_bri);
+	osc_queu_MSG_int("/ostc/audio/sum/fps", 	fft_color_fps);
+	osc_queu_MSG_int("/ostc/audio/sum/d1", 		fft_color_result_data[0]);
+	osc_queu_MSG_int("/ostc/audio/sum/d2", 		fft_color_result_data[1]);
+	osc_queu_MSG_int("/ostc/audio/sum/d3", 		fft_color_result_data[2]);
+	osc_queu_MSG_int("/ostc/audio/sum/red", 	LEDS_FFT_get_color_result(0));
+	osc_queu_MSG_int("/ostc/audio/sum/green", 	LEDS_FFT_get_color_result(1));
+	osc_queu_MSG_int("/ostc/audio/sum/blue",	LEDS_FFT_get_color_result(2));
+
+	for(uint8_t bin = 0 ; bin < 7 ; bin++)
+	{
+		osc_queu_MSG_int("/ostc/audio/abin/"+ String(bin) ,  	fft_data[6-bin].avarage );
+		osc_queu_MSG_int("/ostc/audio/mbin/"+ String(bin) ,  	fft_data[6-bin].max );
+		osc_queu_MSG_int("/ostc/audio/trig/"+ String(bin) ,  	fft_data[6-bin].trigger );
+		osc_queu_MSG_int("/ostc/audio/lbin/"+ String(bin) ,  	fft_data[6-bin].value );		
+	}
+	
+ 
+//debugMe("invizz");
+}
+
 void osc_StC_menu_audio_ref()
 {
 
@@ -3954,11 +3982,6 @@ void osc_StC_menu_audio_ref()
 			osc_queu_MSG_SEL_VAL("/ostc/audio/fftd1" ,bin ,  	int(bitRead(fft_data_menu[0], 6-bin)) );
 			osc_queu_MSG_SEL_VAL("/ostc/audio/fftd2" ,bin ,  	int(bitRead(fft_data_menu[1], 6-bin)) );
 			osc_queu_MSG_SEL_VAL("/ostc/audio/fftd3" ,bin ,  	int(bitRead(fft_data_menu[2], 6-bin)) );
-
-			osc_queu_MSG_int("/ostc/audio/abin/"+ String(bin) ,  	fft_data[6-bin].avarage );
-			osc_queu_MSG_int("/ostc/audio/mbin/"+ String(bin) ,  	fft_data[6-bin].max );
-			osc_queu_MSG_int("/ostc/audio/trig/"+ String(bin) ,  	fft_data[6-bin].trigger );
-			osc_queu_MSG_int("/ostc/audio/lbin/"+ String(bin) ,  	fft_data[6-bin].value );
 		
 		}		
 			osc_queu_MSG_int("/ostc/audio/minauto" ,  	fft_led_cfg.fftAutoMin );
@@ -3966,13 +3989,7 @@ void osc_StC_menu_audio_ref()
 			osc_queu_MSG_int("/ostc/audio/fftviz" ,  	int(get_bool(FFT_OSTC_VIZ)) );
 			osc_queu_MSG_int("/ostc/audio/vizfps" ,  	fft_led_cfg.viz_fps );
 
-			osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
-			osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
-
-
-			osc_queu_MSG_int("/ostc/audio/sum/d1", 		fft_color_result_data[0]);
-			osc_queu_MSG_int("/ostc/audio/sum/d2", 		fft_color_result_data[1]);
-			osc_queu_MSG_int("/ostc/audio/sum/d3", 		fft_color_result_data[2]);
+			osc_StC_FFT_vizIt();
 
 }	
 
@@ -4036,15 +4053,8 @@ void osc_oStC_menu_master_wifi_ref()
 }	
 
 
-void osc_StC_menu_master_ref()
+void osc_StC_menu_master_ledcfg_ref()
 {
-	osc_queu_MSG_int("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
-	osc_queu_MSG_int("/ostc/master/r", 			led_cfg.r);
-	osc_queu_MSG_int("/ostc/master/g", 			led_cfg.g);
-	osc_queu_MSG_int("/ostc/master/b", 			led_cfg.b);
-	osc_queu_MSG_int("/ostc/master/palbri", 	led_cfg.pal_bri);
-	osc_queu_MSG_int("/ostc/master/fps", 		led_cfg.pal_fps);
-	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 
 	osc_queu_MSG_int("/ostc/master/data/sl/1", 		led_cfg.Data1StartLed);
 	osc_queu_MSG_int("/ostc/master/data/nl/1", 		led_cfg.Data1NrLeds);
@@ -4063,14 +4073,29 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/2", 	get_bool(DATA2_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
-	
+
+
+
+}
+
+void osc_StC_menu_master_ref()
+{
+	osc_queu_MSG_int("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
+	osc_queu_MSG_int("/ostc/master/r", 			led_cfg.r);
+	osc_queu_MSG_int("/ostc/master/g", 			led_cfg.g);
+	osc_queu_MSG_int("/ostc/master/b", 			led_cfg.b);
+	osc_queu_MSG_int("/ostc/master/palbri", 	led_cfg.pal_bri);
+	osc_queu_MSG_int("/ostc/master/fps", 		led_cfg.pal_fps);
+	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
+	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
+
 	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
 	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
 	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
 
 
 	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
-
+	osc_queu_MSG_int("/ostc/master/playnr", 	led_cfg.Play_Nr);
 
 	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
 	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
@@ -4085,7 +4110,7 @@ void osc_StC_menu_master_loadsave()
 {
 
 
-	for(uint8_t confNr = 0; confNr < OSC_CONF_MAX_SAVES ; confNr++)  		// update leds to show what confs are saved
+	for(uint8_t confNr = 0; confNr < MAX_NR_SAVES ; confNr++)  		// update leds to show what confs are saved
 	{
 		//debugMe(confNr);
 		if(FS_check_Conf_Available(confNr) == false)
@@ -4100,7 +4125,15 @@ void osc_StC_menu_master_loadsave()
 				//debugMe("ingreen");
 			 //	yield();
 			}
+
+
+			osc_queu_MSG_int(String("/ostc/master/tmin/"+String(confNr)  ),  int(play_conf_time_min[confNr])    );
+			osc_queu_MSG_SEL_VAL(String("/ostc/master/auto"),  confNr,  LEDS_get_sequencer(confNr)   );
+
+			
 	}
+	
+
 
 
 }
@@ -4157,30 +4190,7 @@ void osc_StC_audio_trig_in(OSCMessage &msg, int addrOffset)
 // END Oopen Stage Controll in Functions 
 
 
-void osc_StC_FFT_vizIt()
-{
-	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
-	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
-	osc_queu_MSG_int("/ostc/audio/sum/bri", 	fft_color_result_bri);
-	osc_queu_MSG_int("/ostc/audio/sum/fps", 	fft_color_fps);
-	osc_queu_MSG_int("/ostc/audio/sum/d1", 		fft_color_result_data[0]);
-	osc_queu_MSG_int("/ostc/audio/sum/d2", 		fft_color_result_data[1]);
-	osc_queu_MSG_int("/ostc/audio/sum/d3", 		fft_color_result_data[2]);
-	osc_queu_MSG_int("/ostc/audio/sum/red", 	LEDS_FFT_get_color_result(0));
-	osc_queu_MSG_int("/ostc/audio/sum/green", 	LEDS_FFT_get_color_result(1));
-	osc_queu_MSG_int("/ostc/audio/sum/blue",	LEDS_FFT_get_color_result(2));
 
-	for(uint8_t bin = 0 ; bin < 7 ; bin++)
-	{
-		osc_queu_MSG_int("/ostc/audio/abin/"+ String(bin) ,  	fft_data[6-bin].avarage );
-		osc_queu_MSG_int("/ostc/audio/mbin/"+ String(bin) ,  	fft_data[6-bin].max );
-		osc_queu_MSG_int("/ostc/audio/trig/"+ String(bin) ,  	fft_data[6-bin].trigger );
-		osc_queu_MSG_int("/ostc/audio/lbin/"+ String(bin) ,  	fft_data[6-bin].value );		
-	}
-	
- 
-//debugMe("invizz");
-}
 
 
 void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
@@ -4225,8 +4235,8 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		form_nr = form_nr-8;
 	}
 	
-
-		if 			(msg.fullMatch("/pal/run",addrOffset))			{ bitWrite(form_menu[bit_int][_M_STRIP_], form_nr, 		bool(msg.getInt(1)));  ;}
+		if  		(msg.fullMatch("/ref",addrOffset))				{osc_StC_menu_form_ref();}
+		else if		(msg.fullMatch("/pal/run",addrOffset))			{ bitWrite(form_menu[bit_int][_M_STRIP_], form_nr, 		bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/onecolor",addrOffset))		{ bitWrite(form_menu[bit_int][_M_ONE_COLOR_], form_nr, 	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/mirr",addrOffset))			{ bitWrite(form_menu[bit_int][_M_MIRROR_OUT_], form_nr, bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/rev",addrOffset))			{ bitWrite(form_menu[bit_int][_M_REVERSED_], form_nr, 	bool(msg.getInt(1)));  ;}
@@ -4417,13 +4427,16 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 
 void osc_StC_master_conf_routing(OSCMessage &msg, int addrOffset) 
 {
+	uint8_t conf_NR = (uint8_t(msg.getInt(0)));
+
 	
-	if (boolean(msg.getInt(1)))
+
+	if (boolean(msg.getInt(1)))  // if pushdown only
 	{
-		uint8_t conf_NR = (uint8_t(msg.getInt(0)));
+		
 		//debugMe(conf_NR);
 		if 			(msg.fullMatch("/save",addrOffset))		{ FS_play_conf_write(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 0,255,0); }
-		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);  }
+		else if 	(msg.fullMatch("/load",addrOffset))		{ FS_play_conf_read(conf_NR);   LEDS_pal_reset_index();  }
 		else if 	(msg.fullMatch("/clear",addrOffset))	{ FS_play_conf_clear(conf_NR);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_NR)), 255,0,0); }
 		
 	}
@@ -4466,7 +4479,10 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 			else if 	(msg.fullMatch("/mode",addrOffset))   { write_bool(WIFI_MODE,			bool(msg.getInt(0) )) ; }
 
 			
+
+			
 		}
+		
 		else	// it is a string
 		{ 
 		int length=msg.getDataLength(0);
@@ -4490,6 +4506,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		
 			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
 			else if (msg.fullMatch("/conn",addrOffset))				{ osc_StC_menu_master_ref(); }
+			else if (msg.fullMatch("/ledcfg/ref",addrOffset))		{ osc_StC_menu_master_ledcfg_ref(); }
 
 			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    }
 			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); }
@@ -4515,11 +4532,12 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/select/3",addrOffset))	{ write_bool(DATA3_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/4",addrOffset))	{ write_bool(DATA4_ENABLE, bool(msg.getInt(0) )) ; }
 
-			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.Data2StartLed =  led_cfg.Data1NrLeds ; }
-			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.Data3StartLed =  led_cfg.Data2NrLeds + led_cfg.Data2StartLed ; }
-			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ; }
+			
+			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.Data2StartLed =  led_cfg.Data1NrLeds ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.Data2StartLed);}   
+			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.Data3StartLed =  led_cfg.Data2NrLeds + led_cfg.Data2StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.Data3StartLed); }
+			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.Data4StartLed);}
 
-			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = bool(msg.getInt(0) )  ;}
+			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = uint8_t(msg.getInt(0) )  ;}
 			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}
 
 			
@@ -4531,10 +4549,30 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			
 			
 			else if (msg.fullMatch("/conf/loadsave",addrOffset) && boolean(msg.getInt(0)) == true ) 	{ osc_StC_menu_master_loadsave();}
+			else if	(msg.fullMatch("/auto",addrOffset))	   					 							{ LEDS_write_sequencer( uint8_t(msg.getInt(0)), boolean(msg.getInt(1)) ); } 
 			else if (msg.fullMatch("/conf/wifi",   addrOffset)  && boolean(msg.getInt(0)) == true )     { osc_oStC_menu_master_wifi_ref();}
 			
-			
+			else if (msg.fullMatch("/seq",addrOffset))    		{ write_bool(SEQUENCER_ON,		bool(msg.getInt(0) )) ;  led_cfg.confSwitch_time = ( micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN )  ;  }
+			else if (msg.fullMatch("/playnr",addrOffset))   	{  FS_play_conf_read(uint8_t(msg.getInt(0) )); }
 
+			else if (	(msg.match("/tmin",addrOffset)) 
+			)
+			{
+							char address[5] ;
+							String save_no_string;
+							uint8_t sel_save_no = 0;
+							memset(address, 0, sizeof(address));
+							msg.getAddress(address, addrOffset + 6);
+
+							for (byte i = 0; i < sizeof(address); i++)  { save_no_string = save_no_string + address[i]; }
+
+							sel_save_no = save_no_string.toInt();  // What CRGB value in the pallete
+
+							if  		(msg.match("/tmin",addrOffset))  	play_conf_time_min[sel_save_no] = uint16_t(msg.getInt(0))	;
+
+
+
+			}
 			else   // route it
 			{
 				msg.route("/conf", osc_StC_master_conf_routing, addrOffset);

@@ -32,7 +32,13 @@
 		#define NR_STRIPS		32				// how many strips  default 32
 		#define NR_PALETTS 		2				// how many pallets do we have = 2
 
+		#define MICROS_TO_MIN 60000000
+						      
+
 // Structures
+
+
+
 	struct led_controls_struct
 	{
 		uint8_t PotBriLast;
@@ -74,7 +80,7 @@
 		uint16_t		Data4NrLeds;		// Nr of leds for data4;
 		uint16_t		Data4StartLed;		// Start led for data4;
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
-		
+		unsigned long 	confSwitch_time;	// when to swtich to the next config
 		
 	
 
@@ -280,6 +286,8 @@
 	uint8_t LEDS_get_real_bri();   // gets the real BRi including fft shift
 	uint8_t LEDS_FFT_get_color_result(uint8_t color );   // Get the FFT color result 0= red 1= green 2 = blue
 
+	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
+	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
 #endif
 
