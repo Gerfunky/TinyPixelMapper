@@ -193,7 +193,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS };			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
 	{ 0,  0,  0,  1,  0 , 1 ,  0,  0}  //0
@@ -270,6 +270,56 @@ byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection me
 	 { 0,0,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0 }
 	,{ 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0 }
 };
+
+
+uint16_t play_conf_time_min[MAX_NR_SAVES] = {5,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+
+uint8_t squencer_bool[2]  = {0,0};		// to hold what saves o play in sequence mode
+
+void LEDS_write_sequencer(uint8_t play_nr, boolean value)
+{
+	uint8_t bit_nr = play_nr;
+	uint8_t byte_nr = 0;
+
+	while( bit_nr > 7)
+	{
+		bit_nr = bit_nr - 8;
+		byte_nr++;
+
+	}
+	debugMe(play_nr);
+	debugMe(value);
+	debugMe(byte_nr);
+	debugMe(bit_nr);
+
+	bitWrite(squencer_bool[byte_nr], bit_nr, value);
+
+
+	for (uint8_t i = 0 ; i< 8 ;i++)	
+	{
+		debugMe(String(i) + " -- " + String(bitRead(squencer_bool[0], i)));	
+		debugMe(String(i) + " .. " + String(bitRead(squencer_bool[1], i)));	
+	}
+}
+
+boolean LEDS_get_sequencer(uint8_t play_nr)
+{
+	uint8_t bit_nr = play_nr;
+	uint8_t byte_nr = 0;
+
+	while( bit_nr > 7)
+	{
+		bit_nr = bit_nr - 8;
+		byte_nr++;
+
+	}
+
+	boolean returnBool = bitRead(squencer_bool[byte_nr], bit_nr);
+
+	return returnBool;
+
+
+}
 
 
 
@@ -1712,7 +1762,7 @@ void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed
 
 						if(!mask)
 						{
-							if(subrtact_mode)
+							if(!subrtact_mode)
 							{
 
 
@@ -2175,6 +2225,9 @@ void LEDS_setup()
 
 	fft_led_cfg.update_time = micros();
 	fft_led_cfg.viz_fps = DEF_VIZ_UPDATE_TIME_FPS ;
+
+	led_cfg.confSwitch_time = micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+
 	debugMe("end LEDS setup");
 }
 
@@ -2249,12 +2302,12 @@ void LEDS_loop()
 					 if(FS_check_Conf_Available(led_cfg.Play_Nr +1 ))
 					 {
 					 	FS_play_conf_read(led_cfg.Play_Nr +1);
-						 led_cfg.Play_Nr++;
+						 //led_cfg.Play_Nr++;
 						 debugMe("in +1");
 					 }
 					else{
 							FS_play_conf_read(0);
-							led_cfg.Play_Nr = 0;
+							//led_cfg.Play_Nr = 0;
 					}
 						
 
@@ -2276,6 +2329,51 @@ void LEDS_loop()
 	}
 
 
+	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) )
+	{
+		uint8_t orig_play_nr = led_cfg.Play_Nr;
+
+		if (orig_play_nr < MAX_NR_SAVES-1 )
+		{
+			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+			{
+						debugMe("Play switch test to " + String(play_nr));
+
+						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
+						if (play_nr == orig_play_nr ) break;
+			}
+		}
+		else
+		{
+			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
+			{
+						debugMe("15-Play switch test to " + String(play_nr));
+						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						
+			}			
+			
+		}
+
+		led_cfg.confSwitch_time = currentT +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+
+	}
+
+
 	//debugMe("leds loop end ", false);
 	//debugMe(String(xPortGetCoreID()));
 }
+
+
+
+

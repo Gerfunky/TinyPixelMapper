@@ -11,7 +11,7 @@
 
 
 
-#define NR_GLOBAL_OPTIONS_BYTES 3     // to hold the bools in bits not bytes! Enum below must fit in here!!!
+#define NR_GLOBAL_OPTIONS_BYTES 4     // to hold the bools in bits not bytes! Enum below must fit in here!!!
 
 enum GLOBAL_OPTIONS_ENUM
 {
@@ -39,6 +39,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,DATA4_ENABLE		= 21
 	,WIFI_POWER_ON_BOOT = 22 	// was wifi on on boot?
 	,POT_DISABLE 		= 23  	// Disable HW Pots BRI & FPS!
+	,SEQUENCER_ON 		= 24
 	
 
 };

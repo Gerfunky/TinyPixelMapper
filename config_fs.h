@@ -10,6 +10,13 @@
 #endif
 
 
+
+#define MAX_NR_SAVES 16
+
+
+
+
+
 // Public function
 void FS_setup_SPIFFS();
 

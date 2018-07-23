@@ -17,7 +17,7 @@
 
 
 
-#define MAX_NR_SAVES 16
+
 
 
 
@@ -50,7 +50,7 @@
 	extern uint8_t fft_bin_autoTrigger;
 	extern byte fft_data_fps;
 
-
+	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 
 
 //**************** Functions 
@@ -151,7 +151,7 @@ int	get_int_conf_value(File myFile, char *character)
 
 	if (*character != ']') {
 		*character = myFile.read();
-		while ((myFile.available()) && (*character != ':') && *character != ']') {
+		while ((myFile.available()) && (*character != ':')  && (*character != '.') && *character != ']') {
 			settingValue = settingValue + *character;
 			*character = myFile.read();
 		}
@@ -912,6 +912,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
 			
+			
 			//else if (type == 'T')			// FFT settings to load in play config
 			//{
 			//		write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
@@ -935,6 +936,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 		}
 		// close the file:
 		conf_file.close();
+
+		led_cfg.Play_Nr = conf_nr; 
+		LEDS_pal_reset_index();
 		return true;
 	}
 	else
@@ -992,7 +996,17 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
+		conf_file.println("] ");
 
+
+		conf_file.println(F("S = Sequencer on: Conf ON . time in min : ... to conf 15 "));
+		conf_file.print(String("[S:" + String(get_bool(SEQUENCER_ON))));
+		
+		for(uint8_t confNr = 0; confNr < MAX_NR_SAVES; confNr++)
+		{
+			conf_file.print(String(":" + String(LEDS_get_sequencer(confNr ))));
+			conf_file.print(String("." + String(play_conf_time_min[confNr])));
+		}
 
 		conf_file.println(F("] "));
 		
@@ -1074,6 +1088,17 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
 
+				}
+				else if (type == 'S')
+				{
+					write_bool(SEQUENCER_ON, get_bool_conf_value(conf_file, &character));
+					for(uint8_t confNr = 0; confNr < MAX_NR_SAVES; confNr++)
+					{
+						int in_int = 0;
+
+						LEDS_write_sequencer(confNr , get_int_conf_value	(conf_file, &character)) ;
+						in_int = get_int_conf_value(conf_file, &character);	 	play_conf_time_min[confNr] = in_int;		
+					}
 				}
 				else
 					debugMe("NO_TYPE");
