@@ -49,7 +49,7 @@
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
 	extern uint8_t fft_bin_autoTrigger;
 	extern byte fft_data_fps;
-
+	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 
 
@@ -122,6 +122,22 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 }
 
 
+void  FS_write_Conf_status(uint8_t play_NR, boolean value)
+{
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = play_NR;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+	bitWrite(confStatus[byte_nr], bit_nr, value);
+
+	
+
+}
 
 
 
@@ -692,6 +708,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
 			
 			conf_file.print(String(":" + String(form_part[form].fft_offset)));
+			conf_file.print(String(":" + String(form_part[form].fft_level)));
+			conf_file.print(String(":" + String(form_part[form].pal_level)));
 
 			conf_file.println("] ");
 
@@ -740,6 +758,16 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
 			conf_file.println("] ");
 		}
+		
+
+		conf_file.println("l = Layers 1 to 10, ");
+			conf_file.print("[l:" + String(layer_select[0]) )	;
+			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
+			{
+					conf_file.print(":" + String(layer_select[layer]) )	;
+
+			}
+		conf_file.println("] ");
 
 		//conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
 		//conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
@@ -748,6 +776,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 
 		conf_file.close();
+		FS_write_Conf_status(conf_nr, true);
 	}
 }
 
@@ -865,6 +894,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				}
 
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_offset = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_level = in_int;
 
 			} 
 			else if (type == 'c')
@@ -911,7 +942,16 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				bitWrite(fft_bin_autoTrigger, bit_no, get_bool_conf_value(conf_file, &character));
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
+			else if (type == 'l')
+			{
+					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
+					{
+					layer_select[layer] = get_int_conf_value(conf_file, &character)	;
+					}
+
 			
+
+			}
 			
 			//else if (type == 'T')			// FFT settings to load in play config
 			//{
@@ -1013,7 +1053,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		
 		 
 		conf_file.close();
-
+		
 		 debugMe(F("Bool conf wrote"));
 	}	// end open conf file
 
