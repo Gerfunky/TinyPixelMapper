@@ -66,7 +66,7 @@ extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , bo
 	}
 
 
-void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror) //, bool mirrored)
+void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror, uint8_t level, boolean subtract, boolean mask ) //, bool mirrored)
 {
 
 	
@@ -79,7 +79,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 		sparking = LEDS_FFT_get_fire_sparking();
 
 	} */
-
+	uint16_t real_nr_leds = Nr_leds;
 	if (true == mirror)
 	{
         
@@ -102,9 +102,12 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 		
 
 		// Step 1.  Cool down every cell a little
-		for (int i = start_led_M; i < start_led_M + NR_leds_M; i++) {
+		for (int i = start_led; i < start_led + real_nr_leds ; i++) 
+		{
 			heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NR_leds_M) + 2));
 		}
+
+		//for (int i =  NR_leds_M -1 ; i >= start_led ; i--)  {	heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NR_leds_M) + 2)); }
 
 		// Step 2.  Heat from each cell drifts 'up' and diffuses a little
 		if (true == reversed)
@@ -112,12 +115,14 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			for (int k = (start_led_M + NR_leds_M - 1); k >= (start_led_M + 2); k--) {
 				heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
 			}
+			for (int k = (start_led ); k <= start_led_M ; k++ ) { heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3; }
 		}
 		else
 		{
 			for (int k = (start_led_M); k < (start_led_M + NR_leds_M - 3); k++) {
 				heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3;
 			}
+			for (int k = (start_led_M); k > (start_led +  3); k--)  { 	heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;  	}
 		}
 		// Step 3.  Randomly ignite new 'sparks' of heat near the bottom
 		// needs to spark at every strip / form start if selected
@@ -126,6 +131,8 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			if (random8() < sparking) {
 				int y = random8(7) + start_led_M;
 				heat[y] = qadd8(heat[y], random8(160, 255));
+				int x = random8(7) - start_led_M;
+				heat[x] = qadd8(heat[x], random8(160, 255));
 			}
 		}
 		else
@@ -133,15 +140,19 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			if (random8() < sparking) {
 				int y = -(random8(7)) + start_led_M + NR_leds_M - 1;
 				heat[y] = qadd8(heat[y], random8(160, 255));
+				int x = (random8(7)) + start_led;
+				heat[x] = qadd8(heat[x], random8(160, 255));
 			}
 		}
 		// Step 4.  Map from heat cells to LED colors
-		for (int j = start_led_M; j < NR_leds_M + start_led_M; j++) {
+		for (int j = start_led; j < NR_leds_M + start_led_M; j++) 
+		{
+
 			// Scale the heat value from 0-255 down to 0-240
 			// for best results with color palettes.
 			byte colorindex = scale8(heat[j], 240);
 			//CRGB color = HeatColor(heat[j]);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
+			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex,level);
 			int pixelnumber;
 			/*if (reversed) {
 			pixelnumber = (Nr_leds + start_led - 1) - j;
@@ -150,11 +161,41 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			}
-			led_FX_out[pixelnumber] = color;
+			if(!mask)
+			{
+				if(!subtract)
+				{
+				leds[pixelnumber].red = 	qadd8( color.red , leds[pixelnumber].red);
+				leds[pixelnumber].green = 	qadd8( color.green , leds[pixelnumber].green);
+				leds[pixelnumber].blue =	qadd8( color.blue , leds[pixelnumber].blue);
+				//leds[pixelnumber] = color;
+				}
+				else
+				{
+				leds[pixelnumber].red = 	qsub8( leds[pixelnumber].red ,color.red  );
+				leds[pixelnumber].green = 	qsub8( leds[pixelnumber].green, color.green  );
+				leds[pixelnumber].blue =	qsub8( leds[pixelnumber].blue, color.blue )  ;
+				//leds[pixelnumber] = color;
+				}
+
+
+			}
+			else //mask
+			{
+
+				leds[pixelnumber].red = 	map( leds[pixelnumber].red , 0, 255, 0, color.red   );	
+				leds[pixelnumber].green = 	map( leds[pixelnumber].green , 0, 255, 0,color.green  );
+				leds[pixelnumber].blue =	map( leds[pixelnumber].blue , 0, 255, 0, color.blue  );
+
+
+			}
+
+			
+			//led_FX_out[pixelnumber] = color;
 		}
 
 	}
-	//else
+	else
 	{	
 		// Step 1.  Cool down every cell a little
 		for (int i = start_led; i < start_led + Nr_leds; i++) {
@@ -198,7 +239,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			// for best results with color palettes.
 			//CRGB color = HeatColor(heat[j]);
 			byte colorindex = scale8(heat[j], 240);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
+			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex,level);
 			int pixelnumber;
 			/*if (reversed) {
 				pixelnumber = (Nr_leds + start_led - 1) - j;
@@ -207,7 +248,37 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			} 
-			led_FX_out[pixelnumber] = color;
+
+
+			if(!mask)
+			{
+				if(!subtract)
+				{
+				leds[pixelnumber].red = 	qadd8( color.red , leds[pixelnumber].red);
+				leds[pixelnumber].green = 	qadd8( color.green , leds[pixelnumber].green);
+				leds[pixelnumber].blue =	qadd8( color.blue , leds[pixelnumber].blue);
+				//leds[pixelnumber] = color;
+				}
+				else // subtract
+				{
+				leds[pixelnumber].red = 	qsub8( leds[pixelnumber].red ,color.red  );
+				leds[pixelnumber].green = 	qsub8( leds[pixelnumber].green, color.green  );
+				leds[pixelnumber].blue =	qsub8( leds[pixelnumber].blue, color.blue  );
+				//leds[pixelnumber] = color;
+				}
+
+
+			}
+			else //mask
+			{
+
+				
+				leds[pixelnumber].red = 	map( leds[pixelnumber].red , 0, 255, 0, color.red   );	
+				leds[pixelnumber].green = 	map( leds[pixelnumber].green , 0, 255, 0,color.green  );
+				leds[pixelnumber].blue =	map( leds[pixelnumber].blue , 0, 255, 0, color.blue  );
+
+
+			}
 		}
 
 	}
@@ -263,11 +334,11 @@ void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, ui
 	}
 }
 
-void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
+void LEDS_G_E_saw(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
 {	// Make a dot  run  a SAW wave over the leds normal speed = bpm additional leds = bpm +1
 	if (*nr_leds != 0 && (*nr_leds + *start_led <=MAX_NUM_LEDS))
 	{
-		byte dothue = 0;
+		byte dothue = 64;
 		for (int i = 0; i < nr_dots; i++)
 		{
 			//led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
@@ -349,8 +420,8 @@ void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean 
     led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
   
-  dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
- 
+  //dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
+ dist += beater;
 
 } // shimmer()
 
@@ -468,15 +539,15 @@ int wave3=0;
 //uint8_t mul2 = 6;
 //uint8_t mul3 = 9;
 
-void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean mirror,   boolean blend , uint8_t distance ) 
+void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean mirror,   boolean blend , uint8_t distance , uint8_t bmpWave1  ,uint8_t bmpWave2  ,uint8_t bmpWave3 , int lowWave1 ,int hiWave1 ,int lowWave2 ,int hiWave2 ,int lowWave3 ,int hiWave3  ) 
 {
  
  
 
-  wave1 += beatsin8(1,-4,4);
-  wave2 += beatsin8(5,-2,2);
-  wave3 += beatsin8(2,-1, 1);
-debugMe(distance);
+  wave1 += beatsin8(bmpWave1,lowWave1,hiWave1);
+  wave2 += beatsin8(bmpWave2,lowWave2,hiWave2);
+  wave3 += beatsin8(bmpWave3,lowWave3, hiWave3);
+//debugMe(distance);
 
   for (uint16_t i = StartLed; i < StartLed+NrLeds; i++) 
   {
@@ -490,27 +561,25 @@ debugMe(distance);
 } 
 /*
 
-void two_sin() 
+void two_sin(uint16_t indexA, uimt16_t indexB, boolean waveAdir =true , boolean waveBdir = false, waveAspeed =10 , waveBspeed =4 ) 
 {
   FastLED.setBrightness(255);
 
-    thisdir ? thisphase += beatsin8(thisspeed, 2, 10) : thisphase -= beatsin8(thisspeed, 2, 10);
-    thatdir ? thatphase += beatsin8(thisspeed, 2, 10) : thatphase -= beatsin8(thatspeed, 2, 10);
-    thishue += thisrot;                                        // Hue rotation is fun for thiswave.
-    thathue += thatrot;                                        // It's also fun for thatwave.
+    waveAdir ? thisphase += beatsin8(thisspeed, 2, 10) : thisphase -= beatsin8(thisspeed, 2, 10);
+    waveBdir ? thatphase += beatsin8(thisspeed, 2, 10) : thatphase -= beatsin8(thatspeed, 2, 10);
+    indexA += thisrot;                                        // Hue rotation is fun for thiswave.
+    indexB += thatrot;                                        // It's also fun for thatwave.
   
   for (int k=0; k<NUM_LEDS-1; k++) {
     int thisbright = qsuba(cubicwave8((k*allfreq)+thisphase), thiscutoff);      // qsub sets a minimum value called thiscutoff. If < thiscutoff, then bright = 0. Otherwise, bright = 128 (as defined in qsub)..
     int thatbright = qsuba(cubicwave8((k*allfreq)+128+thatphase), thatcutoff);  // This wave is 180 degrees out of phase (with the value of 128).
 
-    leds1[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
-    leds1[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
-    leds2[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
-    leds2[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
+    leds1[k] = ColorFromPalette(currentPalette, indexA, 255, currentBlending);
+    leds1[k] += ColorFromPalette(targetPalette, indexB, 255, currentBlending);
+    
   }
-     nscale8(leds1,NUM_LEDS,fadeval);
-     nscale8(leds2,NUM_LEDS,fadeval);
+     
      
 } // two_sin()
 
-*/
+//*/

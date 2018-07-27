@@ -159,9 +159,35 @@
 		  uint8_t   fx_shim_xscale;
 		  uint8_t   fx_shim_yscale;
 		  uint8_t   fx_shim_beater;
-		  uint8_t pal_level;
-		  uint8_t fft_level;
+		  uint8_t 	FX_shim_level;
+		  uint8_t 	pal_level;
+		  uint8_t 	fft_level;
+		  uint8_t 	fire_level;
+	  };
+	  
+	  struct form_part_fx_shim_struct
+	  {
+		   int waveA;
+		   int waveB;
+		   int waveC;
 
+		   uint8_t Abpm;
+		   int Ahigh;
+		   int Alow;
+		   uint8_t index_addA;
+		   uint8_t indexA;
+
+		   uint8_t Bbpm;
+		   int Bhigh;
+		   int Blow;
+		   uint8_t index_addB;
+		   uint8_t indexB;
+
+		   uint8_t Cbpm;
+		   int Chigh;
+		   int Clow;
+			uint8_t index_addC;
+		   uint8_t indexC;
 
 	  };
 
@@ -186,7 +212,7 @@
 
 
 #define _M_NR_OPTIONS_     40 //10			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  40			// Nr of options for forms 
+#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
 		  _M_AUDIO_REVERSED = 1,
@@ -218,6 +244,8 @@
 		  _M_REVERSED_ 			,				// reversed mod
 		  _M_PALETTE_			,				// Pallete 0 or 1
 		  _M_BLEND_ 			,				// Fade or Hard Blend
+
+		  
 		  _M_AUDIO_MIRROR  		,			//
 		  _M_AUDIO_ONECOLOR		,			//
 		  _M_AUDIO_MASK  		,			//
@@ -227,36 +255,43 @@
 		  _M_FX_REVERSED		,	
 		  _M_FX_MASK			,
 		  _M_FX_SUBTRACT		,				// add the FX channel to the leds
-		  _M_FX1_ON  			,			// 
+		  _M_FX1_ON  			,			//
+		  _M_FX_LAYERS_ON		, 
 
-		  
-		  _M_FX_SHIMMER  		,			//
-		  _M_FX_SHIM_PAL  		,			//
-		  _M_AUDIO_FX4  		,			// 
 		  
 		  _M_GLITTER_FROM_FFT_DATA1  , 
 		  _M_RBOW_GLITTER_ 		,			// Random Glitter
 		  _M_GLITTER_			,				// White Glitter
 		  _M_JUGGLE_ 			,				// Sine wave dots
 		  _M_SAW_DOT_ 			,				// Saw wave dots
+		  _M_AUDIO_DOT_ 		,			// 
+
+		  _M_AUDIO_FX4  		,			// 
 		  _M_AUDIO_FX5  		,			//
 		  _M_AUDIO_FX6  		,			//
-		  
+
+	  	 _M_FX_SHIMMER  		,			//
+		  _M_FX_SHIM_PAL  		,			//
+		  _M_FX_SHIM_BLEND , 
+		  _M_FX_SHIM_SUBTRACT , 
+		  _M_FX_SHIM_MASK , 
+		 	
 		  
 		  _M_FIRE_				,				// Fire animation
 		  _M_FIRE_PAL			,				// Fire animation
-		  _M_AUDIO_DOT_ 		,			// 
+		  _M_FIRE_MIRROR  		,			//
+		  _M_FIRE_REV			,			//
+		  _M_FIRE_SUBTRACT		,			//
+		  _M_FIRE_MASK			,			//
 
-		  
-		  			//
+		
+				  			//
 		  _M_FX_SIN_PAL  		,			//
-		  _M_FX_3_SIN	  		,			//31
-		  
-		//
-		  _M_AUDIO_FX7  		,			//
-		  _M_AUDIO_FX8			,			//
-		  _M_AUDIO_FX9  		,			//
-		  _M_AUDIO_FX10	  		,			// 39
+		  _M_FX_3_SIN	  		,			//40
+		  _M_FX_2_SIN  		,			//
+		 
+		
+
 		  
 
 	  };
@@ -271,7 +306,7 @@
 	  };
 
 	#define MAX_LAYERS_SELECT 10
-	#define MAX_LAYERS 5
+	#define MAX_LAYERS 7
 
 
 // Functions
