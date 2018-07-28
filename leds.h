@@ -137,6 +137,8 @@
 					uint8_t 	fft_offset;			//
 					uint8_t pal_level;
 					uint8_t fft_level;
+					uint8_t 	pal_mix_mode;
+		  			uint8_t 	fft_mix_mode;
 	};
 
 	  struct form_Part_FL_Struct 
@@ -163,6 +165,11 @@
 		  uint8_t 	pal_level;
 		  uint8_t 	fft_level;
 		  uint8_t 	fire_level;
+		  uint8_t 	pal_mix_mode;
+		  uint8_t 	fft_mix_mode;
+		  uint8_t 	fx1_mix_mode;
+		  uint8_t 	fx_fire_mix_mode;
+		  uint8_t 	fx_shim_mix_mode;
 	  };
 	  
 	  struct form_part_fx_shim_struct
@@ -296,6 +303,19 @@
 
 	  };
 
+
+
+	  enum mix_enum 
+	  {  MIX_ADD 			
+	  	,MIX_SUBTRACT		
+		,MIX_MASK			
+		,MIX_OR		
+		,MIX_XOR
+		,MIX_AND
+		
+	  };
+
+
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
 										// TODO Check me again
@@ -339,5 +359,6 @@
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
+	
 #endif
 

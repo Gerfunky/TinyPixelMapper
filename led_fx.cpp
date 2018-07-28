@@ -11,6 +11,8 @@ extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array.
 extern CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 //extern CRGB ColorFromPalette( const TProgmemRGBPalette32& pal, uint8_t index, uint8_t brightness, TBlendType blendType);
 extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
+extern void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0);
+
 
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
@@ -66,7 +68,7 @@ extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , bo
 	}
 
 
-void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror, uint8_t level, boolean subtract, boolean mask ) //, bool mirrored)
+void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror, uint8_t level, boolean subtract, boolean mask, uint8_t mix_mode ) //, bool mirrored)
 {
 
 	
@@ -161,34 +163,8 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			}
-			if(!mask)
-			{
-				if(!subtract)
-				{
-				leds[pixelnumber].red = 	qadd8( color.red , leds[pixelnumber].red);
-				leds[pixelnumber].green = 	qadd8( color.green , leds[pixelnumber].green);
-				leds[pixelnumber].blue =	qadd8( color.blue , leds[pixelnumber].blue);
-				//leds[pixelnumber] = color;
-				}
-				else
-				{
-				leds[pixelnumber].red = 	qsub8( leds[pixelnumber].red ,color.red  );
-				leds[pixelnumber].green = 	qsub8( leds[pixelnumber].green, color.green  );
-				leds[pixelnumber].blue =	qsub8( leds[pixelnumber].blue, color.blue )  ;
-				//leds[pixelnumber] = color;
-				}
-
-
-			}
-			else //mask
-			{
-
-				leds[pixelnumber].red = 	map( leds[pixelnumber].red , 0, 255, 0, color.red   );	
-				leds[pixelnumber].green = 	map( leds[pixelnumber].green , 0, 255, 0,color.green  );
-				leds[pixelnumber].blue =	map( leds[pixelnumber].blue , 0, 255, 0, color.blue  );
-
-
-			}
+			
+			LEDS_mix_led(leds, pixelnumber, color, mix_mode);
 
 			
 			//led_FX_out[pixelnumber] = color;
