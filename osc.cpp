@@ -4003,7 +4003,7 @@ void osc_StC_menu_form_pal_adv_ref()
 		osc_queu_MSG_int("/ostc/form/af/" + String(formNr), form_part[formNr].index_add_pal );
 		osc_queu_MSG_int("/ostc/form/si/" + String(formNr), form_part[formNr].index_start );
 		osc_queu_MSG_int("/ostc/form/mix/pal/" + String(formNr), form_part[formNr].pal_mix_mode );
-
+		osc_queu_MSG_int("/ostc/form/pl/" + String(formNr), form_part[formNr].pal_pal );
 
 		}		
 }
@@ -4097,8 +4097,9 @@ void osc_StC_menu_strip_ref()
 		osc_queu_MSG_int("/ostc/strip/al/" + String(formNr), part[formNr].index_add );
 		osc_queu_MSG_int("/ostc/strip/af/" + String(formNr), part[formNr].index_add_pal );
 
-		osc_queu_MSG_int("/ostc/strip/mix/pal" + String(formNr), part[formNr].pal_mix_mode );
-		osc_queu_MSG_int("/ostc/strip/mix/fft" + String(formNr), part[formNr].fft_mix_mode );
+		osc_queu_MSG_int("/ostc/strip/mix/pal/" + String(formNr), part[formNr].pal_mix_mode );
+		osc_queu_MSG_int("/ostc/strip/mix/fft/" + String(formNr), part[formNr].fft_mix_mode );
+		osc_queu_MSG_int("/ostc/strip/pl/" + String(formNr), part[formNr].fft_mix_mode );
 		
 		}		
 }
@@ -4428,7 +4429,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if		(msg.fullMatch("/pal/onecolor",addrOffset))		{ bitWrite(form_menu[bit_int][_M_ONE_COLOR_], form_nr, 	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/mirr",addrOffset))			{ bitWrite(form_menu[bit_int][_M_MIRROR_OUT_], form_nr, bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/rev",addrOffset))			{ bitWrite(form_menu[bit_int][_M_REVERSED_], form_nr, 	bool(msg.getInt(1)));  ;}
-		else if		(msg.fullMatch("/pal/pal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_PALETTE_], form_nr, 	bool(msg.getInt(1)));  ;}
+		//else if		(msg.fullMatch("/pal/pal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_PALETTE_], form_nr, 	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/blend",addrOffset))		{ bitWrite(form_menu[bit_int][_M_BLEND_], form_nr, 		bool(msg.getInt(1)));  ;}
 
 		//else if		(msg.fullMatch("/mix/pm",addrOffset))			{ bitWrite(form_menu[bit_int][_M_AUDIO_SUB_FROM_FFT], 	form_nr, bool(msg.getInt(1)));  ;}
@@ -4519,7 +4520,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 				||	(msg.match("/gv",addrOffset))
 				||	(msg.match("/fo",addrOffset))
 				||	(msg.match("/cs",addrOffset))
-
+				||	(msg.match("/pl",addrOffset))
 				)		
 		{
 						char address[5] ;
@@ -4541,6 +4542,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/si",addrOffset))  	form_part[sel_form_no].index_start = uint16_t(msg.getInt(0))	; 
 						else if  	(msg.match("/gv",addrOffset))  	form_part[sel_form_no].glitter_value = uint8_t(msg.getInt(0))	; 
 						else if  	(msg.match("/fo",addrOffset))  	form_part[sel_form_no].fft_offset = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pl",addrOffset))  	form_part[sel_form_no].pal_pal = uint8_t(msg.getInt(0))	; 
 
 
 						else if  	(msg.match("/cs",addrOffset) && sel_form_no > 0 )  	{form_part[sel_form_no].start_led = form_part[sel_form_no-1 ].start_led + form_part[sel_form_no-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sl/" + String(sel_form_no), form_part[sel_form_no].start_led ); } 	; 
@@ -4646,6 +4648,7 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 				||	(msg.match("/al",addrOffset))
 				||	(msg.match("/si",addrOffset)) 
 				||	(msg.match("/cs",addrOffset))	
+				||	(msg.match("/pl",addrOffset))	
 				)		
 		{
 						char address[5] ;
@@ -4665,6 +4668,7 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/al",addrOffset))  	part[sel_strip_no].index_add = uint16_t(msg.getInt(0))	;
 						else if  	(msg.match("/af",addrOffset))  	part[sel_strip_no].index_add_pal = uint16_t(msg.getInt(0))	;   
 						else if  	(msg.match("/si",addrOffset))  	form_part[sel_strip_no].index_start = uint16_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pl",addrOffset))  	form_part[sel_strip_no].index_start = uint8_t(msg.getInt(0))	; 
 
 
 						else if  	(msg.match("/cs",addrOffset) && sel_strip_no > 0)  	form_part[sel_strip_no].start_led =  form_part[sel_strip_no - 1].start_led + form_part[sel_strip_no - 1].nr_leds ;

@@ -682,6 +682,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(part[strip].fft_offset)));
 			conf_file.print(String(":" + String(part[strip].pal_mix_mode)));
 			conf_file.print(String(":" + String(part[strip].fft_mix_mode)));
+			conf_file.print(String(":" + String(part[strip].pal_pal)));
 
 			conf_file.println("] ");
 
@@ -718,6 +719,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_part[form].fx1_mix_mode)));
 			conf_file.print(String(":" + String(form_part[form].fx_fire_mix_mode)));
 			conf_file.print(String(":" + String(form_part[form].fx_shim_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].pal_pal)));
 
 			conf_file.println("] ");
 
@@ -872,6 +874,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_offset = in_int;
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_pal = in_int;
 
 				// debugMe(strip_no,false);
 				// debugMe(" . ", false);
@@ -912,6 +915,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx1_mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_fire_mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_shim_mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_pal = in_int;
 
 
 			} 
