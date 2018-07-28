@@ -154,7 +154,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			// for best results with color palettes.
 			byte colorindex = scale8(heat[j], 240);
 			//CRGB color = HeatColor(heat[j]);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex,level);
+			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex,level, LINEARBLEND);
 			int pixelnumber;
 			/*if (reversed) {
 			pixelnumber = (Nr_leds + start_led - 1) - j;

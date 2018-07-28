@@ -304,7 +304,7 @@
 	  };
 
 
-
+#define HARD_MIX_TRIGGER 128
 	  enum mix_enum 
 	  {  MIX_ADD 			
 	  	,MIX_SUBTRACT		
@@ -312,6 +312,15 @@
 		,MIX_OR		
 		,MIX_XOR
 		,MIX_AND
+		,MIX_DIFF
+		,MIX_HARD
+		,MIX_MULTIPLY
+		,MIX_HARD_LIGHT
+		,MIX_OVERLAY
+		,MIX_TADA
+		,MIX_DARKEN
+		,MIX_LIGHTEN
+		,MIX_LINEAR_BURN
 		
 	  };
 

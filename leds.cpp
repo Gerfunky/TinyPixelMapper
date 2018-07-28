@@ -997,7 +997,7 @@ void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0
 					1 = MIX_SUBTRACT
 					3 = MIX_MASK
 		*/
-
+	int mixed_color;
 
 
 	switch(mode)
@@ -1036,8 +1036,80 @@ void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0
 			out_array[led_nr].blue   =  out_array[led_nr].blue  & color.blue ;
 			break;
 
-		
+		case MIX_DIFF:
+			if( out_array[led_nr].red  >  color.red )  		out_array[led_nr].red =  	qsub8(out_array[led_nr].red ,  	color.red );
+			else 											out_array[led_nr].red =  	qsub8(color.red,		 		out_array[led_nr].red );
+			if( out_array[led_nr].green  >  color.green )  	out_array[led_nr].green =  	qsub8(out_array[led_nr].green ,  color.green );
+			else 											out_array[led_nr].green =  	qsub8(color.green,			 	out_array[led_nr].green );
+			if( out_array[led_nr].blue  >  color.blue )  	out_array[led_nr].blue =  	qsub8(out_array[led_nr].blue ,  color.blue );
+			else 											out_array[led_nr].blue =  	qsub8(color.blue,			 	out_array[led_nr].blue );
+			break;
+		case MIX_LINEAR_BURN:
+			if( qadd8(out_array[led_nr].red ,  	color.red ) 	== 255 )  		out_array[led_nr].red =  	255 ; else out_array[led_nr].red = 0;
+			if( qadd8(out_array[led_nr].green ,  color.green ) 	== 255 )  		out_array[led_nr].green =  	255 ; else out_array[led_nr].green = 0;
+			if( qadd8(out_array[led_nr].blue ,  color.blue ) 	== 255 )  		out_array[led_nr].blue =  	255 ; else out_array[led_nr].blue = 0;			
+			break;
+		case MIX_HARD:
+			if( (out_array[led_nr].red +	color.red ) /2 		>= HARD_MIX_TRIGGER )  		out_array[led_nr].red =  	255 ; else out_array[led_nr].red = 0;
+			if( (out_array[led_nr].green + color.green ) /2  	>= HARD_MIX_TRIGGER )  		out_array[led_nr].green =  	255 ; else out_array[led_nr].green = 0;
+			if( (out_array[led_nr].blue +  color.blue ) /2  	>= HARD_MIX_TRIGGER )  		out_array[led_nr].blue =  	255 ; else out_array[led_nr].blue = 0;			
+			break;
+		case MIX_MULTIPLY:
+			out_array[led_nr].red =    constrain(out_array[led_nr].red  *   color.red, 0,255) ;
+			out_array[led_nr].green =  constrain(out_array[led_nr].green  *   color.green, 0,255) ;
+			out_array[led_nr].blue =   constrain(out_array[led_nr].blue  *   color.blue, 0,255) ;
+			break;
+		case MIX_HARD_LIGHT:
+			if (color.getAverageLight() >= 128)
+			{
+					out_array[led_nr].red =  	qadd8(out_array[led_nr].red ,  	color.red );
+					out_array[led_nr].green =  	qadd8(out_array[led_nr].green , color.green );
+					out_array[led_nr].blue =  	qadd8(out_array[led_nr].blue ,  color.blue );
 
+			}
+			else
+			{
+					out_array[led_nr].red =  	qsub8(out_array[led_nr].red,	color.red  );
+					out_array[led_nr].green =  	qsub8(out_array[led_nr].green,	color.green  );
+					out_array[led_nr].blue =  	qsub8(out_array[led_nr].blue,	color.blue  );
+			}
+			break;
+		case MIX_OVERLAY:
+			if(  color.red <128 )  							out_array[led_nr].red =  	constrain(out_array[led_nr].red  *   color.red, 0,255) ; 
+			else 											out_array[led_nr].red =  	0; //constrain(out_array[led_nr].red  *   -color.red, 0,255) ;  // ??? wll always be 0
+			if(  color.green <128 )  						out_array[led_nr].green =  	constrain(out_array[led_nr].green  *   color.green, 0,255) ; 
+			else 											out_array[led_nr].green =  	0;//constrain(out_array[led_nr].green  *   -color.green, 0,255) ; 
+			if(  color.blue <128 )  						out_array[led_nr].blue =  	constrain(out_array[led_nr].blue  *   color.blue, 0,255) ; 
+			else 											out_array[led_nr].blue =  	0; //constrain(out_array[led_nr].blue  *   -color.blue, 0,255) ; 
+			break;
+		case MIX_TADA:
+			if( out_array[led_nr].red  >=  color.red )  	out_array[led_nr].red =  	out_array[led_nr].red - (out_array[led_nr].red - color.red) ;
+			else 											out_array[led_nr].red =  	out_array[led_nr].red + (out_array[led_nr].red - color.red);
+			if( out_array[led_nr].green  >=  color.green )  out_array[led_nr].green =  	out_array[led_nr].green - (out_array[led_nr].green - color.green);
+			else 											out_array[led_nr].green =  	out_array[led_nr].green + (out_array[led_nr].green - color.green);
+			if( out_array[led_nr].blue  >=  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue - (out_array[led_nr].blue - color.blue) ;
+			else 											out_array[led_nr].blue =  	out_array[led_nr].blue + (out_array[led_nr].blue - color.blue);
+
+			out_array[led_nr].red =  		constrain(out_array[led_nr].red  *  	color.red, 0,255) ;
+			out_array[led_nr].green =  		constrain(out_array[led_nr].green  *   	color.green, 0,255) ; 
+			out_array[led_nr].blue =  		constrain(out_array[led_nr].blue  *   	color.blue, 0,255) ; 
+			break;
+		case MIX_DARKEN:
+			if( out_array[led_nr].red  <  color.red )  		out_array[led_nr].red =  	out_array[led_nr].red ;
+			else 											out_array[led_nr].red =  	color.red;
+			if( out_array[led_nr].green  <  color.green )  	out_array[led_nr].green =  	out_array[led_nr].green ;
+			else 											out_array[led_nr].green =  	color.green;
+			if( out_array[led_nr].blue  <  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue ;
+			else 											out_array[led_nr].blue =  	color.blue;
+			break;
+		case MIX_LIGHTEN:
+			if( out_array[led_nr].red  >=  color.red )  	out_array[led_nr].red =  	out_array[led_nr].red ;
+			else 											out_array[led_nr].red =  	color.red;
+			if( out_array[led_nr].green  >=  color.green )  out_array[led_nr].green =  	out_array[led_nr].green ;
+			else 											out_array[led_nr].green =  	color.green;
+			if( out_array[led_nr].blue  >=  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue ;
+			else 											out_array[led_nr].blue =  	color.blue;
+			break;
 
 	}
 
