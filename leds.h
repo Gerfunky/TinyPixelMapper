@@ -6,6 +6,7 @@
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
 #endif
+#include "leds_palletes.h"
 
 //#include <FastLED.h>	
 	//#include <pixeltypes.h>
@@ -172,6 +173,8 @@
 		  uint8_t 	fx_fire_mix_mode;
 		  uint8_t 	fx_shim_mix_mode;
 		  uint8_t 	pal_pal;			// what pallete for pallete run
+		  uint8_t 	pal_fire;			// what pallete for pallete run
+		  uint8_t 	pal_shim;			// what pallete for pallete run
 	  };
 	  
 	  struct form_part_fx_shim_struct

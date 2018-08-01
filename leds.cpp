@@ -828,28 +828,7 @@ return random8();
 
 // palletes
 
-const TProgmemPalette16 myRedAndGreenPalette_p PROGMEM =
-{
-	CRGB::Red,
-	CRGB::Red, 
-	CRGB::Green,
-	CRGB::Red,
 
-	CRGB::Red,
-	CRGB::Green,
-	CRGB::Green,
-	CRGB::Red,
-
-	CRGB::Red,
-	CRGB::Red,
-	CRGB::Black,
-	CRGB::Red,
-
-	CRGB::Red,
-	CRGB::Green,
-	CRGB::Green,
-	CRGB::Red
-};
 
 
 void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
@@ -929,7 +908,7 @@ void LEDS_pal_reset_index()
 
 
 CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
-	boolean pal,
+	uint8_t pal,
 	uint16_t longIndex,
 	//uint8_t index,
 	uint8_t brightness = 255,
@@ -956,10 +935,37 @@ CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index
 	//debugMe(indexC1);
 	//delay(100);
 	//debugMe(indexC1);
+	CRGB color1;
+	CRGB color2;
 
-	CRGB color1 = ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
-	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2 * 16, brightness , blendType);
-	//nblend(CRGB& existing, const CRGB& overlay, fract8 amountOfOverlay)
+	switch(pal)
+	{
+		case 0: color1 = ColorFromPalette(LEDS_pal_cur[0], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[0], 			indexC2 * 16, brightness , blendType); break ;
+		case 1: color1 = ColorFromPalette(LEDS_pal_cur[1], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[1], 			indexC2 * 16, brightness , blendType); break;
+		//case 2: color1 = ColorFromPalette(LEDS_pal_cur[2], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[2], 			indexC2 * 16, brightness , blendType); break;
+		//case 3: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		//case 4: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		//case 19: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		case 20: color1 = ColorFromPalette(RainbowColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 21: color1 = ColorFromPalette(RainbowStripeColors_p, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowStripeColors_p, 	indexC2 * 16, brightness , blendType); break; 
+		case 22: color1 = ColorFromPalette(CloudColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(CloudColors_p, 			indexC2 * 16, brightness , blendType); break; 
+		case 23: color1 = ColorFromPalette(PartyColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(PartyColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 24: color1 = ColorFromPalette(OceanColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(OceanColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 25: color1 = ColorFromPalette(ForestColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(ForestColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 27: color1 = ColorFromPalette(LavaColors_p , 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LavaColors_p , 			indexC2 * 16, brightness , blendType); break ;
+		case 28: color1 = ColorFromPalette(pal_red_green, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_green, 			indexC2 * 16, brightness , blendType); break ;
+		case 29: color1 = ColorFromPalette(pal_red_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 30: color1 = ColorFromPalette(pal_green_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_green_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 31: color1 = ColorFromPalette(pal_black_white_Narrow, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_Narrow, 	indexC2 * 16, brightness , blendType); break ;
+		case 32: color1 = ColorFromPalette(pal_black_white_wide, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_wide, 	indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		
+		
+	}
+	
+	
 	CRGB outcolor = blend(color1, color2, longIndex);
 	//debugMe(String(String(color1.red) + "." + String(color1.green) + "." + String(color1.blue)));
 	if (blendType == NOBLEND)
@@ -1133,7 +1139,7 @@ void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0
 
 }
 
-void LEDS_long_pal_fill(CRGB *out_array,boolean targetPaletteX, boolean currentBlending, uint16_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror, boolean subtract , boolean mask, uint8_t pal_level, uint8_t mix_mode)
+void LEDS_long_pal_fill(CRGB *out_array,uint8_t targetPaletteX, boolean currentBlending, uint16_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror, boolean subtract , boolean mask, uint8_t pal_level, uint8_t mix_mode)
 {
 	// fill the pallete with colors
 //debugMe(mix_mode);
@@ -1264,7 +1270,7 @@ void LEDS_pal_mix_arrays(boolean Strip)
 
 		if (Strip) for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++)
 		{
-			if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true)) 		LEDS_long_pal_fill(leds, bitRead(strip_menu[z][_M_PALETTE_], i), bitRead(strip_menu[z][_M_BLEND_], i), part[i + (z * 8)].index_long, part[i + (z * 8)].index_add, part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_ONE_COLOR_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i),bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT], i),bitRead(strip_menu[z][_M_AUDIO_PAL_MASK], i), part[i + (z * 8)].pal_level , part[i + (z * 8)].pal_mix_mode );	
+			if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true)) 		LEDS_long_pal_fill(leds, part[i + (z * 8)].pal_pal , bitRead(strip_menu[z][_M_BLEND_], i), part[i + (z * 8)].index_long, part[i + (z * 8)].index_add, part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_ONE_COLOR_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i),bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT], i),bitRead(strip_menu[z][_M_AUDIO_PAL_MASK], i), part[i + (z * 8)].pal_level , part[i + (z * 8)].pal_mix_mode );	
 			//if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true)) 		LEDS_mix_onto_output(led_pal_strip_out, part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i),bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(strip_menu[z][_M_AUDIO_PAL_MASK], i),255 );
 																											//LEDS_mix_onto_output(led_pal_strip_out , part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, false, false, bitRead(strip_menu[zp][_M_AUDIO_SUB_FROM_FFT], i) , bitRead(strip_menu[zp][_M_AUDIO_PAL_MASK], i),  false,  0 );
 																											//LEDS_long_pal_fill(led_pal_strip_out, bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index_long, part[i + (zp * 8)].index_add,  bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
@@ -1276,7 +1282,7 @@ void LEDS_pal_mix_arrays(boolean Strip)
 			
 			//if ((form_part[i + (z * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_STRIP_], i) == true))  LEDS_mix_onto_output(led_pal_form_out,  form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i), form_part[i + (z * 8)].pal_level);
 																											//LEDS_mix_onto_output(led_pal_form_out , form_part[i + (zf * 8)].start_led, part[i + (zf * 8)].nr_leds, false, false, bitRead(form_menu[zf][_M_AUDIO_SUB_FROM_FFT], i) , bitRead(form_menu[zf][_M_AUDIO_PAL_MASK], i),  false,  0 );
-			if ((form_part[i + (z  * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_STRIP_], i) == true)) LEDS_long_pal_fill(leds, bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_BLEND_], i), form_part[i + (z * 8)].indexLong, form_part[i + (z * 8)].index_add, form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i), form_part[i + (z * 8)].pal_level, form_part[i + (z * 8)].pal_mix_mode  );
+			if ((form_part[i + (z  * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_STRIP_], i) == true)) LEDS_long_pal_fill(leds, form_part[i + (z * 8)].pal_pal, bitRead(form_menu[z][_M_BLEND_], i), form_part[i + (z * 8)].indexLong, form_part[i + (z * 8)].index_add, form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i), form_part[i + (z * 8)].pal_level, form_part[i + (z * 8)].pal_mix_mode  );
 			
 		}
 	}
@@ -1373,6 +1379,8 @@ boolean LEDS_pal_check_bit()
 void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {	// process the ARTNET information and send it to the leds
 
+	debugMe("in artnet uni:" + String(universe));
+	
 	if ((universe >= artnet_cfg.startU) && (universe < artnet_cfg.startU + artnet_cfg.numU))
 	{
 		//FastLED.show();
@@ -1710,7 +1718,7 @@ void LEDS_FX_shimmer_mix()
 			if(bitRead(form_menu[z][_M_FX1_ON], i ))
 			{
 
-				if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_FX_SHIM_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  );   }
+				if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  form_part[i + (z * 8)].pal_shim, bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  );   }
 			}
 		}
 	}
@@ -1728,7 +1736,7 @@ void LEDS_FX_fire_mix()
 			if(bitRead(form_menu[z][_M_FX_LAYERS_ON], i ))
 			{
 
-				if ( (bitRead(form_menu[z][_M_FIRE_], i) == true)	)   { Fire2012WithPalette(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_FIRE_REV], i), bitRead(form_menu[z][_M_FIRE_PAL], i), bitRead(form_menu[z][_M_FIRE_MIRROR], i), form_part[i + (z * 8)].fire_level ,bitRead(form_menu[z][_M_FIRE_SUBTRACT ], i),bitRead(form_menu[z][_M_FIRE_MASK], i),form_part[i + (z * 8)].fx_fire_mix_mode);   }
+				if ( (bitRead(form_menu[z][_M_FIRE_], i) == true)	)   { Fire2012WithPalette(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_FIRE_REV], i), form_part[i + (z * 8)].pal_fire, bitRead(form_menu[z][_M_FIRE_MIRROR], i), form_part[i + (z * 8)].fire_level ,bitRead(form_menu[z][_M_FIRE_SUBTRACT ], i),bitRead(form_menu[z][_M_FIRE_MASK], i),form_part[i + (z * 8)].fx_fire_mix_mode);   }
 			}
 		}
 	}
@@ -2239,8 +2247,8 @@ void LEDS_setup()
 		LEDS_pal_work[i] = &LEDS_pal_cur[i];
 #endif
 	}
-	LEDS_pal_cur[0] = myRedAndGreenPalette_p;
-	LEDS_pal_cur[1] = myRedAndGreenPalette_p;
+	LEDS_pal_cur[0] = pal_red_green;
+	LEDS_pal_cur[1] = pal_red_green;
 
 
 	//led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
@@ -2400,10 +2408,13 @@ void LEDS_loop()
 
 
 		}
-	}
 
 
 	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) ) LEDS_seqencer_advance();
+	}
+
+
+	
 	
 
 
