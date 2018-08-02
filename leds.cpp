@@ -374,8 +374,26 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 // ************* FUNCTIONS
 
 
+CRGB LEDS_get_color_shortindex(uint8_t pal, uint16_t  index, uint8_t level , boolean blend)
+{
+	CRGB color;
 
-// END Fire
+		TBlendType currentBlendingTB;
+		if (get_bool(BLEND_INVERT) == true)
+				blend = !blend;
+			if (blend == true)
+				currentBlendingTB = LINEARBLEND;
+			else
+				currentBlendingTB = NOBLEND;
+
+
+
+}
+
+
+
+
+
 
 void  LEDS_setall_color(uint8_t color = 0) {
 
@@ -637,7 +655,7 @@ void LEDS_G_FX1Routing()				// Chcek wwhat effect bits are set and do it
 
 														
 					if ((bitRead(form_menu[z][_M_FX_3_SIN], i) == true) 
-					|| (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		
+					//|| (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		
 
 					|| (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)        
 					|| (bitRead(form_menu[z][_M_AUDIO_FX6], i) == true)        
@@ -651,7 +669,7 @@ void LEDS_G_FX1Routing()				// Chcek wwhat effect bits are set and do it
 					
 					|| (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)    
 
-					|| (bitRead(form_menu[z][_M_FIRE_], i) == true)	
+					//|| (bitRead(form_menu[z][_M_FIRE_], i) == true)	
 					)   
 					 { trigger = true;   }
 					
@@ -700,7 +718,7 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 					if (bitRead(form_menu[z][_M_FX_3_SIN], i) == true)         { FX_three_sin(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SIN_PAL], i), form_fx_test.val_0) ; trigger = true ;  }
 					//if (bitRead(form_menu[z][_M_FX_2_SIN], i) == true)         { FX_three_sin(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SIN_PAL], i), form_fx_test.val_0) ; trigger = true ;  }
 
-					if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_FX_SHIM_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  ); trigger = true ;  }
+					//if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_FX_SHIM_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  ); trigger = true ;  }
 
 					if (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)         { noise16_2_pallete(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
 					if (bitRead(form_menu[z][_M_AUDIO_FX6], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, 			form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
@@ -906,6 +924,50 @@ void LEDS_pal_reset_index()
 		}
 }
 
+CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , boolean blend)
+{
+	CRGB color;
+
+		TBlendType currentBlendingTB;
+		if (get_bool(BLEND_INVERT) == true)
+				blend = !blend;
+			if (blend == true)
+				currentBlendingTB = LINEARBLEND;
+			else
+				currentBlendingTB = NOBLEND;
+
+
+
+	switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], 		index,level, currentBlendingTB);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], 		index,level, currentBlendingTB);	break;
+				case 20: color = ColorFromPalette(RainbowColors_p, 		index,level, currentBlendingTB);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, index,level, currentBlendingTB);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, 		index,level, currentBlendingTB);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, 		index,level, currentBlendingTB);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, 		index,level, currentBlendingTB);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, 		index,level, currentBlendingTB);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, 		index,level, currentBlendingTB);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, 		index,level, currentBlendingTB);	break;
+				case 28: color = ColorFromPalette(pal_red_green, 		index,level, currentBlendingTB);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, 		index,level, currentBlendingTB);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, 		index,level, currentBlendingTB);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, index,level, currentBlendingTB);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, index,level, currentBlendingTB);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], index,level, LINEARBLEND);break;
+			}
+
+
+
+
+
+
+	return color;
+
+
+}
 
 CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 	uint8_t pal,
@@ -977,6 +1039,8 @@ CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index
 
 }
 
+
+/*
 CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend)
 {
     TBlendType currentBlendingTB;
@@ -992,7 +1056,7 @@ CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean b
 	return color;
 
 }
-
+*/
 
 
 
@@ -1380,7 +1444,7 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 {	// process the ARTNET information and send it to the leds
 
 	debugMe("in artnet uni:" + String(universe));
-	
+
 	if ((universe >= artnet_cfg.startU) && (universe < artnet_cfg.startU + artnet_cfg.numU))
 	{
 		//FastLED.show();
@@ -1715,10 +1779,10 @@ void LEDS_FX_shimmer_mix()
 
 		for (byte i = 0; i < 8; i++)
 		{
-			if(bitRead(form_menu[z][_M_FX1_ON], i ))
+			if(bitRead(form_menu[z][_M_FX_LAYERS_ON], i ))
 			{
 
-				if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  form_part[i + (z * 8)].pal_shim, bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  );   }
+				if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  form_part[i + (z * 8)].pal_shim, form_part[i + (z * 8)].fx_shim_mix_mode, form_part[i + (z * 8)].FX_shim_level, bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  );   }
 			}
 		}
 	}
@@ -1743,6 +1807,8 @@ void LEDS_FX_fire_mix()
 
 
 }
+
+
 
 void LEDS_mix_FFT_onto_output(CRGB *source_leds, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror, boolean subrtact_mode  , boolean mask, boolean onecolor , uint16_t fft_offset = 0 , uint8_t mix_mode = 0 , uint8_t fft_level = 255)
 {
@@ -2346,6 +2412,7 @@ void LEDS_loop()
 						case 4: LEDS_pal_mix_arrays(true); 	break; 
 						case 5: LEDS_G_FX1Routing();		break;
 						case 6: LEDS_FX_fire_mix();			break;
+						case 7: LEDS_FX_shimmer_mix();		break;
 
 					}
 

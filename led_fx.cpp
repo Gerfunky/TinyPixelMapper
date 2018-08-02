@@ -10,10 +10,11 @@ extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array.
 
 extern CRGB ColorFrom_LONG_Palette(uint8_t pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 //extern CRGB ColorFromPalette( const TProgmemRGBPalette32& pal, uint8_t index, uint8_t brightness, TBlendType blendType);
-extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
+//extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
 extern void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0);
 
-
+extern CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , boolean blend);
+//extern CRGB LEDS_get_color_longindex(uint8_t pal, uint16_t index, uint8_t level , boolean blend);
 
 
 
@@ -159,6 +160,8 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, ui
 			//CRGB color = HeatColor(heat[j]);
 			CRGB color;
 
+			color = ColorFrom_SHORT_Palette(pal,colorindex,level,LINEARBLEND); 
+			/*
 			switch(pal)
 			{
 				case 0: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);	break;
@@ -179,7 +182,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, ui
 
 				default: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);break;
 			}
-
+			*/
 
 			
 			int pixelnumber;
@@ -244,6 +247,10 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, ui
 			byte colorindex = scale8(heat[j], 240);
 			CRGB color;
 			
+
+
+			color = ColorFrom_SHORT_Palette(pal,colorindex,level,LINEARBLEND); 
+			/*
 			switch(pal)
 			{
 				case 0: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);	break;
@@ -263,7 +270,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, ui
 				case 32: color = ColorFromPalette(pal_black_white_wide, colorindex,level, LINEARBLEND);	break;
 
 				default: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);break;
-			}
+			} */
 			
 			
 			int pixelnumber;
@@ -417,7 +424,7 @@ void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *numb
 
 
 
-void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, boolean mirror, boolean blend, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
+void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, uint8_t mix_mode,uint8_t level, boolean mirror, boolean blend, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
 {          // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
 
    static int16_t dist = random8();
@@ -432,21 +439,48 @@ void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, boolean 
 				mirror_add = 1; // dosmething
 			}
 	}
-		TBlendType currentBlendingTB;
+	/*	TBlendType currentBlendingTB;
 		if (get_bool(BLEND_INVERT) == true)
 				blend = !blend;
 			if (blend == true)
 				currentBlendingTB = LINEARBLEND;
 			else
 				currentBlendingTB = NOBLEND;
+*/
 
-
-
+	CRGB color;
 
   for(int i = StartLed ; i < StartLed + (NrLeds/(1+1*mirror_add)) ; i++)    // Just ONE loop to fill up the LED array as all of the pixels change.
   {                                     
     uint8_t index = inoise8(i*xscale, dist+i*yscale) % 255; 			 // Get a value from the noise function. I'm using both x and y axis. 
-    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+    
+	color = ColorFrom_SHORT_Palette(pal,index,level,blend);
+	
+	/*
+	switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], 		index,level, currentBlendingTB);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], 		index,level, currentBlendingTB);	break;
+				case 20: color = ColorFromPalette(RainbowColors_p, 		index,level, currentBlendingTB);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, index,level, currentBlendingTB);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, 		index,level, currentBlendingTB);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, 		index,level, currentBlendingTB);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, 		index,level, currentBlendingTB);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, 		index,level, currentBlendingTB);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, 		index,level, currentBlendingTB);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, 		index,level, currentBlendingTB);	break;
+				case 28: color = ColorFromPalette(pal_red_green, 		index,level, currentBlendingTB);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, 		index,level, currentBlendingTB);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, 		index,level, currentBlendingTB);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, index,level, currentBlendingTB);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, index,level, currentBlendingTB);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], index,level, LINEARBLEND);break;
+			}
+	*/
+	
+	LEDS_mix_led(leds, i, color, mix_mode);
+	//led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
   
   //dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
@@ -629,7 +663,7 @@ void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean m
  
     uint8_t tmp = sin8(distance*i + wave1) + sin8(distance*i + wave2) + sin8(distance*i + wave3);
 
-    led_FX_out[i] = myColorFromPalette(pallete, tmp, 255,blend);
+    led_FX_out[i] = ColorFrom_SHORT_Palette(pallete, tmp, 255,blend);
     
   }
  //m++;

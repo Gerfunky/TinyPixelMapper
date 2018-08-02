@@ -3868,6 +3868,49 @@ void osc_StC_menu_form_fft_adv_ref()
 		}		
 }
 
+void osc_StC_menu_form_fx_shim_adv_ref()
+{
+	uint8_t bit = 0;	
+	for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+		{
+			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
+			{
+				uint8_t real_formNr = formNr;
+				 bit = 0;
+				while (real_formNr >= 8 )
+				{
+					bit++;
+					real_formNr = real_formNr - 8;	
+
+				}
+		
+				switch(z)
+				{
+						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIMMER], 	real_formNr)));  		break;
+						case _M_FX_SHIM_BLEND: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimblend",formNr,		(bitRead(form_menu[bit][_M_FX_SHIM_BLEND], 	real_formNr)));  		break;
+
+						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu[bit][_M_FX_LAYERS_ON], 		real_formNr)));  		break;
+				}
+
+
+
+	
+			}
+
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_part[formNr].FX_shim_level );
+			osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_part[formNr].fx_shim_xscale );
+			osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_part[formNr].fx_shim_yscale );
+			osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_part[formNr].fx_shim_beater );
+
+			osc_queu_MSG_int("/ostc/form/mix/shi/" + String(formNr), form_part[formNr].fx_shim_mix_mode );
+			osc_queu_MSG_int("/ostc/form/shi/pal/" + String(formNr), form_part[formNr].pal_shim );
+		
+		}
+
+}
+
+
+
 void osc_StC_menu_form_fx_fire_adv_ref()
 {
 uint8_t bit = 0;	
@@ -3887,21 +3930,20 @@ uint8_t bit = 0;
 					switch(z)
 					{
 						case _M_FIRE_: 						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu[bit][_M_FIRE_], 			real_formNr)));  		break;
-						case _M_FIRE_PAL: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firepal" , formNr,		(bitRead(form_menu[bit][_M_FIRE_PAL], 		real_formNr)));  		break;
-						//case _M_FIRE_SUBTRACT: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/sub" , formNr,	(bitRead(form_menu[bit][_M_FIRE_SUBTRACT], 	real_formNr)));  		break;
-						//case _M_FIRE_MASK: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/mask" , formNr,	(bitRead(form_menu[bit][_M_FIRE_MASK], 		real_formNr)));  		break;
 						case _M_FIRE_MIRROR: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/mirr" , formNr,	(bitRead(form_menu[bit][_M_FIRE_MIRROR], 	real_formNr)));  		break;
 						case _M_FIRE_REV: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/rev" , formNr,	(bitRead(form_menu[bit][_M_FIRE_REV], 		real_formNr)));  		break;
 						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu[bit][_M_FX_LAYERS_ON], 		real_formNr)));  		break;
 					}
 					
 			}
+			
 			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_part[formNr].fire_level );
 			osc_queu_MSG_int("/ostc/form/mix/fir/" + String(formNr), form_part[formNr].fx_fire_mix_mode );
 			osc_queu_MSG_int("/ostc/form/fir/pal/" + String(formNr), form_part[formNr].pal_fire );
 		}
 
-
+		osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
+		osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
 }
 
 
@@ -3939,11 +3981,8 @@ void osc_StC_menu_form_fx_adv_ref()
 						case _M_JUGGLE_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/jug" , 	formNr,		(bitRead(form_menu[bit][_M_JUGGLE_], 		real_formNr)));  		break;
 						case _M_AUDIO_DOT_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/audot" , 	formNr,		(bitRead(form_menu[bit][_M_AUDIO_DOT_], 	real_formNr)));  		break;
 
-						case _M_FX_3_SIN: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/3sin" , 	formNr,		(bitRead(form_menu[bit][_M_FX_3_SIN], 		real_formNr)));  		break;
-						case _M_FX_SIN_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/sinpal" , 	formNr,		(bitRead(form_menu[bit][_M_FX_SIN_PAL], 	real_formNr)));  		break;
-						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIMMER], 	real_formNr)));  		break;
-						case _M_FX_SHIM_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/palshim" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIM_PAL], 	real_formNr)));  		break;
-						case _M_FX_SHIM_BLEND: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimblend",formNr,		(bitRead(form_menu[bit][_M_FX_SHIM_BLEND], 	real_formNr)));  		break;
+
+						
 
 					} // endd switch
 			} // end NR form options
@@ -3956,12 +3995,11 @@ void osc_StC_menu_form_fx_adv_ref()
 		osc_queu_MSG_int("/ostc/form/fx/dotnum/" + String(formNr), form_part[formNr].juggle_nr_dots );
 		osc_queu_MSG_int("/ostc/form/fx/dotbpm/" + String(formNr), form_part[formNr].juggle_speed );
 
-		osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_part[formNr].fx_shim_xscale );
-		osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_part[formNr].fx_shim_yscale );
-		osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_part[formNr].fx_shim_beater );
+	
 		osc_queu_MSG_int("/ostc/form/mix/fx1/" + String(formNr), form_part[formNr].fx1_mix_mode );
 
 		}		
+
 }
 
 void osc_StC_menu_form_pal_ref()
@@ -4038,6 +4076,54 @@ void osc_StC_menu_form_pal_adv_ref()
 		}		
 }
 
+void osc_StC_menu_form_FX_layers_ref()
+{
+	//debugMe("inFormRef ostc");
+	
+		
+		uint8_t bit = 0;
+
+		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+		{
+			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
+			{
+				uint8_t real_formNr = formNr;
+				 bit = 0;
+				while (real_formNr >= 8 )
+				{
+					bit++;
+					real_formNr = real_formNr - 8;	
+
+				}
+					switch(z)
+					{
+
+						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu[bit][_M_FX_LAYERS_ON], 		real_formNr)));  		break;
+
+						case _M_FIRE_: 						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu[bit][_M_FIRE_], 			real_formNr)));  		break;
+
+						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu[bit][_M_FX_SHIMMER], 	real_formNr)));  		break;
+
+						case _M_FX_3_SIN: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/3sin" , 	formNr,		(bitRead(form_menu[bit][_M_FX_3_SIN], 		real_formNr)));  		break;
+						case _M_FX_SIN_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/sinpal" , 	formNr,		(bitRead(form_menu[bit][_M_FX_SIN_PAL], 	real_formNr)));  		break;
+						
+
+					} // endd switch
+			} // end NR form options
+
+
+		
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_part[formNr].FX_shim_level );
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_part[formNr].fire_level );
+		
+		
+
+		}		
+		osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
+		osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
+}
+
+
 void osc_StC_menu_form_ref()
 {
 	//debugMe("inFormRef ostc");
@@ -4073,6 +4159,7 @@ void osc_StC_menu_form_ref()
 		//osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_part[formNr].FX_level );
 		osc_queu_MSG_SEL_VAL("/ostc/form/fft/level",formNr, form_part[formNr].fft_level );
 		osc_queu_MSG_SEL_VAL("/ostc/form/pal/level",formNr, form_part[formNr].pal_level );
+		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_part[formNr].FX_level );
 
 		
 		
@@ -4111,7 +4198,7 @@ void osc_StC_menu_strip_leds_ref()
 boolean  osc_StC_menu_strip_ref(uint8_t page)
 {
 	//debugMe("inFormRef ostc");
-	if ((page+1) * 16 >= NR_STRIPS) return false;
+	if ((page+1) * 16 > NR_STRIPS) return false;
 		
 		uint8_t bit = 0;
 
@@ -4320,8 +4407,7 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
 
 	
-	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
-	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
+	
 
 
 	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
@@ -4475,9 +4561,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		{
 			switch(msg.getInt(0))
 			{
-				case 0: osc_StC_menu_form_ref();
-				case 1: osc_StC_menu_form_fx_adv_ref();
-				case 2: osc_StC_menu_form_fx_fire_adv_ref();
+				case 0: osc_StC_menu_form_ref(); break;
+				case 1: osc_StC_menu_form_fx_adv_ref(); break; 
+				case 2: osc_StC_menu_form_FX_layers_ref();break;
 
 			}
 			
@@ -4493,6 +4579,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.fullMatch("/fft/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref();}
 		else if  	(msg.fullMatch("/led/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_led_adv_ref();}
 		else if  	(msg.fullMatch("/fx/fire/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref();}
+		
 
 		else if		(msg.fullMatch("/pal/run",addrOffset))			{ bitWrite(form_menu[bit_int][_M_STRIP_], form_nr, 		bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/onecolor",addrOffset))		{ bitWrite(form_menu[bit_int][_M_ONE_COLOR_], form_nr, 	bool(msg.getInt(1)));  ;}
@@ -4541,6 +4628,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if		(msg.fullMatch("/fx/shimmer",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIMMER], form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/palshim",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_PAL], form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/shimblend",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_BLEND], form_nr,	bool(msg.getInt(1)));  ;}
+		else if  	(msg.fullMatch("/fx/shim/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_shim_adv_ref();}
+		else if		(msg.fullMatch("/fx/shim/level",addrOffset))		{  form_part[orig_form_nr].FX_shim_level  =  uint8_t(msg.getInt(1))  ;}
+		
 
 
 		else if		(msg.fullMatch("/fx/3sin",addrOffset))				{ bitWrite(form_menu[bit_int][_M_FX_3_SIN], form_nr,	bool(msg.getInt(1)));  ;}
@@ -4672,7 +4762,7 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 	uint8_t strip_nr =  orig_strip_nr;
 	uint8_t bit_int = 0;
 
-	if		(msg.fullMatch("/menu/ref",addrOffset))	 osc_StC_menu_strip_ref(uint8_t(msg.getInt(0)));					
+					
 
 
 	while (strip_nr >=8)
@@ -4680,8 +4770,8 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 		bit_int++;
 		strip_nr = strip_nr-8;
 	}
-	
-		if 			(msg.fullMatch("/pal/ref",addrOffset))			{ osc_StC_menu_strip_pal_ref();}
+		if			(msg.fullMatch("/menu/ref",addrOffset))			{ osc_StC_menu_strip_ref(uint8_t(msg.getInt(0)));}
+		else  if 	(msg.fullMatch("/pal/ref",addrOffset))			{ osc_StC_menu_strip_pal_ref();}
 		else if 	(msg.fullMatch("/leds/ref",addrOffset))			{ osc_StC_menu_strip_leds_ref();}
 		else if 	(msg.fullMatch("/pal/run",addrOffset))			{ bitWrite(strip_menu[bit_int][_M_STRIP_], strip_nr, 		bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/pal/onecolor",addrOffset))		{ bitWrite(strip_menu[bit_int][_M_ONE_COLOR_], strip_nr, 	bool(msg.getInt(1)));  ;}
