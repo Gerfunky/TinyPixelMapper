@@ -42,6 +42,10 @@ static TaskHandle_t FastLEDshowTaskHandle = 0;
 static TaskHandle_t userTaskHandle = 0;
 
 
+//void LEDS_mix_onto_output(CRGB *source_leds, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror, boolean subrtact_mode , boolean mask , boolean onecolor , uint16_t fft_offset  );
+void LEDS_mix_onto_output(CRGB *in_array, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror , boolean subrtact_mode  , boolean mask, uint8_t fx_level , uint8_t mix_mode);
+
+
 /** show() for ESP32
  *  Call this function instead of FastLED.show(). It signals core 0 to issue a show, 
  *  then waits for a notification that it is done.
@@ -159,8 +163,24 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 	//CRGBSet leds_p(leds, NUM_LEDS); led_cfg.NrLeds
 	CRGBArray<MAX_NUM_LEDS> leds_FFT_history;
 	CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
-	
+	//CRGBArray<MAX_NUM_LEDS> led_pal_form_out;	// output from pallete
+	//CRGBArray<MAX_NUM_LEDS> led_pal_strip_out;
 
+
+
+			uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0};
+
+
+			/*			0 = none
+						1 = Form FFT
+						2 = Strip FFT
+						3 = Form pallete
+						4 = Strip pallete
+						5 = FX1
+						6 = Fire
+						7 = Shimmer
+						
+			*/
 
 	byte  copy_leds_mode[NR_COPY_LED_BYTES] = { 0,0 };
 	led_Copy_Struct copy_leds[NR_COPY_STRIPS] = 
@@ -196,38 +216,38 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
 
 Strip_FL_Struct part[NR_STRIPS] = {						// Holds the  Strip settings
-	{ 0,  0,  0,  1,  0 , 1 ,  0,  0}  //0
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}	//9
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}	//19
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}	//29
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
-	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0}
+	{ 0,  0,  0,  1,  0 , 1 ,  0,  0,255,255}  //0
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}	//9
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}	//19
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}	//29
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
+	,{ 0,  0,  0 , 1,  0 , 1 ,  0,  0,255,255}
 };
 
 
@@ -235,30 +255,30 @@ struct form_fx_test_val form_fx_test = {0,0,0};
 
 struct form_Part_FL_Struct form_part[NR_FORM_PARTS] =					// Holds the Form settings
 {
-	{ 0, 1, 0, NUM_LEDS, 0, 0, 0, 0, 0, 0,0, 1 ,  0,255,0 , 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2} //7
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2}
-	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2} //15 
+	{ 0, 1, 0, NUM_LEDS, 0, 0, 0, 0, 0, 0,0, 1 ,  0,255,0 , 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255} //7
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255}
+	,{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0 ,1 ,  0,255,0, 2, 2, 2,255,255,255,255} //15 
 };
 
 byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_] =				// Strip Selection menu what efferct on/off/fft ....
 {
-	{ 0,0,0,0,0,0,0,0,0,0 }
-	,{ 0,0,0,0,0,0,0,0,0,0 }
-	,{ 0,0,0,0,0,0,0,0,0,0 }
-	,{ 0,0,0,0,0,0,0,0,0,0 }
+	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 };
 
 
@@ -267,8 +287,8 @@ uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_] = { { 0,0 } 
 
 byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection menu
 {
-	 { 0,0,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0 }
-	,{ 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0 }
+	 { 0,0,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 ,0,0 }
+	,{ 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 ,0,0 }
 };
 
 
@@ -355,8 +375,26 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 // ************* FUNCTIONS
 
 
+CRGB LEDS_get_color_shortindex(uint8_t pal, uint16_t  index, uint8_t level , boolean blend)
+{
+	CRGB color;
 
-// END Fire
+		TBlendType currentBlendingTB;
+		if (get_bool(BLEND_INVERT) == true)
+				blend = !blend;
+			if (blend == true)
+				currentBlendingTB = LINEARBLEND;
+			else
+				currentBlendingTB = NOBLEND;
+
+
+
+}
+
+
+
+
+
 
 void  LEDS_setall_color(uint8_t color = 0) {
 
@@ -512,6 +550,7 @@ void LEDS_FX_run_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, boo
 				{
 						
 
+					//LEDS_mix_led(out_array, led_num, color, mix_mode);
 
 					if(!mask)
 					{
@@ -595,13 +634,71 @@ void LEDS_FX_run_mix(uint16_t start_led, uint16_t nr_leds, boolean reversed, boo
 		}
 		*/
 	
+	} 
+}
+
+void LEDS_G_FX1Routing()				// Chcek wwhat effect bits are set and do it
+{	// main routing function for effects
+	// read the bit from the menu and run if active
+
+	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
+	{
+
+		for (byte i = 0; i < 8; i++)
+		{
+			if(bitRead(form_menu[z][_M_FX1_ON], i ) == true)
+			{
+				if (form_part[i + (z * 8)].nr_leds != 0)  // only run if we actualy have leds to do 
+				{										 // fade first so that we only fade the new effects on next go
+					boolean trigger = false;
+				
+					
+
+														
+					if ((bitRead(form_menu[z][_M_FX_3_SIN], i) == true) 
+					//|| (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		
+
+					|| (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)        
+					|| (bitRead(form_menu[z][_M_AUDIO_FX6], i) == true)        
+					|| (bitRead(form_menu[z][_M_AUDIO_FX5], i) == true) 	
+
+					|| (bitRead(form_menu[z][_M_GLITTER_], i) == true)       
+					|| (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)  
+					
+					|| (bitRead(form_menu[z][_M_JUGGLE_], i) == true)        
+					|| (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)       
+					
+					|| (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)    
+
+					//|| (bitRead(form_menu[z][_M_FIRE_], i) == true)	
+					)   
+					 { trigger = true;   }
+					
+					if(trigger)
+					{
+							
+							//LEDS_FX_run_mix(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),   (bitRead(form_menu[z][_M_STRIP_], i) == true || bitRead(form_menu[z][_M_AUDIO_], i) == true ) ,bitRead(form_menu[z][_M_FX_SUBTRACT], i), bitRead(form_menu[z][_M_FX_MASK], i),form_part[i + (z * 8)].FX_level );
+							LEDS_mix_onto_output(led_FX_out,form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_FX_REVERSED], i), bitRead(form_menu[z][_M_FX_MIRROR], i),bitRead(form_menu[z][_M_FX_SUBTRACT], i), bitRead(form_menu[z][_M_FX_MASK], i),form_part[i + (z * 8)].FX_level , form_part[i + (z * 8)].fx1_mix_mode);
+							//LEDS_mix_onto_output(CRGB *in_array, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror , boolean subrtact_mode = false , boolean mask= true, uint8_t fx_level = 255 )
+							//LEDS_mix_onto_output(led_FX_out, form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SUBTRACT], i), bitRead(form_menu[z][_M_FX_MASK], i),false , 0);//, form_part[i + (z * 8)].FX_level );
+							//LEDS_mix_onto_output(leds_FFT_history, form_part[i + (z * 8)].start_led,form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), bitRead(form_menu[z][_M_AUDIO_MIRROR],i ) , bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i) , bitRead(form_menu[z][_M_AUDIO_ONECOLOR] , i) , form_part[i + (z * 8)].fft_offset );
+					}
+					
+				
+
+				}
+			}
+		
+
+		}
 	}
+
 }
 
 
 
 
-void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do it
+void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 {	// main routing function for effects
 	// read the bit from the menu and run if active
 
@@ -620,7 +717,9 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 
 														
 					if (bitRead(form_menu[z][_M_FX_3_SIN], i) == true)         { FX_three_sin(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SIN_PAL], i), form_fx_test.val_0) ; trigger = true ;  }
-					if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_FX_SHIM_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  ); trigger = true ;  }
+					//if (bitRead(form_menu[z][_M_FX_2_SIN], i) == true)         { FX_three_sin(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SIN_PAL], i), form_fx_test.val_0) ; trigger = true ;  }
+
+					//if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_FX_SHIM_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  ); trigger = true ;  }
 
 					if (bitRead(form_menu[z][_M_AUDIO_FX4], i) == true)         { noise16_2_pallete(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
 					if (bitRead(form_menu[z][_M_AUDIO_FX6], i) == true)         { noise16_2(form_part[i + (z * 8)].start_led, 			form_part[i + (z * 8)].nr_leds,  bitRead(form_menu[z][_M_PALETTE_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_BLEND_], i)); trigger = true ;  }
@@ -630,19 +729,19 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 					if (bitRead(form_menu[z][_M_RBOW_GLITTER_], i) == true)   { if(!bitRead(form_menu[z][_M_GLITTER_FROM_FFT_DATA1], i)) LEDS_G_E_addGlitterRainbow(form_part[i + (z * 8)].glitter_value, 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); else LEDS_G_E_addGlitterRainbow( fft_color_result_data[0] , 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds); trigger = true;}
 					
 					if (bitRead(form_menu[z][_M_JUGGLE_], i) == true)         { LEDS_G_E_juggle(form_part[i + (z * 8)].juggle_nr_dots, 	&form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i)); trigger = true;}
-					if (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)        { LEDS_G_E_juggle2(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));trigger = true; }
+					if (bitRead(form_menu[z][_M_SAW_DOT_], i) == true)        { LEDS_G_E_saw(form_part[i + (z * 8)].juggle_nr_dots, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, &form_part[i + (z * 8)].juggle_speed, bitRead(form_menu[z][_M_REVERSED_], i));trigger = true; }
 					
 					if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)     { LEDS_FFT_running_dot(GlobalColor_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].juggle_nr_dots); trigger = true; }
 
-					if ((form_part[i + (z * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_FIRE_], i) == true)	)   { Fire2012WithPalette(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_FIRE_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i)); trigger = true;   }
+					//if ( (bitRead(form_menu[z][_M_FIRE_], i) == true)	)   { Fire2012WithPalette(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, false, bitRead(form_menu[z][_M_FIRE_PAL], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i)); trigger = true;   }
 					
-					if(trigger)
+					/*if(trigger)
 					{
 							
 							LEDS_FX_run_mix(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),   (bitRead(form_menu[z][_M_STRIP_], i) == true || bitRead(form_menu[z][_M_AUDIO_], i) == true ) ,bitRead(form_menu[z][_M_FX_SUBTRACT], i), bitRead(form_menu[z][_M_FX_MASK], i),form_part[i + (z * 8)].FX_level );
 
 						if (bitRead(form_menu[z][_M_MIRROR_OUT_], i) == true) 	LEDS_Copy_strip((form_part[i + (z * 8)].start_led  + form_part[i + (z * 8)].nr_leds / 2) , -(form_part[i + (z * 8)].nr_leds ) / 2, form_part[i + (z * 8)].start_led);  
-					}
+					}*/
 					
 				
 
@@ -659,12 +758,7 @@ void LEDS_G_form_effectsRouting()				// Chcek wwhat effect bits are set and do i
 
 		}
 	}
-	for (byte i = 0; i < 8; i++)
-	{
-		if (bitRead(copy_leds_mode[0], i) == true) LEDS_Copy_strip(copy_leds[i].start_led, copy_leds[i].nr_leds, copy_leds[i].Ref_LED);
-		if (bitRead(copy_leds_mode[1], i) == true) LEDS_Copy_strip(copy_leds[i + 8].start_led, copy_leds[i + 8].nr_leds, copy_leds[i + 8].Ref_LED);
 
-	} 
 	//for (byte i = 0; i < NR_FORM_PARTS; i++) 
 	//	if (form_part[i].rotate != 0) rotate_form(form_part[i].start_led  , form_part[i].nr_leds , form_part[i].rotate);
 
@@ -677,9 +771,7 @@ void LEDS_G_pre_show_processing()
 {	// the leds pre show prcessing 
 	// run the effects and set the brightness.
 
-	//LEDS_G_master_rgb_faders();
-    LEDS_G_form_effectsRouting();
-	//LED_G_bit_run();
+
 
 	if(led_cfg.ledMode == 0 || led_cfg.ledMode == 2 || led_cfg.ledMode == 4 )
 	{
@@ -755,46 +847,49 @@ return random8();
 
 // palletes
 
-const TProgmemPalette16 myRedAndGreenPalette_p PROGMEM =
-{
-	CRGB::Red,
-	CRGB::Red, 
-	CRGB::Green,
-	CRGB::Red,
 
-	CRGB::Red,
-	CRGB::Green,
-	CRGB::Green,
-	CRGB::Red,
-
-	CRGB::Red,
-	CRGB::Red,
-	CRGB::Black,
-	CRGB::Red,
-
-	CRGB::Red,
-	CRGB::Green,
-	CRGB::Green,
-	CRGB::Red
-};
 
 
 void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
 {
 	// load a pallete from the default (FastLed)
 	debugMe("Load pal" + String(pal_menu));
+	if (pal_no < NR_PALETTS && pal_menu < NR_PALETTS_SELECT )
 	switch (pal_menu)
 	{
-	case 0: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;	
-	case 1: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
-	case 2: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
-	case 3: LEDS_pal_cur[pal_no] = CloudColors_p; break;
-	case 4: LEDS_pal_cur[pal_no] = PartyColors_p; break;
-	case 5: LEDS_pal_cur[pal_no] = OceanColors_p; break;
-	case 6: LEDS_pal_cur[pal_no] = ForestColors_p; break;
-	case 7: LEDS_pal_cur[pal_no] = HeatColors_p; break;
-	case 8: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
-	case 9: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(0, 20, 255); } break;
+	case 0: LEDS_pal_cur[pal_no] = LEDS_pal_cur[0]; break;
+	case 1: LEDS_pal_cur[pal_no] = LEDS_pal_cur[1]; break;
+	case 2: LEDS_pal_cur[pal_no] = LEDS_pal_cur[2]; break;
+	case 3: LEDS_pal_cur[pal_no] = LEDS_pal_cur[3]; break;
+	case 4: LEDS_pal_cur[pal_no] = LEDS_pal_cur[4]; break;
+	case 5: LEDS_pal_cur[pal_no] = LEDS_pal_cur[5]; break;
+	case 6: LEDS_pal_cur[pal_no] = LEDS_pal_cur[6]; break;
+	case 7: LEDS_pal_cur[pal_no] = LEDS_pal_cur[7]; break;
+	case 8: LEDS_pal_cur[pal_no] = LEDS_pal_cur[8]; break;
+	case 9: LEDS_pal_cur[pal_no] = LEDS_pal_cur[9]; break;
+	case 10: LEDS_pal_cur[pal_no] = LEDS_pal_cur[10]; break;
+	case 11: LEDS_pal_cur[pal_no] = LEDS_pal_cur[11]; break;
+	case 12: LEDS_pal_cur[pal_no] = LEDS_pal_cur[12]; break;
+	case 13: LEDS_pal_cur[pal_no] = LEDS_pal_cur[13]; break;
+	case 14: LEDS_pal_cur[pal_no] = LEDS_pal_cur[14]; break;
+	case 15: LEDS_pal_cur[pal_no] = LEDS_pal_cur[15]; break;
+
+	case 19: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
+	case 20: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
+	case 21: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
+	case 22: LEDS_pal_cur[pal_no] = CloudColors_p; break;
+	case 23: LEDS_pal_cur[pal_no] = PartyColors_p; break;
+	case 24: LEDS_pal_cur[pal_no] = OceanColors_p; break;
+	case 25: LEDS_pal_cur[pal_no] = ForestColors_p; break;
+	case 26: LEDS_pal_cur[pal_no] = HeatColors_p; break;
+	case 27: LEDS_pal_cur[pal_no] = LavaColors_p; break;
+	case 28: LEDS_pal_cur[pal_no] = pal_red_green; break;
+	case 29: LEDS_pal_cur[pal_no] = pal_red_blue; break;
+	case 30: LEDS_pal_cur[pal_no] = pal_green_blue; break;
+	case 31: LEDS_pal_cur[pal_no] = pal_black_white_Narrow; break;
+	case 32: LEDS_pal_cur[pal_no] = pal_black_white_wide; break;
+	
+	
 	default: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
 		
 
@@ -854,9 +949,69 @@ void LEDS_pal_reset_index()
 		}
 }
 
+CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , boolean blend)
+{
+	CRGB color;
+
+		TBlendType currentBlendingTB;
+		if (get_bool(BLEND_INVERT) == true)
+				blend = !blend;
+			if (blend == true)
+				currentBlendingTB = LINEARBLEND;
+			else
+				currentBlendingTB = NOBLEND;
+
+
+
+	switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], 		index,level, currentBlendingTB);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], 		index,level, currentBlendingTB);	break;
+				case 2: color = ColorFromPalette(LEDS_pal_cur[2], 		index,level, currentBlendingTB);	break;
+				case 3: color = ColorFromPalette(LEDS_pal_cur[3], 		index,level, currentBlendingTB);	break;
+				case 4: color = ColorFromPalette(LEDS_pal_cur[4], 		index,level, currentBlendingTB);	break;
+				case 5: color = ColorFromPalette(LEDS_pal_cur[5], 		index,level, currentBlendingTB);	break;
+				case 6: color = ColorFromPalette(LEDS_pal_cur[6], 		index,level, currentBlendingTB);	break;
+				case 7: color = ColorFromPalette(LEDS_pal_cur[7], 		index,level, currentBlendingTB);	break;
+
+				case 8: color = ColorFromPalette(LEDS_pal_cur[8], 		index,level, currentBlendingTB);	break;
+				case 9: color = ColorFromPalette(LEDS_pal_cur[9], 		index,level, currentBlendingTB);	break;
+				case 10: color = ColorFromPalette(LEDS_pal_cur[10], 		index,level, currentBlendingTB);	break;
+				case 11: color = ColorFromPalette(LEDS_pal_cur[11], 		index,level, currentBlendingTB);	break;
+				case 12: color = ColorFromPalette(LEDS_pal_cur[12], 		index,level, currentBlendingTB);	break;
+				case 13: color = ColorFromPalette(LEDS_pal_cur[13], 		index,level, currentBlendingTB);	break;
+				case 14: color = ColorFromPalette(LEDS_pal_cur[14], 		index,level, currentBlendingTB);	break;
+				case 15: color = ColorFromPalette(LEDS_pal_cur[15], 		index,level, currentBlendingTB);	break;
+
+				case 20: color = ColorFromPalette(RainbowColors_p, 		index,level, currentBlendingTB);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, index,level, currentBlendingTB);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, 		index,level, currentBlendingTB);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, 		index,level, currentBlendingTB);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, 		index,level, currentBlendingTB);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, 		index,level, currentBlendingTB);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, 		index,level, currentBlendingTB);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, 		index,level, currentBlendingTB);	break;
+				case 28: color = ColorFromPalette(pal_red_green, 		index,level, currentBlendingTB);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, 		index,level, currentBlendingTB);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, 		index,level, currentBlendingTB);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, index,level, currentBlendingTB);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, index,level, currentBlendingTB);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], index,level, LINEARBLEND);break;
+			}
+
+
+
+
+
+
+	return color;
+
+
+}
 
 CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
-	boolean pal,
+	uint8_t pal,
 	uint16_t longIndex,
 	//uint8_t index,
 	uint8_t brightness = 255,
@@ -883,10 +1038,51 @@ CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index
 	//debugMe(indexC1);
 	//delay(100);
 	//debugMe(indexC1);
+	CRGB color1;
+	CRGB color2;
 
-	CRGB color1 = ColorFromPalette(*LEDS_pal_work[pal], indexC1 * 16, brightness , blendType);
-	CRGB color2 = ColorFromPalette(*LEDS_pal_work[pal], indexC2 * 16, brightness , blendType);
-	//nblend(CRGB& existing, const CRGB& overlay, fract8 amountOfOverlay)
+	switch(pal)
+	{
+		case 0:  color1 = ColorFromPalette(LEDS_pal_cur[0], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[0], 			indexC2 * 16, brightness , blendType); break ;
+		case 1:  color1 = ColorFromPalette(LEDS_pal_cur[1], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[1], 			indexC2 * 16, brightness , blendType); break;
+		case 2:  color1 = ColorFromPalette(LEDS_pal_cur[2], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[2], 			indexC2 * 16, brightness , blendType); break;
+		case 3:  color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		case 4:  color1 = ColorFromPalette(LEDS_pal_cur[4], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[4], 			indexC2 * 16, brightness , blendType); break;
+		case 5:  color1 = ColorFromPalette(LEDS_pal_cur[5], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[5], 			indexC2 * 16, brightness , blendType); break ;
+		case 6:  color1 = ColorFromPalette(LEDS_pal_cur[6], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[6], 			indexC2 * 16, brightness , blendType); break;
+		case 7:  color1 = ColorFromPalette(LEDS_pal_cur[7], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[7], 			indexC2 * 16, brightness , blendType); break;
+		
+		case 8:  color1 = ColorFromPalette(LEDS_pal_cur[8], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[8], 			indexC2 * 16, brightness , blendType); break;
+		case 9:  color1 = ColorFromPalette(LEDS_pal_cur[9], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[9], 			indexC2 * 16, brightness , blendType); break;
+		case 10: color1 = ColorFromPalette(LEDS_pal_cur[10], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[10], 			indexC2 * 16, brightness , blendType); break ;
+		case 11: color1 = ColorFromPalette(LEDS_pal_cur[11], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[11], 			indexC2 * 16, brightness , blendType); break;
+		case 12: color1 = ColorFromPalette(LEDS_pal_cur[12], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[12], 			indexC2 * 16, brightness , blendType); break;
+		case 13: color1 = ColorFromPalette(LEDS_pal_cur[13], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[13], 			indexC2 * 16, brightness , blendType); break;
+		case 14: color1 = ColorFromPalette(LEDS_pal_cur[14], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[14], 			indexC2 * 16, brightness , blendType); break;
+		case 15: color1 = ColorFromPalette(LEDS_pal_cur[15], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[15], 			indexC2 * 16, brightness , blendType); break ;
+		
+		
+		//case 19: reserverd random!
+		case 20: color1 = ColorFromPalette(RainbowColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 21: color1 = ColorFromPalette(RainbowStripeColors_p, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowStripeColors_p, 	indexC2 * 16, brightness , blendType); break; 
+		case 22: color1 = ColorFromPalette(CloudColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(CloudColors_p, 			indexC2 * 16, brightness , blendType); break; 
+		case 23: color1 = ColorFromPalette(PartyColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(PartyColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 24: color1 = ColorFromPalette(OceanColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(OceanColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 25: color1 = ColorFromPalette(ForestColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(ForestColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 27: color1 = ColorFromPalette(LavaColors_p , 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LavaColors_p , 			indexC2 * 16, brightness , blendType); break ;
+		case 28: color1 = ColorFromPalette(pal_red_green, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_green, 			indexC2 * 16, brightness , blendType); break ;
+		case 29: color1 = ColorFromPalette(pal_red_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 30: color1 = ColorFromPalette(pal_green_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_green_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 31: color1 = ColorFromPalette(pal_black_white_Narrow, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_Narrow, 	indexC2 * 16, brightness , blendType); break ;
+		case 32: color1 = ColorFromPalette(pal_black_white_wide, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_wide, 	indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		
+		
+	}
+	
+	
 	CRGB outcolor = blend(color1, color2, longIndex);
 	//debugMe(String(String(color1.red) + "." + String(color1.green) + "." + String(color1.blue)));
 	if (blendType == NOBLEND)
@@ -898,6 +1094,8 @@ CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index
 
 }
 
+
+/*
 CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend)
 {
     TBlendType currentBlendingTB;
@@ -913,168 +1111,275 @@ CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean b
 	return color;
 
 }
+*/
 
 
 
 
-void LEDS_long_pal_fill(boolean targetPaletteX, boolean currentBlending, uint16_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror)
+void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0)
 {
-	// fill the pallete with colors
-
-	TBlendType currentBlendingTB;
-	byte mirror_div = 1;
-	byte mirror_add = 0;
-
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= MAX_NUM_LEDS))
-	{
-
-		if (get_bool(BLEND_INVERT) == true)
-			currentBlending = !currentBlending;
-		if (currentBlending == true)
-			currentBlendingTB = LINEARBLEND;
-		else
-			currentBlendingTB = NOBLEND;
-
-		if (mirror == true) {
-			mirror_div = 2;
-
-			if (isODDnumber(number_of_leds) == true) {
-				mirror_add = 1; // dosmething
-			}
-
-
-		}
-
-		if (one_color == true) {
-			leds(Start_led, Start_led + number_of_leds - 1) = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
-
-		}
-		else {
-
-
-			if (reversed == true) {
-				//colorIndex = (colorIndex-(number_of_leds) * index_add);
-
-				for (int i = (Start_led + number_of_leds / mirror_div - 1 + mirror_add); i >Start_led - 1; i--) {
-					leds[i] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
-					colorIndex = colorIndex + index_add;
-				}
-
-				//index_add = -index_add;
-			}
-			else
-				for (int i = Start_led; i < (Start_led + number_of_leds / mirror_div + mirror_add); i++) {
-					leds[i] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
-					colorIndex = colorIndex + index_add;
-				}
-
-			if (mirror == true) {
-				LEDS_Copy_strip(Start_led + number_of_leds / 2 + mirror_add, -number_of_leds / 2, Start_led);
-				if (number_of_leds == 1) leds[Start_led] = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
-
-			}
-
-		}
-
-	/*
-		// fade RGB if we are not on full
-		if (led_cfg.r != 255)
-			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].r = leds[i].r  * led_cfg.r / 255;
-		if (led_cfg.g != 255)
-			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].g = leds[i].g * led_cfg.g / 255;
-		if (led_cfg.b != 255)
-			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].b = leds[i].b * led_cfg.b / 255;
-	*/
-
-	}
-	else debugMe("LEDS_long_pal_fill-NOT NUNNING");
-}
-
-
-
-
-
-
-void LEDS_pal_fill(boolean targetPaletteX, boolean currentBlending, uint8_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror)
-{
-	// fill the pallete with colors
-
-	TBlendType currentBlendingTB;
-	byte mirror_div = 1;
-	byte mirror_add = 0;
-
-	if ((number_of_leds != 0) && (number_of_leds + Start_led <= MAX_NUM_LEDS))
-	{
-
-		if (get_bool(BLEND_INVERT) == true)
-			currentBlending = !currentBlending;
-		if (currentBlending == true)
-			currentBlendingTB = LINEARBLEND;
-		else
-			currentBlendingTB = NOBLEND;
-
-		if (mirror == true) {
-			mirror_div = 2;
-
-			if (isODDnumber(number_of_leds) == true) {
-				mirror_add = 1; // dosmething
-			}
-
-
-		}
-
-		if (one_color == true) {
-			leds(Start_led, Start_led + number_of_leds - 1) = ColorFromPalette(*LEDS_pal_work[targetPaletteX], colorIndex, led_cfg.pal_bri * led_cfg.max_bri / 255, currentBlendingTB);
-
-		}
-		else {
-
-
-			if (reversed == true) {
-				//colorIndex = (colorIndex-(number_of_leds) * index_add);
-
-				for (int i = (Start_led + number_of_leds / mirror_div - 1 + mirror_add); i >Start_led - 1; i--) {
-					leds[i] = ColorFromPalette(*LEDS_pal_work[targetPaletteX], colorIndex, led_cfg.pal_bri * led_cfg.max_bri /255, currentBlendingTB);
-					colorIndex = colorIndex + index_add;
-				}
-
-				//index_add = -index_add;
-			}
-			else
-				for (int i = Start_led; i < (Start_led + number_of_leds / mirror_div + mirror_add); i++) {
-					leds[i] = ColorFromPalette(*LEDS_pal_work[targetPaletteX], colorIndex, led_cfg.pal_bri * led_cfg.max_bri /255, currentBlendingTB);
-					colorIndex = colorIndex + index_add;
-				}
-
-			if (mirror == true) {
-				LEDS_Copy_strip(Start_led + number_of_leds / 2 + mirror_add, -number_of_leds / 2, Start_led);
-				if (number_of_leds == 1) leds[Start_led] = ColorFromPalette(*LEDS_pal_work[targetPaletteX], colorIndex, led_cfg.pal_bri * led_cfg.max_bri /255, currentBlendingTB);
-
-			}
-
-		}
-
-		/*	
-			// fade RGB if we are not on full
-		if (led_cfg.r != 255 ) 
-			for (int i = Start_led ; i < Start_led + number_of_leds; i++)
-				leds[i].r = leds[i].r  * led_cfg.r / 255;
-		if (led_cfg.g != 255) 
-			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].g = leds[i].g * led_cfg.g / 255;
-		if (led_cfg.b != 255) 
-			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].b = leds[i].b * led_cfg.b / 255;
+		/*	Mode 	0 = MIX_ADD
+					1 = MIX_SUBTRACT
+					3 = MIX_MASK
 		*/
+	int mixed_color;
+
+
+	switch(mode)
+	{
+		case MIX_ADD:
+			out_array[led_nr].red   =  qadd8(out_array[led_nr].red ,    color.red );
+			out_array[led_nr].green =  qadd8(out_array[led_nr].green ,  color.green );
+			out_array[led_nr].blue   =  qadd8(out_array[led_nr].blue  ,  color.blue );
+			break;
+
+		case MIX_SUBTRACT:
+			out_array[led_nr].red   =  qsub8(out_array[led_nr].red ,    color.red );
+			out_array[led_nr].green =  qsub8(out_array[led_nr].green ,  color.green );
+			out_array[led_nr].blue   =  qsub8(out_array[led_nr].blue  ,  color.blue );
+			break;
+
+		case MIX_MASK:
+			out_array[led_nr].red   =   scale8(out_array[led_nr].red ,    color.red );
+			out_array[led_nr].green =   scale8(out_array[led_nr].green ,  color.green );
+			out_array[led_nr].blue   =  scale8(out_array[led_nr].blue  ,  color.blue );
+			break;
+
+		case MIX_OR:
+			out_array[led_nr].red  	 =  out_array[led_nr].red 	| color.red ;
+			out_array[led_nr].green	 =  out_array[led_nr].green | color.green ;
+			out_array[led_nr].blue   =  out_array[led_nr].blue  | color.blue ;
+			break;
+		case MIX_XOR:
+			out_array[led_nr].red  	 =  out_array[led_nr].red 	^ color.red ;
+			out_array[led_nr].green	 =  out_array[led_nr].green ^ color.green ;
+			out_array[led_nr].blue   =  out_array[led_nr].blue  ^ color.blue ;
+			break;
+		case MIX_AND:
+			out_array[led_nr].red  	 =  out_array[led_nr].red 	& color.red ;
+			out_array[led_nr].green	 =  out_array[led_nr].green & color.green ;
+			out_array[led_nr].blue   =  out_array[led_nr].blue  & color.blue ;
+			break;
+
+		case MIX_DIFF:
+			if( out_array[led_nr].red  >  color.red )  		out_array[led_nr].red =  	qsub8(out_array[led_nr].red ,  	color.red );
+			else 											out_array[led_nr].red =  	qsub8(color.red,		 		out_array[led_nr].red );
+			if( out_array[led_nr].green  >  color.green )  	out_array[led_nr].green =  	qsub8(out_array[led_nr].green ,  color.green );
+			else 											out_array[led_nr].green =  	qsub8(color.green,			 	out_array[led_nr].green );
+			if( out_array[led_nr].blue  >  color.blue )  	out_array[led_nr].blue =  	qsub8(out_array[led_nr].blue ,  color.blue );
+			else 											out_array[led_nr].blue =  	qsub8(color.blue,			 	out_array[led_nr].blue );
+			break;
+		case MIX_LINEAR_BURN:
+			if( qadd8(out_array[led_nr].red ,  	color.red ) 	== 255 )  		out_array[led_nr].red =  	255 ; else out_array[led_nr].red = 0;
+			if( qadd8(out_array[led_nr].green ,  color.green ) 	== 255 )  		out_array[led_nr].green =  	255 ; else out_array[led_nr].green = 0;
+			if( qadd8(out_array[led_nr].blue ,  color.blue ) 	== 255 )  		out_array[led_nr].blue =  	255 ; else out_array[led_nr].blue = 0;			
+			break;
+		case MIX_HARD:
+			if( (out_array[led_nr].red +	color.red ) /2 		>= HARD_MIX_TRIGGER )  		out_array[led_nr].red =  	255 ; else out_array[led_nr].red = 0;
+			if( (out_array[led_nr].green + color.green ) /2  	>= HARD_MIX_TRIGGER )  		out_array[led_nr].green =  	255 ; else out_array[led_nr].green = 0;
+			if( (out_array[led_nr].blue +  color.blue ) /2  	>= HARD_MIX_TRIGGER )  		out_array[led_nr].blue =  	255 ; else out_array[led_nr].blue = 0;			
+			break;
+		case MIX_MULTIPLY:
+			out_array[led_nr].red =    constrain(out_array[led_nr].red  *   color.red, 0,255) ;
+			out_array[led_nr].green =  constrain(out_array[led_nr].green  *   color.green, 0,255) ;
+			out_array[led_nr].blue =   constrain(out_array[led_nr].blue  *   color.blue, 0,255) ;
+			break;
+		case MIX_HARD_LIGHT:
+			if (color.getLuma() >= 128)
+			{
+					out_array[led_nr].red =  	qadd8(out_array[led_nr].red ,  	color.red );
+					out_array[led_nr].green =  	qadd8(out_array[led_nr].green , color.green );
+					out_array[led_nr].blue =  	qadd8(out_array[led_nr].blue ,  color.blue );
+
+			}
+			else
+			{
+					out_array[led_nr].red =  	qsub8(out_array[led_nr].red,	color.red  );
+					out_array[led_nr].green =  	qsub8(out_array[led_nr].green,	color.green  );
+					out_array[led_nr].blue =  	qsub8(out_array[led_nr].blue,	color.blue  );
+			}
+			break;
+		case MIX_OVERLAY:
+			if (color.getLuma() < 128)
+			{
+				out_array[led_nr].red =  	constrain(out_array[led_nr].red  *   color.red, 0,255) ; 
+				out_array[led_nr].green =  	constrain(out_array[led_nr].green  *   color.green, 0,255) ; 
+				out_array[led_nr].blue =  	constrain(out_array[led_nr].blue  *   color.blue, 0,255) ; 
+
+			}
+			else
+			{
+				out_array[led_nr].red =  	constrain(out_array[led_nr].red  *   (255-color.red), 0,255) ;
+				out_array[led_nr].green =  	constrain(out_array[led_nr].green  *  (255 -color.green ), 0,255) ;
+				out_array[led_nr].blue =  	constrain(out_array[led_nr].blue  *   (255-color.blue), 0,255) ; 
+
+			}
+/*
+			if(  color.red <128 )  							out_array[led_nr].red =  	constrain(out_array[led_nr].red  *   color.red, 0,255) ; 
+			else 											out_array[led_nr].red =  	constrain(out_array[led_nr].red  *   (255-color.red), 0,255) ;  // ??? wll always be 0
+			if(  color.green <128 )  						out_array[led_nr].green =  	constrain(out_array[led_nr].green  *   color.green, 0,255) ; 
+			else 											out_array[led_nr].green =  	constrain(out_array[led_nr].green  *  (255 -color.green ), 0,255) ; 
+			if(  color.blue <128 )  						out_array[led_nr].blue =  	constrain(out_array[led_nr].blue  *   color.blue, 0,255) ; 
+			else 											out_array[led_nr].blue =  	constrain(out_array[led_nr].blue  *   (255-color.blue), 0,255) ;  //*/
+			break;
+		case MIX_TADA:
+			if( out_array[led_nr].red  >=  color.red )  	out_array[led_nr].red =  	out_array[led_nr].red - (out_array[led_nr].red - color.red) ;
+			else 											out_array[led_nr].red =  	out_array[led_nr].red + (out_array[led_nr].red - color.red);
+			if( out_array[led_nr].green  >=  color.green )  out_array[led_nr].green =  	out_array[led_nr].green - (out_array[led_nr].green - color.green);
+			else 											out_array[led_nr].green =  	out_array[led_nr].green + (out_array[led_nr].green - color.green);
+			if( out_array[led_nr].blue  >=  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue - (out_array[led_nr].blue - color.blue) ;
+			else 											out_array[led_nr].blue =  	out_array[led_nr].blue + (out_array[led_nr].blue - color.blue);
+
+			out_array[led_nr].red =  		constrain(out_array[led_nr].red  *  	color.red, 0,255) ;
+			out_array[led_nr].green =  		constrain(out_array[led_nr].green  *   	color.green, 0,255) ; 
+			out_array[led_nr].blue =  		constrain(out_array[led_nr].blue  *   	color.blue, 0,255) ; 
+			break;
+		case MIX_DARKEN:
+			if( out_array[led_nr].red  <  color.red )  		out_array[led_nr].red =  	out_array[led_nr].red ;
+			else 											out_array[led_nr].red =  	color.red;
+			if( out_array[led_nr].green  <  color.green )  	out_array[led_nr].green =  	out_array[led_nr].green ;
+			else 											out_array[led_nr].green =  	color.green;
+			if( out_array[led_nr].blue  <  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue ;
+			else 											out_array[led_nr].blue =  	color.blue;
+			break;
+		case MIX_LIGHTEN:
+			if( out_array[led_nr].red  >=  color.red )  	out_array[led_nr].red =  	out_array[led_nr].red ;
+			else 											out_array[led_nr].red =  	color.red;
+			if( out_array[led_nr].green  >=  color.green )  out_array[led_nr].green =  	out_array[led_nr].green ;
+			else 											out_array[led_nr].green =  	color.green;
+			if( out_array[led_nr].blue  >=  color.blue )  	out_array[led_nr].blue =  	out_array[led_nr].blue ;
+			else 											out_array[led_nr].blue =  	color.blue;
+			break;
 
 	}
+
+
+
+
+}
+
+void LEDS_long_pal_fill(CRGB *out_array,uint8_t targetPaletteX, boolean currentBlending, uint16_t colorIndex, int index_add, uint16_t Start_led, uint16_t number_of_leds, boolean reversed, boolean one_color, boolean mirror, boolean subtract , boolean mask, uint8_t pal_level, uint8_t mix_mode)
+{
+	// fill the pallete with colors
+//debugMe(mix_mode);
+	TBlendType currentBlendingTB;
+	byte mirror_div = 1;
+	byte mirror_add = 0;
+	CRGB color;
+
+	if ((number_of_leds != 0) && (number_of_leds + Start_led <= MAX_NUM_LEDS))
+	{
+
+		if (get_bool(BLEND_INVERT) == true)
+			currentBlending = !currentBlending;
+		if (currentBlending == true)
+			currentBlendingTB = LINEARBLEND;
+		else
+			currentBlendingTB = NOBLEND;
+
+		if (mirror == true) {
+			mirror_div = 2;
+
+			if (isODDnumber(number_of_leds) == true) {
+				mirror_add = 1; // dosmething
+			}
+
+
+		}
+		
+		color =  ColorFrom_LONG_Palette(targetPaletteX, colorIndex, pal_level, currentBlendingTB  );
+
+		if (one_color == true) 
+		{
+			for (int i = (Start_led ); i < Start_led +number_of_leds ; i++) 
+			{
+
+				LEDS_mix_led(out_array, i, color, mix_mode);
+				
+			}
+		}
+		else 
+		{
+
+
+			if (reversed == true) 
+			{
+				//colorIndex = (colorIndex-(number_of_leds) * index_add);
+
+				for (int i = (Start_led + number_of_leds / mirror_div - 1 + mirror_add); i >Start_led - 1; i--) 
+				{
+					color =  ColorFrom_LONG_Palette(targetPaletteX, colorIndex, pal_level, currentBlendingTB  );
+
+					LEDS_mix_led(out_array, i, color, mix_mode);
+				
+					colorIndex = colorIndex + index_add;
+				}
+
+				//index_add = -index_add;
+			}
+			else
+				for (int i = Start_led; i < (Start_led + number_of_leds / mirror_div + mirror_add); i++) 
+				{
+					color =  ColorFrom_LONG_Palette(targetPaletteX, colorIndex, pal_level, currentBlendingTB  );
+					LEDS_mix_led(out_array, i, color, mix_mode);
+					colorIndex = colorIndex + index_add;
+				}
+
+			if (mirror == true) 
+			{
+				if (reversed)
+				{
+					//for (int i = (Start_led + number_of_leds/2 + mirror_add )  ; i < (Start_led + number_of_leds) -1 ; i++)
+					for (int i = (Start_led + number_of_leds-1 )  ; i >= (Start_led + number_of_leds/2 + mirror_add )  ; i--)
+					
+					{
+						if (i == (Start_led + number_of_leds-1 ) ) 
+							if  (mirror_add == 0 )  colorIndex = colorIndex - index_add; // OK
+							else colorIndex = colorIndex - index_add;
+							//else  colorIndex = colorIndex + index_add *1 ;
+
+						//color =  CRGB{10,10,10} ;
+						color = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, pal_level, currentBlendingTB  );
+						LEDS_mix_led(out_array, i, color, mix_mode);
+						
+						colorIndex = colorIndex - index_add;
+					}
+				}
+				else // forward
+				{
+
+					//for (int i = (Start_led + number_of_leds -1 )  ; i > (Start_led + number_of_leds/2) -1 ; i--)
+					for (int i = (Start_led + number_of_leds/2 + mirror_add )  ; i < (Start_led + number_of_leds )   ; i++)
+					{
+						if (i == Start_led + number_of_leds/2 + mirror_add ) 
+							if  (mirror_add == 0 )  colorIndex = colorIndex - index_add *1 ;
+							//else  colorIndex = colorIndex + index_add *2 ;
+						//color =  CRGB{128,128,128} ;
+						color = ColorFrom_LONG_Palette(targetPaletteX, colorIndex, pal_level, currentBlendingTB  );
+						//LEDS_Copy_strip(Start_led + number_of_leds / 2 + mirror_add, -number_of_leds / 2, Start_led);
+						LEDS_mix_led(out_array, i, color, mix_mode);
+			
+						colorIndex = colorIndex - index_add;
+					}
+
+
+
+
+				}
+			}
+
+		}
+
+
+	}
+	//else debugMe("LEDS_long_pal_fill-NOT NUNNING");
 }
 
 
-void LEDS_pal_routing() 
+
+
+
+void LEDS_pal_mix_arrays(boolean Strip) 
 {	// main routing functions for palletes
 	// if the bit is set then run the pallete 
 	// on that strip/form
@@ -1082,26 +1387,27 @@ void LEDS_pal_routing()
 	for (byte i = 0; i < 8; i++)
 	{
 
-		for (byte zp = 0; zp < _M_NR_STRIP_BYTES_; zp++)
+		if (Strip) for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++)
 		{
-			//if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_STRIP_], i) == true)) 		LEDS_pal_fill(bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index, part[i + (zp * 8)].index_add, part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
-			if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_STRIP_], i) == true)) 		LEDS_long_pal_fill(bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index_long, part[i + (zp * 8)].index_add, part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
-			//if ((part[i + (zp * 8)].nr_leds != 0) && (bitRead(strip_menu[zp][_M_FIRE_], i) == true))		Fire2012WithPalette(part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
+			if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true)) 		LEDS_long_pal_fill(leds, part[i + (z * 8)].pal_pal , bitRead(strip_menu[z][_M_BLEND_], i), part[i + (z * 8)].index_long, part[i + (z * 8)].index_add, part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_ONE_COLOR_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i),bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT], i),bitRead(strip_menu[z][_M_AUDIO_PAL_MASK], i), part[i + (z * 8)].pal_level , part[i + (z * 8)].pal_mix_mode );	
+			//if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true)) 		LEDS_mix_onto_output(led_pal_strip_out, part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i),bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(strip_menu[z][_M_AUDIO_PAL_MASK], i),255 );
+																											//LEDS_mix_onto_output(led_pal_strip_out , part[i + (zp * 8)].start_led, part[i + (zp * 8)].nr_leds, false, false, bitRead(strip_menu[zp][_M_AUDIO_SUB_FROM_FFT], i) , bitRead(strip_menu[zp][_M_AUDIO_PAL_MASK], i),  false,  0 );
+																											//LEDS_long_pal_fill(led_pal_strip_out, bitRead(strip_menu[zp][_M_PALETTE_], i), bitRead(strip_menu[zp][_M_BLEND_], i), part[i + (zp * 8)].index_long, part[i + (zp * 8)].index_add,  bitRead(strip_menu[zp][_M_REVERSED_], i), bitRead(strip_menu[zp][_M_ONE_COLOR_], i), bitRead(strip_menu[zp][_M_MIRROR_OUT_], i));
+			
 		}
 	
-
-		for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)
+		else  for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
 		{
-			//if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_STRIP_], i) == true)) LEDS_pal_fill(bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_BLEND_], i), form_part[i + (zf * 8)].index, form_part[i + (zf * 8)].index_add, form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_ONE_COLOR_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
-			if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_STRIP_], i) == true)) LEDS_long_pal_fill(bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_BLEND_], i), form_part[i + (zf * 8)].indexLong, form_part[i + (zf * 8)].index_add, form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_ONE_COLOR_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
-			//if ((form_part[i + (zf * 8)].nr_leds != 0) && (bitRead(form_menu[zf][_M_FIRE_], i) == true)	)   Fire2012WithPalette(form_part[i + (zf * 8)].start_led, form_part[i + (zf * 8)].nr_leds, bitRead(form_menu[zf][_M_REVERSED_], i), bitRead(form_menu[zf][_M_PALETTE_], i), bitRead(form_menu[zf][_M_MIRROR_OUT_], i));
+			
+			//if ((form_part[i + (z * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_STRIP_], i) == true))  LEDS_mix_onto_output(led_pal_form_out,  form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i),bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i), form_part[i + (z * 8)].pal_level);
+																											//LEDS_mix_onto_output(led_pal_form_out , form_part[i + (zf * 8)].start_led, part[i + (zf * 8)].nr_leds, false, false, bitRead(form_menu[zf][_M_AUDIO_SUB_FROM_FFT], i) , bitRead(form_menu[zf][_M_AUDIO_PAL_MASK], i),  false,  0 );
+			if ((form_part[i + (z  * 8)].nr_leds != 0) && (bitRead(form_menu[z][_M_STRIP_], i) == true)) LEDS_long_pal_fill(leds, form_part[i + (z * 8)].pal_pal, bitRead(form_menu[z][_M_BLEND_], i), form_part[i + (z * 8)].indexLong, form_part[i + (z * 8)].index_add, form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i), form_part[i + (z * 8)].pal_level, form_part[i + (z * 8)].pal_mix_mode  );
+			
 		}
 	}
 
 
 }
-
-
 
 void LEDS_PAL_invert(uint8_t pal = 0)
 {
@@ -1191,25 +1497,28 @@ boolean LEDS_pal_check_bit()
 // Artnet
 void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {	// process the ARTNET information and send it to the leds
-
+	
+	//debugMe("in artnet uni:" + String(universe));
+	//debugMe(String( artnet_cfg.startU));
 	if ((universe >= artnet_cfg.startU) && (universe < artnet_cfg.startU + artnet_cfg.numU))
 	{
 		//FastLED.show();
 		byte internal_universe = universe - artnet_cfg.startU;
 
+		uint8_t max_length = length / 3;
+		//debugMe(max_length);
 		// read universe and put into the right part of the display buffer
-		for (int i = 0; i < length / 3; i++)
+		for (int i = 0; i < max_length ; i++)
 		{
+			
 			int led = i + (internal_universe * 170);
-
-			if (led < MAX_NUM_LEDS) {
-				// Do something
-				//DBG_OUTPUT_PORT.print("fetch DMX frame led : ");
-				//DBG_OUTPUT_PORT.println(led);
+			//debugMe(led);
+			if (led < MAX_NUM_LEDS) 
+			{
 				leds[led].r = data[i * 3];
 				leds[led].g = data[i * 3 + 1];
 				leds[led].b = data[i * 3 + 2];
-
+				//debugMe(leds[led].r);
 			}
 		}
 		yield();
@@ -1434,167 +1743,6 @@ CRGB LEDS_FFT_process()
 
 
 
-//void LEDS_FFT_fill_leds( uint16_t *Start_led, uint16_t *number_of_leds, boolean reversed, boolean onecolor, boolean mirror) //, uint8_t ref_led)
-void LEDS_FFT_fill_leds(uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean onecolor, boolean mirror, uint8_t fft_offset = 0 )
-{
-		// form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i));
-
-	//debugMe("s:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
-	
-	byte mirror_div = 1;
-	byte mirror_add = 0;
-			if (mirror == true) 
-			{
-				mirror_div = 2;
-				if (isODDnumber(nr_leds) == true) 
-				{
-					mirror_add = 1; // dosmething
-				}
-			}
-	
-	if(nr_leds != 0)
-	{
-		if(!reversed)  // = forward
-		{	
-			
-			for(uint16_t led_num = start_led; led_num < start_led + nr_leds/ mirror_div  + mirror_add  ; led_num ++ )
-			{
-				
-				if(!onecolor)
-				{
-					leds[led_num].red 	= leds_FFT_history[led_num - start_led + fft_offset ].red;	
-					leds[led_num].green = leds_FFT_history[led_num - start_led + fft_offset ].green;
-					leds[led_num].blue 	= leds_FFT_history[led_num - start_led + fft_offset ].blue;
-				}
-				else 
-				{
-					leds[led_num].red 	= leds_FFT_history[0 + fft_offset ].red;	
-					leds[led_num].green = leds_FFT_history[0 + fft_offset ].green;
-					leds[led_num].blue 	= leds_FFT_history[0 + fft_offset ].blue;
-				}	
-				
-				//leds[led_num].red 	= constrain(leds_FFT_history[led_num - start_led  ].red - leds[led_num].red , 0, 255) ;
-				//leds[led_num].blue 	= constrain(leds_FFT_history[led_num - start_led].blue	- leds[led_num].blue , 0, 255) ;
-				//leds[led_num].green = constrain(leds_FFT_history[led_num - start_led].green - leds[led_num].green , 0, 255) ;
-
-				//debugMe("nr:");
-					
-			}
-
-			if (mirror == true) LEDS_Copy_strip(start_led + nr_leds / 2 + mirror_add , -nr_leds / 2 , start_led);
-
-		}
-		else // wer are reversed
-		{
-			if(onecolor) for(uint16_t led_num = start_led   ; led_num < start_led + (nr_leds)    ; led_num++ ) 
-			{
-					leds[led_num].red 	= leds_FFT_history[0 + fft_offset ].red;	
-					leds[led_num].green = leds_FFT_history[0 + fft_offset ].green;
-					leds[led_num].blue 	= leds_FFT_history[0 + fft_offset ].blue;
-
-			}
-			else if(mirror)
-			{
-
-				for(uint16_t led_num = start_led  ; led_num < start_led  + nr_leds  ; led_num++ ) 
-				{
-
-					if(led_num <= start_led + nr_leds/2)
-						{
-							uint16_t hist_led_num =  nr_leds/2 - (led_num - start_led)+ fft_offset ;
-							leds[led_num].red =       leds_FFT_history[ hist_led_num].red  ;
-							leds[led_num].green  =    leds_FFT_history[ hist_led_num].green ;
-							leds[led_num].blue  =     leds_FFT_history[ hist_led_num].blue ;
-						}
-						else
-						{
-							uint16_t hist_led_num = nr_leds/2 -(nr_leds - (led_num - start_led)) + fft_offset  ;
-							leds[led_num].red =       leds_FFT_history[ hist_led_num].red  ;
-							leds[led_num].green  =    leds_FFT_history[  hist_led_num].green ;
-							leds[led_num].blue  =     leds_FFT_history[  hist_led_num].blue ;
-						} 
-
-
-				}
-
-			//LEDS_Copy_strip(start_led   , -(nr_leds + mirror_add) / 2, start_led + (nr_leds/2) );			
-			}
-			else  //no mirror no onecolor
-			{
-				for(uint16_t led_num = start_led   ; led_num < start_led + (nr_leds)    ; led_num++ ) 
-				{
-					leds[led_num].red =       leds_FFT_history[ nr_leds - (led_num - start_led)+ fft_offset ].red  ;
-					leds[led_num].green  =    leds_FFT_history[ nr_leds - (led_num - start_led)+ fft_offset ].green ;
-					leds[led_num].blue  =     leds_FFT_history[ nr_leds - (led_num - start_led)+ fft_offset ].blue ;
-				}
-
-			}	
-			
-
-		}
-	
-	}	
-	//debugMe("e:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
-}
-
-
-/*
-void LEDS_FFT_fill_leds(CRGB color_result, uint16_t *Start_led, uint16_t *number_of_leds, boolean dir, boolean onecolor, boolean mirror) //, uint8_t ref_led)
-{
-	// fill the Strips and form with FFT data
-	// we scoll dowm the strip and then put the new fft color at the start
-
-
-
-
-
-	if (*number_of_leds != 0) 
-	{
-		if (onecolor == false)
-		{
-			byte mirror_div = 1;
-			byte mirror_add = 0;
-			if (mirror == true) 
-			{
-				mirror_div = 2;
-				if (isODDnumber(*number_of_leds) == true) 
-				{
-					mirror_add = 1; // dosmething
-				}
-			}
-			if (dir == true) 
-			{  // reversed = true
-
-				for (int i = (*Start_led); i < (*Start_led) + ((*number_of_leds / mirror_div) - 1 + mirror_add); i++) 
-				{
-					leds[i] = leds[i + 1];
-				}
-				if (mirror == true) leds[(*Start_led) + ((*number_of_leds / mirror_div) - 1 + mirror_add)] = color_result;
-				else				leds[(*Start_led) + ((*number_of_leds) - 1)] = color_result;
-
-			}
-			else  // dir = false = forward
-			{
-
-				for (int i = *Start_led + (*number_of_leds / mirror_div) - 1 + mirror_add; i > (*Start_led); i--) 
-				{
-					leds[i] = leds[i - 1];
-				}
-				leds[(*Start_led)] = color_result;
-			}
-			if (mirror == true) LEDS_Copy_strip(*Start_led + *number_of_leds / 2 + mirror_add, -*number_of_leds / 2, *Start_led);
-		}
-		else
-		{
-			leds(*Start_led, *Start_led + *number_of_leds - 1) = color_result;
-
-		}
-
-
-	}
-}
-	*/
-
 
 void LEDS_FFT_history_run(CRGB color_result)
 {	// only move up to max leds from mixed mode.
@@ -1613,261 +1761,250 @@ void LEDS_FFT_history_run(CRGB color_result)
 	
 }
 
-void LEDS_FFT_pal_mix(uint16_t start_led, uint16_t nr_leds, boolean fft_reversed, boolean fft_mirror, boolean subrtact_mode = true , boolean mask = true, boolean onecolor = false, uint16_t fft_offset = 0)
+
+
+
+void LEDS_mix_onto_output(CRGB *in_array, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror , boolean subrtact_mode = false , boolean mask= true, uint8_t fx_level =255 ,uint8_t mix_mode=0)
 {
-		// form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_REVERSED_], i), bitRead(form_menu[z][_M_ONE_COLOR_], i), bitRead(form_menu[z][_M_MIRROR_OUT_], i));
+	CRGB color;
 
-	//debugMe("s:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
-	
-
-	
 	if(nr_leds != 0)
+	{
+		{	
+				for(uint16_t led_num = start_led; led_num < start_led + nr_leds  ; led_num ++ )
+				{
+
+					if(!mirror)
+					{
+
+						
+						color.red  = 	map(in_array[led_num].red   ,	0,255,0,fx_level );
+						color.green = 	map(in_array[led_num].green ,	0,255,0,fx_level );
+						color.blue = 	map(in_array[led_num].blue ,	0,255,0,fx_level );
+						LEDS_mix_led(leds, led_num, color, mix_mode);
+
+
+						//leds[led_num].red 	= qsub8(leds[led_num  ].red	,	map(in_array[led_num].red   ,0,255,0,fx_level ));	
+						//leds[led_num].green = qsub8(leds[led_num  ].green,	map(in_array[led_num].green ,	0,255,0,fx_level ));
+						//leds[led_num].blue 	= qsub8(leds[led_num  ].blue,	map(in_array[led_num].blue  ,	0,255,0,fx_level ));
+					}
+					else
+					{
+						if(led_num < start_led + nr_leds/2)
+						{
+							color.red  = 	map(in_array[led_num].red   ,	0,255,0,fx_level );
+							color.green = 	map(in_array[led_num].green ,	0,255,0,fx_level );
+							color.blue = 	map(in_array[led_num].blue ,	0,255,0,fx_level );
+							LEDS_mix_led(leds, led_num, color, mix_mode);
+
+							//leds[led_num].red 	= qsub8(leds[led_num  ].red	,	map(in_array[led_num].red   ,0,255,0,fx_level ));	
+							//leds[led_num].green = qsub8(leds[led_num  ].green,	map(in_array[led_num].green ,	0,255,0,fx_level ));
+							//leds[led_num].blue 	= qsub8(leds[led_num  ].blue,	map(in_array[led_num].blue  ,	0,255,0,fx_level ));
+						}
+						else
+						{
+							uint16_t hist_led_num = (start_led + nr_leds) -  (led_num - start_led) -1   ;	
+
+							color.red  = 	map(in_array[hist_led_num].red   ,	0,255,0,fx_level );
+							color.green = 	map(in_array[hist_led_num].green ,	0,255,0,fx_level );
+							color.blue = 	map(in_array[hist_led_num].blue ,	0,255,0,fx_level );
+							LEDS_mix_led(leds, led_num, color, mix_mode);
+
+							//leds[led_num].red 	= qsub8(leds[led_num  ].red	,	map(in_array[hist_led_num].red   ,0,255,0,fx_level ));	
+							//leds[led_num].green = qsub8(leds[led_num  ].green,	map(in_array[hist_led_num].green ,	0,255,0,fx_level ));
+							//leds[led_num].blue 	= qsub8(leds[led_num  ].blue,	map(in_array[hist_led_num].blue  ,	0,255,0,fx_level ));
+
+						}
+
+
+					}
+					
+					
+				}
+			
+		}
+	
+	} 
+}
+
+
+void LEDS_FX_shimmer_mix()
+{
+	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
+	{
+
+		for (byte i = 0; i < 8; i++)
+		{
+			if(bitRead(form_menu[z][_M_FX_LAYERS_ON], i ))
+			{
+
+				if (bitRead(form_menu[z][_M_FX_SHIMMER], i) == true)		{ LEDS_G_E_shimmer(form_part[i + (z * 8)].start_led, 	form_part[i + (z * 8)].nr_leds,  form_part[i + (z * 8)].pal_shim, form_part[i + (z * 8)].fx_shim_mix_mode, form_part[i + (z * 8)].FX_shim_level, bitRead(form_menu[z][_M_MIRROR_OUT_], i), bitRead(form_menu[z][_M_FX_SHIM_BLEND], i) , form_part[i + (z * 8)].fx_shim_xscale , form_part[i + (z * 8)].fx_shim_yscale, form_part[i + (z * 8)].fx_shim_beater  );   }
+			}
+		}
+	}
+
+
+}
+void LEDS_FX_fire_mix()
+{
+	
+	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
+	{
+
+		for (byte i = 0; i < 8; i++)
+		{
+			if(bitRead(form_menu[z][_M_FX_LAYERS_ON], i ))
+			{
+
+				if ( (bitRead(form_menu[z][_M_FIRE_], i) == true)	)   { Fire2012WithPalette(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_FIRE_REV], i), form_part[i + (z * 8)].pal_fire, bitRead(form_menu[z][_M_FIRE_MIRROR], i), form_part[i + (z * 8)].fire_level ,bitRead(form_menu[z][_M_FIRE_SUBTRACT ], i),bitRead(form_menu[z][_M_FIRE_MASK], i),form_part[i + (z * 8)].fx_fire_mix_mode);   }
+			}
+		}
+	}
+
+
+}
+
+
+
+void LEDS_mix_FFT_onto_output(CRGB *source_leds, uint16_t start_led, uint16_t nr_leds, boolean reversed, boolean mirror, boolean subrtact_mode  , boolean mask, boolean onecolor , uint16_t fft_offset = 0 , uint8_t mix_mode = 0 , uint8_t fft_level = 255)
+{
+	CRGB color;
+if(nr_leds != 0)
 	{
 
 		for(uint16_t led_num = start_led; led_num < start_led + nr_leds  ; led_num ++ )
-		{
+		{	
 			
 			
-				if(!fft_reversed)  // = forward
+				if(!reversed)  // = forward
 				{	
-						if(!mask)
+					
+					if(onecolor)
+					{
+						color.red  = 	map(source_leds[0 + fft_offset ].red   ,	0,255,0,fft_level );
+						color.green = 	map(source_leds[0 + fft_offset ].green ,	0,255,0,fft_level );
+						color.blue = 	map(source_leds[0 + fft_offset ].blue ,		0,255,0,fft_level );
+						LEDS_mix_led(leds, led_num, color, mix_mode);
+
+							//leds[led_num].red 	= qsub8(leds[led_num].red, 		source_leds[0 + fft_offset ].red	);	
+							//leds[led_num].green = qsub8(leds[led_num].green, 	source_leds[0 + fft_offset ].green );
+							//leds[led_num].blue 	= qsub8(leds[led_num].blue,		source_leds[0 + fft_offset ].blue	    );		
+
+					}
+					else
+					{	
+
+						if(!mirror)
 						{
-							if(!subrtact_mode)
-							{
-								if(onecolor)
-								{
-										leds[led_num].red 	= qsub8(leds_FFT_history[0 + fft_offset ].red,	  leds[led_num].red  	);	
-										leds[led_num].green = qsub8(leds_FFT_history[0 + fft_offset ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qsub8(leds_FFT_history[0 + fft_offset ].blue,	  leds[led_num].blue  );		
+							/*
+							leds[led_num].red 	= qsub8(leds[led_num].red, 		255 	);	
+							leds[led_num].green = qsub8(leds[led_num].green ,	source_leds[led_num - start_led + fft_offset ].green );
+							leds[led_num].blue 	= qsub8(leds[led_num].blue , 	255 );
+							//*/
+							
+							color.red  = 	map(source_leds[led_num - start_led + fft_offset  ].red   ,	0,255,0,fft_level );
+							color.green = 	map(source_leds[led_num - start_led + fft_offset ].green ,	0,255,0,fft_level );
+							color.blue = 	map(source_leds[led_num - start_led + fft_offset  ].blue ,		0,255,0,fft_level );
+							LEDS_mix_led(leds, led_num, color, mix_mode);
 
-								}
-								else
-								{	
-
-									if(!fft_mirror)
-									{
-										leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-										leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-									}
-									else // mirror fft
-									{
-										if(led_num <= start_led + nr_leds/2)
-										{
-											leds[led_num].red 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-											leds[led_num].green = qsub8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-											leds[led_num].blue 	= qsub8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-
-										}
-										else
-										{
-											uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-											leds[led_num].red 	= qsub8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
-											leds[led_num].green = qsub8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
-											leds[led_num].blue 	= qsub8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
-										}
-											
-
-									}				
-								}
-
-							}  // end subtract
-							else
-							{
-								if(onecolor)
-								{
-										leds[led_num].red 	= qadd8(leds_FFT_history[0 + fft_offset ].red,	  leds[led_num].red  	);	
-										leds[led_num].green = qadd8(leds_FFT_history[0 + fft_offset ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qadd8(leds_FFT_history[0 + fft_offset ].blue,	  leds[led_num].blue  );		
-
-								}
-								else
-								{
-
-
-									if(!fft_mirror)
-									{
-										leds[led_num].red 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-										leds[led_num].green = qadd8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-										leds[led_num].blue 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-									}
-									else
-									{
-											if(led_num <= start_led + nr_leds/2)
-										{
-											leds[led_num].red 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].red,	leds[led_num].red  	);	
-											leds[led_num].green = qadd8(leds_FFT_history[led_num - start_led + fft_offset ].green,  leds[led_num].green );
-											leds[led_num].blue 	= qadd8(leds_FFT_history[led_num - start_led + fft_offset ].blue,	leds[led_num].blue  );
-
-										}
-										else
-										{
-											uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-											leds[led_num].red 	= qadd8(leds_FFT_history[hist_led_num ].red,	leds[led_num].red  	);	
-											leds[led_num].green = qadd8(leds_FFT_history[hist_led_num ].green,  leds[led_num].green );
-											leds[led_num].blue 	= qadd8(leds_FFT_history[hist_led_num ].blue,	leds[led_num].blue  );		
-										}
-
-									}
-								}
-							}
-
-						
+							//leds[led_num].red 	= qsub8(leds[led_num].red, 		source_leds[led_num - start_led + fft_offset ].red 	);	
+							//leds[led_num].green = qsub8(leds[led_num].green ,	source_leds[led_num - start_led + fft_offset ].green );
+							//leds[led_num].blue 	= qsub8(leds[led_num].blue , 	source_leds[led_num - start_led + fft_offset ].blue );
+							//*/
 						}
-						else	// were masking
+						else // mirror fft
 						{
-							if(onecolor)
+							if(led_num < start_led + nr_leds/2)
 							{
-									leds[led_num].red 	= map(leds_FFT_history[ 0 + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
-									leds[led_num].green = map(leds_FFT_history[ 0 + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
-									leds[led_num].blue 	= map(leds_FFT_history[ 0 + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );		
+								color.red  = 	map(source_leds[led_num - start_led + fft_offset  ].red   ,	0,255,0,fft_level );
+								color.green = 	map(source_leds[led_num - start_led + fft_offset ].green ,	0,255,0,fft_level );
+								color.blue = 	map(source_leds[led_num - start_led + fft_offset  ].blue ,		0,255,0,fft_level );
+								LEDS_mix_led(leds, led_num, color, mix_mode);
+
+								//leds[led_num].red 	= qsub8(leds[led_num].red, 		source_leds[led_num - start_led + fft_offset ].red	);	
+								//leds[led_num].green = qsub8(leds[led_num].green , 	source_leds[led_num - start_led + fft_offset ].green);
+								//leds[led_num].blue 	= qsub8(leds[led_num].blue, 	source_leds[led_num - start_led + fft_offset ].blue  );
 
 							}
 							else
 							{
+								uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset -1  ;
+								color.red  = 	map(source_leds[hist_led_num  ].red   ,	0,255,0,fft_level );
+								color.green = 	map(source_leds[hist_led_num ].green ,	0,255,0,fft_level );
+								color.blue = 	map(source_leds[hist_led_num  ].blue ,		0,255,0,fft_level );
+								LEDS_mix_led(leds, led_num, color, mix_mode);
 
-								if(!fft_mirror)
-								{
-									leds[led_num].red 	= map(leds_FFT_history[led_num - start_led + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
-									leds[led_num].green = map(leds_FFT_history[led_num - start_led + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
-									leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );	
-								}
-								else
-								{
-									if(led_num <= start_led + nr_leds/2)
-										{
-										leds[led_num].red 	= map(leds_FFT_history[led_num - start_led + fft_offset ].red, 		0, 255, 0, leds[led_num].red  	);	
-										leds[led_num].green = map(leds_FFT_history[led_num - start_led + fft_offset ].green, 	0, 255, 0, leds[led_num].green );
-										leds[led_num].blue 	= map(leds_FFT_history[led_num - start_led + fft_offset ].blue,		0, 255, 0, leds[led_num].blue  );
-										}
-									else
-									{
-										uint16_t hist_led_num = (nr_leds) -  (led_num - start_led) + fft_offset  ;
-										leds[led_num].red 	= map(leds_FFT_history[hist_led_num  ].red, 	0, 255, 0, leds[led_num].red  	);	
-										leds[led_num].green = map(leds_FFT_history[hist_led_num ].green, 	0, 255, 0, leds[led_num].green );
-										leds[led_num].blue 	= map(leds_FFT_history[hist_led_num ].blue,		0, 255, 0, leds[led_num].blue  );
-									}
 
-								}
+								//leds[led_num].red 	= qsub8(leds[led_num].red, 		source_leds[hist_led_num ].red 	);	
+								//leds[led_num].green = qsub8(leds[led_num].green,	source_leds[hist_led_num ].green );
+								//leds[led_num].blue 	= qsub8(leds[led_num].blue , 	source_leds[hist_led_num ].blue );		
 							}
-						}				
+								
 
+						}											
+								
 
+					}  // end subtract
+							
+										
+
+		
 				}
 				else  // reversed
 				{
-					
-					
+
+
+					if(onecolor)
 					{
+							color.red  = 	map(source_leds[0 + fft_offset ].red   ,	0,255,0,fft_level );
+							color.green = 	map(source_leds[0 + fft_offset ].green ,	0,255,0,fft_level );
+							color.blue = 	map(source_leds[0 + fft_offset ].blue ,		0,255,0,fft_level );
+							LEDS_mix_led(leds, led_num, color, mix_mode);	
 
-						if(!mask)
+					}
+					else
+					{
+						if(!mirror)
 						{
-							if(!subrtact_mode)
-							{
-
-
-								if(onecolor)
-								{
-										leds[led_num].red =       qsub8(leds_FFT_history[ 0 + fft_offset ].red,leds[led_num].red   ) ;
-										leds[led_num].green  =    qsub8(leds_FFT_history[ 0 + fft_offset ].green,leds[led_num].green   ) ;
-										leds[led_num].blue  =     qsub8(leds_FFT_history[ 0 + fft_offset ].blue,leds[led_num].blue  ) ;		
-
-								}
-								else
-								{
-									if(!fft_mirror)
-									{
-										leds[led_num].red =       qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,leds[led_num].red   ) ;
-										leds[led_num].green  =    qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green,leds[led_num].green   ) ;
-										leds[led_num].blue  =     qsub8(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,leds[led_num].blue  ) ;
-									}
-									else
-									{
-
-										if(led_num <= start_led + nr_leds/2)
-										{
-											uint16_t hist_led_num =  nr_leds/2 - (led_num - start_led) + fft_offset;
-											leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
-											leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
-											leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
-
-										}
-										else{
-											uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;
-											leds[led_num].red =       qsub8(leds_FFT_history[ hist_led_num ].red,	leds[led_num].red   ) ;
-											leds[led_num].green  =    qsub8(leds_FFT_history[ hist_led_num ].green,	leds[led_num].green   ) ;
-											leds[led_num].blue  =     qsub8(leds_FFT_history[ hist_led_num ].blue,	leds[led_num].blue  ) ;
-										}
-									}
-								}
-				
-							}
-							else // revadd
-							{
-								if		(onecolor)  	leds[led_num] += leds_FFT_history[ 0  + fft_offset ]; 
-								else if(!fft_mirror) 	leds[led_num] += leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ]; 
-
-								else
-								{
-									if(led_num <= start_led + nr_leds/2) leds[led_num] += leds_FFT_history[ nr_leds/2  - (led_num - start_led) + fft_offset ]; 
-									else 								 leds[led_num] += leds_FFT_history[ (led_num - start_led) - nr_leds/2 + fft_offset]; 
-
-								
-									
-								}
-
-							}
-
-						} // end mask
+							color.red  = 	map(source_leds[nr_leds - (led_num - start_led) + fft_offset].red   ,	0,255,0,fft_level );
+							color.green = 	map(source_leds[nr_leds - (led_num - start_led) + fft_offset ].green ,	0,255,0,fft_level );
+							color.blue = 	map(source_leds[nr_leds - (led_num - start_led) + fft_offset ].blue ,		0,255,0,fft_level );
+							LEDS_mix_led(leds, led_num, color, mix_mode);
+							
+						}
 						else
 						{
-							if(onecolor)
+
+							if(led_num < start_led + nr_leds/2)
 							{
-									leds[led_num].red =       map(leds_FFT_history[ 0 + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
-									leds[led_num].green  =    map(leds_FFT_history[ 0 + fft_offset ].green,  0,255,0, leds[led_num].green   ) ;
-									leds[led_num].blue  =     map(leds_FFT_history[ 0 + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;	
+								uint16_t hist_led_num =  nr_leds/2 - (led_num - start_led) + fft_offset ;
+								color.red  = 	map(source_leds[hist_led_num].red   ,	0,255,0,fft_level );
+								color.green = 	map(source_leds[hist_led_num].green ,	0,255,0,fft_level );
+								color.blue = 	map(source_leds[hist_led_num].blue ,		0,255,0,fft_level );
+								LEDS_mix_led(leds, led_num, color, mix_mode);
 
 							}
-							else
-							{
-								if(!fft_mirror) 
-								{
-									leds[led_num].red =       map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
-									leds[led_num].green  =    map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].green, 0,255,0, leds[led_num].green   ) ;
-									leds[led_num].blue  =     map(leds_FFT_history[ nr_leds - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
-								}
-								else
-								{
-									if(led_num <= start_led + nr_leds/2)
-									{
-										leds[led_num].red =       map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].red,	 0,255,0, leds[led_num].red   ) ;
-										leds[led_num].green  =    map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].green,  0,255,0, leds[led_num].green   ) ;
-										leds[led_num].blue  =     map(leds_FFT_history[ nr_leds/2 - (led_num - start_led) + fft_offset ].blue,	 0,255,0, leds[led_num].blue  ) ;
-									}
-									else
-									{
-										uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;		
-										leds[led_num].red =       map(leds_FFT_history[ hist_led_num ].red,	  	0,255,0, leds[led_num].red   ) ;
-										leds[led_num].green  =    map(leds_FFT_history[ hist_led_num ].green,	0,255,0, leds[led_num].green   ) ;
-										leds[led_num].blue  =     map(leds_FFT_history[ hist_led_num ].blue, 	0,255,0, leds[led_num].blue  ) ;
-									}
+							else{
+								uint16_t hist_led_num =  (led_num - start_led) - nr_leds/2 + fft_offset   ;
+								color.red  = 	map(source_leds[hist_led_num].red   ,	0,255,0,fft_level );
+								color.green = 	map(source_leds[hist_led_num].green ,	0,255,0,fft_level );
+								color.blue = 	map(source_leds[hist_led_num].blue ,		0,255,0,fft_level );
+								LEDS_mix_led(leds, led_num, color, mix_mode);
 
-
-								} 
-
-							}							
+							}
 						}
-
-						
 					}
+							
 				}
 
 			
 		}	// end for loop
 	
-	} // ent != 0 nrleds	
-	//debugMe("e:" + String(leds[0].red) + " : "  + String(leds[0].green) + " : " + String(leds[0].blue) );
+	} 
+
+
 }
+
 
 
 uint8_t LEDS_FFT_get_color_result(uint8_t color )
@@ -1884,28 +2021,27 @@ uint8_t LEDS_FFT_get_color_result(uint8_t color )
 }
 
 
-void LEDS_FFT_check_leds(CRGB color_result)
+void LEDS_FFT_check_leds(boolean strip)
 {	// check if FFT is selected and then send it to the leds
 
 	if (LEDS_checkIfAudioSelected())
 	{
-		for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
+
+		if (strip) 	for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
 		{
 			for (byte i = 0; i < 8; i++) 
 			{ 	
-			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == false )	 	LEDS_FFT_fill_leds(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR], i), part[i + (z * 8)].fft_offset );
-			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == true ) 		LEDS_FFT_pal_mix(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i), bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT],i), bitRead(strip_menu[z][_M_AUDIO_PAL_MASK],i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], part[i + (z * 8)].fft_offset) );
+			//if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == false )	 	LEDS_FFT_fill_leds(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR], i), part[i + (z * 8)].fft_offset );
+			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true ) 		LEDS_mix_FFT_onto_output( leds_FFT_history,  part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i), bitRead(strip_menu[z][_M_AUDIO_SUBTRACT],i), bitRead(strip_menu[z][_M_AUDIO_MASK],i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR] ,i ), part[i + (z * 8)].fft_offset, part[i + (z * 8)].fft_mix_mode, part[i + (z * 8)].fft_level );
+																												//	LEDS_FFT_pal_mix(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i), bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT],i), bitRead(strip_menu[z][_M_AUDIO_PAL_MASK],i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], part[i + (z * 8)].fft_offset) );
 			}	
 		}
-		for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
+		else 	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
 		{
 			for (byte i = 0; i < 8; i++) 
 			{
-				if (bitRead(form_menu[z][_M_AUDIO_], i) == true  && bitRead(form_menu[z][_M_STRIP_], i) == false )			LEDS_FFT_fill_leds(form_part[i + (z * 8)].start_led, form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), bitRead(form_menu[z][_M_AUDIO_ONECOLOR], i), bitRead(form_menu[z][_M_AUDIO_MIRROR], i), form_part[i + (z * 8)].fft_offset);   //, form_part[i + ( z * 8 ) ].ref_led) ;
-				if (bitRead(form_menu[z][_M_AUDIO_], i) == true  && bitRead(form_menu[z][_M_STRIP_], i) == true )  			LEDS_FFT_pal_mix(form_part[i + (z * 8)].start_led,form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), bitRead(form_menu[z][_M_AUDIO_MIRROR],i ) , bitRead(form_menu[z][_M_AUDIO_SUB_FROM_FFT], i), bitRead(form_menu[z][_M_AUDIO_PAL_MASK], i) , bitRead(form_menu[z][_M_AUDIO_ONECOLOR] , i) , form_part[i + (z * 8)].fft_offset );
-				//if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true) ramdom_audio_dot(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds);
-				//if (bitRead(form_menu[z][_M_AUDIO_DOT_], i) == true)    LEDS_FFT_running_dot(color_result, &form_part[i + (z * 8)].start_led, &form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), form_part[i + (z * 8)].juggle_speed, form_part[i + (z * 8)].juggle_nr_dots);
-				
+				if (bitRead(form_menu[z][_M_AUDIO_], i) == true )  	LEDS_mix_FFT_onto_output(leds_FFT_history, form_part[i + (z * 8)].start_led,form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), bitRead(form_menu[z][_M_AUDIO_MIRROR],i ) ,bitRead(form_menu[z][_M_AUDIO_SUBTRACT],i ) , bitRead(form_menu[z][_M_AUDIO_MASK], i) , bitRead(form_menu[z][_M_AUDIO_ONECOLOR] , i) , form_part[i + (z * 8)].fft_offset,form_part[i + (z * 8)].fft_mix_mode, form_part[i + (z * 8)].fft_level );
+
 			}
 		}
 	}
@@ -2050,6 +2186,47 @@ void LEDS_load_default_play_conf()
 
 }
 
+void LEDS_seqencer_advance()
+{
+		uint8_t orig_play_nr = led_cfg.Play_Nr;
+
+		if (orig_play_nr < MAX_NR_SAVES-1 )
+		{
+			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+			{
+						debugMe("Play switch test to " + String(play_nr));
+
+						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
+						if (play_nr == orig_play_nr ) break;
+			}
+		}
+		else
+		{
+			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
+			{
+						debugMe("15-Play switch test to " + String(play_nr));
+						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						
+			}			
+			
+		}
+
+		led_cfg.confSwitch_time = micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+
+	}
+
+
 
 void LEDS_setup()
 {	// the main led setup function
@@ -2192,8 +2369,8 @@ void LEDS_setup()
 		LEDS_pal_work[i] = &LEDS_pal_cur[i];
 #endif
 	}
-	LEDS_pal_cur[0] = myRedAndGreenPalette_p;
-	LEDS_pal_cur[1] = myRedAndGreenPalette_p;
+	LEDS_pal_cur[0] = pal_red_green;
+	LEDS_pal_cur[1] = pal_red_green;
 
 
 	//led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
@@ -2260,17 +2437,54 @@ void LEDS_loop()
 				LEDS_pal_advance();
 				yield();
 				//debugMe("pre leds routing");
-				LEDS_pal_routing();
+				//LEDS_pal_fill_arrays();
 			}
 
 			if (LEDS_checkIfAudioSelected()) 
 			{
 				LEDS_FFT_process();  // Get the color from the FFT data
 				LEDS_FFT_history_run(GlobalColor_result);
-				LEDS_FFT_check_leds(GlobalColor_result);      // send the color to the leds.
+				
 				yield();
 			}
 			
+			LEDS_G_form_FX1_run();
+
+
+			//LEDS_G_FX1Routing();
+			//LEDS_FFT_check_leds(false);
+			
+
+			//*
+			for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
+			{
+				if(layer_select[layer] != 0 && layer_select[layer] <= MAX_LAYERS )
+				{
+					switch(layer_select[layer])	
+					{
+						case 1: LEDS_FFT_check_leds(false); break;     
+						case 2: LEDS_FFT_check_leds(true); 	break;   
+						case 3: LEDS_pal_mix_arrays(false); break;
+						case 4: LEDS_pal_mix_arrays(true); 	break; 
+						case 5: LEDS_G_FX1Routing();		break;
+						case 6: LEDS_FX_fire_mix();			break;
+						case 7: LEDS_FX_shimmer_mix();		break;
+
+					}
+
+				}
+
+
+			}  //*/
+
+			for (byte i = 0; i < 8; i++)
+			{
+				if (bitRead(copy_leds_mode[0], i) == true) LEDS_Copy_strip(copy_leds[i].start_led, copy_leds[i].nr_leds, copy_leds[i].Ref_LED);
+				if (bitRead(copy_leds_mode[1], i) == true) LEDS_Copy_strip(copy_leds[i + 8].start_led, copy_leds[i + 8].nr_leds, copy_leds[i + 8].Ref_LED);
+
+			} 
+
+
 			
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
 			{
@@ -2299,16 +2513,7 @@ void LEDS_loop()
 			 	write_bool(BTN_LASTSTATE, Btn_state);
 				 if (Btn_state == false )
 				 {
-					 if(FS_check_Conf_Available(led_cfg.Play_Nr +1 ))
-					 {
-					 	FS_play_conf_read(led_cfg.Play_Nr +1);
-						 //led_cfg.Play_Nr++;
-						 debugMe("in +1");
-					 }
-					else{
-							FS_play_conf_read(0);
-							//led_cfg.Play_Nr = 0;
-					}
+					LEDS_seqencer_advance();
 						
 
 				 }
@@ -2326,54 +2531,19 @@ void LEDS_loop()
 
 
 		}
+
+
+	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) ) LEDS_seqencer_advance();
 	}
 
 
-	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) )
-	{
-		uint8_t orig_play_nr = led_cfg.Play_Nr;
-
-		if (orig_play_nr < MAX_NR_SAVES-1 )
-		{
-			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
-			{
-						debugMe("Play switch test to " + String(play_nr));
-
-						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
-						{
-							FS_play_conf_read(play_nr);
-							break;
-							
-						}
-						if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
-						if (play_nr == orig_play_nr ) break;
-			}
-		}
-		else
-		{
-			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
-			{
-						debugMe("15-Play switch test to " + String(play_nr));
-						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
-						{
-							FS_play_conf_read(play_nr);
-							break;
-							
-						}
-						
-			}			
-			
-		}
-
-		led_cfg.confSwitch_time = currentT +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
-
-	}
+	
+	
 
 
 	//debugMe("leds loop end ", false);
 	//debugMe(String(xPortGetCoreID()));
 }
-
 
 
 

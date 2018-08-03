@@ -8,9 +8,15 @@ extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 extern CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
 
 
-extern CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
+extern CRGB ColorFrom_LONG_Palette(uint8_t pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND); // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors
 //extern CRGB ColorFromPalette( const TProgmemRGBPalette32& pal, uint8_t index, uint8_t brightness, TBlendType blendType);
-extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
+//extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , boolean blend);
+extern void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0);
+
+extern CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , boolean blend);
+//extern CRGB LEDS_get_color_longindex(uint8_t pal, uint16_t index, uint8_t level , boolean blend);
+
+
 
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
@@ -66,7 +72,7 @@ extern CRGB myColorFromPalette(boolean pallete, uint8_t index , uint8_t bri , bo
 	}
 
 
-void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bool pal, bool mirror) //, bool mirrored)
+void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, uint8_t pal, bool mirror, uint8_t level, boolean subtract, boolean mask, uint8_t mix_mode ) //, bool mirrored)
 {
 
 	
@@ -79,7 +85,7 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 		sparking = LEDS_FFT_get_fire_sparking();
 
 	} */
-
+	uint16_t real_nr_leds = Nr_leds;
 	if (true == mirror)
 	{
         
@@ -102,9 +108,12 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 		
 
 		// Step 1.  Cool down every cell a little
-		for (int i = start_led_M; i < start_led_M + NR_leds_M; i++) {
+		for (int i = start_led; i < start_led + real_nr_leds ; i++) 
+		{
 			heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NR_leds_M) + 2));
 		}
+
+		//for (int i =  NR_leds_M -1 ; i >= start_led ; i--)  {	heat[i] = qsub8(heat[i], random8(0, ((cooling * 10) / NR_leds_M) + 2)); }
 
 		// Step 2.  Heat from each cell drifts 'up' and diffuses a little
 		if (true == reversed)
@@ -112,12 +121,14 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			for (int k = (start_led_M + NR_leds_M - 1); k >= (start_led_M + 2); k--) {
 				heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
 			}
+			for (int k = (start_led ); k <= start_led_M ; k++ ) { heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3; }
 		}
 		else
 		{
 			for (int k = (start_led_M); k < (start_led_M + NR_leds_M - 3); k++) {
 				heat[k] = (heat[k + 1] + heat[k + 2] + heat[k + 2]) / 3;
 			}
+			for (int k = (start_led_M); k > (start_led +  3); k--)  { 	heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;  	}
 		}
 		// Step 3.  Randomly ignite new 'sparks' of heat near the bottom
 		// needs to spark at every strip / form start if selected
@@ -126,6 +137,8 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			if (random8() < sparking) {
 				int y = random8(7) + start_led_M;
 				heat[y] = qadd8(heat[y], random8(160, 255));
+				int x = random8(7) - start_led_M;
+				heat[x] = qadd8(heat[x], random8(160, 255));
 			}
 		}
 		else
@@ -133,15 +146,45 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			if (random8() < sparking) {
 				int y = -(random8(7)) + start_led_M + NR_leds_M - 1;
 				heat[y] = qadd8(heat[y], random8(160, 255));
+				int x = (random8(7)) + start_led;
+				heat[x] = qadd8(heat[x], random8(160, 255));
 			}
 		}
 		// Step 4.  Map from heat cells to LED colors
-		for (int j = start_led_M; j < NR_leds_M + start_led_M; j++) {
+		for (int j = start_led; j < NR_leds_M + start_led_M; j++) 
+		{
+
 			// Scale the heat value from 0-255 down to 0-240
 			// for best results with color palettes.
 			byte colorindex = scale8(heat[j], 240);
 			//CRGB color = HeatColor(heat[j]);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
+			CRGB color;
+
+			color = ColorFrom_SHORT_Palette(pal,colorindex,level,LINEARBLEND); 
+			/*
+			switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], colorindex,level, LINEARBLEND);	break;
+				case 20: color = ColorFromPalette(RainbowColors_p, colorindex,level, LINEARBLEND);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, colorindex,level, LINEARBLEND);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, colorindex,level, LINEARBLEND);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, colorindex,level, LINEARBLEND);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, colorindex,level, LINEARBLEND);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, colorindex,level, LINEARBLEND);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, colorindex,level, LINEARBLEND);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, colorindex,level, LINEARBLEND);	break;
+				case 28: color = ColorFromPalette(pal_red_green, colorindex,level, LINEARBLEND);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, colorindex,level, LINEARBLEND);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, colorindex,level, LINEARBLEND);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, colorindex,level, LINEARBLEND);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, colorindex,level, LINEARBLEND);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);break;
+			}
+			*/
+
+			
 			int pixelnumber;
 			/*if (reversed) {
 			pixelnumber = (Nr_leds + start_led - 1) - j;
@@ -150,11 +193,15 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			}
-			led_FX_out[pixelnumber] = color;
+			
+			LEDS_mix_led(leds, pixelnumber, color, mix_mode);
+
+			
+			//led_FX_out[pixelnumber] = color;
 		}
 
 	}
-	//else
+	else
 	{	
 		// Step 1.  Cool down every cell a little
 		for (int i = start_led; i < start_led + Nr_leds; i++) {
@@ -198,7 +245,34 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			// for best results with color palettes.
 			//CRGB color = HeatColor(heat[j]);
 			byte colorindex = scale8(heat[j], 240);
-			CRGB color = ColorFromPalette(LEDS_pal_cur[pal], colorindex);
+			CRGB color;
+			
+
+
+			color = ColorFrom_SHORT_Palette(pal,colorindex,level,LINEARBLEND); 
+			/*
+			switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], colorindex,level, LINEARBLEND);	break;
+				case 20: color = ColorFromPalette(RainbowColors_p, colorindex,level, LINEARBLEND);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, colorindex,level, LINEARBLEND);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, colorindex,level, LINEARBLEND);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, colorindex,level, LINEARBLEND);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, colorindex,level, LINEARBLEND);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, colorindex,level, LINEARBLEND);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, colorindex,level, LINEARBLEND);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, colorindex,level, LINEARBLEND);	break;
+				case 28: color = ColorFromPalette(pal_red_green, colorindex,level, LINEARBLEND);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, colorindex,level, LINEARBLEND);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, colorindex,level, LINEARBLEND);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, colorindex,level, LINEARBLEND);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, colorindex,level, LINEARBLEND);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], colorindex,level, LINEARBLEND);break;
+			} */
+			
+			
 			int pixelnumber;
 			/*if (reversed) {
 				pixelnumber = (Nr_leds + start_led - 1) - j;
@@ -207,7 +281,40 @@ void Fire2012WithPalette(uint16_t start_led, uint16_t Nr_leds, bool reversed, bo
 			{
 				pixelnumber = j;
 			} 
-			led_FX_out[pixelnumber] = color;
+
+			LEDS_mix_led(leds, pixelnumber, color, mix_mode);
+			/*
+
+			if(!mask)
+			{
+				if(!subtract)
+				{
+				leds[pixelnumber].red = 	qadd8( color.red , leds[pixelnumber].red);
+				leds[pixelnumber].green = 	qadd8( color.green , leds[pixelnumber].green);
+				leds[pixelnumber].blue =	qadd8( color.blue , leds[pixelnumber].blue);
+				//leds[pixelnumber] = color;
+				}
+				else // subtract
+				{
+				leds[pixelnumber].red = 	qsub8( leds[pixelnumber].red ,color.red  );
+				leds[pixelnumber].green = 	qsub8( leds[pixelnumber].green, color.green  );
+				leds[pixelnumber].blue =	qsub8( leds[pixelnumber].blue, color.blue  );
+				//leds[pixelnumber] = color;
+				}
+
+
+			}
+			else //mask
+			{
+
+				
+				leds[pixelnumber].red = 	map( leds[pixelnumber].red , 0, 255, 0, color.red   );	
+				leds[pixelnumber].green = 	map( leds[pixelnumber].green , 0, 255, 0,color.green  );
+				leds[pixelnumber].blue =	map( leds[pixelnumber].blue , 0, 255, 0, color.blue  );
+
+
+			}
+			*/
 		}
 
 	}
@@ -263,16 +370,16 @@ void LEDS_G_E_juggle(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, ui
 	}
 }
 
-void LEDS_G_E_juggle2(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
+void LEDS_G_E_saw(uint8_t nr_dots, uint16_t *start_led, uint16_t *nr_leds, uint8_t *jd_speed, boolean reversed)  // Saw Dots that run in cirles in the form
 {	// Make a dot  run  a SAW wave over the leds normal speed = bpm additional leds = bpm +1
 	if (*nr_leds != 0 && (*nr_leds + *start_led <=MAX_NUM_LEDS))
 	{
-		byte dothue = 0;
+		byte dothue = 64;
 		for (int i = 0; i < nr_dots; i++)
 		{
 			//led_FX_out[beatsin16(i + *jd_speed, *start_led, *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			if (reversed == true) 	led_FX_out[map(beat16(i + *jd_speed),0 , 65535, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
-			else					led_FX_out[map(beat16(i + *jd_speed), 0, 65535, *start_led , *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			if (reversed == true) 	led_FX_out[map(beat16(i + *jd_speed/2),0 , 65535, *start_led + *nr_leds - 1, *start_led)] |= CHSV(led_cfg.hue + dothue, 255, 255);
+			else					led_FX_out[map(beat16(i + *jd_speed/2), 0, 65535, *start_led , *start_led + *nr_leds - 1)] |= CHSV(led_cfg.hue + dothue, 255, 255);
 			dothue += (255 / nr_dots);
 		}
 
@@ -317,7 +424,7 @@ void LEDS_FFT_running_dot(CRGB color_result, uint16_t *Start_led, uint16_t *numb
 
 
 
-void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
+void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, uint8_t mix_mode,uint8_t level, boolean mirror, boolean blend, uint16_t xscale = 6 , uint16_t yscale = 5, uint8_t beater = 7) 
 {          // A time (rather than loop) based demo sequencer. This gives us full control over the length of each sequence.
 
    static int16_t dist = random8();
@@ -332,31 +439,60 @@ void LEDS_G_E_shimmer(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean 
 				mirror_add = 1; // dosmething
 			}
 	}
-		TBlendType currentBlendingTB;
+	/*	TBlendType currentBlendingTB;
 		if (get_bool(BLEND_INVERT) == true)
 				blend = !blend;
 			if (blend == true)
 				currentBlendingTB = LINEARBLEND;
 			else
 				currentBlendingTB = NOBLEND;
+*/
 
-
-
+	CRGB color;
 
   for(int i = StartLed ; i < StartLed + (NrLeds/(1+1*mirror_add)) ; i++)    // Just ONE loop to fill up the LED array as all of the pixels change.
   {                                     
     uint8_t index = inoise8(i*xscale, dist+i*yscale) % 255; 			 // Get a value from the noise function. I'm using both x and y axis. 
-    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+    
+	color = ColorFrom_SHORT_Palette(pal,index,level,blend);
+	
+	/*
+	switch(pal)
+			{
+				case 0: color = ColorFromPalette(LEDS_pal_cur[0], 		index,level, currentBlendingTB);	break;
+				case 1: color = ColorFromPalette(LEDS_pal_cur[1], 		index,level, currentBlendingTB);	break;
+				case 20: color = ColorFromPalette(RainbowColors_p, 		index,level, currentBlendingTB);	break;
+				case 21: color = ColorFromPalette(RainbowStripeColors_p, index,level, currentBlendingTB);break;	
+				case 22: color = ColorFromPalette(CloudColors_p, 		index,level, currentBlendingTB);	break;
+				case 23: color = ColorFromPalette(PartyColors_p, 		index,level, currentBlendingTB);	break;
+				case 24: color = ColorFromPalette(OceanColors_p, 		index,level, currentBlendingTB);	break;
+				case 25: color = ColorFromPalette(ForestColors_p, 		index,level, currentBlendingTB);	break;
+				case 26: color = ColorFromPalette(HeatColors_p, 		index,level, currentBlendingTB);	break;
+				case 27: color = ColorFromPalette(LavaColors_p, 		index,level, currentBlendingTB);	break;
+				case 28: color = ColorFromPalette(pal_red_green, 		index,level, currentBlendingTB);	break;
+				case 29: color = ColorFromPalette(pal_red_blue, 		index,level, currentBlendingTB);	break;
+				case 30: color = ColorFromPalette(pal_green_blue, 		index,level, currentBlendingTB);	break;
+				case 31: color = ColorFromPalette(pal_black_white_Narrow, index,level, currentBlendingTB);break;	
+				case 32: color = ColorFromPalette(pal_black_white_wide, index,level, currentBlendingTB);	break;
+
+				default: color = ColorFromPalette(LEDS_pal_cur[0], index,level, LINEARBLEND);break;
+			}
+	*/
+	
+	LEDS_mix_led(leds, i, color, mix_mode);
+	//led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, 255, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
   
-  dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
- 
+  //dist += beatsin8(beater,1,4);                                                // Moving along the distance (that random number we started out with). Vary it a bit with a sine wave.
+ dist += beater;
 
 } // shimmer()
 
 
+ 
 
-void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror, boolean blend = true) 
+
+void noise16_2(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, boolean mirror, boolean blend = true) 
 {  
     TBlendType currentBlendingTB;
     if (get_bool(BLEND_INVERT) == true)
@@ -385,7 +521,51 @@ void noise16_2(uint16_t StartLed, uint16_t NrLeds , boolean pal, boolean mirror,
     uint8_t index = sin8(noise*trip);                            // map led color based on noise data
     uint8_t bri   = noise;
 
-    led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[pal], index, bri, currentBlendingTB);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+
+
+	led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[0], index, bri, currentBlendingTB);  break ;
+/*switch(pal)
+	{
+		case 0: led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[0], index, bri, currentBlendingTB);  break ;
+		case 1: led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[1], index, bri, currentBlendingTB);  break ;
+		case 20: led_FX_out[i] = ColorFromPalette(RainbowColors_p, index, bri, currentBlendingTB);  break ; 
+		case 21: led_FX_out[i] = ColorFromPalette(RainbowStripeColors_p, index, bri, currentBlendingTB);  break ; 
+		case 22: led_FX_out[i] = ColorFromPalette(CloudColors_p, index, bri, currentBlendingTB);  break ; 
+		case 23: led_FX_out[i] = ColorFromPalette(PartyColors_p, index, bri, currentBlendingTB);  break ; 
+		case 24: led_FX_out[i] = ColorFromPalette(OceanColors_p, index, bri, currentBlendingTB);  break ; 
+		case 25: led_FX_out[i] = ColorFromPalette(ForestColors_p, index, bri, currentBlendingTB);  break ; 
+		case 26: led_FX_out[i] = ColorFromPalette(HeatColors_p, index, bri, currentBlendingTB);  break ; 
+		case 27: led_FX_out[i] = ColorFromPalette(LavaColors_p, index, bri, currentBlendingTB);  break ; 
+		case 28: led_FX_out[i] = ColorFromPalette(pal_red_green, index, bri, currentBlendingTB);  break ; 
+		case 20: led_FX_out[i] = ColorFromPalette(pal_red_blue, index, bri, currentBlendingTB);  break ; 
+		case 20: led_FX_out[i] = ColorFromPalette(pal_green_blue, index, bri, currentBlendingTB);  break ; 
+		case 20: led_FX_out[i] = ColorFromPalette(pal_black_white_Narrow, index, bri, currentBlendingTB);  break ; 
+		case 20: led_FX_out[i] = ColorFromPalette(pal_black_white_wide, index, bri, currentBlendingTB);  break ; 
+		
+/*
+		case 20: color1 = ColorFromPalette(RainbowColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 21: color1 = ColorFromPalette(RainbowStripeColors_p, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowStripeColors_p, 	indexC2 * 16, brightness , blendType); break; 
+		case 22: color1 = ColorFromPalette(CloudColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(CloudColors_p, 			indexC2 * 16, brightness , blendType); break; 
+		case 23: color1 = ColorFromPalette(PartyColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(PartyColors_p, 			indexC2 * 16, brightness , blendType); break;
+		case 24: color1 = ColorFromPalette(OceanColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(OceanColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 25: color1 = ColorFromPalette(ForestColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(ForestColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		case 27: color1 = ColorFromPalette(LavaColors_p , 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LavaColors_p , 			indexC2 * 16, brightness , blendType); break ;
+		case 28: color1 = ColorFromPalette(pal_red_green, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_green, 			indexC2 * 16, brightness , blendType); break ;
+		case 29: color1 = ColorFromPalette(pal_red_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_red_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 30: color1 = ColorFromPalette(pal_green_blue, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_green_blue, 			indexC2 * 16, brightness , blendType); break ;
+		case 31: color1 = ColorFromPalette(pal_black_white_Narrow, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_Narrow, 	indexC2 * 16, brightness , blendType); break ;
+		case 32: color1 = ColorFromPalette(pal_black_white_wide, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(pal_black_white_wide, 	indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		//case 26: color1 = ColorFromPalette(HeatColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(HeatColors_p, 			indexC2 * 16, brightness , blendType); break ;
+		 
+		
+	}*/
+
+
+
+
+       // With that value, look up the 8 bit colour palette value and assign it to the current LED.
 
     //leds2[i] = ColorFromPalette(currentPalette, index, bri, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
   }
@@ -468,49 +648,47 @@ int wave3=0;
 //uint8_t mul2 = 6;
 //uint8_t mul3 = 9;
 
-void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean mirror,   boolean blend , uint8_t distance ) 
+void FX_three_sin(uint16_t StartLed, uint16_t NrLeds ,boolean pallete, boolean mirror,   boolean blend , uint8_t distance , uint8_t bmpWave1  ,uint8_t bmpWave2  ,uint8_t bmpWave3 , int lowWave1 ,int hiWave1 ,int lowWave2 ,int hiWave2 ,int lowWave3 ,int hiWave3  ) 
 {
  
  
 
-  wave1 += beatsin8(1,-4,4);
-  wave2 += beatsin8(5,-2,2);
-  wave3 += beatsin8(2,-1, 1);
-debugMe(distance);
+  wave1 += beatsin8(bmpWave1,lowWave1,hiWave1);
+  wave2 += beatsin8(bmpWave2,lowWave2,hiWave2);
+  wave3 += beatsin8(bmpWave3,lowWave3, hiWave3);
+//debugMe(distance);
 
   for (uint16_t i = StartLed; i < StartLed+NrLeds; i++) 
   {
  
     uint8_t tmp = sin8(distance*i + wave1) + sin8(distance*i + wave2) + sin8(distance*i + wave3);
 
-    led_FX_out[i] = myColorFromPalette(pallete, tmp, 255,blend);
+    led_FX_out[i] = ColorFrom_SHORT_Palette(pallete, tmp, 255,blend);
     
   }
  //m++;
 } 
 /*
 
-void two_sin() 
+void two_sin(uint16_t indexA, uimt16_t indexB, boolean waveAdir =true , boolean waveBdir = false, waveAspeed =10 , waveBspeed =4 ) 
 {
   FastLED.setBrightness(255);
 
-    thisdir ? thisphase += beatsin8(thisspeed, 2, 10) : thisphase -= beatsin8(thisspeed, 2, 10);
-    thatdir ? thatphase += beatsin8(thisspeed, 2, 10) : thatphase -= beatsin8(thatspeed, 2, 10);
-    thishue += thisrot;                                        // Hue rotation is fun for thiswave.
-    thathue += thatrot;                                        // It's also fun for thatwave.
+    waveAdir ? thisphase += beatsin8(thisspeed, 2, 10) : thisphase -= beatsin8(thisspeed, 2, 10);
+    waveBdir ? thatphase += beatsin8(thisspeed, 2, 10) : thatphase -= beatsin8(thatspeed, 2, 10);
+    indexA += thisrot;                                        // Hue rotation is fun for thiswave.
+    indexB += thatrot;                                        // It's also fun for thatwave.
   
   for (int k=0; k<NUM_LEDS-1; k++) {
     int thisbright = qsuba(cubicwave8((k*allfreq)+thisphase), thiscutoff);      // qsub sets a minimum value called thiscutoff. If < thiscutoff, then bright = 0. Otherwise, bright = 128 (as defined in qsub)..
     int thatbright = qsuba(cubicwave8((k*allfreq)+128+thatphase), thatcutoff);  // This wave is 180 degrees out of phase (with the value of 128).
 
-    leds1[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
-    leds1[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
-    leds2[k] = ColorFromPalette(currentPalette, thishue, thisbright, currentBlending);
-    leds2[k] += ColorFromPalette(targetPalette, thathue, thatbright, currentBlending);
+    leds1[k] = ColorFromPalette(currentPalette, indexA, 255, currentBlending);
+    leds1[k] += ColorFromPalette(targetPalette, indexB, 255, currentBlending);
+    
   }
-     nscale8(leds1,NUM_LEDS,fadeval);
-     nscale8(leds2,NUM_LEDS,fadeval);
+     
      
 } // two_sin()
 
-*/
+//*/

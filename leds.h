@@ -6,6 +6,7 @@
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
 #endif
+#include "leds_palletes.h"
 
 //#include <FastLED.h>	
 	//#include <pixeltypes.h>
@@ -30,7 +31,8 @@
 		// Strip/Form settings do not change!!! 
 		#define NR_FORM_PARTS	16				// how many forms? default 16
 		#define NR_STRIPS		32				// how many strips  default 32
-		#define NR_PALETTS 		2				// how many pallets do we have = 2
+		#define NR_PALETTS 		16				// how many pallets do we have = 2
+		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
 		#define MICROS_TO_MIN 60000000
 						      
@@ -81,6 +83,7 @@
 		uint16_t		Data4StartLed;		// Start led for data4;
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config
+		uint8_t 		edit_pal;
 		
 	
 
@@ -135,6 +138,11 @@
 					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition
 					uint16_t index_long; 
 					uint8_t 	fft_offset;			//
+					uint8_t pal_level;
+					uint8_t fft_level;
+					uint8_t 	pal_mix_mode;
+		  			uint8_t 	fft_mix_mode;
+					uint8_t 	pal_pal;
 	};
 
 	  struct form_Part_FL_Struct 
@@ -157,7 +165,43 @@
 		  uint8_t   fx_shim_xscale;
 		  uint8_t   fx_shim_yscale;
 		  uint8_t   fx_shim_beater;
+		  uint8_t 	FX_shim_level;
+		  uint8_t 	pal_level;
+		  uint8_t 	fft_level;
+		  uint8_t 	fire_level;
+		  uint8_t 	pal_mix_mode;
+		  uint8_t 	fft_mix_mode;
+		  uint8_t 	fx1_mix_mode;
+		  uint8_t 	fx_fire_mix_mode;
+		  uint8_t 	fx_shim_mix_mode;
+		  uint8_t 	pal_pal;			// what pallete for pallete run
+		  uint8_t 	pal_fire;			// what pallete for pallete run
+		  uint8_t 	pal_shim;			// what pallete for pallete run
+	  };
+	  
+	  struct form_part_fx_shim_struct
+	  {
+		   int waveA;
+		   int waveB;
+		   int waveC;
 
+		   uint8_t Abpm;
+		   int Ahigh;
+		   int Alow;
+		   uint8_t index_addA;
+		   uint8_t indexA;
+
+		   uint8_t Bbpm;
+		   int Bhigh;
+		   int Blow;
+		   uint8_t index_addB;
+		   uint8_t indexB;
+
+		   uint8_t Cbpm;
+		   int Chigh;
+		   int Clow;
+			uint8_t index_addC;
+		   uint8_t indexC;
 
 	  };
 
@@ -181,8 +225,8 @@
 	  };
 
 
-#define _M_NR_OPTIONS_     10			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  32			// Nr of options for forms 
+#define _M_NR_OPTIONS_     40 //10			// hass less options compared to forms!!
+#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
 		  _M_AUDIO_REVERSED = 1,
@@ -204,48 +248,89 @@
 	  }; */
 
 	  enum strip_options {
-		  _M_AUDIO_REVERSED 	= 0,
-		  _M_AUDIO_ 			= 1,				// Display FFT
-		  _M_AUDIO_PAL_MASK		= 2,			// use the pallete to mask the fft data or +-
-		  _M_AUDIO_SUB_FROM_FFT = 3,		//  add or subtract the pallete from the FFT data
-		  _M_MIRROR_OUT_ 		= 4,			// Mirror it
-		  _M_ONE_COLOR_ 		= 5,			// Make all the leds show one color
-		  _M_STRIP_				= 6,				// Display Strip
-		  _M_REVERSED_ 			= 7,				// reversed mode
-		  
-		  _M_PALETTE_			= 8,				// Pallete 0 or 1
-		  _M_BLEND_ 			= 9,				// Fade or Hard Blend
-		  _M_FX_MASK			= 10,
-		  _M_FX_SUBTRACT		= 11,				// add the FX channel to the leds
-		  _M_FX1_ON  			= 12,			// 
-		  _M_FX_SHIMMER  		= 13,			//
-		  _M_FX_SHIM_PAL  		= 14,			//
-		  _M_AUDIO_FX4  		= 15,			// 
-		  
-		  _M_GLITTER_FROM_FFT_DATA1 = 16, 
-		  _M_RBOW_GLITTER_ 		= 17,			// Random Glitter
-		  _M_GLITTER_			= 18,				// White Glitter
-		  _M_JUGGLE_ 			= 19,				// Sine wave dots
-		  _M_SAW_DOT_ 			= 20,				// Saw wave dots
-		  _M_AUDIO_FX5  		= 21,			//
-		  _M_AUDIO_FX6  		= 22,			//
-		  
-		  
-		  _M_FIRE_				= 23,				// Fire animation
-		  _M_FIRE_PAL			= 24,				// Fire animation
-		  _M_AUDIO_DOT_ 		= 25,			// 
+		  _M_AUDIO_REVERSED 	,
+		  _M_AUDIO_ 			,				// Display FFT
+		  _M_AUDIO_PAL_MASK		,			// use the pallete to mask the fft data or +-
+		  _M_AUDIO_SUB_FROM_FFT ,		//  add or subtract the pallete from the FFT data
+		  _M_MIRROR_OUT_ 		,			// Mirror it
+		  _M_ONE_COLOR_ 		,			// Make all the leds show one color
+		  _M_STRIP_				,				// Display Strip
+		  _M_REVERSED_ 			,				// reversed mod
+		  _M_PALETTE_			,				// Pallete 0 or 1
+		  _M_BLEND_ 			,				// Fade or Hard Blend
 
 		  
-		  _M_AUDIO_MIRROR  		= 26,			//
-		  _M_AUDIO_ONECOLOR		= 27,			//
-		  _M_AUDIO_FX9  		= 28,			//
-		  _M_AUDIO_FX10  		= 29,			//
-		  _M_FX_SIN_PAL  		= 30,			//
-		  _M_FX_3_SIN	  		= 31,			//
+		  _M_AUDIO_MIRROR  		,			//
+		  _M_AUDIO_ONECOLOR		,			//
+		  _M_AUDIO_MASK  		,			//
+		  _M_AUDIO_SUBTRACT		,
+
+		  _M_FX_MIRROR  		,				//
+		  _M_FX_REVERSED		,	
+		  _M_FX_MASK			,
+		  _M_FX_SUBTRACT		,				// add the FX channel to the leds
+		  _M_FX1_ON  			,			//
+		  _M_FX_LAYERS_ON		, 
+
 		  
+		  _M_GLITTER_FROM_FFT_DATA1  , 
+		  _M_RBOW_GLITTER_ 		,			// Random Glitter
+		  _M_GLITTER_			,				// White Glitter
+		  _M_JUGGLE_ 			,				// Sine wave dots
+		  _M_SAW_DOT_ 			,				// Saw wave dots
+		  _M_AUDIO_DOT_ 		,			// 
+
+		  _M_AUDIO_FX4  		,			// 
+		  _M_AUDIO_FX5  		,			//
+		  _M_AUDIO_FX6  		,			//
+
+	  	 _M_FX_SHIMMER  		,			//
+		  _M_FX_SHIM_PAL  		,			//
+		  _M_FX_SHIM_BLEND , 
+		  _M_FX_SHIM_SUBTRACT , 
+		  _M_FX_SHIM_MASK , 
+		 	
+		  
+		  _M_FIRE_				,				// Fire animation
+		  _M_FIRE_PAL			,				// Fire animation
+		  _M_FIRE_MIRROR  		,			//
+		  _M_FIRE_REV			,			//
+		  _M_FIRE_SUBTRACT		,			//
+		  _M_FIRE_MASK			,			//
+
+		
+				  			//
+		  _M_FX_SIN_PAL  		,			//
+		  _M_FX_3_SIN	  		,			//40
+		  _M_FX_2_SIN  		,			//
+		 
+		
+
 		  
 
 	  };
+
+
+#define HARD_MIX_TRIGGER 128
+	  enum mix_enum 
+	  {  MIX_ADD 			
+	  	,MIX_SUBTRACT		
+		,MIX_MASK			
+		,MIX_OR		
+		,MIX_XOR
+		,MIX_AND
+		,MIX_DIFF
+		,MIX_HARD
+		,MIX_MULTIPLY
+		,MIX_HARD_LIGHT
+		,MIX_OVERLAY
+		,MIX_TADA
+		,MIX_DARKEN
+		,MIX_LIGHTEN
+		,MIX_LINEAR_BURN
+		
+	  };
+
 
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
@@ -256,7 +341,8 @@
 
 	  };
 
-	
+	#define MAX_LAYERS_SELECT 10
+	#define MAX_LAYERS 7
 
 
 // Functions
@@ -289,5 +375,6 @@
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
+	
 #endif
 

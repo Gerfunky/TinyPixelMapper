@@ -49,7 +49,7 @@
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
 	extern uint8_t fft_bin_autoTrigger;
 	extern byte fft_data_fps;
-
+	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 
 
@@ -122,6 +122,22 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 }
 
 
+void  FS_write_Conf_status(uint8_t play_NR, boolean value)
+{
+
+	boolean return_bool = 0;
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = play_NR;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+	bitWrite(confStatus[byte_nr], bit_nr, value);
+
+	
+
+}
 
 
 
@@ -609,6 +625,85 @@ void FS_play_conf_clear(uint8_t conf_nr)
 }	
 
 
+void FS_pal_save(uint8_t save_no, uint8_t pal_no)
+{
+	String addr = String("/conf/" + String(save_no) + ".pal.txt");
+
+	File conf_file = SPIFFS.open(addr, "w");
+
+	if (!conf_file && !conf_file.isDirectory()) {
+		 debugMe("pallete file creation failed");
+	}
+		conf_file.println("Pallete Config.");
+		conf_file.println("holds the 16 colors for a pallete");
+		conf_file.println("p = pallete Config : R . G . B : R . G . B ... ");
+		
+		conf_file.print(String("[p:" + String(LEDS_pal_read( pal_no, 0, 0))));   // targetPalette[pal][color].r)));
+		conf_file.print(String("." + String(LEDS_pal_read(pal_no, 0, 1))));
+		conf_file.print(String("." + String(LEDS_pal_read(pal_no, 0, 2))));
+			
+
+		for (uint8_t color = 1; color < 16; color++) 
+		{
+			conf_file.print(String(":" + String(LEDS_pal_read( pal_no, color, 0))));   // targetPalette[pal][color].r)));
+			conf_file.print(String("." + String(LEDS_pal_read(pal_no, color, 1))));
+			conf_file.print(String("." + String(LEDS_pal_read(pal_no, color, 2))));
+		}
+		conf_file.println("] ");
+		
+
+}
+
+void FS_pal_load(uint8_t load_nr,uint8_t pal_no)
+{
+String addr = String("/conf/" + String(load_nr) + ".pal.txt");
+	 debugMe("READ Conf " + addr);
+	File conf_file = SPIFFS.open(addr, "r");
+	delay(100);
+	if (conf_file && !conf_file.isDirectory())
+	{
+
+		char character;
+		//String settingName;
+		//String settingValue;
+		//int in_int = 0 ;
+		char type;
+		int strip_no = 0;
+		// debugMe("File-opened");
+		while (conf_file.available()) 
+		{
+
+			character = conf_file.read();
+			while ((conf_file.available()) && (character != '[')) 
+			{  // Go to first setting
+				character = conf_file.read();
+			}
+
+			type = conf_file.read();
+			character = conf_file.read(); // go past the first ":"
+			
+			int  in_int = 0;
+			if (type == 'p')
+			{
+				
+				for (uint8_t color = 0; color < 16; color++) {
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 0, in_int) ; // targetPalette[pal_no][color].r =
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 1, in_int);
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 2, in_int);
+
+				}
+
+
+			} 
+		}
+
+
+		conf_file.close();
+	}
+
+}
+
+
 //play conf
 void FS_play_conf_write(uint8_t conf_nr) 
 {
@@ -664,6 +759,9 @@ void FS_play_conf_write(uint8_t conf_nr)
 			}
 
 			conf_file.print(String(":" + String(part[strip].fft_offset)));
+			conf_file.print(String(":" + String(part[strip].pal_mix_mode)));
+			conf_file.print(String(":" + String(part[strip].fft_mix_mode)));
+			conf_file.print(String(":" + String(part[strip].pal_pal)));
 
 			conf_file.println("] ");
 
@@ -692,6 +790,17 @@ void FS_play_conf_write(uint8_t conf_nr)
 			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
 			
 			conf_file.print(String(":" + String(form_part[form].fft_offset)));
+			conf_file.print(String(":" + String(form_part[form].fft_level)));
+			conf_file.print(String(":" + String(form_part[form].pal_level)));
+			conf_file.print(String(":" + String(form_part[form].fire_level)));
+			conf_file.print(String(":" + String(form_part[form].pal_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].fft_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].fx1_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].fx_fire_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].fx_shim_mix_mode)));
+			conf_file.print(String(":" + String(form_part[form].pal_pal)));
+			conf_file.print(String(":" + String(form_part[form].pal_fire)));
+			conf_file.print(String(":" + String(form_part[form].pal_shim)));
 
 			conf_file.println("] ");
 
@@ -740,6 +849,16 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
 			conf_file.println("] ");
 		}
+		
+
+		conf_file.println("l = Layers 1 to 10, ");
+			conf_file.print("[l:" + String(layer_select[0]) )	;
+			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
+			{
+					conf_file.print(":" + String(layer_select[layer]) )	;
+
+			}
+		conf_file.println("] ");
 
 		//conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
 		//conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
@@ -748,6 +867,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 
 		conf_file.close();
+		FS_write_Conf_status(conf_nr, true);
 	}
 }
 
@@ -833,6 +953,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 					bitWrite(global_strip_opt[get_strip_menu_bit(strip_no)][setting_x], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 				}
 				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_offset = in_int;
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_pal = in_int;
 
 				// debugMe(strip_no,false);
 				// debugMe(" . ", false);
@@ -865,6 +988,18 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				}
 
 				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_offset = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_level = in_int; //if (conf_file.peek()  == ']') break;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fire_level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_mix_mode = in_int;
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx1_mix_mode = in_int;
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_fire_mix_mode = in_int;
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_shim_mix_mode = in_int;
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_pal = in_int; 
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_fire = in_int;
+				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_shim = in_int; 
+
 
 			} 
 			else if (type == 'c')
@@ -911,7 +1046,16 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				bitWrite(fft_bin_autoTrigger, bit_no, get_bool_conf_value(conf_file, &character));
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
 			}
+			else if (type == 'l')
+			{
+					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
+					{
+					layer_select[layer] = get_int_conf_value(conf_file, &character)	;
+					}
+
 			
+
+			}
 			
 			//else if (type == 'T')			// FFT settings to load in play config
 			//{
@@ -982,6 +1126,8 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.Data4NrLeds)));
 		conf_file.print(String(":"		+ String(led_cfg.Data4StartLed)));
 		conf_file.print(String(":"		+ String(led_cfg.apa102data_rate)));
+		conf_file.print(String(":" 		+ String(get_bool(fft_led_cfg.fftAutoMin))));
+		conf_file.print(String(":" 		+ String(get_bool(fft_led_cfg.fftAutoMax))));
 		conf_file.println("] ");
 
 		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
@@ -996,6 +1142,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
+		
 		conf_file.println("] ");
 
 
@@ -1013,7 +1160,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		
 		 
 		conf_file.close();
-
+		
 		 debugMe(F("Bool conf wrote"));
 	}	// end open conf file
 
@@ -1071,6 +1218,8 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
+					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint16_t(constrain(in_int, 0,255));
+					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 
 				}
 				else if (type == 'b')
@@ -1087,6 +1236,9 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA3_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
+					
+					
+					
 
 				}
 				else if (type == 'S')
@@ -1207,6 +1359,7 @@ void FS_setup_SPIFFS()
 	delay(100);
 	load_bool();
 	FS_load_PlayConf_status();
+	FS_artnet_read(0);
 	
 
 
