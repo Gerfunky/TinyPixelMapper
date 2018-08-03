@@ -625,6 +625,85 @@ void FS_play_conf_clear(uint8_t conf_nr)
 }	
 
 
+void FS_pal_save(uint8_t save_no, uint8_t pal_no)
+{
+	String addr = String("/conf/" + String(save_no) + ".pal.txt");
+
+	File conf_file = SPIFFS.open(addr, "w");
+
+	if (!conf_file && !conf_file.isDirectory()) {
+		 debugMe("pallete file creation failed");
+	}
+		conf_file.println("Pallete Config.");
+		conf_file.println("holds the 16 colors for a pallete");
+		conf_file.println("p = pallete Config : R . G . B : R . G . B ... ");
+		
+		conf_file.print(String("[p:" + String(LEDS_pal_read( pal_no, 0, 0))));   // targetPalette[pal][color].r)));
+		conf_file.print(String("." + String(LEDS_pal_read(pal_no, 0, 1))));
+		conf_file.print(String("." + String(LEDS_pal_read(pal_no, 0, 2))));
+			
+
+		for (uint8_t color = 1; color < 16; color++) 
+		{
+			conf_file.print(String(":" + String(LEDS_pal_read( pal_no, color, 0))));   // targetPalette[pal][color].r)));
+			conf_file.print(String("." + String(LEDS_pal_read(pal_no, color, 1))));
+			conf_file.print(String("." + String(LEDS_pal_read(pal_no, color, 2))));
+		}
+		conf_file.println("] ");
+		
+
+}
+
+void FS_pal_load(uint8_t load_nr,uint8_t pal_no)
+{
+String addr = String("/conf/" + String(load_nr) + ".pal.txt");
+	 debugMe("READ Conf " + addr);
+	File conf_file = SPIFFS.open(addr, "r");
+	delay(100);
+	if (conf_file && !conf_file.isDirectory())
+	{
+
+		char character;
+		//String settingName;
+		//String settingValue;
+		//int in_int = 0 ;
+		char type;
+		int strip_no = 0;
+		// debugMe("File-opened");
+		while (conf_file.available()) 
+		{
+
+			character = conf_file.read();
+			while ((conf_file.available()) && (character != '[')) 
+			{  // Go to first setting
+				character = conf_file.read();
+			}
+
+			type = conf_file.read();
+			character = conf_file.read(); // go past the first ":"
+			
+			int  in_int = 0;
+			if (type == 'p')
+			{
+				
+				for (uint8_t color = 0; color < 16; color++) {
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 0, in_int) ; // targetPalette[pal_no][color].r =
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 1, in_int);
+					in_int = get_int_conf_value(conf_file, &character); 	LEDS_pal_write(pal_no, color, 2, in_int);
+
+				}
+
+
+			} 
+		}
+
+
+		conf_file.close();
+	}
+
+}
+
+
 //play conf
 void FS_play_conf_write(uint8_t conf_nr) 
 {
@@ -1280,6 +1359,7 @@ void FS_setup_SPIFFS()
 	delay(100);
 	load_bool();
 	FS_load_PlayConf_status();
+	FS_artnet_read(0);
 	
 
 

@@ -31,7 +31,8 @@
 		// Strip/Form settings do not change!!! 
 		#define NR_FORM_PARTS	16				// how many forms? default 16
 		#define NR_STRIPS		32				// how many strips  default 32
-		#define NR_PALETTS 		2				// how many pallets do we have = 2
+		#define NR_PALETTS 		16				// how many pallets do we have = 2
+		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
 		#define MICROS_TO_MIN 60000000
 						      
@@ -82,6 +83,7 @@
 		uint16_t		Data4StartLed;		// Start led for data4;
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config
+		uint8_t 		edit_pal;
 		
 	
 

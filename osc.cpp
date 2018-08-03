@@ -4387,6 +4387,10 @@ void osc_StC_menu_master_ledcfg_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
 
+	osc_queu_MSG_int("/ostc/master/artnet/on", 		(get_bool(ARTNET_ENABLE))); 
+	osc_queu_MSG_int("/ostc/master/artnet/su", 		artnet_cfg.startU);
+	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
+
 
 
 }
@@ -4402,9 +4406,7 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
 
-	osc_queu_MSG_int("/ostc/master/artnet/on", 		(get_bool(ARTNET_ENABLE))); 
-	osc_queu_MSG_int("/ostc/master/artnet/su", 		artnet_cfg.startU);
-	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
+	
 
 	
 	
@@ -4471,11 +4473,11 @@ void osc_StC_menu_pal_ref(uint8_t pal)
 		for (int i = 0; i < 16; i++) 
 		{
 				//osc_send_MSG_rgb( String("/ostc/pal/"+ String(pal) + "/" + String(i) ) ,  LEDS_pal_read(pal,i,0), LEDS_pal_read(pal,i,1), LEDS_pal_read(pal,i,2));
-				osc_queu_MSG_rgb( String("/ostc/pal/"+ String(pal) + "/" + String(i) ) ,  LEDS_pal_read(pal,i,0), LEDS_pal_read(pal,i,1), LEDS_pal_read(pal,i,2) );	
+				osc_queu_MSG_rgb( String("/ostc/pal/1/" + String(i) ) ,  LEDS_pal_read(pal,i,0), LEDS_pal_read(pal,i,1), LEDS_pal_read(pal,i,2) );	
 		}
 		
 	//}
-
+	osc_queu_MSG_int("/ostc/pal/edit/edit", led_cfg.edit_pal); 
 }
 
 
@@ -4935,8 +4937,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			if (msg.fullMatch("/conn",addrOffset))					{ osc_StC_menu_master_ref(); }
 			else if (msg.fullMatch("/ledcfg/ref",addrOffset))		{ osc_StC_menu_master_ledcfg_ref(); }
 
-			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    }
-			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); }
+			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
+			else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); 				osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());  }
 			else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
 			else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g				= constrain(uint8_t(msg.getInt(0)), 0, 255); }
 			else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
@@ -4975,7 +4977,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			
 			else if (msg.fullMatch("/artnet/on",addrOffset))		{ osc_toggle_artnet(boolean(msg.getInt(0)) );  }
 			else if (msg.fullMatch("/artnet/su",addrOffset))		{ artnet_cfg.startU = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
-			else if (msg.fullMatch("/artnet/su",addrOffset))		{ artnet_cfg.numU  = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
+			else if (msg.fullMatch("/artnet/nu",addrOffset))		{ artnet_cfg.numU  = constrain(uint8_t(msg.getInt(0)) , 0 , 4) ; }
 			else if (msg.fullMatch("/artnet/save",addrOffset) && boolean(msg.getInt(0)) == true ) 		{ FS_artnet_write(0); }
 			
 			
@@ -5028,15 +5030,15 @@ void osc_StC_pal_rec(OSCMessage &msg, int addrOffset)
 	char address[5];
 	
 	
-	uint8_t pal_no = 0;						// form NR in uint8_t
+	//uint8_t pal_no = 0;						// form NR in uint8_t
 	//String outbuffer = "/pal/0/x/1-3";
 	//float outvalue = 0;
 
-	msg.getAddress(address, addrOffset - 1, 1);
-	pal_no_string = pal_no_string + address[0];
-	pal_no = pal_no_string.toInt();
+	//msg.getAddress(address, addrOffset - 1, 1);
+	//pal_no_string = pal_no_string + address[0];
+	//pal_no = pal_no_string.toInt();
 
-	memset(address, 0, sizeof(address));
+	//memset(address, 0, sizeof(address));
 	msg.getAddress(address, addrOffset + 1);
 
 	for (byte i = 0; i < sizeof(address); i++) 
@@ -5051,13 +5053,13 @@ void osc_StC_pal_rec(OSCMessage &msg, int addrOffset)
 	//debugMe(pal_no);
 	//debugMe(color_no);
 
-	LEDS_pal_write(pal_no, color_no, 0, uint8_t(msg.getInt(0)));
-	LEDS_pal_write(pal_no, color_no, 1, uint8_t(msg.getInt(1)));
-	LEDS_pal_write(pal_no, color_no, 2, uint8_t(msg.getInt(2)));
+	LEDS_pal_write(led_cfg.edit_pal, color_no, 0, uint8_t(msg.getInt(0)));
+	LEDS_pal_write(led_cfg.edit_pal, color_no, 1, uint8_t(msg.getInt(1)));
+	LEDS_pal_write(led_cfg.edit_pal, color_no, 2, uint8_t(msg.getInt(2)));
 
 }
 
-
+/*
 void ostc_sct_pal_load(OSCMessage &msg, int addrOffset)
 {
 
@@ -5076,23 +5078,34 @@ void ostc_sct_pal_load(OSCMessage &msg, int addrOffset)
 
 	debugMe(pal_no_string);
 	memset(address, 0, sizeof(address));
-	LEDS_pal_load(  pal_no	, uint8_t(msg.getInt(0)) );  
+	LEDS_pal_load( pal_no 	, uint8_t(msg.getInt(0)) );  
 
 
-	osc_StC_menu_pal_ref(pal_no);
+	//osc_StC_menu_pal_ref(pal_no);
 
 }
+*/
+
 
 
 
 
 void osc_StC_pal_routing(OSCMessage &msg, int addrOffset) 
 {
+	
+	if 		(msg.fullMatch("/edit/edit",addrOffset))			{ led_cfg.edit_pal = uint8_t(msg.getInt(0));  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load(  led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/fs/load",addrOffset))				{FS_pal_load(uint8_t(msg.getInt(0)), led_cfg.edit_pal); osc_StC_menu_pal_ref(led_cfg.edit_pal);}
+	else if (msg.fullMatch("/fs/save",addrOffset)) 				{FS_pal_save(uint8_t(msg.getInt(0)),  led_cfg.edit_pal);}
+	else
+	{
+		msg.route("/1", osc_StC_pal_rec, addrOffset) ;
+	}
 
 	//debugMe("in par routing");
-	msg.route("/0", osc_StC_pal_rec, addrOffset) ; 
-	msg.route("/1", osc_StC_pal_rec, addrOffset) ;
-	msg.route("/load", ostc_sct_pal_load,  addrOffset)  ;    
+	//msg.route("/0", osc_StC_pal_rec, addrOffset) ; 
+	
+	//msg.route("/load", ostc_sct_pal_load,  addrOffset)  ;    
 
 }
 
@@ -5109,7 +5122,7 @@ void osc_StC_menu_routing(OSCMessage &msg, int addrOffset)
 		case 0:  osc_StC_menu_master_ref(); break; //	osc_StC_menu_pal_ref(0) ; osc_StC_menu_pal_ref(1) ; break;	
 		case 1:  osc_StC_menu_form_ref() ; 	break;	
 		case 2: osc_StC_menu_strip_ref(0) ; break; 
-		case 3:  osc_StC_menu_pal_ref(0) ; osc_StC_menu_pal_ref(1) ;  break;
+		case 3:  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;   break;
 		case 4:  osc_StC_menu_audio_ref() ; break;
 
 

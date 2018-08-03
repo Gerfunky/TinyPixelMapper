@@ -168,7 +168,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 
 
 
-			uint8_t layer_select[MAX_LAYERS_SELECT]  = {1,3,0,5,0,0,0,0,0,0};
+			uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0};
 
 
 			/*			0 = none
@@ -177,7 +177,8 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 						3 = Form pallete
 						4 = Strip pallete
 						5 = FX1
-						6 = Shimmer
+						6 = Fire
+						7 = Shimmer
 						
 			*/
 
@@ -853,18 +854,42 @@ void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
 {
 	// load a pallete from the default (FastLed)
 	debugMe("Load pal" + String(pal_menu));
+	if (pal_no < NR_PALETTS && pal_menu < NR_PALETTS_SELECT )
 	switch (pal_menu)
 	{
-	case 0: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;	
-	case 1: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
-	case 2: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
-	case 3: LEDS_pal_cur[pal_no] = CloudColors_p; break;
-	case 4: LEDS_pal_cur[pal_no] = PartyColors_p; break;
-	case 5: LEDS_pal_cur[pal_no] = OceanColors_p; break;
-	case 6: LEDS_pal_cur[pal_no] = ForestColors_p; break;
-	case 7: LEDS_pal_cur[pal_no] = HeatColors_p; break;
-	case 8: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
-	case 9: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(0, 20, 255); } break;
+	case 0: LEDS_pal_cur[pal_no] = LEDS_pal_cur[0]; break;
+	case 1: LEDS_pal_cur[pal_no] = LEDS_pal_cur[1]; break;
+	case 2: LEDS_pal_cur[pal_no] = LEDS_pal_cur[2]; break;
+	case 3: LEDS_pal_cur[pal_no] = LEDS_pal_cur[3]; break;
+	case 4: LEDS_pal_cur[pal_no] = LEDS_pal_cur[4]; break;
+	case 5: LEDS_pal_cur[pal_no] = LEDS_pal_cur[5]; break;
+	case 6: LEDS_pal_cur[pal_no] = LEDS_pal_cur[6]; break;
+	case 7: LEDS_pal_cur[pal_no] = LEDS_pal_cur[7]; break;
+	case 8: LEDS_pal_cur[pal_no] = LEDS_pal_cur[8]; break;
+	case 9: LEDS_pal_cur[pal_no] = LEDS_pal_cur[9]; break;
+	case 10: LEDS_pal_cur[pal_no] = LEDS_pal_cur[10]; break;
+	case 11: LEDS_pal_cur[pal_no] = LEDS_pal_cur[11]; break;
+	case 12: LEDS_pal_cur[pal_no] = LEDS_pal_cur[12]; break;
+	case 13: LEDS_pal_cur[pal_no] = LEDS_pal_cur[13]; break;
+	case 14: LEDS_pal_cur[pal_no] = LEDS_pal_cur[14]; break;
+	case 15: LEDS_pal_cur[pal_no] = LEDS_pal_cur[15]; break;
+
+	case 19: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
+	case 20: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
+	case 21: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
+	case 22: LEDS_pal_cur[pal_no] = CloudColors_p; break;
+	case 23: LEDS_pal_cur[pal_no] = PartyColors_p; break;
+	case 24: LEDS_pal_cur[pal_no] = OceanColors_p; break;
+	case 25: LEDS_pal_cur[pal_no] = ForestColors_p; break;
+	case 26: LEDS_pal_cur[pal_no] = HeatColors_p; break;
+	case 27: LEDS_pal_cur[pal_no] = LavaColors_p; break;
+	case 28: LEDS_pal_cur[pal_no] = pal_red_green; break;
+	case 29: LEDS_pal_cur[pal_no] = pal_red_blue; break;
+	case 30: LEDS_pal_cur[pal_no] = pal_green_blue; break;
+	case 31: LEDS_pal_cur[pal_no] = pal_black_white_Narrow; break;
+	case 32: LEDS_pal_cur[pal_no] = pal_black_white_wide; break;
+	
+	
 	default: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
 		
 
@@ -942,6 +967,22 @@ CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , boolean
 			{
 				case 0: color = ColorFromPalette(LEDS_pal_cur[0], 		index,level, currentBlendingTB);	break;
 				case 1: color = ColorFromPalette(LEDS_pal_cur[1], 		index,level, currentBlendingTB);	break;
+				case 2: color = ColorFromPalette(LEDS_pal_cur[2], 		index,level, currentBlendingTB);	break;
+				case 3: color = ColorFromPalette(LEDS_pal_cur[3], 		index,level, currentBlendingTB);	break;
+				case 4: color = ColorFromPalette(LEDS_pal_cur[4], 		index,level, currentBlendingTB);	break;
+				case 5: color = ColorFromPalette(LEDS_pal_cur[5], 		index,level, currentBlendingTB);	break;
+				case 6: color = ColorFromPalette(LEDS_pal_cur[6], 		index,level, currentBlendingTB);	break;
+				case 7: color = ColorFromPalette(LEDS_pal_cur[7], 		index,level, currentBlendingTB);	break;
+
+				case 8: color = ColorFromPalette(LEDS_pal_cur[8], 		index,level, currentBlendingTB);	break;
+				case 9: color = ColorFromPalette(LEDS_pal_cur[9], 		index,level, currentBlendingTB);	break;
+				case 10: color = ColorFromPalette(LEDS_pal_cur[10], 		index,level, currentBlendingTB);	break;
+				case 11: color = ColorFromPalette(LEDS_pal_cur[11], 		index,level, currentBlendingTB);	break;
+				case 12: color = ColorFromPalette(LEDS_pal_cur[12], 		index,level, currentBlendingTB);	break;
+				case 13: color = ColorFromPalette(LEDS_pal_cur[13], 		index,level, currentBlendingTB);	break;
+				case 14: color = ColorFromPalette(LEDS_pal_cur[14], 		index,level, currentBlendingTB);	break;
+				case 15: color = ColorFromPalette(LEDS_pal_cur[15], 		index,level, currentBlendingTB);	break;
+
 				case 20: color = ColorFromPalette(RainbowColors_p, 		index,level, currentBlendingTB);	break;
 				case 21: color = ColorFromPalette(RainbowStripeColors_p, index,level, currentBlendingTB);break;	
 				case 22: color = ColorFromPalette(CloudColors_p, 		index,level, currentBlendingTB);	break;
@@ -1002,12 +1043,26 @@ CRGB ColorFrom_LONG_Palette(   // made a new fuction to spread out the 255 index
 
 	switch(pal)
 	{
-		case 0: color1 = ColorFromPalette(LEDS_pal_cur[0], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[0], 			indexC2 * 16, brightness , blendType); break ;
-		case 1: color1 = ColorFromPalette(LEDS_pal_cur[1], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[1], 			indexC2 * 16, brightness , blendType); break;
-		//case 2: color1 = ColorFromPalette(LEDS_pal_cur[2], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[2], 			indexC2 * 16, brightness , blendType); break;
-		//case 3: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
-		//case 4: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
-		//case 19: color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		case 0:  color1 = ColorFromPalette(LEDS_pal_cur[0], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[0], 			indexC2 * 16, brightness , blendType); break ;
+		case 1:  color1 = ColorFromPalette(LEDS_pal_cur[1], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[1], 			indexC2 * 16, brightness , blendType); break;
+		case 2:  color1 = ColorFromPalette(LEDS_pal_cur[2], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[2], 			indexC2 * 16, brightness , blendType); break;
+		case 3:  color1 = ColorFromPalette(LEDS_pal_cur[3], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[3], 			indexC2 * 16, brightness , blendType); break;
+		case 4:  color1 = ColorFromPalette(LEDS_pal_cur[4], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[4], 			indexC2 * 16, brightness , blendType); break;
+		case 5:  color1 = ColorFromPalette(LEDS_pal_cur[5], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[5], 			indexC2 * 16, brightness , blendType); break ;
+		case 6:  color1 = ColorFromPalette(LEDS_pal_cur[6], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[6], 			indexC2 * 16, brightness , blendType); break;
+		case 7:  color1 = ColorFromPalette(LEDS_pal_cur[7], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[7], 			indexC2 * 16, brightness , blendType); break;
+		
+		case 8:  color1 = ColorFromPalette(LEDS_pal_cur[8], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[8], 			indexC2 * 16, brightness , blendType); break;
+		case 9:  color1 = ColorFromPalette(LEDS_pal_cur[9], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[9], 			indexC2 * 16, brightness , blendType); break;
+		case 10: color1 = ColorFromPalette(LEDS_pal_cur[10], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[10], 			indexC2 * 16, brightness , blendType); break ;
+		case 11: color1 = ColorFromPalette(LEDS_pal_cur[11], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[11], 			indexC2 * 16, brightness , blendType); break;
+		case 12: color1 = ColorFromPalette(LEDS_pal_cur[12], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[12], 			indexC2 * 16, brightness , blendType); break;
+		case 13: color1 = ColorFromPalette(LEDS_pal_cur[13], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[13], 			indexC2 * 16, brightness , blendType); break;
+		case 14: color1 = ColorFromPalette(LEDS_pal_cur[14], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[14], 			indexC2 * 16, brightness , blendType); break;
+		case 15: color1 = ColorFromPalette(LEDS_pal_cur[15], 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(LEDS_pal_cur[15], 			indexC2 * 16, brightness , blendType); break ;
+		
+		
+		//case 19: reserverd random!
 		case 20: color1 = ColorFromPalette(RainbowColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowColors_p, 			indexC2 * 16, brightness , blendType); break;
 		case 21: color1 = ColorFromPalette(RainbowStripeColors_p, 	indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(RainbowStripeColors_p, 	indexC2 * 16, brightness , blendType); break; 
 		case 22: color1 = ColorFromPalette(CloudColors_p, 			indexC1 * 16, brightness , blendType); 	color2 = ColorFromPalette(CloudColors_p, 			indexC2 * 16, brightness , blendType); break; 
@@ -1442,27 +1497,28 @@ boolean LEDS_pal_check_bit()
 // Artnet
 void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {	// process the ARTNET information and send it to the leds
-
-	debugMe("in artnet uni:" + String(universe));
-
+	
+	//debugMe("in artnet uni:" + String(universe));
+	//debugMe(String( artnet_cfg.startU));
 	if ((universe >= artnet_cfg.startU) && (universe < artnet_cfg.startU + artnet_cfg.numU))
 	{
 		//FastLED.show();
 		byte internal_universe = universe - artnet_cfg.startU;
 
+		uint8_t max_length = length / 3;
+		//debugMe(max_length);
 		// read universe and put into the right part of the display buffer
-		for (int i = 0; i < length / 3; i++)
+		for (int i = 0; i < max_length ; i++)
 		{
+			
 			int led = i + (internal_universe * 170);
-
-			if (led < MAX_NUM_LEDS) {
-				// Do something
-				//DBG_OUTPUT_PORT.print("fetch DMX frame led : ");
-				//DBG_OUTPUT_PORT.println(led);
+			//debugMe(led);
+			if (led < MAX_NUM_LEDS) 
+			{
 				leds[led].r = data[i * 3];
 				leds[led].g = data[i * 3 + 1];
 				leds[led].b = data[i * 3 + 2];
-
+				//debugMe(leds[led].r);
 			}
 		}
 		yield();

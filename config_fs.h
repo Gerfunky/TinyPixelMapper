@@ -38,6 +38,10 @@ void FS_setup_SPIFFS();
 	void FS_play_conf_clear(uint8_t conf_nr) ;		// delete a conf file
 	void FS_FFT_write(uint8_t conf_nr);				//osc.cpp
 	boolean FS_FFT_read(uint8_t conf_nr);			// wifi-ota.cpp , osc.cpp , leds.cpp
+	
+	void FS_pal_load(uint8_t load_nr,uint8_t pal_no);
+	void FS_pal_save(uint8_t save_no, uint8_t pal_no);
+
 
 #ifndef ARTNET_DISABLED
 	void FS_artnet_write(uint8_t conf_nr);			// osc.cpp

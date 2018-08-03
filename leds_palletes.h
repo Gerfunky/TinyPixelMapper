@@ -5,6 +5,9 @@
 //FASTLED_USING_NAMESPACE 
 
 
+
+
+
 const TProgmemPalette16 pal_red_green PROGMEM =
 {
 	CRGB::Red,
