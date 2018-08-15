@@ -307,18 +307,18 @@ void LEDS_write_sequencer(uint8_t play_nr, boolean value)
 		byte_nr++;
 
 	}
-	debugMe(play_nr);
-	debugMe(value);
-	debugMe(byte_nr);
-	debugMe(bit_nr);
+	//debugMe(play_nr);
+	//debugMe(value);
+	//debugMe(byte_nr);
+	//debugMe(bit_nr);
 
 	bitWrite(squencer_bool[byte_nr], bit_nr, value);
 
 
 	for (uint8_t i = 0 ; i< 8 ;i++)	
 	{
-		debugMe(String(i) + " -- " + String(bitRead(squencer_bool[0], i)));	
-		debugMe(String(i) + " .. " + String(bitRead(squencer_bool[1], i)));	
+		//debugMe(String(i) + " -- " + String(bitRead(squencer_bool[0], i)));	
+		//debugMe(String(i) + " .. " + String(bitRead(squencer_bool[1], i)));	
 	}
 }
 
@@ -412,7 +412,7 @@ void  LEDS_setall_color(uint8_t color = 0) {
 		case 3: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(127, 	0, 		0));	break;
 	   default: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(180,	180, 	180)); break;	
 	}
-	debugMe("Setall Leds to : " + String(color));	
+	//debugMe("Setall Leds to : " + String(color));	
 }
 
 void LEDS_fadeout()
@@ -853,7 +853,7 @@ return random8();
 void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
 {
 	// load a pallete from the default (FastLed)
-	debugMe("Load pal" + String(pal_menu));
+	//debugMe("Load pal" + String(pal_menu));
 	if (pal_no < NR_PALETTS && pal_menu < NR_PALETTS_SELECT )
 	switch (pal_menu)
 	{
@@ -2194,7 +2194,7 @@ void LEDS_seqencer_advance()
 		{
 			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
 			{
-						debugMe("Play switch test to " + String(play_nr));
+						//debugMe("Play switch test to " + String(play_nr));
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
@@ -2210,7 +2210,7 @@ void LEDS_seqencer_advance()
 		{
 			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
 			{
-						debugMe("15-Play switch test to " + String(play_nr));
+						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
 							FS_play_conf_read(play_nr);
@@ -2237,7 +2237,7 @@ void LEDS_setup()
 	switch(led_cfg.ledMode)
 	{
 		case 0:
-			debugMe("mix mode Mirror");
+			//debugMe("mix mode Mirror");
 			if(get_bool(DATA1_ENABLE))
 			switch(led_cfg.apa102data_rate)
 			{

@@ -147,8 +147,8 @@ void osc_send_MSG_rgb(String addr_string , uint8_t  red = 128, uint8_t  green = 
 	IPAddress ip_out(osc_server.remoteIP());
 	OSCMessage msg_out(address_out);
 
-	debugMe("out: ", false);
-	debugMe(String(address_out	));
+	//debugMe("out: ", false);
+	//debugMe(String(address_out	));
 
 	msg_out.add(red);
 	msg_out.add(green);
@@ -170,8 +170,8 @@ void osc_send_MSG_led(String addr_string , uint8_t  state  )    // set a led to 
 
 	//IPAddress ip_out(osc_server.remoteIP());
 	OSCMessage msg_out(address_out);
-	debugMe("o2: ",false);
-	debugMe(String(address_out));
+	//debugMe("o2: ",false);
+	//debugMe(String(address_out));
 	switch(state)
 	{
 		case 0:   // black 
@@ -541,7 +541,7 @@ void osc_multiply_send()
 {
 	for (uint8_t x = 1;x <= 11  ; x++ )
 	{
-		debugMe((String("/multipl/") + String(x) + String("/1")));
+		//debugMe((String("/multipl/") + String(x) + String("/1")));
 		if (x != osc_cfg.conf_multiply)
 			osc_queu_MSG_float((String("/multipl/") + String(x) + String("/1")), 0);
 		else
@@ -1086,8 +1086,8 @@ void osc_strips_routing(OSCMessage &msg, int addrOffset) {
 // OSC Forms 
 void osc_forms_send(byte y) {
 	// OSC MESSAGE OUT :/form/f"y"/T/?/i
-	debugMe("Forms - refesh Start ");
-	debugMe(String("y=" + String(y)));
+	//debugMe("Forms - refesh Start ");
+	//debugMe(String("y=" + String(y)));
 	for (int i = 0; i < 8; i++) 
 	{
 		//debugMe(String("i=" + String(i)));
@@ -1173,7 +1173,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset + 3);
-	debugMe("Form-Addr1 : " + String(address));
+	//debugMe("Form-Addr1 : " + String(address));
 
 	for (byte i = 0; i < sizeof(address); i++) {
 		if (address[i] == '/') {
@@ -1195,7 +1195,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 	memset(address, 0, sizeof(address));
 
 	msg.getAddress(address, addrOffset - 2, 2);
-	debugMe("Form-type : " + String(address));
+	//debugMe("Form-type : " + String(address));
 
 	if (bool(msg.getFloat(0)) == true) 
 	{  // only on pushdown
@@ -1333,9 +1333,9 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		if (address[0] == 'M' && address[1] == 'A') 
 		{
 
-				debugMe(bit_int , true );
-				debugMe(option_int , true );
-				debugMe(form_int , true );
+				//debugMe(bit_int , true );
+				//debugMe(option_int , true );
+				//debugMe(form_int , true );
 
 				//form_menu[bit_int][option_int] = ~form_menu[bit_int][option_int];
 				
@@ -1343,7 +1343,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				{
 				if (form_part[formX].nr_leds != 0) 
 				{
-					debugMe(formX , true );
+					//debugMe(formX , true );
 					boolean trun_value = !bitRead(form_menu[bit_int][option_int], formX- 8*bit_int);
 
 					bitWrite(form_menu[bit_int][option_int], formX - 8*bit_int, trun_value ) ;
@@ -2067,7 +2067,7 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 	memset(address, 0, sizeof(address));
 	//byte msg_size = msg.size();
 
-	debugMe("row: " + String(row) + " col: " + String(collum));
+	//debugMe("row: " + String(row) + " col: " + String(collum));
 
 	switch (collum)
 	{
@@ -2102,7 +2102,7 @@ void osc_fft_rec_toggle(OSCMessage &msg, int addrOffset)
 
 	}
 
-	debugMe(fft_led_cfg.fftAutoMin);
+	//debugMe(fft_led_cfg.fftAutoMin);
 	outbuffer = String("/fft" + out_add_label);
 	osc_queu_MSG_float(outbuffer, outvalue);
 
@@ -2133,13 +2133,13 @@ void osc_fft_rec_toggleRGB(OSCMessage &msg, int addrOffset)
 	select_bit_string = select_bit_string + address[0];
 	select_bit = select_bit_string.toInt();
 	
-	debugMe(address);
+	//debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-	debugMe(address);
+	//debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2205,13 +2205,13 @@ void osc_fft_rec_toggleData(OSCMessage &msg, int addrOffset)
 	select_bit_string = select_bit_string + address[0];
 	select_bit = select_bit_string.toInt();
 	
-	debugMe(address);
+	//debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-	debugMe(address);
+	//debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2271,13 +2271,13 @@ void osc_fft_rec_toggleBri(OSCMessage &msg, int addrOffset)
 	select_bit_string = select_bit_string + address[0];
 	//select_bit = select_bit_string.toInt();
 	
-	debugMe(address);
+	//debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-	debugMe(address);
+	//debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2338,13 +2338,13 @@ void osc_fft_rec_toggleAutoTrigger(OSCMessage &msg, int addrOffset)
 	select_bit_string = select_bit_string + address[0];
 	//select_bit = select_bit_string.toInt();
 	
-	debugMe(address);
+	//debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-	debugMe(address);
+	//debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2405,13 +2405,13 @@ void osc_fft_rec_toggleFPS(OSCMessage &msg, int addrOffset)
 	select_bit_string = select_bit_string + address[0];
 	//select_bit = select_bit_string.toInt();
 	
-	debugMe(address);
+	//debugMe(address);
 	memset(address, 0, sizeof(address));				// rest the address to blank
 
 
 	msg.getAddress(address, addrOffset + 3);		// get the address for row / collum
 													//DBG_OUTPUT_PORT.println(address);
-	debugMe(address);
+	//debugMe(address);
 	for (byte i = 0; i < sizeof(address); i++)
 	{
 		if (address[i] == '/') {
@@ -2999,19 +2999,19 @@ void osc_rec_pal_load(OSCMessage &msg, int addrOffset) {
 void osc_pal_routing(OSCMessage &msg, int addrOffset) {
 	// OSC MESSAGE :/form
 
-	debugMe("pal1");
+	//debugMe("pal1");
 	if (msg.fullMatch("/ref/0", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(0);
 	if (msg.fullMatch("/ref/1", addrOffset) && bool(msg.getFloat(0)) == true) osc_send_pal_info(1);
-	debugMe("pal2");
+	//debugMe("pal2");
 	msg.route("/0", osc_rec_pal_fader, addrOffset);
 	msg.route("/1", osc_rec_pal_fader, addrOffset);
-	debugMe("pal3");
+	//debugMe("pal3");
 	
 	if (msg.fullMatch("/inv/0", addrOffset) && bool(msg.getFloat(0)) == true) {LEDS_PAL_invert(0) ; osc_send_pal_info(0); }
 	if (msg.fullMatch("/inv/1", addrOffset) && bool(msg.getFloat(0)) == true) {LEDS_PAL_invert(1) ; osc_send_pal_info(1); }
 
 	msg.route("/load", osc_rec_pal_load, addrOffset);
-	debugMe("pal4");
+	//debugMe("pal4");
 	//DBG_OUTPUT_PORT.println("yeah");      
 }
 
@@ -3391,12 +3391,12 @@ void osc_DS_led_type(OSCMessage &msg, int addrOffset)
 		String select_mode_string;
 		// String select_bit_string;
 		char address[10];
-		debugMe("T3");
+		//debugMe("T3");
 		
 		bool switch_bool = false;
 
 		msg.getAddress(address, addrOffset + 1);
-		debugMe(String(address));
+		//debugMe(String(address));
 		for (byte i = 0; i < sizeof(address); i++) {
 			if (address[i] == '/') {
 				switch_bool = true;
@@ -3654,7 +3654,7 @@ void osc_DS_DATA_SL_in(OSCMessage &msg, int addrOffset)
 				led_cfg.Data3StartLed = constrain(led_cfg.Data3StartLed +  osc_miltiply_get(), 0, MAX_NUM_LEDS - led_cfg.Data3NrLeds);
 			break;
 		}
-			debugMe("in2");
+			//debugMe("in2");
 			osc_queu_MSG_float("/DS/SL/3", float(led_cfg.Data3StartLed));
 		break;
 	case 3:		// artnet NR universes
@@ -3691,7 +3691,7 @@ void osc_DS_led_data_on(OSCMessage &msg, int addrOffset)
 		bool switch_bool = false;
 
 		msg.getAddress(address, addrOffset + 1);
-		debugMe(String(address));
+		//debugMe(String(address));
 		for (byte i = 0; i < sizeof(address); i++) {
 			if (address[i] == '/') {
 				switch_bool = true;
@@ -3713,18 +3713,18 @@ void osc_DS_led_data_on(OSCMessage &msg, int addrOffset)
 			{
 			case 1:
 				write_bool(DATA1_ENABLE,bool(msg.getFloat(0)));
-				debugMe("Data1-toggle");
+				//debugMe("Data1-toggle");
 				break;
 			case 2:
 				write_bool(DATA2_ENABLE,bool(msg.getFloat(0)));
-				debugMe("Data2-toggle");
+				//debugMe("Data2-toggle");
 				break;
 			case 3:
 				write_bool(DATA3_ENABLE,bool(msg.getFloat(0)));
-				debugMe("Data3-toggle");
+				//debugMe("Data3-toggle");
 				break;
 			case 4:
-				debugMe("Data4-toggle");
+				//debugMe("Data4-toggle");
 				write_bool(DATA4_ENABLE,bool(msg.getFloat(0)));
 				break;	
 			default:
@@ -3751,10 +3751,10 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	char address[18];
 
 	memset(address, 0, sizeof(address));
-	debugMe("T1");
+	//debugMe("T1");
 
 	msg.getAddress(address);
-	debugMe(String(address));
+	//debugMe(String(address));
 
 	
 	// OSC MESSAGE :/DS
@@ -3801,10 +3801,10 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	msg.route("/DGW", osc_DS_ip_in, addrOffset);
 	msg.route("/DNS", osc_DS_ip_in, addrOffset);
 
-	debugMe("T2");
+	//debugMe("T2");
 	msg.route("/ledType", osc_DS_led_type, addrOffset);
 	msg.route("/data", osc_DS_led_data_on, addrOffset);
-	debugMe("TXXX");
+	//debugMe("TXXX");
 
 
 	msg.route("/LNL", osc_DS_DATA_NL_in, addrOffset);
@@ -4833,7 +4833,7 @@ void osc_StC_strip_routing(OSCMessage &msg, int addrOffset)
 
 						sel_strip_no = strip_no_string.toInt();  // What CRGB value in the pallete
 						
-						debugMe(String(sel_strip_no));
+						//debugMe(String(sel_strip_no));
 
 						if  		(msg.match("/sl",addrOffset))  	part[sel_strip_no].start_led = uint16_t(msg.getInt(0))	;
 						else if  	(msg.match("/nl",addrOffset))  	part[sel_strip_no].nr_leds = uint16_t(msg.getInt(0))	;
@@ -4933,8 +4933,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 {
 		//debugMe("in master routing");
 		
-			//if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
-			if (msg.fullMatch("/conn",addrOffset))					{ osc_StC_menu_master_ref(); }
+			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
+			else if (msg.fullMatch("/conn",addrOffset))					{ osc_StC_menu_master_ref(); }
 			else if (msg.fullMatch("/ledcfg/ref",addrOffset))		{ osc_StC_menu_master_ledcfg_ref(); }
 
 			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
@@ -5196,7 +5196,7 @@ void OSC_loop()
 			memset(address, 0, sizeof(address));
 
 			oscMSG.getAddress(address);
-			debugMe(address);
+			//debugMe(address);
 
 
 			oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control

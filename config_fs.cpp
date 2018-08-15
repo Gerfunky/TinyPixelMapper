@@ -1126,8 +1126,8 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.Data4NrLeds)));
 		conf_file.print(String(":"		+ String(led_cfg.Data4StartLed)));
 		conf_file.print(String(":"		+ String(led_cfg.apa102data_rate)));
-		conf_file.print(String(":" 		+ String(get_bool(fft_led_cfg.fftAutoMin))));
-		conf_file.print(String(":" 		+ String(get_bool(fft_led_cfg.fftAutoMax))));
+		conf_file.print(String(":" 		+ String(fft_led_cfg.fftAutoMin)));
+		conf_file.print(String(":" 		+ String(fft_led_cfg.fftAutoMax)));
 		conf_file.println("] ");
 
 		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
@@ -1218,8 +1218,8 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4NrLeds 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.Data4StartLed 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
-					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint16_t(constrain(in_int, 0,255));
-					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
+					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint8_t(constrain(in_int, 0,255));
+					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint8_t(constrain(in_int, 0,255));
 
 				}
 				else if (type == 'b')
