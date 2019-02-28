@@ -18,7 +18,7 @@
 	#include "tools.h"
 	#include "wifi-ota.h"
 	#include "config_fs.h"
-	#include "msgeq7_fft.h"
+	//#include "msgeq7_fft.h"
 
 
 	#include <FastLED.h>
@@ -1180,9 +1180,15 @@ void LEDS_mix_led(CRGB *out_array, uint16_t led_nr, CRGB color, uint8_t mode = 0
 			if( (out_array[led_nr].blue +  color.blue ) /2  	>= HARD_MIX_TRIGGER )  		out_array[led_nr].blue =  	255 ; else out_array[led_nr].blue = 0;			
 			break;
 		case MIX_MULTIPLY:
-			out_array[led_nr].red =    constrain(out_array[led_nr].red  *   color.red, 0,255) ;
-			out_array[led_nr].green =  constrain(out_array[led_nr].green  *   color.green, 0,255) ;
-			out_array[led_nr].blue =   constrain(out_array[led_nr].blue  *   color.blue, 0,255) ;
+
+			out_array[led_nr].red =    out_array[led_nr].red  *   color.red /255  ;
+			out_array[led_nr].green =  out_array[led_nr].green  *   color.green /255  ;
+			out_array[led_nr].blue =   out_array[led_nr].blue  *   color.blue  /255 ;
+			
+
+		//	out_array[led_nr].red =    constrain(out_array[led_nr].red  *   color.red, 0,255) ;
+		//	out_array[led_nr].green =  constrain(out_array[led_nr].green  *   color.green, 0,255) ;
+		//	out_array[led_nr].blue =   constrain(out_array[led_nr].blue  *   color.blue, 0,255) ;
 			break;
 		case MIX_HARD_LIGHT:
 			if (color.getLuma() >= 128)
@@ -1774,7 +1780,7 @@ void LEDS_mix_onto_output(CRGB *in_array, uint16_t start_led, uint16_t nr_leds, 
 				for(uint16_t led_num = start_led; led_num < start_led + nr_leds  ; led_num ++ )
 				{
 
-					if(!mirror)
+					if(!mirror) // we are not mirrored
 					{
 
 						

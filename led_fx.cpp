@@ -18,6 +18,7 @@ extern CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , 
 
 
 
+
 // Fire2012 by Mark Kriegsman, July 2012
 // as part of "Five Elements" shown here: http://youtu.be/knWiGsmgycY
 ////   Modded to acept vaiabled for strip / form selection
@@ -59,8 +60,6 @@ extern CRGB ColorFrom_SHORT_Palette(uint8_t pal, uint8_t index, uint8_t level , 
 // Array of temperature readings at each simulation cell
 //static 
 	byte heat[MAX_NUM_LEDS];
-
-
 	uint8_t LEDS_FFT_get_fire_cooling()
 	{
 		return COOLING * 2;
@@ -523,7 +522,7 @@ void noise16_2(uint16_t StartLed, uint16_t NrLeds , uint8_t pal, boolean mirror,
 
 
 
-	led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[0], index, bri, currentBlendingTB);  break ;
+	led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[0], index, bri, currentBlendingTB); 
 /*switch(pal)
 	{
 		case 0: led_FX_out[i] = ColorFromPalette(LEDS_pal_cur[0], index, bri, currentBlendingTB);  break ;

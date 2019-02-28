@@ -328,6 +328,7 @@
 		,MIX_DARKEN
 		,MIX_LIGHTEN
 		,MIX_LINEAR_BURN
+		,MIX_SCREEN
 		
 	  };
 
