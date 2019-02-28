@@ -177,6 +177,8 @@
 		  uint8_t 	pal_pal;			// what pallete for pallete run
 		  uint8_t 	pal_fire;			// what pallete for pallete run
 		  uint8_t 	pal_shim;			// what pallete for pallete run
+			uint8_t   pal_3sin;
+			
 	  };
 	  
 	  struct form_part_fx_shim_struct
@@ -310,7 +312,7 @@
 
 	  };
 
-
+/*
 #define HARD_MIX_TRIGGER 128
 	  enum mix_enum 
 	  {  MIX_ADD 			
@@ -332,7 +334,7 @@
 		
 	  };
 
-
+*/
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
 										// TODO Check me again
