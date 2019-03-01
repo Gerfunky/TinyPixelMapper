@@ -511,6 +511,33 @@ boolean LEDS_get_sequencer(uint8_t play_nr)
 
 }
 
+CRGBPalette16 LEDS_pal_get(uint8_t pal_no)
+{
+	if (pal_no < 16)
+		return LEDS_pal_cur[pal_no];
+
+	CRGBPalette16 tmp_palette = RainbowColors_p;
+		
+	
+	if (pal_no == 20) tmp_palette = RainbowColors_p; 
+	if (pal_no == 21) tmp_palette = RainbowStripeColors_p; 
+	if (pal_no == 22)  tmp_palette =  CloudColors_p; 
+	if (pal_no == 23)  tmp_palette =  PartyColors_p; 
+	if (pal_no == 24)  tmp_palette =  OceanColors_p; 
+	if (pal_no == 25)  tmp_palette =  ForestColors_p; 
+	if (pal_no == 26)  tmp_palette =  HeatColors_p; 
+	if (pal_no == 27)  tmp_palette =  LavaColors_p; 
+	if (pal_no == 28)  tmp_palette =  pal_red_green; 
+	if (pal_no == 29)  tmp_palette =  pal_red_blue; 
+	if (pal_no == 30)  tmp_palette =  pal_green_blue; 
+	if (pal_no == 31)  tmp_palette =  pal_black_white_Narrow; 
+	if (pal_no == 32)  tmp_palette =  pal_black_white_wide; 
+	
+	
+		return tmp_palette;
+
+}
+
 
 
 uint8_t LEDS_get_real_bri()
@@ -684,7 +711,7 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 				
 					if (form_cfg[i + (z * 8)].fade_value != 0 )         	   tpm_fx.fadeLedArray(led_FX_out, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].fade_value);
 
-					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)        { if(!bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i)) tpm_fx.AddGlitter(led_FX_out, LEDS_pal_cur[form_fx_glitter[i + (z * 8)].pal] ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);																					
+					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)        { if(!bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i)) tpm_fx.AddGlitter(led_FX_out, LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal) ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);																					
 																								else tpm_fx.AddGlitter(led_FX_out ,fft_color_result_data[0] ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds); trigger = true; }
 
 				
@@ -797,6 +824,8 @@ return random8();
 }
 
 // palletes
+
+
 
 
 
@@ -1707,15 +1736,18 @@ void LEDS_run_layers()
 							}
 						break;   
 						case 3:
-							for (byte i = 0; i < 8; i++)
+							
+							for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
 							{
-								for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
+								for (byte i = 0; i < 8; i++)
 								{
 									
 									if ((form_cfg[i + (z  * 8)].nr_leds != 0) && (bitRead(form_menu_pal[z][_M_FORM_PAL_RUN], i) == true)) 
 									{
-										tpm_fx.PalFillLong(tmp_array, LEDS_pal_cur[form_fx_pal[i + (z * 8)].pal ], form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , form_fx_pal[i + (z * 8)].index_add_led,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
+										
+										tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , form_fx_pal[i + (z * 8)].index_add_led,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
 										tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), form_fx_pal[i + (z * 8)].level , bitRead(form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
+
 									}
 									
 								}
@@ -1728,7 +1760,7 @@ void LEDS_run_layers()
 								{
 									if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true))         
 										{
-											tpm_fx.PalFillLong(tmp_array, LEDS_pal_cur[part[i + (z * 8)].pal_pal ], part[i + (z * 8)].start_led,part[i + (z * 8)].nr_leds  , part[i + (z * 8)].index_long , part[i + (z * 8)].index_add,  MIX_REPLACE, 255, TBlendType(bitRead(strip_menu[z][_M_BLEND_], i) ) );
+											tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(part[i + (z * 8)].pal_pal ), part[i + (z * 8)].start_led,part[i + (z * 8)].nr_leds  , part[i + (z * 8)].index_long , part[i + (z * 8)].index_add,  MIX_REPLACE, 255, TBlendType(bitRead(strip_menu[z][_M_BLEND_], i) ) );
 											tpm_fx.mixOntoLedArray(tmp_array, leds, part[i + (z * 8)].nr_leds , part[i + (z * 8)].start_led,  bitRead(strip_menu[z][_M_REVERSED_], i), bitRead(strip_menu[z][_M_MIRROR_OUT_], i), MixModeType(part[i + (z * 8)].pal_mix_mode), part[i + (z * 8)].pal_level , bitRead(strip_menu[z][_M_ONE_COLOR_], i) );
 										}
 								}
@@ -1779,7 +1811,7 @@ void LEDS_run_layers()
 									
 										if ( (bitRead(form_menu_fire[z][_M_FORM_FIRE_RUN], i) == true)	)  
 										{ 
-											tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_cur[form_fx_fire[i + (z * 8)].pal],  form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_fire[i + (z * 8)].level , led_cfg.fire_cooling ,led_cfg.fire_sparking , MixModeType(form_fx_fire[i + (z * 8)].mix_mode)  );
+											tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_get(form_fx_fire[i + (z * 8)].pal),  form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_fire[i + (z * 8)].level , led_cfg.fire_cooling ,led_cfg.fire_sparking , MixModeType(form_fx_fire[i + (z * 8)].mix_mode)  );
 											tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_fire[z][_M_FORM_FIRE_REVERSED], i), bitRead(form_menu_fire[z][_M_FORM_FIRE_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), form_fx_pal[i + (z * 8)].level , false );
 										}
 									
@@ -1790,7 +1822,7 @@ void LEDS_run_layers()
 									
 
 										if (bitRead(form_menu_shimmer[z][_M_FORM_SHIMMER_RUN], i) == true)
-											tpm_fx.Shimmer(leds,  LEDS_pal_cur[form_fx_shim[i + (z * 8)].pal] , form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_shim[i + (z * 8)].xscale, form_fx_shim[i + (z * 8)].yscale, form_fx_shim[i + (z * 8)].beater ,  MixModeType(form_fx_shim[i + (z * 8)].mix_mode), form_fx_shim[i + (z * 8)].level,  TBlendType(bitRead(form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
+											tpm_fx.Shimmer(leds,  LEDS_pal_get(form_fx_shim[i + (z * 8)].pal) , form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_shim[i + (z * 8)].xscale, form_fx_shim[i + (z * 8)].yscale, form_fx_shim[i + (z * 8)].beater ,  MixModeType(form_fx_shim[i + (z * 8)].mix_mode), form_fx_shim[i + (z * 8)].level,  TBlendType(bitRead(form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
 									
 						break;
 
