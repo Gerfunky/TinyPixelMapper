@@ -297,6 +297,66 @@
 		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
 	  }; */
 
+		#define _M_NR_FORM_PAL_OPTIONS_ 5
+		enum form_pal_options
+		{
+			_M_FORM_PAL_RUN,
+			_M_FORM_PAL_REVERSED,
+			_M_FORM_PAL_MIRROR,
+			_M_FORM_PAL_BLEND,
+			_M_FORM_PAL_ONECOLOR
+		};
+
+		#define _M_NR_FORM_FFT_OPTIONS_ 4
+		enum form_fft_options
+		{
+			_M_FORM_FFT_RUN,
+			_M_FORM_FFT_REVERSED,
+			_M_FORM_FFT_MIRROR,
+			_M_FORM_FFT_ONECOLOR
+		};
+
+		#define _M_NR_FORM_FIRE_OPTIONS_ 3
+		enum form_fire_options
+		{
+			_M_FORM_FIRE_RUN,
+			_M_FORM_FIRE_REVERSED,
+			_M_FORM_FIRE_MIRROR,
+		};	
+
+		#define _M_NR_FORM_GLITTER_OPTIONS_ 2
+		enum form_glitter_options
+		{
+			_M_FORM_GLITTER_RUN,
+			_M_FORM_GLITTER_FFT,
+		};
+
+		#define _M_NR_FORM_DOT_OPTIONS_ 4
+			enum form_dot_options
+		{
+			_M_FORM_DOT_RUN,
+			_M_FORM_DOT_FFT,
+			_M_FORM_DOT_SINE,
+			_M_FORM_DOT_SAW,
+
+		};
+
+		#define _M_NR_FORM_SHIMMER_OPTIONS_ 2
+		enum form_shimmer_options
+		{
+			_M_FORM_SHIMMER_RUN,
+			_M_FORM_SHIMMER_BLEND,
+		};
+
+		#define _M_NR_FORM_FX1_OPTIONS_ 3
+		enum form_fx1_options
+		{
+			_M_FORM_FX1_RUN,
+			_M_FORM_FX1_REVERSED,
+			_M_FORM_FX1_MIRROR,
+		};
+
+
 	  enum strip_options {
 		  _M_AUDIO_REVERSED 	,
 		  _M_AUDIO_ 			,				// Display FFT
@@ -334,7 +394,7 @@
 		  _M_AUDIO_FX5  		,			//
 		  _M_AUDIO_FX6  		,			//
 
-	  	 _M_FX_SHIMMER  		,			//
+	  	_M_FX_SHIMMER  		,			//
 		  _M_FX_SHIM_PAL  		,			//
 		  _M_FX_SHIM_BLEND , 
 		  _M_FX_SHIM_SUBTRACT , 
