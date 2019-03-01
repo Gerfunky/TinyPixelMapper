@@ -432,14 +432,16 @@ struct form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] =
 };
 
 
-byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_] =				// Strip Selection menu what efferct on/off/fft ....
+byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
+/*
+ =				// Strip Selection menu what efferct on/off/fft ....
 {
 	{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 	,{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
 };
-
+*/
 
 uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_] = { { 0,0 } ,{ 0,0 } };			// Test for global mirruring and reversing even in artnet
 
@@ -1747,7 +1749,7 @@ void LEDS_run_layers()
 								
 											
 											if (
-											(bitRead(form_menu_glitter[z][_M_GLITTER_], i) == true)       
+											(bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)       
 											 
 											
 											|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)        

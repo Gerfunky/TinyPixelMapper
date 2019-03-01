@@ -275,7 +275,7 @@
 	  };
 
 
-#define _M_NR_OPTIONS_     40 //10			// hass less options compared to forms!!
+#define _M_NR_OPTIONS_     16 //40 //10			// hass less options compared to forms!!
 #define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
@@ -372,7 +372,15 @@
 		  
 		  _M_AUDIO_MIRROR  		,			//
 		  _M_AUDIO_ONECOLOR		,			//
-		  _M_AUDIO_MASK  		,			//
+
+
+			_M_FIRE_				,				// Fire animation
+		  _M_FIRE_PAL			,				// Fire animation
+		  _M_FIRE_MIRROR  		,			//
+		  _M_FIRE_REV			,			//
+
+
+		  /*_M_AUDIO_MASK  		,			//
 		  _M_AUDIO_SUBTRACT		,
 
 		  _M_FX_MIRROR  		,				//
@@ -413,7 +421,7 @@
 		  _M_FX_SIN_PAL  		,			//
 		  _M_FX_3_SIN	  		,			//40
 		  _M_FX_2_SIN  		,			//
-		 
+		 */
 		
 
 		  

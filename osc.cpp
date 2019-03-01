@@ -3858,8 +3858,7 @@ void osc_StC_menu_form_fft_adv_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+			
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -3868,16 +3867,13 @@ void osc_StC_menu_form_fft_adv_ref()
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
+					
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rev" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rgb" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 				real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/onecolor",formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/mirr" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 			real_formNr)));  		
 
-						case _M_AUDIO_REVERSED: 			osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rev" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		real_formNr)));  		break;
-						case _M_AUDIO_: 							osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rgb" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 				real_formNr)));  		break;
-						case _M_AUDIO_ONECOLOR: 			osc_queu_MSG_SEL_VAL( "/ostc/form/fft/onecolor",formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		real_formNr)));  		break;
-						case _M_AUDIO_MIRROR: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fft/mirr" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 			real_formNr)));  		break;
-
-					} // endd switch
-			} // end NR form options
+				
 	;
 		osc_queu_MSG_int("/ostc/form/fo/" + String(formNr), form_fx_fft[formNr].offset );
 		osc_queu_MSG_int("/ostc/form/mix/fft/" + String(formNr), form_fx_fft[formNr].mix_mode );
@@ -3890,8 +3886,7 @@ void osc_StC_menu_form_fx_shim_adv_ref()
 	uint8_t bit = 0;	
 	for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+			
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -3901,18 +3896,16 @@ void osc_StC_menu_form_fx_shim_adv_ref()
 
 				}
 		
-				switch(z)
-				{
-						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		break;
-						case _M_FX_SHIM_BLEND: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimblend",formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_BLEND], 	real_formNr)));  		break;
+				
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimblend",formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_BLEND], 	real_formNr)));  		
 
-						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		break;
-				}
-
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		
+				
 
 
 	
-			}
+			
 
 			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_fx_shim[formNr].level );
 			osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_fx_shim[formNr].xscale );
@@ -3934,8 +3927,7 @@ uint8_t bit = 0;
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+		
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -3944,16 +3936,13 @@ uint8_t bit = 0;
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
-						case _M_FIRE_: 						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  		break;
-						case _M_FIRE_MIRROR: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/mirr" , formNr,	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_MIRROR], 	real_formNr)));  		break;
-						case _M_FIRE_REV: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/rev" , formNr,	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_REVERSED], 		real_formNr)));  		break;
-						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		break;
-					}
 					
-			}
-			
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/mirr" , formNr,	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_MIRROR], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/fire/rev" , formNr,	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_REVERSED], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  	
+										
+		
 			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_fx_fire[formNr].level );
 			osc_queu_MSG_int("/ostc/form/mix/fir/" + String(formNr), form_fx_fire[formNr].mix_mode );
 			osc_queu_MSG_int("/ostc/form/fir/pal/" + String(formNr), form_fx_fire[formNr].pal );
@@ -3973,8 +3962,7 @@ void osc_StC_menu_form_fx_adv_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+			
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -3983,26 +3971,21 @@ void osc_StC_menu_form_fx_adv_ref()
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
+				
 
-						//case _M_FX_MASK: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/mask" , 	formNr,		(bitRead(form_menu[bit][_M_FX_MASK], 		real_formNr)));  		break;
-						//case _M_FX_SUBTRACT: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/pm" , 		formNr,		(bitRead(form_menu[bit][_M_FX_SUBTRACT], 	real_formNr)));  		break;
-						case _M_FX1_ON: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/on" , 		formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		break;
+						//case _M_FX_MASK: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/mask" , 	formNr,		(bitRead(form_menu[bit][_M_FX_MASK], 		real_formNr)));  	
+						//case _M_FX_SUBTRACT: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/pm" , 		formNr,		(bitRead(form_menu[bit][_M_FX_SUBTRACT], 	real_formNr)));  		
+						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/on" , 		formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  	
 
-						case _M_GLITTER_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitw" , 	formNr,		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_RUN], 					real_formNr)));  		break;
-					//	case _M_RBOW_GLITTER_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitRW" , 	formNr,		(bitRead(form_menu[bit][_M_RBOW_GLITTER_], 				real_formNr)));  		break;
-						case _M_GLITTER_FROM_FFT_DATA1: 	osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitFFT" , formNr,		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_FFT], 	real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitw" , 	formNr,		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_RUN], 					real_formNr)));  		
+					//	case _M_RBOW_GLITTER_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitRW" , 	formNr,		(bitRead(form_menu[bit][_M_RBOW_GLITTER_], 				real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/glitFFT" , formNr,		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_FFT], 	real_formNr)));  		
 
-						case _M_SAW_DOT_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/saw" 	, 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SAW], 		real_formNr)));  		break;
-						case _M_JUGGLE_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/jug" 		, 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SINE], 		real_formNr)));  		break;
-						case _M_AUDIO_DOT_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/audot" , 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_FFT], 	real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/saw" 	, 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SAW], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/jug" 		, 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SINE], 		real_formNr)));  	
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/audot" , 	formNr,		(bitRead(form_menu_dot[bit][_M_FORM_DOT_FFT], 	real_formNr)));  	
 
 
-						
-
-					} // endd switch
-			} // end NR form options
 		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, 	form_fx1[formNr].level );
 		osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_fx_glitter[formNr].value );
 		osc_queu_MSG_SEL_VAL("/ostc/form/fx/fade" ,			formNr , form_cfg[formNr].fade_value );
@@ -4059,8 +4042,7 @@ void osc_StC_menu_form_pal_adv_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+			
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -4069,18 +4051,17 @@ void osc_StC_menu_form_pal_adv_ref()
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
+				
 						
-						case _M_ONE_COLOR_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/pal/onecolor" ,formNr, 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_ONECOLOR], 	real_formNr)));  		break;
-						case _M_REVERSED_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/rev" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_REVERSED], 		real_formNr)));  		break;
-						case _M_MIRROR_OUT_: 				osc_queu_MSG_SEL_VAL( "/ostc/form/pal/mirr" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	real_formNr)));  		break;
-						case _M_BLEND_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/blend" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_BLEND], 		real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/onecolor" ,formNr, 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_ONECOLOR], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/rev" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_REVERSED], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/mirr" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/blend" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_BLEND], 		real_formNr)));  	
 
 
 
-					} // endd switch
-			} // end NR form options
+				
+		
 
 		
 		osc_queu_MSG_int("/ostc/form/mix/pal/" + String(formNr), form_fx_pal[formNr].mix_mode );
@@ -4098,8 +4079,6 @@ void osc_StC_menu_form_FX_layers_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -4108,21 +4087,19 @@ void osc_StC_menu_form_FX_layers_ref()
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
+			
+						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		
 
-						case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  	
 
-						case _M_FIRE_: 						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/firerun" , formNr,		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  		break;
-
-						case _M_FX_SHIMMER: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		break;
+						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		
 
 						//case _M_FX_3_SIN: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/3sin" , 	formNr,		(bitRead(form_menu[bit][_M_FX_3_SIN], 		real_formNr)));  		break;
 						//case _M_FX_SIN_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/sinpal" , 	formNr,		(bitRead(form_menu[bit][_M_FX_SIN_PAL], 	real_formNr)));  		break;
 						
 
-					} // endd switch
-			} // end NR form options
+			
+
 
 
 		
@@ -4146,8 +4123,7 @@ void osc_StC_menu_form_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			for (int z = 0; z < _M_NR_FORM_OPTIONS_ ; z++)
-			{
+		
 				uint8_t real_formNr = formNr;
 				 bit = 0;
 				while (real_formNr >= 8 )
@@ -4156,17 +4132,13 @@ void osc_StC_menu_form_ref()
 					real_formNr = real_formNr - 8;	
 
 				}
-					switch(z)
-					{
-						case _M_STRIP_:  					osc_queu_MSG_SEL_VAL( "/ostc/form/pal/run" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_RUN], 		real_formNr)));  		break;
-						case _M_AUDIO_: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rgb" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 				real_formNr)));  break;
-						case _M_FX1_ON: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/on" , 		formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		break;
+
+						osc_queu_MSG_SEL_VAL( "/ostc/form/pal/run" , 	formNr,		(bitRead(form_menu_pal[bit][_M_FORM_PAL_RUN], 		real_formNr)));  		
+						osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rgb" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 				real_formNr))); 
+						osc_queu_MSG_SEL_VAL( "/ostc/form/fx/on" , 		formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		
 						//case _M_FX_LAYERS_ON: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu[bit][_M_FX_LAYERS_ON], 		real_formNr)));  		break;
 
-						
-
-					} // endd switch
-			} // end NR form options
+		
 
 		
 		//osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_part[formNr].FX_level );
@@ -4217,8 +4189,7 @@ boolean  osc_StC_menu_strip_ref(uint8_t page)
 
 		for (uint8_t formNr = page * 16 ; formNr <  ( page+1) * 16 ; formNr++)
 		{
-			for (int z = 0; z < _M_NR_OPTIONS_ ; z++)
-			{
+		
 				uint8_t real_formNr = formNr;
 				bit = 0;
 
@@ -4230,24 +4201,23 @@ boolean  osc_StC_menu_strip_ref(uint8_t page)
 
 				}
 					
-				switch(z)
-				{
-					case _M_STRIP_:  					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/run" , 	formNr,		(bitRead(strip_menu[bit][_M_STRIP_], 		real_formNr)));  		break;
-					case _M_ONE_COLOR_: 				osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/onecolor" ,formNr, 	(bitRead(strip_menu[bit][_M_ONE_COLOR_], 	real_formNr)));  		break;
-					case _M_REVERSED_: 					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/rev" , 	formNr,		(bitRead(strip_menu[bit][_M_REVERSED_], 	real_formNr)));  		break;
-					case _M_MIRROR_OUT_: 				osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/mirr" , 	formNr,		(bitRead(strip_menu[bit][_M_MIRROR_OUT_], 	real_formNr)));  		break;
+			
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/run" , 	formNr,		(bitRead(strip_menu[bit][_M_STRIP_], 		real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/onecolor" ,formNr, 	(bitRead(strip_menu[bit][_M_ONE_COLOR_], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/rev" , 	formNr,		(bitRead(strip_menu[bit][_M_REVERSED_], 	real_formNr)));  		
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/mirr" , 	formNr,		(bitRead(strip_menu[bit][_M_MIRROR_OUT_], 	real_formNr)));  		
 					//case _M_PALETTE_: 					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/pal" , 	formNr,		(bitRead(strip_menu[bit][_M_PALETTE_], 		real_formNr)));  		break;
-					case _M_BLEND_: 					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/blend" , 	formNr,	(bitRead(strip_menu[bit][_M_BLEND_], 		real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/pal/blend" , 	formNr,	(bitRead(strip_menu[bit][_M_BLEND_], 		real_formNr)));  		
 
-					case _M_AUDIO_REVERSED: 			osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/rev" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_REVERSED], 		real_formNr)));  		break;
-					case _M_AUDIO_: 					osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/rgb" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_], 				real_formNr)));  		break;
-					case _M_AUDIO_ONECOLOR: 			osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/onecolor" , 	formNr,	(bitRead(strip_menu[bit][_M_AUDIO_ONECOLOR], 		real_formNr)));  		break;
-					case _M_AUDIO_MIRROR: 				osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/mirr" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_MIRROR], 			real_formNr)));  		break;
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/rev" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_REVERSED], 		real_formNr)));  	
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/rgb" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_], 				real_formNr)));  	
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/onecolor" , 	formNr,	(bitRead(strip_menu[bit][_M_AUDIO_ONECOLOR], 		real_formNr)));  	
+					osc_queu_MSG_SEL_VAL( "/ostc/strip/fft/mirr" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_MIRROR], 			real_formNr)));  	
 					//case _M_AUDIO_PAL_MASK: 			osc_queu_MSG_SEL_VAL( "/ostc/strip/mix/mask" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_PAL_MASK], 		real_formNr)));  		break;
 					//case _M_AUDIO_SUB_FROM_FFT: 		osc_queu_MSG_SEL_VAL( "/ostc/strip/mix/pm" , 	formNr,		(bitRead(strip_menu[bit][_M_AUDIO_SUB_FROM_FFT], 	real_formNr)));  		break;
 
-				} // endd switch
-			} // end NR form options
+			
+		
 		
 
 		osc_queu_MSG_SEL_VAL("/ostc/strip/pal/level",formNr, part[formNr].pal_level );
