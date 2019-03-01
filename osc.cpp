@@ -4855,7 +4855,8 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.fullMatch("/ip1",addrOffset))		{ wifi_cfg.ipStaticLocal[0] = uint8_t(msg.getInt(0));}
 			else if 	(msg.fullMatch("/ip2",addrOffset))		{ wifi_cfg.ipStaticLocal[1] = uint8_t(msg.getInt(0));}
 			else if 	(msg.fullMatch("/ip3",addrOffset))		{ wifi_cfg.ipStaticLocal[2] = uint8_t(msg.getInt(0));}
-			else if 	(msg.fullMatch("/ip4",addrOffset))		{ wifi_cfg.ipStaticLocal[4] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip4",addrOffset))		{ wifi_cfg.ipStaticLocal[3] = uint8_t(msg.getInt(0));    }
+			
 			
 			else if 	(msg.fullMatch("/sn1",addrOffset))		{ wifi_cfg.ipSubnet[0] = uint8_t(msg.getInt(0));}
 			else if 	(msg.fullMatch("/sn2",addrOffset))		{ wifi_cfg.ipSubnet[1] = uint8_t(msg.getInt(0));}

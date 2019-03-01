@@ -1130,7 +1130,16 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_start = in_int ;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_led = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_frame = in_int;
+				
+
 			}
+			else if ((type == 'P') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) 
+					bitWrite(form_menu_pal[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
+			
 			else if ((type == 'D') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1139,6 +1148,12 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].nr_dots = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
+			}
+			else if ((type == 'D') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) 
+					bitWrite(form_menu_dot[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 			}
 			else if ((type == 'S') && (typeb == 'F'))
 			{
@@ -1151,6 +1166,12 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].beater = in_int; 
 
 			}	
+			else if ((type == 'S') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) 
+					bitWrite(form_menu_shimmer[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
 			else if ((type == 'T') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1158,6 +1179,13 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
 			}
+			else if ((type == 'T') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) 
+					bitWrite(form_menu_fft[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
+
 			else if ((type == 'I') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1169,6 +1197,13 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 
 
 			}
+			else if ((type == 'I') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) 
+					bitWrite(form_menu_fire[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
+
 			else if ((type == 'G') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1178,11 +1213,23 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].value = in_int;
 
 			}
+			else if ((type == 'G') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) 
+					bitWrite(form_menu_glitter[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
 			else if ((type == 'X') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].mix_mode = in_int;
+			}
+			else if ((type == 'X') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) 
+					bitWrite(form_menu_fx1[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 			}
 
 		
