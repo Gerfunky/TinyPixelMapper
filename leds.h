@@ -141,47 +141,93 @@
 					uint8_t pal_level;
 					uint8_t fft_level;
 					uint8_t 	pal_mix_mode;
-		  			uint8_t 	fft_mix_mode;
+		  		uint8_t 	fft_mix_mode;
 					uint8_t 	pal_pal;
 	};
 
-	  struct form_Part_FL_Struct 
-	  {
-		  uint16_t	index_start;		// prev state A
-			int		index_add;			// how much to add onto the index on ....  CHECKME!!
-		  uint16_t	start_led;			// where the pallete starts
-		  uint16_t	nr_leds;			// how many ?  for mirror how many extra.
-		  uint8_t	fade_value;			// the fade value
-		  uint8_t	scroll_speed;		// scoll speed !! NOT implemented!!!
-		  uint8_t	glitter_value;		// glitter value
-		  uint8_t	juggle_nr_dots;		// Nr Juggle Dots or Saw dots
-		  uint8_t	juggle_speed;		// Dot speed in BPM
-		  uint8_t	index;				// the pallete index
-			int		rotate;				// ???
-		  uint8_t	index_add_pal;		// ???
-		  uint16_t	indexLong;
-		  uint8_t 	FX_level;			//
-		  uint8_t 	fft_offset;			//
-		  uint8_t   fx_shim_xscale;
-		  uint8_t   fx_shim_yscale;
-		  uint8_t   fx_shim_beater;
-		  uint8_t 	FX_shim_level;
-		  uint8_t 	pal_level;
-		  uint8_t 	fft_level;
-		  uint8_t 	fire_level;
-		  uint8_t 	pal_mix_mode;
-		  uint8_t 	fft_mix_mode;
-		  uint8_t 	fx1_mix_mode;
-		  uint8_t 	fx_fire_mix_mode;
-		  uint8_t 	fx_shim_mix_mode;
-		  uint8_t 	pal_pal;			// what pallete for pallete run
-		  uint8_t 	pal_fire;			// what pallete for pallete run
-		  uint8_t 	pal_shim;			// what pallete for pallete run
-			uint8_t   pal_3sin;
+		struct form_Led_Setup_Struct 
+		{
+			uint16_t	start_led;			// where the pallete starts
+			uint16_t	nr_leds;			// how many ?  for mirror how many extra.
+			uint8_t		fade_value;			// the fade value
+
+		};
+
+		struct form_fx_pal_struct
+		{
+					uint8_t 	pal;			// what pallete for pallete run
+					uint8_t 	level;
+					uint8_t 	mix_mode;
+					uint16_t	index_start;		// Where to start at reset
+					int				index_add_led;			// how much to add onto the index on 
+					uint8_t		index_add_frame;		// ???
+					uint16_t 	indexLong;
+					uint8_t		index;				// the pallete index
+					
+
+		};
+
+		
+
+
+
+		struct form_fx_glitter_struct
+		{
+			uint8_t pal;
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t	value;
 			
-	  };
+		};
+
+		struct form_fx_dots_struct
+		{
+			uint8_t pal;
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
+		  uint8_t	speed;		// Dot speed in BPM
+
+		};
+
+		struct form_fx1_struct
+		{
+			uint8_t mix_mode;
+			uint8_t level;
+
+		};
+
+		struct form_fx_fire_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t cooling;
+			uint8_t sparking;
+
+		};
+
+		struct form_fx_fft_struct
+		{
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t offset;
+
+		};
+
+		struct form_fx_shim_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t xscale;
+		  uint8_t yscale;
+		  uint8_t beater;
+
+
+		};
 	  
-	  struct form_part_fx_shim_struct
+	  struct form_fx_shim_global_struct
 	  {
 		   int waveA;
 		   int waveB;
@@ -202,8 +248,10 @@
 		   uint8_t Cbpm;
 		   int Chigh;
 		   int Clow;
-			uint8_t index_addC;
+			 uint8_t index_addC;
 		   uint8_t indexC;
+
+		
 
 	  };
 

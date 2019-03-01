@@ -56,11 +56,24 @@
 
 
 // from leds
+	extern  form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
+	extern  form_fx_pal_struct form_fx_pal[NR_FORM_PARTS] ;
+	extern  form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
+	extern  form_fx_fire_struct form_fx_fire[NR_FORM_PARTS];
+	extern  form_fx_fft_struct form_fx_fft[NR_FORM_PARTS];
+	extern  form_fx1_struct form_fx1[NR_FORM_PARTS];
+	extern  form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS];
+	extern  form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] ;
+
+
+
+
+
 
 	extern led_cfg_struct led_cfg;
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	extern Strip_FL_Struct part[NR_STRIPS];
-	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
+
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
 	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
 	extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
@@ -1101,20 +1114,21 @@ void osc_forms_send(byte y) {
 		}
 		//debugMe(String("for 1 done"), true);
 		
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_part[i + (y * 8)].start_led));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_part[i + (y * 8)].nr_leds));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].start_led));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].nr_leds));
 
 
-		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].fade_value, MAX_FADE_VALUE));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/FFL/" + String(i + 1)), float(form_part[i + (y * 8)].fade_value));
+		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_cfg[i + (y * 8)].fade_value, MAX_FADE_VALUE));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/FFL/" + String(i + 1)), float(form_cfg[i + (y * 8)].fade_value));
 		
-		osc_queu_MSG_float(String("/form/FA/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].FX_level, 255));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/FAL/" + String(i + 1)), float(form_part[i + (y * 8)].FX_level));
+		osc_queu_MSG_float(String("/form/FA/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_fx1[i + (y * 8)].level, 255));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/FAL/" + String(i + 1)), float(form_fx1[i + (y * 8)].level));
 		
-		osc_queu_MSG_float(String("/form/GL/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].glitter_value, MAX_GLITTER_VALUE));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/GLL/" + String(i + 1)), float(form_part[i + (y * 8)].glitter_value));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/JDL/" + String(i + 1)), float(form_part[i + (y * 8)].juggle_nr_dots));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/JSL/" + String(i + 1)), float(form_part[i + (y * 8)].juggle_speed));
+		osc_queu_MSG_float(String("/form/GL/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_fx_glitter[i + (y * 8)].value, MAX_GLITTER_VALUE));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/GLL/" + String(i + 1)), float(form_fx_glitter[i + (y * 8)].value));
+
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/JDL/" + String(i + 1)), float(form_fx_dots[i + (y * 8)].nr_dots));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/JSL/" + String(i + 1)), float(form_fx_dots[i + (y * 8)].speed));
 		yield();
 		osc_send_out_float_MSG_buffer();
 		
@@ -1128,15 +1142,15 @@ void osc_forms_config_send(byte y) {
 
 	for (int i = 0; i < 8; i++) {
 
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_part[i + (y * 8)].start_led));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_part[i + (y * 8)].nr_leds));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/IAL/" + String(i + 1)), float(form_part[i + (y * 8)].index_add));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/IFL/" + String(i + 1)), float(form_part[i + (y * 8)].index_add_pal));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/SIL/" + String(i + 1)), float(form_part[i + (y * 8)].index_start));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/JDL/" + String(i + 1)), float(form_part[i + (y * 8)].juggle_nr_dots));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/JS/" + String(i + 1)), osc_byte_tofloat(form_part[i + (y * 8)].juggle_speed, MAX_JD_SPEED_VALUE));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/JSL/" + String(i + 1)), float(form_part[i + (y * 8)].juggle_speed));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/RFL/" + String(i + 1)), float(form_part[i + (y * 8)].rotate));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].start_led));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].nr_leds));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/IAL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_add_led));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/IFL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_add_frame));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/SIL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_start));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/JDL/" + String(i + 1)), float(form_fx_dots[i + (y * 8)].nr_dots));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/JS/" + String(i + 1)), osc_byte_tofloat(form_fx_dots[i + (y * 8)].speed, MAX_JD_SPEED_VALUE));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/JSL/" + String(i + 1)), float(form_fx_dots[i + (y * 8)].speed));
+		//osc_queu_MSG_float(String("/form/f" + String(y) + "/RFL/" + String(i + 1)), float(form_part[i + (y * 8)].rotate));
  
 	}
 
@@ -1204,27 +1218,27 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 
 			case 0:
-				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start -  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
+				form_fx_pal[form_int + bit_int * 8].index_start = constrain(form_fx_pal[form_int + bit_int * 8].index_start -  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_start = constrain(form_part[form_int + bit_int * 8].index_start +  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
+				form_fx_pal[form_int + bit_int * 8].index_start = constrain(form_fx_pal[form_int + bit_int * 8].index_start +  osc_miltiply_get(), 0, MAX_INDEX_LONG-1);
 				break;
 			}
-			outvalue = float(form_part[form_int + bit_int * 8].index_start);
+			outvalue = float(form_fx_pal[form_int + bit_int * 8].index_start);
 		}
 
 		if (address[0] == 'I' && address[1] == 'A') {
 			switch (option_int) {
 			case 0:
-				form_part[form_int + bit_int * 8].index_add -=  osc_miltiply_get();
+				form_fx_pal[form_int + bit_int * 8].index_add_led -=  osc_miltiply_get();
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_add +=  osc_miltiply_get();
+				form_fx_pal[form_int + bit_int * 8].index_add_led +=  osc_miltiply_get();
 				break;
 			}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-			outvalue = float(form_part[form_int + bit_int * 8].index_add);
+			outvalue = float(form_fx_pal[form_int + bit_int * 8].index_add_led);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
@@ -1232,15 +1246,15 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 		else if (address[0] == 'I' && address[1] == 'F') {
 			switch (option_int) {
 			case 0:
-				form_part[form_int + bit_int * 8].index_add_pal -=  osc_miltiply_get();
+				form_fx_pal[form_int + bit_int * 8].index_add_frame -=  osc_miltiply_get();
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].index_add_pal +=  osc_miltiply_get();
+				form_fx_pal[form_int + bit_int * 8].index_add_frame +=  osc_miltiply_get();
 				break;
 			}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-			outvalue = float(form_part[form_int + bit_int * 8].index_add_pal);
+			outvalue = float(form_fx_pal[form_int + bit_int * 8].index_add_frame);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
@@ -1252,23 +1266,23 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				case 0:
 					//form_part[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
 
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					form_cfg[form_int + bit_int * 8].start_led = constrain(form_cfg[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].nr_leds);
 					break;
 				case 1:
 					if (form_int != 0)
-						form_part[form_int + bit_int * 8].start_led = form_part[form_int - 1 + bit_int * 8].start_led + form_part[form_int - 1 + bit_int * 8].nr_leds;
+						form_cfg[form_int + bit_int * 8].start_led = form_cfg[form_int - 1 + bit_int * 8].start_led + form_cfg[form_int - 1 + bit_int * 8].nr_leds;
 					else  if (bit_int != 0)
-						form_part[form_int + bit_int * 8].start_led = form_part[7 + (bit_int - 1) * 8].start_led + form_part[7 + (bit_int - 1) * 8].nr_leds;
+						form_cfg[form_int + bit_int * 8].start_led = form_cfg[7 + (bit_int - 1) * 8].start_led + form_cfg[7 + (bit_int - 1) * 8].nr_leds;
 					break;
 
 				case 2:
 					//form_part[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
-					form_part[form_int + bit_int * 8].start_led = constrain(form_part[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].nr_leds);
+					form_cfg[form_int + bit_int * 8].start_led = constrain(form_cfg[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].nr_leds);
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-			outvalue = float(form_part[form_int + bit_int * 8].start_led);
+			outvalue = float(form_cfg[form_int + bit_int * 8].start_led);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
@@ -1278,33 +1292,33 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int)
 				{
 				case 0:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_cfg[form_int + bit_int * 8].nr_leds = constrain(form_cfg[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].start_led);
 					break;
 				case 2:
-					form_part[form_int + bit_int * 8].nr_leds = constrain(form_part[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_part[form_int + bit_int * 8].start_led);
+					form_cfg[form_int + bit_int * 8].nr_leds = constrain(form_cfg[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].start_led);
 					break;
 				}
 
-			outvalue = float(form_part[form_int + bit_int * 8].nr_leds);
+			outvalue = float(form_cfg[form_int + bit_int * 8].nr_leds);
 
 		}
 
 		else if (address[0] == 'J' && address[1] == 'D') {
 			switch (option_int) {
 			case 0:
-				form_part[form_int + bit_int * 8].juggle_nr_dots--;
+				form_fx_dots[form_int + bit_int * 8].nr_dots--;
 				break;
 			case 2:
-				form_part[form_int + bit_int * 8].juggle_nr_dots++;
+				form_fx_dots[form_int + bit_int * 8].nr_dots++;
 				break;
 			}
 
 
-			outvalue = float(form_part[form_int + bit_int * 8].juggle_nr_dots);
+			outvalue = float(form_fx_dots[form_int + bit_int * 8].nr_dots);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
-		else if (address[0] == 'R' && address[1] == 'F') 
+		/*else if (address[0] == 'R' && address[1] == 'F') 
 		{
 			if (get_bool(OSC_EDIT) == true)
 				if (form_part[form_int + bit_int * 8].nr_leds != 0) 
@@ -1323,9 +1337,9 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 
 			outvalue = float(form_part[form_int + bit_int * 8].rotate);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
-
+			
 		}
-
+*/
 
 		
 		
@@ -1341,7 +1355,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				
 				for (uint8_t formX = bit_int * 8 ; formX < (bit_int+1) * 8  ; formX++ )
 				{
-				if (form_part[formX].nr_leds != 0) 
+				if (form_cfg[formX].nr_leds != 0) 
 				{
 					//debugMe(formX , true );
 					boolean trun_value = !bitRead(form_menu[bit_int][option_int], formX- 8*bit_int);
@@ -1402,14 +1416,14 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 
 	if (address[0] == 'F' && address[1] == 'A') 
 	{
-		form_part[select_mode_int + z * 8].FX_level = (msg.getFloat(0) * 255);  //byte(msg.getFloat(0) * 255);
-		outvalue = float(form_part[select_mode_int + z * 8].FX_level);
+		form_fx1[select_mode_int + z * 8].level = (msg.getFloat(0) * 255);  //byte(msg.getFloat(0) * 255);
+		outvalue = float(form_fx1[select_mode_int + z * 8].level);
 	}
 
 	if (address[0] == 'F' && address[1] == 'F') 
 	{
-		form_part[select_mode_int + z * 8].fade_value = (msg.getFloat(0) * MAX_FADE_VALUE);  //byte(msg.getFloat(0) * 255);
-		outvalue = float(form_part[select_mode_int + z * 8].fade_value);
+		form_cfg[select_mode_int + z * 8].fade_value = (msg.getFloat(0) * MAX_FADE_VALUE);  //byte(msg.getFloat(0) * 255);
+		outvalue = float(form_cfg[select_mode_int + z * 8].fade_value);
 	}
 
 
@@ -1418,11 +1432,11 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 	if (address[0] == 'G' && address[1] == 'L') 
 	{				//map(msg.getFloat(0), 0,1,0,MAX_FADE) 
 
-		form_part[select_mode_int + z * 8].glitter_value = (msg.getFloat(0) *  MAX_GLITTER_VALUE); //byte(msg.getFloat(0) * 255);
+		form_fx_glitter[select_mode_int + z * 8].value = (msg.getFloat(0) *  MAX_GLITTER_VALUE); //byte(msg.getFloat(0) * 255);
 
 																								   //outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-		outvalue = float(form_part[select_mode_int + z * 8].glitter_value);
+		outvalue = float(form_fx_glitter[select_mode_int + z * 8].value);
 		//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 	}
@@ -1430,11 +1444,11 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 	if (address[0] == 'J' && address[1] == 'S') 
 	{
 
-		form_part[select_mode_int + z * 8].juggle_speed = constrain(msg.getFloat(0) * MAX_JD_SPEED_VALUE, 0, MAX_JD_SPEED_VALUE);  //byte(msg.getFloat(0) * 255);
+		form_fx_dots[select_mode_int + z * 8].speed = constrain(msg.getFloat(0) * MAX_JD_SPEED_VALUE, 0, MAX_JD_SPEED_VALUE);  //byte(msg.getFloat(0) * 255);
 
 																								 //outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-		outvalue = float(form_part[select_mode_int + z * 8].juggle_speed);
+		outvalue = float(form_fx_dots[select_mode_int + z * 8].speed);
 		//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 	}
@@ -3824,8 +3838,8 @@ void osc_StC_menu_form_led_adv_ref()
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
 			
-		osc_queu_MSG_int("/ostc/form/sl/" + String(formNr), form_part[formNr].start_led );
-		osc_queu_MSG_int("/ostc/form/nl/" + String(formNr), form_part[formNr].nr_leds );
+		osc_queu_MSG_int("/ostc/form/sl/" + String(formNr), form_cfg[formNr].start_led );
+		osc_queu_MSG_int("/ostc/form/nl/" + String(formNr), form_cfg[formNr].nr_leds );
 
 		}	
 }
@@ -3862,8 +3876,8 @@ void osc_StC_menu_form_fft_adv_ref()
 					} // endd switch
 			} // end NR form options
 	;
-		osc_queu_MSG_int("/ostc/form/fo/" + String(formNr), form_part[formNr].fft_offset );
-		osc_queu_MSG_int("/ostc/form/mix/fft/" + String(formNr), form_part[formNr].fft_mix_mode );
+		osc_queu_MSG_int("/ostc/form/fo/" + String(formNr), form_fx_fft[formNr].offset );
+		osc_queu_MSG_int("/ostc/form/mix/fft/" + String(formNr), form_fx_fft[formNr].mix_mode );
 
 		}		
 }
@@ -3897,13 +3911,13 @@ void osc_StC_menu_form_fx_shim_adv_ref()
 	
 			}
 
-			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_part[formNr].FX_shim_level );
-			osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_part[formNr].fx_shim_xscale );
-			osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_part[formNr].fx_shim_yscale );
-			osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_part[formNr].fx_shim_beater );
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_fx_shim[formNr].level );
+			osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_fx_shim[formNr].xscale );
+			osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_fx_shim[formNr].yscale );
+			osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_fx_shim[formNr].beater );
 
-			osc_queu_MSG_int("/ostc/form/mix/shi/" + String(formNr), form_part[formNr].fx_shim_mix_mode );
-			osc_queu_MSG_int("/ostc/form/shi/pal/" + String(formNr), form_part[formNr].pal_shim );
+			osc_queu_MSG_int("/ostc/form/mix/shi/" + String(formNr), form_fx_shim[formNr].mix_mode );
+			osc_queu_MSG_int("/ostc/form/shi/pal/" + String(formNr), form_fx_shim[formNr].pal );
 		
 		}
 
@@ -3937,9 +3951,9 @@ uint8_t bit = 0;
 					
 			}
 			
-			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_part[formNr].fire_level );
-			osc_queu_MSG_int("/ostc/form/mix/fir/" + String(formNr), form_part[formNr].fx_fire_mix_mode );
-			osc_queu_MSG_int("/ostc/form/fir/pal/" + String(formNr), form_part[formNr].pal_fire );
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_fx_fire[formNr].level );
+			osc_queu_MSG_int("/ostc/form/mix/fir/" + String(formNr), form_fx_fire[formNr].mix_mode );
+			osc_queu_MSG_int("/ostc/form/fir/pal/" + String(formNr), form_fx_fire[formNr].pal );
 		}
 
 		osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
@@ -3986,17 +4000,17 @@ void osc_StC_menu_form_fx_adv_ref()
 
 					} // endd switch
 			} // end NR form options
-		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, 	form_part[formNr].FX_level );
-		osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_part[formNr].glitter_value );
-		osc_queu_MSG_SEL_VAL("/ostc/form/fx/fade" ,			formNr , form_part[formNr].fade_value );
+		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, 	form_fx1[formNr].level );
+		osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_fx_glitter[formNr].value );
+		osc_queu_MSG_SEL_VAL("/ostc/form/fx/fade" ,			formNr , form_cfg[formNr].fade_value );
 		
 
 
-		osc_queu_MSG_int("/ostc/form/fx/dotnum/" + String(formNr), form_part[formNr].juggle_nr_dots );
-		osc_queu_MSG_int("/ostc/form/fx/dotbpm/" + String(formNr), form_part[formNr].juggle_speed );
+		osc_queu_MSG_int("/ostc/form/fx/dotnum/" + String(formNr), form_fx_dots[formNr].nr_dots );
+		osc_queu_MSG_int("/ostc/form/fx/dotbpm/" + String(formNr), form_fx_dots[formNr].speed );
 
 	
-		osc_queu_MSG_int("/ostc/form/mix/fx1/" + String(formNr), form_part[formNr].fx1_mix_mode );
+		osc_queu_MSG_int("/ostc/form/mix/fx1/" + String(formNr), form_fx1[formNr].mix_mode );
 
 		}		
 
@@ -4011,9 +4025,9 @@ void osc_StC_menu_form_pal_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			osc_queu_MSG_int("/ostc/form/al/" + String(formNr), form_part[formNr].index_add );
-			osc_queu_MSG_int("/ostc/form/af/" + String(formNr), form_part[formNr].index_add_pal );
-			osc_queu_MSG_int("/ostc/form/si/" + String(formNr), form_part[formNr].index_start );
+			osc_queu_MSG_int("/ostc/form/al/" + String(formNr), form_fx_pal[formNr].index_add_led );
+			osc_queu_MSG_int("/ostc/form/af/" + String(formNr), form_fx_pal[formNr].index_add_frame );
+			osc_queu_MSG_int("/ostc/form/si/" + String(formNr), form_fx_pal[formNr].index_start );
 		}
 }
 
@@ -4026,8 +4040,8 @@ void osc_StC_menu_form_leds_ref()
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
-			osc_queu_MSG_int("/ostc/form/sl/" + String(formNr), form_part[formNr].start_led );
-			osc_queu_MSG_int("/ostc/form/nl/" + String(formNr), form_part[formNr].nr_leds );
+			osc_queu_MSG_int("/ostc/form/sl/" + String(formNr), form_cfg[formNr].start_led );
+			osc_queu_MSG_int("/ostc/form/nl/" + String(formNr), form_cfg[formNr].nr_leds );
 		}
 
 }
@@ -4070,8 +4084,8 @@ void osc_StC_menu_form_pal_adv_ref()
 			} // end NR form options
 
 		
-		osc_queu_MSG_int("/ostc/form/mix/pal/" + String(formNr), form_part[formNr].pal_mix_mode );
-		osc_queu_MSG_int("/ostc/form/pl/" + String(formNr), form_part[formNr].pal_pal );
+		osc_queu_MSG_int("/ostc/form/mix/pal/" + String(formNr), form_fx_pal[formNr].mix_mode );
+		osc_queu_MSG_int("/ostc/form/pl/" + String(formNr), form_fx_pal[formNr].pal );
 
 		}		
 }
@@ -4113,8 +4127,8 @@ void osc_StC_menu_form_FX_layers_ref()
 
 
 		
-			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_part[formNr].FX_shim_level );
-			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_part[formNr].fire_level );
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_fx_shim[formNr].level );
+			osc_queu_MSG_SEL_VAL("/ostc/form/fx/fire/level" ,	formNr , form_fx_fire[formNr].level );
 		
 		
 
@@ -4157,9 +4171,9 @@ void osc_StC_menu_form_ref()
 
 		
 		//osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_part[formNr].FX_level );
-		osc_queu_MSG_SEL_VAL("/ostc/form/fft/level",formNr, form_part[formNr].fft_level );
-		osc_queu_MSG_SEL_VAL("/ostc/form/pal/level",formNr, form_part[formNr].pal_level );
-		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_part[formNr].FX_level );
+		osc_queu_MSG_SEL_VAL("/ostc/form/fft/level",formNr, form_fx_fft[formNr].level );
+		osc_queu_MSG_SEL_VAL("/ostc/form/pal/level",formNr, form_fx_pal[formNr].level );
+		osc_queu_MSG_SEL_VAL("/ostc/form/fx/level",formNr, form_fx1[formNr].level );
 
 		
 		
@@ -4605,9 +4619,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if		(msg.fullMatch("/fx/layon",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_LAYERS_ON],	form_nr, bool(msg.getInt(1)));  ;}
 		//else if		(msg.fullMatch("/fx/mask",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_MASK], 		form_nr, bool(msg.getInt(1)));  ;}
 		//else if		(msg.fullMatch("/fx/pm",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SUBTRACT], 	form_nr, bool(msg.getInt(1)));  ;}
-		else if		(msg.fullMatch("/fx/level",addrOffset))			{  form_part[orig_form_nr].FX_level  =  uint8_t(msg.getInt(1))  ;}
-		else if		(msg.fullMatch("/fft/level",addrOffset))		{  form_part[orig_form_nr].fft_level  =  uint8_t(msg.getInt(1))  ;}
-		else if		(msg.fullMatch("/pal/level",addrOffset))		{  form_part[orig_form_nr].pal_level  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/fx/level",addrOffset))			{  form_fx1[orig_form_nr].level  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/fft/level",addrOffset))		{  form_fx_fft[orig_form_nr].level  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/pal/level",addrOffset))		{  form_fx_pal[orig_form_nr].level  =  uint8_t(msg.getInt(1))  ;}
 
 		//else if		(msg.fullMatch("/fx/glitv",addrOffset))			{  form_part[orig_form_nr].glitter_value  =  uint8_t(msg.getInt(1))  ;}
 		else if		(msg.fullMatch("/fx/glitw",addrOffset))			{ bitWrite(form_menu[bit_int][_M_GLITTER_], 				form_nr, bool(msg.getInt(1)));  ;}
@@ -4617,7 +4631,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if		(msg.fullMatch("/fx/saw",addrOffset))			{ bitWrite(form_menu[bit_int][_M_SAW_DOT_], 	form_nr, 	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/jug",addrOffset))			{ bitWrite(form_menu[bit_int][_M_JUGGLE_], 		form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/audot",addrOffset))			{ bitWrite(form_menu[bit_int][_M_AUDIO_DOT_], 	form_nr,	bool(msg.getInt(1)));  ;}
-		else if		(msg.fullMatch("/fx/fade",addrOffset))			{  form_part[orig_form_nr].fade_value  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/fx/fade",addrOffset))			{  form_cfg[orig_form_nr].fade_value  =  uint8_t(msg.getInt(1))  ;}
 
 		else if		(msg.fullMatch("/fx/firerun",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_], 			form_nr, 	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/firepal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_PAL], 		form_nr,	bool(msg.getInt(1)));  ;}	
@@ -4625,13 +4639,13 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		//else if		(msg.fullMatch("/fx/fire/sub",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_SUBTRACT], 	form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/fire/rev",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_REV], 		form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/fire/mirr",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FIRE_MIRROR], 		form_nr,	bool(msg.getInt(1)));  ;}
-		else if		(msg.fullMatch("/fx/fire/level",addrOffset))		{  form_part[orig_form_nr].fire_level  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/fx/fire/level",addrOffset))		{  form_fx_fire[orig_form_nr].level  =  uint8_t(msg.getInt(1))  ;}
 
 		else if		(msg.fullMatch("/fx/shimmer",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIMMER], form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/palshim",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_PAL], form_nr,	bool(msg.getInt(1)));  ;}
 		else if		(msg.fullMatch("/fx/shimblend",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_BLEND], form_nr,	bool(msg.getInt(1)));  ;}
 		else if  	(msg.fullMatch("/fx/shim/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_shim_adv_ref();}
-		else if		(msg.fullMatch("/fx/shim/level",addrOffset))		{  form_part[orig_form_nr].FX_shim_level  =  uint8_t(msg.getInt(1))  ;}
+		else if		(msg.fullMatch("/fx/shim/level",addrOffset))		{  form_fx_shim[orig_form_nr].level  =  uint8_t(msg.getInt(1))  ;}
 		
 
 
@@ -4666,13 +4680,13 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 						sel_form_no = form_no_string.toInt();  // What CRGB value in the pallete
 
-						if  		(msg.match("/mix/pal",addrOffset))  	form_part[sel_form_no].pal_mix_mode = uint8_t(msg.getInt(0))	; 
-						else if  	(msg.match("/mix/fft",addrOffset))  	form_part[sel_form_no].fft_mix_mode = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/mix/fx1",addrOffset))  	form_part[sel_form_no].fx1_mix_mode = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/mix/fir",addrOffset))  	form_part[sel_form_no].fx_fire_mix_mode = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/mix/shi",addrOffset))  	form_part[sel_form_no].fx_shim_mix_mode = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/fir/pal",addrOffset))  	form_part[sel_form_no].pal_fire = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/shi/pal",addrOffset))  	form_part[sel_form_no].pal_shim = uint8_t(msg.getInt(0))	;
+						if  		(msg.match("/mix/pal",addrOffset))  	form_fx_pal[sel_form_no].mix_mode = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/mix/fft",addrOffset))  	form_fx_fft[sel_form_no].mix_mode = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/mix/fx1",addrOffset))  	form_fx1[sel_form_no].mix_mode = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/mix/fir",addrOffset))  	form_fx_fire[sel_form_no].mix_mode = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/mix/shi",addrOffset))  	form_fx_shim[sel_form_no].mix_mode = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fir/pal",addrOffset))  	form_fx_fire[sel_form_no].pal = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/shi/pal",addrOffset))  	form_fx_shim[sel_form_no].pal = uint8_t(msg.getInt(0))	;
 
 
 		}
@@ -4700,17 +4714,17 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						
 						
 
-						if  		(msg.match("/sl",addrOffset))  	form_part[sel_form_no].start_led = uint16_t(msg.getInt(0))	;
-						else if  	(msg.match("/nl",addrOffset))  	form_part[sel_form_no].nr_leds = uint16_t(msg.getInt(0))	;
-						else if  	(msg.match("/al",addrOffset))  	form_part[sel_form_no].index_add = uint16_t(msg.getInt(0))	;
-						else if  	(msg.match("/af",addrOffset))  	form_part[sel_form_no].index_add_pal = uint16_t(msg.getInt(0))	;   
-						else if  	(msg.match("/si",addrOffset))  	form_part[sel_form_no].index_start = uint16_t(msg.getInt(0))	; 
-						else if  	(msg.match("/gv",addrOffset))  	form_part[sel_form_no].glitter_value = uint8_t(msg.getInt(0))	; 
-						else if  	(msg.match("/fo",addrOffset))  	form_part[sel_form_no].fft_offset = uint8_t(msg.getInt(0))	; 
-						else if  	(msg.match("/pl",addrOffset))  	form_part[sel_form_no].pal_pal = uint8_t(msg.getInt(0))	; 
+						if  		(msg.match("/sl",addrOffset))  	form_cfg[sel_form_no].start_led = uint16_t(msg.getInt(0))	;
+						else if  	(msg.match("/nl",addrOffset))  	form_cfg[sel_form_no].nr_leds = uint16_t(msg.getInt(0))	;
+						else if  	(msg.match("/al",addrOffset))  	form_fx_pal[sel_form_no].index_add_led = uint16_t(msg.getInt(0))	;
+						else if  	(msg.match("/af",addrOffset))  	form_fx_pal[sel_form_no].index_add_frame = uint16_t(msg.getInt(0))	;   
+						else if  	(msg.match("/si",addrOffset))  	form_fx_pal[sel_form_no].index_start = uint16_t(msg.getInt(0))	; 
+						else if  	(msg.match("/gv",addrOffset))  	form_fx_glitter[sel_form_no].value = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/fo",addrOffset))  	form_fx_fft[sel_form_no].offset = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pl",addrOffset))  	form_fx_pal[sel_form_no].pal = uint8_t(msg.getInt(0))	; 
 
 
-						else if  	(msg.match("/cs",addrOffset) && sel_form_no > 0 )  	{form_part[sel_form_no].start_led = form_part[sel_form_no-1 ].start_led + form_part[sel_form_no-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sl/" + String(sel_form_no), form_part[sel_form_no].start_led ); } 	; 
+						else if  	(msg.match("/cs",addrOffset) && sel_form_no > 0 )  	{form_cfg[sel_form_no].start_led = form_cfg[sel_form_no-1 ].start_led + form_cfg[sel_form_no-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sl/" + String(sel_form_no), form_cfg[sel_form_no].start_led ); } 	; 
 			   
 		}
 
@@ -4731,12 +4745,12 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 						sel_form_no = form_no_string.toInt();  // What CRGB value in the pallete
 
-						if  		(msg.match("/fx/dotnum",addrOffset))  	form_part[sel_form_no].juggle_nr_dots = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/fx/dotbpm",addrOffset))  	form_part[sel_form_no].juggle_speed = uint8_t(msg.getInt(0))	;
+						if  		(msg.match("/fx/dotnum",addrOffset))  	form_fx_dots[sel_form_no].nr_dots = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fx/dotbpm",addrOffset))  	form_fx_dots[sel_form_no].speed = uint8_t(msg.getInt(0))	;
 
-						else if  	(msg.match("/fx/shm_xs",addrOffset))  	form_part[sel_form_no].fx_shim_xscale = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/fx/shm_ys",addrOffset))  	form_part[sel_form_no].fx_shim_yscale = uint8_t(msg.getInt(0))	;
-						else if  	(msg.match("/fx/shm_bt",addrOffset))  	form_part[sel_form_no].fx_shim_beater = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/fx/shm_xs",addrOffset))  	form_fx_shim[sel_form_no].xscale = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fx/shm_ys",addrOffset))  	form_fx_shim[sel_form_no].yscale = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fx/shm_bt",addrOffset))  	form_fx_shim[sel_form_no].beater = uint8_t(msg.getInt(0))	; 
 		}
 
 

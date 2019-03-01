@@ -33,9 +33,22 @@
 	#ifndef ARTNET_DISABLED
 		extern artnet_struct artnet_cfg;
 	#endif
+
+	extern  form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
+	extern  form_fx_pal_struct form_fx_pal[NR_FORM_PARTS] ;
+	extern  form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
+	extern  form_fx_fire_struct form_fx_fire[NR_FORM_PARTS];
+	extern  form_fx_fft_struct form_fx_fft[NR_FORM_PARTS];
+	extern  form_fx1_struct form_fx1[NR_FORM_PARTS];
+	extern  form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS];
+	extern  form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] ;
+
+
+
+
 	extern fft_ip_cfg_struct fft_ip_cfg;
 	extern Strip_FL_Struct part[NR_STRIPS];
-	extern form_Part_FL_Struct form_part[NR_FORM_PARTS];
+
 	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
 	extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
 	extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
@@ -767,44 +780,115 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 		}
 		
-		conf_file.println("f = form Config : Start Led : Nr Leds : Start Index : index add Led : index add frame : rest is on off selection ");
+		conf_file.println("F = form Config : Start Led : Nr Leds : Fade  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			conf_file.print(String("[f:" + String(form)));
-			conf_file.print(String(":" + String(form_part[form].start_led)));
-			conf_file.print(String(":" + String(form_part[form].nr_leds)));
-			conf_file.print(String(":" + String(form_part[form].index_start)));
-			conf_file.print(String(":" + String(form_part[form].index_add)));
-			conf_file.print(String(":" + String(form_part[form].index_add_pal)));
-
-			conf_file.print(String(":" + String(form_part[form].fade_value)));
-			conf_file.print(String(":" + String(form_part[form].FX_level)));
-			conf_file.print(String(":" + String(form_part[form].scroll_speed)));
-			conf_file.print(String(":" + String(form_part[form].glitter_value)));
-			conf_file.print(String(":" + String(form_part[form].juggle_nr_dots)));
-			conf_file.print(String(":" + String(form_part[form].juggle_speed)));
-			conf_file.print(String(":" + String(form_part[form].rotate)));
-			
-			
-
-			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
-			
-			conf_file.print(String(":" + String(form_part[form].fft_offset)));
-			conf_file.print(String(":" + String(form_part[form].fft_level)));
-			conf_file.print(String(":" + String(form_part[form].pal_level)));
-			conf_file.print(String(":" + String(form_part[form].fire_level)));
-			conf_file.print(String(":" + String(form_part[form].pal_mix_mode)));
-			conf_file.print(String(":" + String(form_part[form].fft_mix_mode)));
-			conf_file.print(String(":" + String(form_part[form].fx1_mix_mode)));
-			conf_file.print(String(":" + String(form_part[form].fx_fire_mix_mode)));
-			conf_file.print(String(":" + String(form_part[form].fx_shim_mix_mode)));
-			conf_file.print(String(":" + String(form_part[form].pal_pal)));
-			conf_file.print(String(":" + String(form_part[form].pal_fire)));
-			conf_file.print(String(":" + String(form_part[form].pal_shim)));
+			conf_file.print(String("[F:" + String(form)));
+			conf_file.print(String(":" + String(form_cfg[form].start_led)));
+			conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
+			conf_file.print(String(":" + String(form_cfg[form].fade_value)));
 
 			conf_file.println("] ");
 
 		} 
+
+		conf_file.println("P - Pallete FX Form ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[P:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_pal[form].pal)));
+			conf_file.print(String(":" + String(form_fx_pal[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_pal[form].level)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_start)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_add_led)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_add_frame)));
+
+
+			conf_file.println("] ");
+		}
+		conf_file.println("D dots ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[D:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_dots[form].pal)));
+			conf_file.print(String(":" + String(form_fx_dots[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_dots[form].level)));
+			conf_file.print(String(":" + String(form_fx_dots[form].nr_dots)));
+			conf_file.print(String(":" + String(form_fx_dots[form].speed)));
+			
+
+			conf_file.println("] ");
+		}
+
+		conf_file.println("S shimmer ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[S:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_shim[form].pal)));
+			conf_file.print(String(":" + String(form_fx_shim[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_shim[form].level)));
+			conf_file.print(String(":" + String(form_fx_shim[form].xscale)));
+			conf_file.print(String(":" + String(form_fx_shim[form].yscale)));
+			conf_file.print(String(":" + String(form_fx_shim[form].beater)));
+
+			conf_file.println("] ");
+		}
+
+		conf_file.println("T form fft  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[T:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_fft[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_fft[form].level)));
+			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
+			
+
+			conf_file.println("] ");
+		}
+
+		conf_file.println("I form Fire  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[I:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_fire[form].pal)));
+			conf_file.print(String(":" + String(form_fx_fire[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_fire[form].level)));
+			conf_file.print(String(":" + String(form_fx_fire[form].cooling)));
+			conf_file.print(String(":" + String(form_fx_fire[form].sparking)));
+
+
+			conf_file.println("] ");
+		}
+
+		conf_file.println("G Glitter ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[G:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].pal)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].level)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].value)));
+
+
+			conf_file.println("] ");
+		}
+
+		conf_file.println("X  FX1 form ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[X:" + String(form)));
+			conf_file.print(String(":" + String(form_fx1[form].level)));
+			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
+			conf_file.println("] ");
+		}
+		conf_file.println("O form options.  boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[O:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
 		
 		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
 			conf_file.print(String("[c:" + String(copy_L)));
@@ -961,58 +1045,94 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				// debugMe(" . ", false);
 				// debugMe(part[strip_no].start_led);
 			}
-			else if (type == 'f')
+			else if (type == 'F')   //if (conf_file.peek()  != ']') 
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				//in_int = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
+				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_cfg[strip_no].start_led);
+				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].fade_value = in_int;
+			}
+			else if (type == 'P')
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].pal = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].level = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_start = in_int ;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_led = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_frame = in_int;
+			}
+			else if (type == 'D')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].nr_dots = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
+			}
+			else if (type == 'S')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].pal = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].mix_mode = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].level = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].xscale = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].yscale = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].beater = in_int; 
+
+			}	
+			else if (type == 'T')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
+			}
+			else if (type == 'I')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].cooling = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].sparking = in_int;
 
 
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_part[strip_no].start_led);
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_start = in_int ;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].index_add_pal = in_int;
+			}
+			else if (type == 'G')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].value = in_int;
 
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fade_value = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].FX_level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].scroll_speed = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].glitter_value = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_nr_dots = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].juggle_speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].rotate = in_int;
+			}
+			else if (type == 'X')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].mix_mode = in_int;
+			}
+
+			else if (type == 'O')	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) 
 				
-
-
-				for (uint8_t setting = 0; setting < _M_NR_FORM_OPTIONS_; setting++) {
 					bitWrite(form_menu[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-				}
+				
+			}
 
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_offset = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_level = in_int; //if (conf_file.peek()  == ']') break;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fire_level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fft_mix_mode = in_int;
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx1_mix_mode = in_int;
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_fire_mix_mode = in_int;
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].fx_shim_mix_mode = in_int;
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_pal = in_int; 
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_fire = in_int;
-				if (conf_file.peek()  != ']') in_int = get_int_conf_value(conf_file, &character); form_part[strip_no].pal_shim = in_int; 
-
-
-			} 
 			else if (type == 'c')
 			{
-			strip_no = get_int_conf_value(conf_file, &character);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , MAX_NUM_LEDS);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , MAX_NUM_LEDS - copy_leds[strip_no].start_led);
-			in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , MAX_NUM_LEDS);
-			bitWrite(copy_leds_mode[get_strip_menu_bit(strip_no)], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-
-
-
-
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , MAX_NUM_LEDS);
+				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , MAX_NUM_LEDS - copy_leds[strip_no].start_led);
+				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , MAX_NUM_LEDS);
+				bitWrite(copy_leds_mode[get_strip_menu_bit(strip_no)], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 			} 
 			else if (type == 'p')
 			{
