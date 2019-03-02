@@ -1754,10 +1754,11 @@ void LEDS_run_layers()
 							}
 						break;
 						case 4:
-							for (byte i = 0; i < 8; i++)
+							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++)
 							{
-								for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++)
-								{
+									for (byte i = 0; i < 8; i++)
+									{
+								
 									if ((part[i + (z * 8)].nr_leds != 0) && (bitRead(strip_menu[z][_M_STRIP_], i) == true))         
 										{
 											tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(part[i + (z * 8)].pal_pal ), part[i + (z * 8)].start_led,part[i + (z * 8)].nr_leds  , part[i + (z * 8)].index_long , part[i + (z * 8)].index_add,  MIX_REPLACE, 255, TBlendType(bitRead(strip_menu[z][_M_BLEND_], i) ) );
