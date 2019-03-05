@@ -494,6 +494,13 @@
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
+
+
+	uint8_t LEDS_get_playNr(); 
+	uint8_t LEDS_get_bri();
+	void LEDS_set_bri(uint8_t bri);
+	void LEDS_set_playNr(uint8_t setNr);
+
 	
 #endif
 

@@ -105,6 +105,12 @@ void WiFi_OTA_setup()
 	ArduinoOTA.begin();
 }
 
+String WiFi_Get_Name()
+{
+	return String(wifi_cfg.APname);
+
+}
+
 
 
 void WiFi_NTP_printTime() {

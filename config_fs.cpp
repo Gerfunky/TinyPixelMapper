@@ -630,7 +630,7 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	
 
 
-	boolean return_bool = 0;
+	//boolean return_bool = 0;
 	uint8_t byte_nr = 0;
 	uint8_t bit_nr = conf_nr;
 	while (bit_nr > 7)
@@ -689,7 +689,7 @@ String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 		//String settingValue;
 		//int in_int = 0 ;
 		char type;
-		int strip_no = 0;
+		//int strip_no = 0;
 		// debugMe("File-opened");
 		while (conf_file.available()) 
 		{

@@ -22,7 +22,7 @@
 
 
 	#include <FastLED.h>
-	#include "led_fx.h"
+	
 	#include <RunningAverage.h>			// For Auto FFT
 	#include <QueueArray.h>	   			// For buffering incoming FFT packets
 
@@ -538,6 +538,17 @@ CRGBPalette16 LEDS_pal_get(uint8_t pal_no)
 
 }
 
+void LEDS_set_bri(uint8_t bri)
+{
+	led_cfg.bri = bri;
+
+}
+
+uint8_t LEDS_get_bri()
+{
+	return led_cfg.bri;
+
+}
 
 
 uint8_t LEDS_get_real_bri()
@@ -1488,6 +1499,16 @@ void LEDS_load_default_play_conf()
 
 }
 
+uint8_t LEDS_get_playNr()
+{
+return led_cfg.Play_Nr;
+}
+void LEDS_set_playNr(uint8_t setNr)
+{
+	FS_play_conf_read(setNr);
+}
+
+
 void LEDS_seqencer_advance()
 {
 		uint8_t orig_play_nr = led_cfg.Play_Nr;
@@ -1724,14 +1745,14 @@ void LEDS_run_layers()
 						case 1: 
 						for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
 							for (byte i = 0; i < 8; i++) 
-								if (bitRead(form_menu_fft[z][_M_FORM_FFT_RUN], i) == true )  tpm_fx.mixOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led+ form_fx_fft[i + (z * 8)].offset, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i)  );
+								if (bitRead(form_menu_fft[z][_M_FORM_FFT_RUN], i) == true )  tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), part[i + (z * 8)].fft_offset  );
 						break;     
 						case 2: 
 							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
 							{
 								for (byte i = 0; i < 8; i++) 
 								{ 	
-								if (bitRead(strip_menu[z][_M_AUDIO_], i) == true ) 	tpm_fx.mixOntoLedArray(leds_FFT_history, leds,part[i + (z * 8)].nr_leds, part[i + (z * 8)].start_led + part[i + (z * 8)].fft_offset ,bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i) ,MixModeType(part[i + (z * 8)].fft_mix_mode), part[i + (z * 8)].fft_level  ,bitRead(strip_menu[z][_M_AUDIO_ONECOLOR] ,i ) ) ;																										
+								if (bitRead(strip_menu[z][_M_AUDIO_], i) == true ) 	tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds,part[i + (z * 8)].nr_leds, part[i + (z * 8)].start_led  ,bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i) ,MixModeType(part[i + (z * 8)].fft_mix_mode), part[i + (z * 8)].fft_level  ,bitRead(strip_menu[z][_M_AUDIO_ONECOLOR] ,i ),part[i + (z * 8)].fft_offset ) ;
 								}	
 							}
 						break;   

@@ -4005,9 +4005,6 @@ void osc_StC_menu_form_fx_adv_ref()
 void osc_StC_menu_form_pal_ref()
 {
 		//debugMe("inFormRef ostc");
-	
-		
-		uint8_t bit = 0;
 
 		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
 		{
