@@ -1745,7 +1745,11 @@ void LEDS_run_layers()
 						case 1: 
 						for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
 							for (byte i = 0; i < 8; i++) 
-								if (bitRead(form_menu_fft[z][_M_FORM_FFT_RUN], i) == true )  tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), part[i + (z * 8)].fft_offset  );
+								if (bitRead(form_menu_fft[z][_M_FORM_FFT_RUN], i) == true )  tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), form_fx_fft[i + (z * 8)].offset  );
+						break;     
+						case 2: 
+							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
+
 						break;     
 						case 2: 
 							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
