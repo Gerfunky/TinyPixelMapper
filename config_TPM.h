@@ -39,7 +39,7 @@
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
 	#define DEF_STATIC_IP_ENABLED true							// set static ip for startup  ?
-	#define DEF_IP_LOCAL		{172,16,222,20}					// Static IP
+	#define DEF_IP_LOCAL		{172,16,222,26}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
 
