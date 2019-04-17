@@ -1749,10 +1749,6 @@ void LEDS_run_layers()
 						break;     
 						case 2: 
 							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
-
-						break;     
-						case 2: 
-							for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
 							{
 								for (byte i = 0; i < 8; i++) 
 								{ 	
