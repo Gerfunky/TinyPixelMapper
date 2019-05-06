@@ -327,7 +327,7 @@
 		#define _M_NR_FORM_GLITTER_OPTIONS_ 2
 		enum form_glitter_options
 		{
-			_M_FORM_GLITTER_RUN,
+			_M_FORM_GLITTER_PAL,
 			_M_FORM_GLITTER_FFT,
 		};
 

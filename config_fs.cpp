@@ -742,7 +742,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 		 debugMe("play file creation failed");
 	}
 	else {   // yeah its open
-
+		debugMe("Write Conf File");
 		conf_file.println("Play Config.");
 		conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
 

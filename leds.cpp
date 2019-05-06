@@ -582,27 +582,7 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 
 // ************* FUNCTIONS
 
-
-CRGB LEDS_get_color_shortindex(uint8_t pal, uint16_t  index, uint8_t level , boolean blend)
-{
-	CRGB color;
-
-		TBlendType currentBlendingTB;
-		if (get_bool(BLEND_INVERT) == true)
-				blend = !blend;
-			if (blend == true)
-				currentBlendingTB = LINEARBLEND;
-			else
-				currentBlendingTB = NOBLEND;
-
-
-
-}
-
-
-
-
-
+	
 
 void  LEDS_setall_color(uint8_t color = 0) {
 
@@ -722,7 +702,7 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 				
 					if (form_cfg[i + (z * 8)].fade_value != 0 )         	   tpm_fx.fadeLedArray(led_FX_out, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].fade_value);
 
-					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)        { if(!bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i)) tpm_fx.AddGlitter(led_FX_out, LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal) ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);																					
+					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_PAL], i) == true)        { if(!bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i)) tpm_fx.AddGlitter(led_FX_out, LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal) ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);																					
 																								else tpm_fx.AddGlitter(led_FX_out ,fft_color_result_data[0] ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds); trigger = true; }
 
 				
@@ -1736,6 +1716,17 @@ void LEDS_setup()
 void LEDS_run_layers()
 {
 
+/*	{
+  "None": 0,
+  "FFT Form": 1,
+  "FFT Strip": 2,
+  "Pal Form": 3,
+  "Pal Strip": 4,
+  "FX1": 5,
+  "FX: Fire": 6,
+  "FX: Shimmer": 7
+*/
+
 			for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
 			{
 				if(layer_select[layer] != 0 && layer_select[layer] <= MAX_LAYERS )
@@ -1803,7 +1794,7 @@ void LEDS_run_layers()
 								
 											
 											if (
-											(bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)       
+											(bitRead(form_menu_glitter[z][_M_FORM_GLITTER_PAL], i) == true)       
 											 
 											
 											|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)        
