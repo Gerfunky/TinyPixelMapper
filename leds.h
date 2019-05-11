@@ -149,7 +149,7 @@
 		{
 			uint16_t	start_led;			// where the pallete starts
 			uint16_t	nr_leds;			// how many ?  for mirror how many extra.
-			uint8_t		fade_value;			// the fade value
+		//	uint8_t		fade_value;			// the fade value
 
 		};
 
@@ -194,6 +194,7 @@
 		{
 			uint8_t mix_mode;
 			uint8_t level;
+			uint8_t fade;
 
 		};
 

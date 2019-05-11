@@ -794,7 +794,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String("[FC:" + String(form)));
 			conf_file.print(String(":" + String(form_cfg[form].start_led)));
 			conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
-			conf_file.print(String(":" + String(form_cfg[form].fade_value)));
+			conf_file.print(String(":" + String(form_fx1[form].fade)));
 
 			conf_file.println("] ");
 
@@ -1119,7 +1119,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				//in_int = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_cfg[strip_no].start_led);
-				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].fade_value = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
 			}
 			else if ((type == 'P') && (typeb == 'F'))
 			{

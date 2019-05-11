@@ -1125,8 +1125,8 @@ void osc_forms_send(byte y) {
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].nr_leds));
 
 
-		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_cfg[i + (y * 8)].fade_value, MAX_FADE_VALUE));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/FFL/" + String(i + 1)), float(form_cfg[i + (y * 8)].fade_value));
+		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_fx1[i + (y * 8)].fade, MAX_FADE_VALUE));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/FFL/" + String(i + 1)), float(form_fx1[i + (y * 8)].fade));
 		
 		osc_queu_MSG_float(String("/form/FA/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_fx1[i + (y * 8)].level, 255));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/FAL/" + String(i + 1)), float(form_fx1[i + (y * 8)].level));
@@ -1429,8 +1429,8 @@ void osc_forms_fader_rec(OSCMessage &msg, int addrOffset)
 
 	if (address[0] == 'F' && address[1] == 'F') 
 	{
-		form_cfg[select_mode_int + z * 8].fade_value = (msg.getFloat(0) * MAX_FADE_VALUE);  //byte(msg.getFloat(0) * 255);
-		outvalue = float(form_cfg[select_mode_int + z * 8].fade_value);
+		form_fx1[select_mode_int + z * 8].fade = (msg.getFloat(0) * MAX_FADE_VALUE);  //byte(msg.getFloat(0) * 255);
+		outvalue = float(form_fx1[select_mode_int + z * 8].fade);
 	}
 
 
@@ -3903,7 +3903,7 @@ uint8_t bit = 0;
 					osc_queu_MSG_int( "/ostc/form/fx/fire/run/" + String(formNr),		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  		
 					osc_queu_MSG_int( "/ostc/form/fx/fire/mir/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_MIRROR], 	real_formNr)));  		
 					osc_queu_MSG_int( "/ostc/form/fx/fire/rev/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_REVERSED], 		real_formNr)));  		
-				//	osc_queu_MSG_int( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  	
+				;  	
 										
 		
 			osc_queu_MSG_int("/ostc/form/fx/fire/lvl/" + String(formNr) , form_fx_fire[formNr].level );
@@ -3913,8 +3913,8 @@ uint8_t bit = 0;
 			osc_queu_MSG_int("/ostc/form/fx/fire/spk/" + String(formNr), form_fx_fire[formNr].sparking );
 		}
 
-		osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
-		osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
+	//	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
+	//	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
 }
 
 
@@ -4198,7 +4198,7 @@ void osc_StC_menu_form_level_ref()
 				osc_queu_MSG_int("/ostc/form/pal/lvl/"+	String(formNr), form_fx_pal[formNr].level );
 				
 				osc_queu_MSG_int( "/ostc/form/fx/sys/lvl/" +	String(formNr), form_fx1[formNr].level );
-				osc_queu_MSG_int( "/ostc/form/fx/fade/lvl/" +	String(formNr), form_fx1[formNr].level );
+				osc_queu_MSG_int( "/ostc/form/fx/fade/lvl/" +	String(formNr), form_fx1[formNr].fade );
 				osc_queu_MSG_int( "/ostc/form/fx/shim/lvl/" + String(formNr),	 form_fx_shim[real_formNr].level);
 				osc_queu_MSG_int( "/ostc/form/fx/glit/lvl/" + String(formNr),	 form_fx_glitter[real_formNr].level);
 				osc_queu_MSG_int( "/ostc/form/fx/dott/lvl/" + String(formNr), form_fx_dots[formNr].level );
@@ -4761,7 +4761,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.match("/fx/dott/mix",addrOffset))  		form_fx_dots[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 		else if  	(msg.match("/fx/dott/pal",addrOffset))  		form_fx_dots[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
 
-		else if		(msg.match("/fx/fade/lvl",addrOffset))			{  form_cfg[orig_form_nr].fade_value  =  uint8_t(msg.getInt(0))  ;}
+		else if		(msg.match("/fx/fade/lvl",addrOffset))			{  form_fx1[orig_form_nr].fade  =  uint8_t(msg.getInt(0))  ;}
 
 		else if		(msg.match("/fx/fire/run",addrOffset))			{ bitWrite(form_menu_fire[i_bit_int][_M_FORM_FIRE_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  ;}
 		else if		(msg.match("/fx/fire/rev",addrOffset))			{ bitWrite(form_menu_fire[i_bit_int][_M_FORM_FIRE_REVERSED], 		i_form_nr,	bool(msg.getInt(0)));  ;}
