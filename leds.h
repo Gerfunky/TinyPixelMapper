@@ -187,6 +187,11 @@
 			uint8_t level;
 			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
 		  uint8_t	speed;		// Dot speed in BPM
+			uint16_t 	indexLong;
+			//uint8_t fft_dot_type;
+			//uint8_t normal_dot_type;
+			//uint8_t normal_dot_color;
+
 
 		};
 
@@ -266,7 +271,7 @@
 
 
 #define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
-#define _M_NR_FORM_BYTES_ 2				// 2 bytes = 16 forms
+#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 	  enum strip_bits
 	  {
 		  _S_7_0_ = 0,					// Strip / Form 0 to 7
@@ -277,7 +282,7 @@
 
 
 #define _M_NR_OPTIONS_     16 //40 //10			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
+//#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
 		  _M_AUDIO_REVERSED = 1,
@@ -332,13 +337,12 @@
 			_M_FORM_GLITTER_FFT,
 		};
 
-		#define _M_NR_FORM_DOT_OPTIONS_ 4
+		#define _M_NR_FORM_DOT_OPTIONS_ 3
 			enum form_dot_options
 		{
 			_M_FORM_DOT_RUN,
-			_M_FORM_DOT_FFT,
-			_M_FORM_DOT_SINE,
-			_M_FORM_DOT_SAW,
+			_M_FORM_DOT_TYPE,
+			_M_FORM_DOT_COLOR,		// 0 = Pallete , 1  FFT
 
 		};
 
@@ -461,8 +465,8 @@
 
 	  };
 
-	#define MAX_LAYERS_SELECT 10
-	#define MAX_LAYERS 7
+	#define MAX_LAYERS_SELECT 18  // up to how many layers can you add
+	#define MAX_LAYERS 7					// what is the max layer Number 
 
 
 // Functions

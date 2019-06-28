@@ -171,7 +171,7 @@ fft_data_struct fft_data[7] =   // FFT data Sructure
 	byte heat[NUM_LEDS];
 
 
-	uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0};
+	uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0,0,0,0,0,0,0};
 
 
 			/*			0 = none
@@ -445,13 +445,13 @@ byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
 
 uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_] = { { 0,0 } ,{ 0,0 } };			// Test for global mirruring and reversing even in artnet
 
-
+/*
 byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_] =				// Form selection menu
 {
 	 { 0,0,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 ,0,0 }
 	,{ 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 ,0,0 }
 };
-
+*/
 
 byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
 byte form_menu_fft[_M_NR_FORM_BYTES_][_M_NR_FORM_FFT_OPTIONS_];
@@ -706,12 +706,26 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 
 				
 					
-					if (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)         { tpm_fx.DotSine(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); }
-																				
-					if (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)        { tpm_fx.DotSaw(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); }
+					/*
+					if (bitRead(form_menu_dot[z][_M_FORM_DOT_RUN], i) == true)         
+					{
+						CRGB dotcolor;
+
+						if (bitRead(form_menu_dot[z][_M_FORM_DOT_COLOR], i))
+							dotcolor = tpm_fx.PalGetFromLongPal(LEDS_pal_get(form_fx_dots[i + (z * 8)].pal ),form_fx_dots[i + (z * 8)].indexLong,form_fx_dots[i + (z * 8)].level,TBlendType(LINEARBLEND) , MixModeType(MIX_ADD));
+						else
+							dotcolor = GlobalColor_result;
+						
+
+						if (bitRead(form_menu_dot[z][_M_FORM_DOT_TYPE], i)	)
+								tpm_fx.DotSine(led_FX_out, dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
+						else	tpm_fx.DotSaw(led_FX_out,  dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
+						
+					}	 */														
+					//if (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)        { tpm_fx.DotSaw(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); }
 																					
 					
-					if (bitRead(form_menu_dot[z][_M_FORM_DOT_FFT], i) == true)     { tpm_fx.DotSaw(led_FX_out, GlobalColor_result, form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255);}
+					//if (bitRead(form_menu_dot[z][_M_FORM_DOT_FFT], i) == true)     { tpm_fx.DotSaw(led_FX_out, GlobalColor_result, form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255);}
 
 
 				}
@@ -794,7 +808,7 @@ void LEDS_G_pre_show_processing()
 boolean LEDS_checkIfAudioSelected()
 {	// check if there are audi strips if so return true
 	for (byte zp = 0; zp < _M_NR_STRIP_BYTES_; zp++) if (strip_menu[zp][_M_AUDIO_] != 0)   return true;
-	for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)  if ((form_menu_fft[zf][_M_FORM_FFT_RUN] != 0) || (form_menu_dot[zf][_M_FORM_DOT_FFT] != 0)) return true;
+	for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)  if ((form_menu_fft[zf][_M_FORM_FFT_RUN] != 0) || (form_menu_dot[zf][_M_FORM_DOT_RUN] != 0)) return true;
 	if(fft_data_bri != 0) return true;
 	if(fft_data_menu[0] != 0) return true;
 	if(fft_data_menu[1] != 0) return true;
@@ -1795,10 +1809,10 @@ void LEDS_run_layers()
 											 
 											|| (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true) 
 											
-											|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)        
-											|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)       
+											//|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)        
+											//|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)       
 											
-											|| (bitRead(form_menu_dot[z][_M_FORM_DOT_FFT], i) == true)    
+											//|| (bitRead(form_menu_dot[z][_M_FORM_DOT_FFT], i) == true)    
 
 											
 											)   
