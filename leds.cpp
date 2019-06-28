@@ -28,7 +28,7 @@
 
 	#include <TPM-FX.h>
 
-	tpm_fx tpm_fx;
+	tpm_fx tpm_fx;					//load the FX lib
 
 	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 
@@ -37,7 +37,7 @@
 #define FASTLED_SHOW_CORE 0
 
 
-	extern  void osc_StC_FFT_vizIt();
+	extern  void osc_StC_FFT_vizIt();			// of open stage controll to send the fft data
 
 
 // -- Task handles for use in the notifications
@@ -390,44 +390,44 @@ struct form_fx1_struct form_fx1[NR_FORM_PARTS]=
 
 struct form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS] =
 {
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
 
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15},
-	{0,MIX_ADD,255,15}
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15}
 };
 
 struct form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] =
 {
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
 
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20},
-	{0,MIX_ADD,255,1,20}
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20},
+	{0,255,1,20}
 
 };
 
@@ -694,34 +694,62 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 
 		for (byte i = 0; i < 8; i++)
 		{
-			//if(bitRead(form_menu_fx1[z][_M_FORM_FX1_RUN], i ))
-			//{
+			if(bitRead(form_menu_fx1[z][_M_FORM_FX1_RUN], i ))
+			{
 				if (form_cfg[i + (z * 8)].nr_leds != 0)  // only run if we actualy have leds to do 
 				{										 // fade first so that we only fade the new effects on next go
 				
 					if (form_fx1[i + (z * 8)].fade != 0 )         	   tpm_fx.fadeLedArray(led_FX_out, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx1[i + (z * 8)].fade);
 
-					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_PAL], i) == true)      { tpm_fx.AddGlitter(led_FX_out, LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal) ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);	}																				
-					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true)  	{ tpm_fx.AddGlitter(led_FX_out ,GlobalColor_result ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds); }
+					if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)      
+					{ 
+						if (form_fx_glitter[i + (z * 8)].pal  != 250)   // 250 = from FFT,  other = from Pallete
+							tpm_fx.AddGlitter(led_FX_out, LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal) ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);	
+						else
+							tpm_fx.AddGlitter(led_FX_out ,GlobalColor_result ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);
+					}																				
+					
+					
+					
+					//if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true)  	{ tpm_fx.AddGlitter(led_FX_out ,GlobalColor_result ,form_fx_glitter[i + (z * 8)].value, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds); }
 
 				
 					
-					/*
+					
 					if (bitRead(form_menu_dot[z][_M_FORM_DOT_RUN], i) == true)         
 					{
 						CRGB dotcolor;
-
-						if (bitRead(form_menu_dot[z][_M_FORM_DOT_COLOR], i))
-							dotcolor = tpm_fx.PalGetFromLongPal(LEDS_pal_get(form_fx_dots[i + (z * 8)].pal ),form_fx_dots[i + (z * 8)].indexLong,form_fx_dots[i + (z * 8)].level,TBlendType(LINEARBLEND) , MixModeType(MIX_ADD));
-						else
+						
+						if (form_fx_dots[i + (z * 8)].pal < 250)
+							dotcolor = tpm_fx.PalGetFromLongPal(LEDS_pal_get(form_fx_dots[i + (z * 8)].pal ),form_fx_dots[i + (z * 8)].indexLong,form_fx_dots[i + (z * 8)].level,TBlendType(LINEARBLEND) );
+						else if (form_fx_dots[i + (z * 8)].pal == 250) // 250 = fft
 							dotcolor = GlobalColor_result;
 						
-
-						if (bitRead(form_menu_dot[z][_M_FORM_DOT_TYPE], i)	)
-								tpm_fx.DotSine(led_FX_out, dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
-						else	tpm_fx.DotSaw(led_FX_out,  dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
 						
-					}	 */														
+						
+						if (bitRead(form_menu_dot[z][_M_FORM_DOT_TYPE], i) == DOT_SINE	)
+						{
+							if (form_fx_dots[i + (z * 8)].pal <= 250)
+								tpm_fx.DotSine(led_FX_out, dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
+							else if (form_fx_dots[i + (z * 8)].pal == 251) // Hue Dot
+								tpm_fx.DotSine(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255);
+						}
+						else   // its a saw DOT
+						{ 
+
+							if (form_fx_dots[i + (z * 8)].pal <= 250)
+								tpm_fx.DotSaw(led_FX_out,  dotcolor,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
+							else if (form_fx_dots[i + (z * 8)].pal == 251) // Hue Dot
+								 tpm_fx.DotSaw(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
+						}
+							
+						
+						
+
+
+
+					}	 
+
 					//if (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)        { tpm_fx.DotSaw(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); }
 																					
 					
@@ -729,7 +757,7 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 
 
 				}
-			//}
+			}
 			else
 			{
 					for (byte i = 0; i < 8; i++)
@@ -1805,9 +1833,9 @@ void LEDS_run_layers()
 								
 											
 											if (
-											(bitRead(form_menu_glitter[z][_M_FORM_GLITTER_PAL], i) == true)       
+											(bitRead(form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)       
 											 
-											|| (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true) 
+											//|| (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true) 
 											
 											//|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SINE], i) == true)        
 											//|| (bitRead(form_menu_dot[z][_M_FORM_DOT_SAW], i) == true)       

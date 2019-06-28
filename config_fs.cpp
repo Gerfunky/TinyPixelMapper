@@ -830,7 +830,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 		{
 			conf_file.print(String("[DF:" + String(form)));
 			conf_file.print(String(":" + String(form_fx_dots[form].pal)));
-			conf_file.print(String(":" + String(form_fx_dots[form].mix_mode)));
+			//conf_file.print(String(":" + String(form_fx_dots[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx_dots[form].level)));
 			conf_file.print(String(":" + String(form_fx_dots[form].nr_dots)));
 			conf_file.print(String(":" + String(form_fx_dots[form].speed)));
@@ -919,7 +919,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 		{
 			conf_file.print(String("[GF:" + String(form)));
 			conf_file.print(String(":" + String(form_fx_glitter[form].pal)));
-			conf_file.print(String(":" + String(form_fx_glitter[form].mix_mode)));
+			//conf_file.print(String(":" + String(form_fx_glitter[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx_glitter[form].level)));
 			conf_file.print(String(":" + String(form_fx_glitter[form].value)));
 
@@ -942,6 +942,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String("[XF:" + String(form)));
 			conf_file.print(String(":" + String(form_fx1[form].level)));
 			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx1[form].fade)));
 			conf_file.println("] ");
 		}
 
@@ -1144,7 +1145,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].pal = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].mix_mode = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].nr_dots = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_dots[strip_no].speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
@@ -1208,7 +1209,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].pal = in_int;
-				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].mix_mode = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_glitter[strip_no].value = in_int;
 
@@ -1224,6 +1225,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				strip_no = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
 			}
 			else if ((type == 'X') && (typeb == 'B'))
 			{

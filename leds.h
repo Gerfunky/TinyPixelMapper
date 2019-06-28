@@ -89,20 +89,7 @@
 
 	};
 
-	// FFT
 
-	struct fft_data_struct 
-	{
-		//uint8_t bin_on_red;		// bits select what bin to trigger on
-		//uint8_t bin_on_green;		// bits select what bin to trigger on 
-		//uint8_t bin_on_blue;		// bits select what bin to trigger on
-		uint8_t trigger;		// trigger value
-		uint8_t value;			// actual value
-		uint8_t avarage;
-		uint8_t autoFFT;
-		uint8_t max;
-		
-	};
 
 	struct fft_led_cfg_struct
 	{
@@ -153,6 +140,20 @@
 
 		};
 
+
+
+// PAL
+		#define _M_NR_FORM_PAL_OPTIONS_ 5
+		enum form_pal_options
+		{
+			_M_FORM_PAL_RUN,
+			_M_FORM_PAL_REVERSED,
+			_M_FORM_PAL_MIRROR,
+			_M_FORM_PAL_BLEND,
+			_M_FORM_PAL_ONECOLOR
+		};
+
+
 		struct form_fx_pal_struct
 		{
 					uint8_t 	pal;			// what pallete for pallete run
@@ -167,23 +168,73 @@
 
 		};
 
-		
 
 
+// FX1
+
+		#define _M_NR_FORM_FX1_OPTIONS_ 3
+		enum form_fx1_options
+		{
+			_M_FORM_FX1_RUN,
+			_M_FORM_FX1_REVERSED,
+			_M_FORM_FX1_MIRROR,
+		};
+
+
+	struct form_fx1_struct
+		{
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t fade;
+
+		};
+
+
+
+
+		// GLITTER
+
+	 #define _M_NR_FORM_GLITTER_OPTIONS_ 1
+		enum form_glitter_options
+		{
+			_M_FORM_GLITTER_RUN,
+		//	_M_FORM_GLITTER_FFT,
+		};
 
 		struct form_fx_glitter_struct
 		{
 			uint8_t pal;
-			uint8_t mix_mode;
+			//uint8_t mix_mode;
 			uint8_t level;
 			uint8_t	value;
+			//uint8_t color_source;  // 0 = palette, 1 = fft
 			
 		};
 
+
+// DOTS
+
+	#define _M_NR_FORM_DOT_OPTIONS_ 2
+			enum form_dot_options
+		{
+			_M_FORM_DOT_RUN,
+			_M_FORM_DOT_TYPE,  // 0 = sine , 1 = saw
+			//_M_FORM_DOT_COLOR,		// 0 = Pallete , 1  FFT
+
+		};
+
+			enum form_dot_type
+		{	
+			DOT_SAW = 0,
+			DOT_SINE = 1
+			
+		};
+
+
 		struct form_fx_dots_struct
 		{
-			uint8_t pal;
-			uint8_t mix_mode;
+			uint8_t pal; 					// "FFT color result": 250,"Rotating Hue": 251   others = pal
+			//uint8_t mix_mode;
 			uint8_t level;
 			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
 		  uint8_t	speed;		// Dot speed in BPM
@@ -195,13 +246,16 @@
 
 		};
 
-		struct form_fx1_struct
+	
+// Fire
+		#define _M_NR_FORM_FIRE_OPTIONS_ 3
+		enum form_fire_options
 		{
-			uint8_t mix_mode;
-			uint8_t level;
-			uint8_t fade;
+			_M_FORM_FIRE_RUN,
+			_M_FORM_FIRE_REVERSED,
+			_M_FORM_FIRE_MIRROR,
+		};	
 
-		};
 
 		struct form_fx_fire_struct
 		{
@@ -213,6 +267,32 @@
 
 		};
 
+
+	// FFT
+
+	#define _M_NR_FORM_FFT_OPTIONS_ 4
+		enum form_fft_options
+		{
+			_M_FORM_FFT_RUN,
+			_M_FORM_FFT_REVERSED,
+			_M_FORM_FFT_MIRROR,
+			_M_FORM_FFT_ONECOLOR
+		};
+
+		
+	struct fft_data_struct 
+	{
+		//uint8_t bin_on_red;		// bits select what bin to trigger on
+		//uint8_t bin_on_green;		// bits select what bin to trigger on 
+		//uint8_t bin_on_blue;		// bits select what bin to trigger on
+		uint8_t trigger;		// trigger value
+		uint8_t value;			// actual value
+		uint8_t avarage;
+		uint8_t autoFFT;
+		uint8_t max;
+		
+	};
+
 		struct form_fx_fft_struct
 		{
 			uint8_t mix_mode;
@@ -220,6 +300,18 @@
 			uint8_t offset;
 
 		};
+
+
+
+		// Shimmer
+		
+		#define _M_NR_FORM_SHIMMER_OPTIONS_ 2
+		enum form_shimmer_options
+		{
+			_M_FORM_SHIMMER_RUN,
+			_M_FORM_SHIMMER_BLEND,
+		};
+
 
 		struct form_fx_shim_struct
 		{
@@ -233,6 +325,7 @@
 
 		};
 	  
+		
 	  struct form_fx_shim_global_struct
 	  {
 		   int waveA;
@@ -303,63 +396,14 @@
 		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
 	  }; */
 
-		#define _M_NR_FORM_PAL_OPTIONS_ 5
-		enum form_pal_options
-		{
-			_M_FORM_PAL_RUN,
-			_M_FORM_PAL_REVERSED,
-			_M_FORM_PAL_MIRROR,
-			_M_FORM_PAL_BLEND,
-			_M_FORM_PAL_ONECOLOR
-		};
 
-		#define _M_NR_FORM_FFT_OPTIONS_ 4
-		enum form_fft_options
-		{
-			_M_FORM_FFT_RUN,
-			_M_FORM_FFT_REVERSED,
-			_M_FORM_FFT_MIRROR,
-			_M_FORM_FFT_ONECOLOR
-		};
 
-		#define _M_NR_FORM_FIRE_OPTIONS_ 3
-		enum form_fire_options
-		{
-			_M_FORM_FIRE_RUN,
-			_M_FORM_FIRE_REVERSED,
-			_M_FORM_FIRE_MIRROR,
-		};	
+	
 
-		#define _M_NR_FORM_GLITTER_OPTIONS_ 2
-		enum form_glitter_options
-		{
-			_M_FORM_GLITTER_PAL,
-			_M_FORM_GLITTER_FFT,
-		};
 
-		#define _M_NR_FORM_DOT_OPTIONS_ 3
-			enum form_dot_options
-		{
-			_M_FORM_DOT_RUN,
-			_M_FORM_DOT_TYPE,
-			_M_FORM_DOT_COLOR,		// 0 = Pallete , 1  FFT
+	
 
-		};
-
-		#define _M_NR_FORM_SHIMMER_OPTIONS_ 2
-		enum form_shimmer_options
-		{
-			_M_FORM_SHIMMER_RUN,
-			_M_FORM_SHIMMER_BLEND,
-		};
-
-		#define _M_NR_FORM_FX1_OPTIONS_ 3
-		enum form_fx1_options
-		{
-			_M_FORM_FX1_RUN,
-			_M_FORM_FX1_REVERSED,
-			_M_FORM_FX1_MIRROR,
-		};
+	
 
 
 	  enum strip_options {
