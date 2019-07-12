@@ -29,8 +29,12 @@
 		#define MAX_INDEX_LONG 4096 //6			// must stay under this number!
 
 		// Strip/Form settings do not change!!! 
-		#define NR_FORM_PARTS	16				// how many forms? default 16
-		#define NR_STRIPS		32				// how many strips  default 32
+		
+		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8)				// how many forms? default 32
+
+
+	//	#define NR_STRIPS		32				// how many strips  default 32
 		#define NR_PALETTS 		16				// how many pallets do we have = 2
 		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
@@ -115,6 +119,7 @@
 		#define NR_COPY_LED_BYTES 2
 
 // Forms and Parts 
+/*
    struct Strip_FL_Struct
    {
 					uint16_t start_led ;	// where the pallete starts
@@ -131,7 +136,7 @@
 		  		uint8_t 	fft_mix_mode;
 					uint8_t 	pal_pal;
 	};
-
+*/
 		struct form_Led_Setup_Struct 
 		{
 			uint16_t	start_led;			// where the pallete starts
@@ -239,6 +244,8 @@
 			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
 		  uint8_t	speed;		// Dot speed in BPM
 			uint16_t 	indexLong;
+			uint16_t  index_add;
+			
 			//uint8_t fft_dot_type;
 			//uint8_t normal_dot_type;
 			//uint8_t normal_dot_color;
@@ -362,9 +369,12 @@
 
 	  };
 
-
-#define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
 #define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+
+
+/*
+#define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
+
 	  enum strip_bits
 	  {
 		  _S_7_0_ = 0,					// Strip / Form 0 to 7
@@ -375,6 +385,8 @@
 
 
 #define _M_NR_OPTIONS_     16 //40 //10			// hass less options compared to forms!!
+*/ 
+
 //#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
@@ -404,7 +416,7 @@
 	
 
 	
-
+/*
 
 	  enum strip_options {
 		  _M_AUDIO_REVERSED 	,
@@ -427,7 +439,7 @@
 		  _M_FIRE_PAL			,				// Fire animation
 		  _M_FIRE_MIRROR  		,			//
 		  _M_FIRE_REV			,			//
-
+*/
 
 		  /*_M_AUDIO_MASK  		,			//
 		  _M_AUDIO_SUBTRACT		,
@@ -475,7 +487,7 @@
 
 		  
 
-	  };
+	//  };
 
 /*
 #define HARD_MIX_TRIGGER 128
@@ -509,7 +521,7 @@
 
 	  };
 
-	#define MAX_LAYERS_SELECT 18  // up to how many layers can you add
+	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
 	#define MAX_LAYERS 7					// what is the max layer Number 
 
 

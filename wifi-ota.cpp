@@ -556,8 +556,9 @@ void WiFi_Start_Network()
 
 		if(btn_read == BUTTON_DOWN )
 		{
+			if(get_bool(STATIC_IP_ENABLED))  WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); 
 			WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel); 
-			write_bool(STATIC_IP_ENABLED,false);
+			//write_bool(STATIC_IP_ENABLED,true);
 			write_bool(WIFI_POWER,true);
 			write_bool(WIFI_POWER_ON_BOOT, true);
 			debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));

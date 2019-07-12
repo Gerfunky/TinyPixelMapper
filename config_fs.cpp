@@ -55,11 +55,11 @@
 
 
 	extern fft_ip_cfg_struct fft_ip_cfg;
-	extern Strip_FL_Struct part[NR_STRIPS];
+	//extern Strip_FL_Struct part[NR_STRIPS];
 
-	extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
+	//extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
 	//extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
-	extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
+	//extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
 	extern led_cfg_struct led_cfg;
 	extern fft_led_cfg_struct fft_led_cfg;
 	extern fft_data_struct fft_data[7];
@@ -760,7 +760,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 
 			conf_file.println("sp = Strips Config : Start Led : Nr Leds : Start Index : index add Led : index add frame : rest is on off selection ");
-		for (int strip = 0; strip < NR_STRIPS; strip++) 
+	/*	for (int strip = 0; strip < NR_STRIPS; strip++) 
 		{
 			conf_file.print(String("[sp:" + String(strip)));
 
@@ -786,7 +786,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 			conf_file.println("] ");
 
-		}
+		}   */
 		
 		conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
@@ -1075,7 +1075,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
 				// debugMe(led_cfg.max_bri);
 			}
-			else if ((type == 's') && (typeb == 'p'))
+	/*		else if ((type == 's') && (typeb == 'p'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				
@@ -1113,7 +1113,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				// debugMe(strip_no,false);
 				// debugMe(" . ", false);
 				// debugMe(part[strip_no].start_led);
-			}
+			} */
 			else if ((type == 'F') && (typeb == 'C'))   //if (conf_file.peek()  != ']') 
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1281,6 +1281,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 					{
 					layer_select[layer] = get_int_conf_value(conf_file, &character)	;
+					debugMe(layer_select[layer]);
 					}
 
 			
