@@ -2065,6 +2065,8 @@ void LEDS_loop()
 
 		}
 
+		FS_play_conf_loop();
+
 
 	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) ) LEDS_seqencer_advance();
 	}
