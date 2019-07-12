@@ -910,6 +910,7 @@ void osc_StC_menu_form_dot_adv_ref()
 		//osc_queu_MSG_int("/ostc/form/fx/dott/mix/" + String(formNr), form_fx_dots[formNr].mix );
 		osc_queu_MSG_int("/ostc/form/fx/dott/num/" + String(formNr), form_fx_dots[formNr].nr_dots );
 		osc_queu_MSG_int("/ostc/form/fx/dott/bpm/" + String(formNr), form_fx_dots[formNr].speed );
+		osc_queu_MSG_int("/ostc/form/fx/dott/pbm/" + String(formNr), form_fx_dots[formNr].index_add );
 
 		osc_queu_MSG_int("/ostc/form/fx/dott/run/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_RUN], 		real_formNr)) );
 		osc_queu_MSG_int("/ostc/form/fx/dott/typ/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_TYPE], 		real_formNr)));
@@ -1604,6 +1605,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		//else if		(msg.match("/fx/dott/fft",addrOffset))			{ bitWrite(form_menu_dot[i_bit_int][_M_FORM_DOT_FFT], 	i_form_nr,	bool(msg.getInt(0)));  ;}
 		if  	(msg.match("/fx/dott/num",addrOffset))  				form_fx_dots[orig_form_nr].nr_dots = uint8_t(msg.getInt(0))	;
 		else if  	(msg.match("/fx/dott/bpm",addrOffset))  		form_fx_dots[orig_form_nr].speed = uint8_t(msg.getInt(0))	;
+		else if  	(msg.match("/fx/dott/pbm",addrOffset))  		form_fx_dots[orig_form_nr].index_add = uint8_t(msg.getInt(0))	;
 		else if  	(msg.match("/fx/dott/lvl",addrOffset))  		form_fx_dots[orig_form_nr].level = uint8_t(msg.getInt(0))	;
 		//else if  	(msg.match("/fx/dott/mix",addrOffset))  		form_fx_dots[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 		else if  	(msg.match("/fx/dott/pal",addrOffset))  		form_fx_dots[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
