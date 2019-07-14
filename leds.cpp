@@ -697,7 +697,7 @@ void LED_G_bit_run()
 } */
 
 // pre show precessing
-
+/*
 void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 {	// main routing function for effects
 	// read the bit from the menu and run if active
@@ -785,7 +785,7 @@ void LEDS_G_form_FX1_run()				// Chcek wwhat effect bits are set and do it
 	}
 
 	led_cfg.hue++;
-}
+} */
 
 
 void LEDS_G_pre_show_processing()
@@ -1710,33 +1710,33 @@ uint8_t LEDS_fft_get_fxbin_result(uint8_t fxbin)
 uint8_t LEDS_data_or_fftbin(uint8_t inval)
 {		
 	// based on the input value, return a FFT bin or the inval.
-	uint8_t returnVal = inval;
-
+	uint8_t returnVal = 0;
+	if (inval >= FFT_FX_NR_OF_BINS) inval=0;
 
 	if(inval < 2)
 	{
-		if(fft_fxbin[0].sum > fft_fxbin[0].trrig_val)
-				returnVal = constrain( fft_fxbin[0].set_val + fft_fxbin[0].sum, 0,255);
+		if(fft_fxbin[inval].sum > fft_fxbin[inval].trrig_val)
+				returnVal = constrain( fft_fxbin[inval].set_val + fft_fxbin[inval].sum, 0,255);
 			else returnVal = 0;
 	}
 	else if (inval < 10)
 	{
-			if(fft_fxbin[2].sum > fft_fxbin[2].trrig_val)
-				returnVal = constrain( fft_fxbin[2].set_val + fft_fxbin[2].sum, 0,255);
-			else returnVal = fft_fxbin[2].set_val;
+			if(fft_fxbin[inval].sum > fft_fxbin[inval].trrig_val)
+				returnVal = constrain( fft_fxbin[inval].set_val + fft_fxbin[inval].sum, 0,255);
+			else returnVal = fft_fxbin[inval].set_val;
 
 	}
 	else if (inval < 18)
 	{
-			if(fft_fxbin[5].sum > fft_fxbin[5].trrig_val)
-				returnVal = constrain( fft_fxbin[5].set_val - fft_fxbin[5].sum, 0,255);
-			else returnVal = fft_fxbin[5].set_val;
+			if(fft_fxbin[inval].sum > fft_fxbin[inval].trrig_val)
+				returnVal = constrain( fft_fxbin[inval].set_val - fft_fxbin[inval].sum, 0,255);
+			else returnVal = fft_fxbin[inval].set_val;
 
 	}
 	else if (inval < 20)
 	{
-			if(fft_fxbin[5].sum > fft_fxbin[5].trrig_val)
-				returnVal = constrain( fft_fxbin[5].set_val - fft_fxbin[5].sum, 0,255);
+			if(fft_fxbin[inval].sum > fft_fxbin[inval].trrig_val)
+				returnVal = constrain( fft_fxbin[inval].set_val - fft_fxbin[inval].sum, 0,255);
 			else returnVal = 255;
 	}
 	return returnVal;
@@ -1766,7 +1766,9 @@ void LEDS_run_pal(uint8_t z, uint8_t i )
 
 void LEDS_run_fx1_glitter(uint8_t z, uint8_t i )
 {
- 	uint8_t glitt_val = LEDS_data_or_fftbin(form_fx_glitter[i + (z * 8)].value);
+ 	uint8_t glitt_val = form_fx_glitter[i + (z * 8)].value;
+	 
+	 if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true)   glitt_val = LEDS_data_or_fftbin(form_fx_glitter[i + (z * 8)].value);
 
 	if (form_fx_glitter[i + (z * 8)].pal  != 250)   // 250 = from FFT,  other = from Pallete
 	{
