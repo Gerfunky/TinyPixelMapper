@@ -148,14 +148,15 @@
 
 
 // PAL
-		#define _M_NR_FORM_PAL_OPTIONS_ 5
+		#define _M_NR_FORM_PAL_OPTIONS_ 6
 		enum form_pal_options
 		{
 			_M_FORM_PAL_RUN,
 			_M_FORM_PAL_REVERSED,
 			_M_FORM_PAL_MIRROR,
 			_M_FORM_PAL_BLEND,
-			_M_FORM_PAL_ONECOLOR
+			_M_FORM_PAL_ONECOLOR,
+			_M_FORM_PAL_SPEED_FROM_FFT
 		};
 
 
@@ -165,8 +166,8 @@
 					uint8_t 	level;
 					uint8_t 	mix_mode;
 					uint16_t	index_start;		// Where to start at reset
-					int				index_add_led;			// how much to add onto the index on 
-					uint8_t		index_add_frame;		// ???
+					uint16_t	index_add_led;			// how much to add onto the index on 
+					uint16_t	index_add_frame;		// ???
 					uint16_t 	indexLong;
 					uint8_t		index;				// the pallete index
 					
@@ -203,7 +204,7 @@
 		enum form_glitter_options
 		{
 			_M_FORM_GLITTER_RUN,
-		//	_M_FORM_GLITTER_FFT,
+			_M_FORM_GLITTER_FFT,
 		};
 
 		struct form_fx_glitter_struct
@@ -261,6 +262,9 @@
 			_M_FORM_FIRE_RUN,
 			_M_FORM_FIRE_REVERSED,
 			_M_FORM_FIRE_MIRROR,
+			_M_FORM_FIRE_SPK_FFT,
+			_M_FORM_FIRE_COOL_FFT
+
 		};	
 
 
@@ -300,17 +304,13 @@
 		
 	};
 
-#define FFT_FX_NR_OF_BINS 6
+#define FFT_FX_NR_OF_BINS 20
 	struct fft_fxbin_struct 
 	{
 			uint8_t sum ;					
 			uint8_t set_val ;
 			uint8_t trrig_val;
 			uint8_t menu_select;
-
-
-
-
 	};
 
 		struct form_fx_fft_struct

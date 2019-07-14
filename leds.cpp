@@ -849,7 +849,7 @@ void LEDS_G_pre_show_processing()
 boolean LEDS_checkIfAudioSelected()
 {	// check if there are audi strips if so return true
 	//for (byte zp = 0; zp < _M_NR_STRIP_BYTES_; zp++) if (strip_menu[zp][_M_AUDIO_] != 0)   return true;
-	for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)  if ((form_menu_fft[zf][_M_FORM_FFT_RUN] != 0) || (form_menu_dot[zf][_M_FORM_DOT_RUN] != 0)) return true;
+	for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)  if ((form_menu_fft[zf][_M_FORM_FFT_RUN] != 0) ) return true;
 	if(fft_data_bri != 0) return true;
 	if(fft_fxbin[0].menu_select != 0) return true;
 	if(fft_fxbin[1].menu_select != 0) return true;
@@ -921,38 +921,6 @@ void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
 }
 
 
-void LEDS_pal_advance() 
-{
-	// advance the pallete for each strip/form
-
-/*#ifdef BLEND_PATTERN
-	nblendPaletteTowardPalette(currentPalette_P0, targetPalette_P0, paletteMaxChanges_P0);   // blend to Target Palette_0
-	nblendPaletteTowardPalette(currentPalette_P1, targetPalette_P1, paletteMaxChanges_P1);   // blend to Target Palette
-#endif // BLEND_PATTERN
-*/
-/*
-	for (int i = 0; i < NR_STRIPS; i++) {
-
-		part[i].index = part[i].index + part[i].index_add_pal;
-		part[i].index_long = part[i].index_long + part[i].index_add_pal;
-		if (MAX_INDEX_LONG <= part[i].index_long)
-			part[i].index_long = part[i].index_long - MAX_INDEX_LONG;
-	}
-
-*/
-	for (int i = 0; i < NR_FORM_PARTS; i++) {
-
-		form_fx_pal[i].index = form_fx_pal[i].index + form_fx_pal[i].index_add_frame;
-		form_fx_pal[i].indexLong = form_fx_pal[i].indexLong + form_fx_pal[i].index_add_frame;
-		if (MAX_INDEX_LONG <= form_fx_pal[i].indexLong)
-			form_fx_pal[i].indexLong = form_fx_pal[i].indexLong - MAX_INDEX_LONG;
-
-		
-		//debugMe(form_fx_dots[i ].indexLong);
-	}
-
-
-}
 
 void LEDS_pal_reset_index() 
 {	// reset all the pallete indexes
@@ -1035,37 +1003,7 @@ uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color)
 
 }
 
-boolean LEDS_pal_check_bit()
-{	// check if we have any pallete bits set if so return true
-	
 
-	/*
-	for (byte i = 0; i < 8; i++)
-	{
-
-		for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) if ( bitRead(strip_menu[z][_M_STRIP_], i) == true) return true;
-		for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) if ( bitRead(form_menu[z][_M_STRIP_], i) == true) return true;
-		
-
-	}
-
-	*/
-
-	//for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) if ((strip_menu[z][_M_STRIP_]) > 0) return true;
-	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++)
-	
-	{ 
-		if ((form_menu_pal[z][_M_FORM_PAL_RUN]) > 0  ) return true;
-		if ((form_menu_fire[z][_M_FORM_FIRE_RUN]) > 0) return true;
-		if ((form_menu_dot[z][_M_FORM_DOT_RUN]) > 0) return true;
-
-
-	}
-	//for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) if ((strip_menu[z][_M_FIRE_]) > 0) return true;
-//	for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) if ((form_menu_fire[z][_M_FORM_FIRE_RUN]) > 0) return true;
-
-	return false;
-}
 
 
 
@@ -1361,54 +1299,6 @@ uint8_t LEDS_FFT_get_color_result(uint8_t color )
 }
 
 
-void LEDS_FFT_check_leds(boolean strip)
-{	// check if FFT is selected and then send it to the leds
-
-	if (LEDS_checkIfAudioSelected())
-	{
-		/*
-
-		if (strip) 	for (byte z = 0; z < _M_NR_STRIP_BYTES_; z++) 
-		{
-			for (byte i = 0; i < 8; i++) 
-			{ 	
-			//if (bitRead(strip_menu[z][_M_AUDIO_], i) == true && bitRead(strip_menu[z][_M_STRIP_], i) == false )	 	LEDS_FFT_fill_leds(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds, bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR], i), part[i + (z * 8)].fft_offset );
-			if (bitRead(strip_menu[z][_M_AUDIO_], i) == true ) 	tpm_fx.mixOntoLedArray(leds_FFT_history, 
-			leds,
-			 part[i + (z * 8)].nr_leds, 
-			 part[i + (z * 8)].start_led + part[i + (z * 8)].fft_offset ,
-			  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), 
-			  bitRead(strip_menu[z][_M_AUDIO_MIRROR],i) ,
-			  MixModeType(part[i + (z * 8)].fft_mix_mode),  
-			  part[i + (z * 8)].fft_level  ,
-			  bitRead(strip_menu[z][_M_AUDIO_ONECOLOR] ,i ) ) ;	
-			//if (bitRead(strip_menu[z][_M_AUDIO_], i) == true ) 		LEDS_mix_FFT_onto_output( leds_FFT_history,  part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i), bitRead(strip_menu[z][_M_AUDIO_SUBTRACT],i), bitRead(strip_menu[z][_M_AUDIO_MASK],i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR] ,i ), part[i + (z * 8)].fft_offset, part[i + (z * 8)].fft_mix_mode, part[i + (z * 8)].fft_level );
-																												//	LEDS_FFT_pal_mix(part[i + (z * 8)].start_led, part[i + (z * 8)].nr_leds,  bitRead(strip_menu[z][_M_AUDIO_REVERSED], i), bitRead(strip_menu[z][_M_AUDIO_MIRROR],i), bitRead(strip_menu[z][_M_AUDIO_SUB_FROM_FFT],i), bitRead(strip_menu[z][_M_AUDIO_PAL_MASK],i), bitRead(strip_menu[z][_M_AUDIO_ONECOLOR], part[i + (z * 8)].fft_offset) );
-			}	
-		}
-		else
-		*/
-		for (byte z = 0; z < _M_NR_FORM_BYTES_; z++) 
-		{
-			for (byte i = 0; i < 8; i++) 
-			{
-				if (bitRead(form_menu_fft[z][_M_FORM_FFT_RUN], i) == true )  tpm_fx.mixOntoLedArray(leds_FFT_history,
-				leds,
-				form_cfg[i + (z * 8)].nr_leds,
-				form_cfg[i + (z * 8)].start_led+ form_fx_fft[i + (z * 8)].offset,
-				bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i), 
-				bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) ,
-				MixModeType(form_fx_fft[i + (z * 8)].mix_mode), 
-				form_fx_fft[i + (z * 8)].level,
-				bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i)  );
-
-				//if (bitRead(form_menu[z][_M_AUDIO_], i) == true )  	LEDS_mix_FFT_onto_output(leds_FFT_history, form_part[i + (z * 8)].start_led,form_part[i + (z * 8)].nr_leds, bitRead(form_menu[z][_M_AUDIO_REVERSED], i), bitRead(form_menu[z][_M_AUDIO_MIRROR],i ) ,bitRead(form_menu[z][_M_AUDIO_SUBTRACT],i ) , bitRead(form_menu[z][_M_AUDIO_MASK], i) , bitRead(form_menu[z][_M_AUDIO_ONECOLOR] , i) , form_part[i + (z * 8)].fft_offset,form_part[i + (z * 8)].fft_mix_mode, form_part[i + (z * 8)].fft_level );
-
-			}
-		}
-	}
-
-}
  
 void LEDS_load_default_play_conf()
 {
@@ -1788,25 +1678,30 @@ uint8_t LEDS_fft_get_fxbin_result(uint8_t fxbin)
 {
 	uint8_t returnVal = 0;
 
-	if(fxbin < 3) 	
+	if(fxbin < 2) 	
 	{
 		if(fft_fxbin[fxbin].sum >= fft_fxbin[fxbin].trrig_val)
 				returnVal = constrain( fft_fxbin[fxbin].set_val + fft_fxbin[fxbin].sum, 0,255);
-				
-		
-		
-		else 
-		{
-			if (fxbin == 2)
-				returnVal = fft_fxbin[fxbin].set_val;
 			else returnVal = 0;
-		}
+
 	}
-	else
+	else if(fxbin < 10) 
+	{
+		if(fft_fxbin[fxbin].sum >= fft_fxbin[fxbin].trrig_val)
+				returnVal = constrain( fft_fxbin[fxbin].set_val + fft_fxbin[fxbin].sum, 0,255);
+		else returnVal = fft_fxbin[fxbin].set_val;
+	}
+	else if(fxbin < 18) 
 	{
 		if(fft_fxbin[fxbin].sum >= fft_fxbin[fxbin].trrig_val)
 				returnVal = constrain( fft_fxbin[fxbin].set_val - fft_fxbin[fxbin].sum, 0,255);
 		else returnVal = fft_fxbin[fxbin].set_val;
+	}
+	else if(fxbin < 20) 
+	{
+		if(fft_fxbin[fxbin].sum >= fft_fxbin[fxbin].trrig_val)
+				returnVal = constrain( fft_fxbin[fxbin].set_val - fft_fxbin[fxbin].sum, 0,255);
+		else returnVal =255;
 	}
 	return returnVal;
 }
@@ -1817,42 +1712,32 @@ uint8_t LEDS_data_or_fftbin(uint8_t inval)
 	// based on the input value, return a FFT bin or the inval.
 	uint8_t returnVal = inval;
 
-	switch(inval)
+
+	if(inval < 2)
 	{
-		case 250:
-			if(fft_fxbin[0].sum > fft_fxbin[0].trrig_val)
+		if(fft_fxbin[0].sum > fft_fxbin[0].trrig_val)
 				returnVal = constrain( fft_fxbin[0].set_val + fft_fxbin[0].sum, 0,255);
 			else returnVal = 0;
-		break;
-		case 251:
-			if(fft_fxbin[1].sum > fft_fxbin[1].trrig_val)
-			returnVal = constrain( fft_fxbin[1].set_val + fft_fxbin[1].sum, 0,255);
-			else returnVal = 0;
-		break;
-		case 252:
+	}
+	else if (inval < 10)
+	{
 			if(fft_fxbin[2].sum > fft_fxbin[2].trrig_val)
-			returnVal = constrain( fft_fxbin[2].set_val + fft_fxbin[2].sum, 0,255);
+				returnVal = constrain( fft_fxbin[2].set_val + fft_fxbin[2].sum, 0,255);
 			else returnVal = fft_fxbin[2].set_val;
-		break;
-		case 253:
-			if(fft_fxbin[3].sum > fft_fxbin[3].trrig_val)
-			returnVal = constrain( fft_fxbin[3].set_val - fft_fxbin[3].sum, 0,255);
-			else returnVal = fft_fxbin[3].set_val;
-		break;
-		case 254:
-			if(fft_fxbin[4].sum > fft_fxbin[4].trrig_val)
-			returnVal = constrain( fft_fxbin[4].set_val - fft_fxbin[4].sum, 0,255);
-			else returnVal = fft_fxbin[4].set_val;
-		break;
-		case 255:
-			if(fft_fxbin[5].sum > fft_fxbin[5].trrig_val)
-			returnVal = constrain( fft_fxbin[5].set_val - fft_fxbin[5].sum, 0,255);
-			else returnVal = fft_fxbin[5].set_val;
-		break;
-		default :
 
-			return inval;
-		break;
+	}
+	else if (inval < 18)
+	{
+			if(fft_fxbin[5].sum > fft_fxbin[5].trrig_val)
+				returnVal = constrain( fft_fxbin[5].set_val - fft_fxbin[5].sum, 0,255);
+			else returnVal = fft_fxbin[5].set_val;
+
+	}
+	else if (inval < 20)
+	{
+			if(fft_fxbin[5].sum > fft_fxbin[5].trrig_val)
+				returnVal = constrain( fft_fxbin[5].set_val - fft_fxbin[5].sum, 0,255);
+			else returnVal = 255;
 	}
 	return returnVal;
 }
@@ -1864,8 +1749,18 @@ void LEDS_run_fft(uint8_t z, uint8_t i )
 
 void LEDS_run_pal(uint8_t z, uint8_t i )
 {
+	
 	tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , form_fx_pal[i + (z * 8)].index_add_led,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
 	tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), form_fx_pal[i + (z * 8)].level , bitRead(form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
+
+	uint16_t pal_speed	= form_fx_pal[i + (z * 8)].index_add_frame   ;
+	if(bitRead(form_menu_pal[z][_M_FORM_PAL_SPEED_FROM_FFT], i)) pal_speed = LEDS_data_or_fftbin(form_fx_pal[i + (z * 8)].index_add_frame) *8; 
+
+	//debugMe("palSpeed" + String(pal_speed));
+	form_fx_pal[i + (z * 8)].index = form_fx_pal[i + (z * 8)].index + pal_speed;
+	form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong + pal_speed;
+	//if (MAX_INDEX_LONG <= form_fx_pal[i + (z * 8)].indexLong)
+	//			form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
 
 }
 
@@ -1925,7 +1820,7 @@ void LEDS_run_fx1_dot(uint8_t z, uint8_t i )
 			tpm_fx.DotSaw(led_FX_out, led_cfg.hue,form_fx_dots[i + (z * 8)].nr_dots, form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_dots[i + (z * 8)].speed, form_fx_dots[i + (z * 8)].level, 255); 
 	}
 	form_fx_dots[i ].indexLong  = form_fx_dots[i ].indexLong + form_fx_dots[i ].index_add ;
-	if (MAX_INDEX_LONG <= form_fx_dots[i ].indexLong) form_fx_dots[i ].indexLong = form_fx_dots[i ].indexLong - MAX_INDEX_LONG;
+	//if (MAX_INDEX_LONG <= form_fx_dots[i ].indexLong) form_fx_dots[i ].indexLong = form_fx_dots[i ].indexLong - MAX_INDEX_LONG;
 
 
 }
@@ -1968,6 +1863,7 @@ void LEDS_run_layers()
 				
 				if(layer_select[layer] != 0 && layer_select[layer] <= MAX_LAYERS )
 				{
+					yield();
 					
 					switch(layer_select[layer])	
 					{
@@ -2176,16 +2072,6 @@ void LEDS_loop()
 
 			leds.fadeToBlackBy(255);				// fade the whole led array to black so that we can add from different sources amd mix it up!
 
-			if (LEDS_pal_check_bit() == true)
-			{
-				yield();
-				//debugMe("pre pal advance");
-				LEDS_pal_advance();
-				yield();
-				//debugMe("pre leds routing");
-				//LEDS_pal_fill_arrays();
-			}
-
 			if (LEDS_checkIfAudioSelected()) 
 			{
 				LEDS_FFT_process();  // Get the color from the FFT data
@@ -2193,15 +2079,7 @@ void LEDS_loop()
 				
 				yield();
 			}
-			
-			
 
-
-			//LEDS_G_FX1Routing();
-			//LEDS_FFT_check_leds(false);
-			
-
-			//*
 
 			LEDS_run_layers();
 			
