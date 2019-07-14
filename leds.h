@@ -300,6 +300,19 @@
 		
 	};
 
+#define FFT_FX_NR_OF_BINS 6
+	struct fft_fxbin_struct 
+	{
+			uint8_t sum ;					
+			uint8_t set_val ;
+			uint8_t trrig_val;
+			uint8_t menu_select;
+
+
+
+
+	};
+
 		struct form_fx_fft_struct
 		{
 			uint8_t mix_mode;
@@ -328,6 +341,7 @@
 			uint8_t xscale;
 		  uint8_t yscale;
 		  uint8_t beater;
+			uint16_t dist;
 
 
 		};
@@ -522,7 +536,7 @@
 	  };
 
 	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
-	#define MAX_LAYERS 7					// what is the max layer Number 
+	#define MAX_LAYERS 10					// what is the max layer Number 
 
 
 // Functions

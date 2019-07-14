@@ -64,7 +64,8 @@
 	extern fft_led_cfg_struct fft_led_cfg;
 	extern fft_data_struct fft_data[7];
 	extern byte fft_menu[3];
-	extern byte fft_data_menu[3];
+	//extern byte fft_data_menu[3];
+	extern fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS];
 	extern byte fft_data_bri;
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
@@ -766,16 +767,29 @@ void FS_FS_play_conf_write_audio(String addr)
 			{
 				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
 			}
-			for (int color = 0; color < 3; color++)
+			for (int color = 0; color < FFT_FX_NR_OF_BINS; color++)
 			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_menu[color]), bin))));
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[color].menu_select), bin))));
 			}
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_bri), bin))));
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_bin_autoTrigger), bin))));
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
+			
+			
 			conf_file.println("] ");
 		}
-	
+		for (int fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++) 	
+		{
+			conf_file.print(String("[AF:" + String(fxbin)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].set_val)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].trrig_val)));
+			for (int bin = 0; bin < 7; bin++) 
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[fxbin].menu_select), bin))));
+			}
+
+			conf_file.println("] ");
+		}
 		conf_file.close();
 		
 	}  	
@@ -1346,8 +1360,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 	}
 	else {   // yeah its open
 		debugMe("Write Conf File");
-		conf_file.println("Play Config.");
-		conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
+		//conf_file.println("Play Config.");
+		//conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
 
 			conf_file.print(String("[LS:" + String(led_cfg.fire_cooling)));
 			conf_file.print(String(":" + String(led_cfg.fire_sparking)));
@@ -1391,7 +1405,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 		}   */
 		
-		conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
+		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[FC:" + String(form)));
@@ -1403,7 +1417,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 		} 
 
-		conf_file.println("PF - Pallete FX Form ");
+		//conf_file.println("PF - Pallete FX Form ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[PF:" + String(form)));
@@ -1418,7 +1432,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("PB Form Pallete boolean values ");
+		//conf_file.println("PB Form Pallete boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[PB:" + String(form)));
@@ -1428,7 +1442,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 		}
 
 
-		conf_file.println("DF dots ");
+		//conf_file.println("DF dots ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[DF:" + String(form)));
@@ -1441,7 +1455,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 			conf_file.println("] ");
 		}
-		conf_file.println("DB Form Dots boolean values ");
+		//conf_file.println("DB Form Dots boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[DB:" + String(form)));
@@ -1450,7 +1464,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("SF shimmer ");
+		//conf_file.println("SF shimmer ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[SF:" + String(form)));
@@ -1464,7 +1478,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("SB Form Shimmer boolean values ");
+		//conf_file.println("SB Form Shimmer boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[SB:" + String(form)));
@@ -1473,7 +1487,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("TF form fft  ");
+		//conf_file.println("TF form fft  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[TF:" + String(form)));
@@ -1485,7 +1499,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("TB Form FFt boolean values ");
+		//conf_file.println("TB Form FFt boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[TB:" + String(form)));
@@ -1494,7 +1508,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("IF form Fire  ");
+		//conf_file.println("IF form Fire  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[IF:" + String(form)));
@@ -1508,7 +1522,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("IB Form Fire boolean values ");
+		//conf_file.println("IB Form Fire boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[IB:" + String(form)));
@@ -1517,7 +1531,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("GF Glitter ");
+		//conf_file.println("GF Glitter ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[GF:" + String(form)));
@@ -1530,7 +1544,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("GB Form Fire boolean values ");
+		//conf_file.println("GB Form Fire boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[GB:" + String(form)));
@@ -1539,7 +1553,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("XF  FX1 form ");
+		//conf_file.println("XF  FX1 form ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[XF:" + String(form)));
@@ -1549,7 +1563,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
-		conf_file.println("XB Form fx1 boolean values ");
+		//conf_file.println("XB Form fx1 boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[XB:" + String(form)));
@@ -1571,7 +1585,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 		} 
 
-		conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
+		//conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
 		for (uint8_t pal = 0; pal < NR_PALETTS; pal++) {
 			conf_file.print(String("[PA:" + String(pal)));
 
@@ -1583,7 +1597,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 		
-		conf_file.println("A = FFT Bin Config : Pal Nr : BIN Nr : Trigger : Into R : Into G : into B ");
+		//conf_file.println("A = FFT Bin Config : Pal Nr : BIN Nr : Trigger : Into R : Into G : into B ");
 		for (int bin = 0; bin < 7; bin++) 
 		{							// Save FFT settings   
 
@@ -1594,17 +1608,25 @@ void FS_play_conf_write(uint8_t conf_nr)
 			{
 				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
 			}
-			for (int color = 0; color < 3; color++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_menu[color]), bin))));
-			}
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_bri), bin))));
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_bin_autoTrigger), bin))));
 			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
+			
 			conf_file.println("] ");
 		}
-		
 
+		for (int fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++) 	
+		{
+			conf_file.print(String("[AF:" + String(fxbin)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].set_val)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].trrig_val)));
+			for (int bin = 0; bin < 7; bin++) 
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[fxbin].menu_select), bin))));
+			}
+
+			conf_file.println("] ");
+		}
 		conf_file.println("ly = Layers 1 to 10, ");
 			conf_file.print("[ly:" + String(layer_select[0]) )	;
 			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
@@ -1872,14 +1894,23 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				{
 					bitWrite(fft_menu[color], bit_no, get_bool_conf_value(conf_file, &character));
 				}
-				for (uint8_t color = 0; color < 3; color++)
-				{
-					bitWrite(fft_data_menu[color], bit_no, get_bool_conf_value(conf_file, &character));
-				}
+				
 				bitWrite(fft_data_bri, bit_no, get_bool_conf_value(conf_file, &character));
 				bitWrite(fft_bin_autoTrigger, bit_no, get_bool_conf_value(conf_file, &character));
 				bitWrite(fft_data_fps, bit_no, get_bool_conf_value(conf_file, &character));
+				
 			}
+			else if ((type == 'A') && (typeb == 'F'))
+			{
+				uint8_t fxbin = get_int_conf_value(conf_file, &character);
+				fft_fxbin[fxbin].set_val = get_int_conf_value(conf_file, &character);
+				fft_fxbin[fxbin].trrig_val = get_int_conf_value(conf_file, &character);
+				for (uint8_t bit_nr = 0; bit_nr < 7; bit_nr++)
+				{
+					bitWrite(fft_fxbin[fxbin].menu_select, bit_nr, get_bool_conf_value(conf_file, &character));
+				}
+			}
+			
 			else if  ((type == 'l') && (typeb == 'y'))	
 			{
 					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
