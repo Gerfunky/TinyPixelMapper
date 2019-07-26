@@ -77,14 +77,16 @@
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
 		uint8_t 		Play_Nr ;			// What sequenca are we in.
-		uint16_t		Data1NrLeds;		// Nr of leds for data1;
+		uint16_t 		DataNR_leds[5]; 
+		uint16_t 		DataStart_leds[4]; 
+		/*uint16_t		Data1NrLeds;		// Nr of leds for data1;
 		uint16_t		Data1StartLed;		// Start led for data1;
 		uint16_t		Data2NrLeds;		// Nr of leds for data2;
 		uint16_t		Data2StartLed;		// Start led for data2;
 		uint16_t		Data3NrLeds;		// Nr of leds for data3;
 		uint16_t		Data3StartLed;		// Start led for data3;
 		uint16_t		Data4NrLeds;		// Nr of leds for data4;
-		uint16_t		Data4StartLed;		// Start led for data4;
+		uint16_t		Data4StartLed;		// Start led for data4;  */
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config
 		uint8_t 		edit_pal;

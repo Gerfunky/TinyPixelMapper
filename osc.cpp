@@ -814,10 +814,14 @@ void osc_StC_menu_form_fft_adv_ref()
 
 				}
 					
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/rev" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		real_formNr)));  		
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/run" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 				real_formNr)));  		
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/ocl",formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		real_formNr)));  		
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fft/mir" , 	formNr,		(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 			real_formNr)));  		
+					osc_queu_MSG_int( "/ostc/form/fft/rev/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		real_formNr)));  		
+					osc_queu_MSG_int( "/ostc/form/fft/run/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 			real_formNr)));  		
+					osc_queu_MSG_int( "/ostc/form/fft/ocl/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		real_formNr)));  		
+					osc_queu_MSG_int( "/ostc/form/fft/mir/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 		real_formNr)));  
+
+					
+
+
 
 				
 	
@@ -1306,14 +1310,14 @@ void osc_oStC_menu_master_wifi_ref()
 void osc_StC_menu_master_ledcfg_ref()
 {
 
-	osc_queu_MSG_int("/ostc/master/data/sl/1", 		led_cfg.Data1StartLed);
-	osc_queu_MSG_int("/ostc/master/data/nl/1", 		led_cfg.Data1NrLeds);
-	osc_queu_MSG_int("/ostc/master/data/sl/2", 		led_cfg.Data2StartLed);
-	osc_queu_MSG_int("/ostc/master/data/nl/2", 		led_cfg.Data2NrLeds);
-	osc_queu_MSG_int("/ostc/master/data/sl/3", 		led_cfg.Data3StartLed);
-	osc_queu_MSG_int("/ostc/master/data/nl/3", 		led_cfg.Data3NrLeds);
-	osc_queu_MSG_int("/ostc/master/data/sl/4", 		led_cfg.Data4StartLed);
-	osc_queu_MSG_int("/ostc/master/data/nl/4", 		led_cfg.Data4NrLeds);
+	osc_queu_MSG_int("/ostc/master/data/sl/1", 		led_cfg.DataStart_leds[0] );
+	osc_queu_MSG_int("/ostc/master/data/nl/1", 		led_cfg.DataNR_leds[0]);
+	osc_queu_MSG_int("/ostc/master/data/sl/2", 		led_cfg.DataStart_leds[1] );
+	osc_queu_MSG_int("/ostc/master/data/nl/2", 		led_cfg.DataNR_leds[1]);
+	osc_queu_MSG_int("/ostc/master/data/sl/3", 		led_cfg.DataStart_leds[2] );
+	osc_queu_MSG_int("/ostc/master/data/nl/3", 		led_cfg.DataNR_leds[2]);
+	osc_queu_MSG_int("/ostc/master/data/sl/4", 		led_cfg.DataStart_leds[3] );
+	osc_queu_MSG_int("/ostc/master/data/nl/4", 		led_cfg.DataNR_leds[3]);
 	osc_queu_MSG_int("/ostc/master/data/nl/0", 		led_cfg.NrLeds);   		// Mirror mode NR of leds
 
 
@@ -1478,11 +1482,11 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 			String form_no_string;
 			memset(address, 0, sizeof(address));
 			msg.getAddress(address, addrOffset +10 );
-			
+			 
 
 			for (byte i = 0; i < sizeof(address); i++)  { form_no_string = form_no_string + address[i]; }
-			
-				uint8_t i_orig_bin_nr =  form_no_string.toInt(); 
+			uint8_t i_orig_bin_nr =  form_no_string.toInt();
+				
 			debugMe(i_orig_bin_nr);	
 			
 			if			(msg.match("/fxbin/00",addrOffset))		{ bitWrite(fft_fxbin[0].menu_select, 	6-i_orig_bin_nr, bool(msg.getInt(0))); }
@@ -1842,8 +1846,8 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 
 
 			else if 	(msg.fullMatch("/http",addrOffset))		{ write_bool(HTTP_ENABLED, bool(msg.getInt(0) )) ; }
-			else if 	(msg.fullMatch("/serial",addrOffset))	{ write_bool(HTTP_ENABLED, bool(msg.getInt(0) )) ; }
-			else if 	(msg.fullMatch("/telnet",addrOffset))	{ write_bool(HTTP_ENABLED, bool(msg.getInt(0) )) ; }
+			else if 	(msg.fullMatch("/serial",addrOffset))	{ write_bool(DEBUG_OUT, bool(msg.getInt(0) )) ; }
+			else if 	(msg.fullMatch("/telnet",addrOffset))	{ write_bool(DEBUG_TELNET, bool(msg.getInt(0) )) ; }
 
 			else if 	(msg.fullMatch("/power",addrOffset))  { write_bool(WIFI_POWER, 			bool(msg.getInt(0) )) ; }
 			else if 	(msg.fullMatch("/dhcp",addrOffset))   { write_bool(STATIC_IP_ENABLED, 	bool(msg.getInt(0) )) ; }
@@ -1888,16 +1892,16 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ led_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
 			else if (msg.fullMatch("/fireSpark",addrOffset))		{ led_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
 
-			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.Data1StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
-			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.Data2StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
-			else if (msg.fullMatch("/data/sl/3",addrOffset))		{ led_cfg.Data3StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
-			else if (msg.fullMatch("/data/sl/4",addrOffset))		{ led_cfg.Data4StartLed = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1NrLeds); }
+			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.DataStart_leds[0]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[0]); }
+			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[1]); }
+			else if (msg.fullMatch("/data/sl/3",addrOffset))		{ led_cfg.DataStart_leds[2]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[2]); }
+			else if (msg.fullMatch("/data/sl/4",addrOffset))		{ led_cfg.DataStart_leds[3]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[3]); }
 
 			else if (msg.fullMatch("/data/nl/0",addrOffset))		{ led_cfg.NrLeds 	  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS ); }
-			else if (msg.fullMatch("/data/nl/1",addrOffset))		{ led_cfg.Data1NrLeds = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data1StartLed); }
-			else if (msg.fullMatch("/data/nl/2",addrOffset))		{ led_cfg.Data2NrLeds = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data2StartLed ); }
-			else if (msg.fullMatch("/data/nl/3",addrOffset))		{ led_cfg.Data3NrLeds = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data3StartLed ); }
-			else if (msg.fullMatch("/data/nl/4",addrOffset))		{ led_cfg.Data4NrLeds = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.Data4StartLed); }
+			else if (msg.fullMatch("/data/nl/1",addrOffset))		{ led_cfg.DataNR_leds[0] = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataStart_leds[0] ); }
+			else if (msg.fullMatch("/data/nl/2",addrOffset))		{ led_cfg.DataNR_leds[1] = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataStart_leds[1]  ); }
+			else if (msg.fullMatch("/data/nl/3",addrOffset))		{ led_cfg.DataNR_leds[2] = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataStart_leds[2]  ); }
+			else if (msg.fullMatch("/data/nl/4",addrOffset))		{ led_cfg.DataNR_leds[3] = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataStart_leds[3] ); }
 
 			else if (msg.fullMatch("/data/select/1",addrOffset))	{ write_bool(DATA1_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/2",addrOffset))	{ write_bool(DATA2_ENABLE, bool(msg.getInt(0) )) ; }
@@ -1905,9 +1909,9 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/select/4",addrOffset))	{ write_bool(DATA4_ENABLE, bool(msg.getInt(0) )) ; }
 
 			
-			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.Data2StartLed =  led_cfg.Data1NrLeds ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.Data2StartLed);}   
-			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.Data3StartLed =  led_cfg.Data2NrLeds + led_cfg.Data2StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.Data3StartLed); }
-			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.Data4StartLed =  led_cfg.Data3NrLeds + led_cfg.Data3StartLed ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.Data4StartLed);}
+			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  =  led_cfg.DataNR_leds[0] ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.DataStart_leds[1] );}   
+			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.DataStart_leds[2]  =  led_cfg.DataNR_leds[1] + led_cfg.DataStart_leds[1]  ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.DataStart_leds[2] ); }
+			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.DataStart_leds[3]  =  led_cfg.DataNR_leds[2] + led_cfg.DataStart_leds[2]  ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.DataStart_leds[3] );}
 
 			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = uint8_t(msg.getInt(0) )  ;}
 			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}
@@ -2112,7 +2116,454 @@ void osc_StC_routing(OSCMessage &msg, int addrOffset)
 
 
 
-//-------------- END OPEN STage Controll
+///////////////////////////////////////////////////////////////////-------------- END OPEN STage Controll
+///////////////////////////////////////////////////////////////////  Start TouchOSC Iphone
+
+void osc_tosc_refresh()
+{
+	osc_queu_MSG_float("/tosc/bri", byte_tofloat(led_cfg.bri, 255)) ;
+	osc_queu_MSG_float("/tosc/bril", float(led_cfg.bri));
+	osc_queu_MSG_float("/tosc/ups", byte_tofloat(led_cfg.pal_fps, MAX_PAL_FPS));
+	osc_queu_MSG_float("/tosc/upsl", float(led_cfg.pal_fps));
+	osc_queu_MSG_float("/tosc/FPSL", LEDS_get_FPS());
+	osc_queu_MSG_float("/tosc/r", byte_tofloat(led_cfg.r,255));
+	osc_queu_MSG_float("/tosc/g", byte_tofloat(led_cfg.g,255));
+	osc_queu_MSG_float("/tosc/b", byte_tofloat(led_cfg.b,255));
+	
+	osc_send_MSG_String("/tosc/SSID", String(wifi_cfg.ssid));
+	osc_send_MSG_String("/tosc/WPW", String(wifi_cfg.pwd));
+	osc_send_MSG_String("/tosc/WAPNL", String(wifi_cfg.APname));
+	for (uint8_t i = 0; i < 4; i++)
+		{
+			// IP Config
+			osc_queu_MSG_float(String("/tosc/L/SIP/" + String(i)), float(wifi_cfg.ipStaticLocal[i]));
+			osc_queu_MSG_float(String("/tosc/L/SNM/" + String(i)), float(wifi_cfg.ipSubnet[i]));
+			osc_queu_MSG_float(String("/tosc/L/DGW/" + String(i)), float(wifi_cfg.ipDGW[i]));
+			osc_queu_MSG_float(String("/tosc/L/DNS/" + String(i)), float(wifi_cfg.ipDNS[i]));
+		}
+
+	
+	osc_queu_MSG_float("/tosc/L/LNL/4", float(led_cfg.NrLeds));
+	osc_queu_MSG_float("/tosc/L/LNL/0", float(led_cfg.DataNR_leds[0]));
+	osc_queu_MSG_float("/tosc/L/LNL/1", float(led_cfg.DataNR_leds[1]));
+	osc_queu_MSG_float("/tosc/L/LNL/2", float(led_cfg.DataNR_leds[2]));
+	osc_queu_MSG_float("/tosc/L/LNL/3", float(led_cfg.DataNR_leds[3]));
+
+	osc_queu_MSG_float("/tosc/L/LSL/0", float(led_cfg.DataStart_leds[0] ));
+	osc_queu_MSG_float("/tosc/L/LSL/1", float(led_cfg.DataStart_leds[1] ));
+	osc_queu_MSG_float("/tosc/L/LSL/2", float(led_cfg.DataStart_leds[2] ));
+	osc_queu_MSG_float("/tosc/L/LSL/3", float(led_cfg.DataStart_leds[3] ));
+	
+
+	osc_queu_MSG_float("/tosc/LTP/1/1", 0);
+	osc_queu_MSG_float("/tosc/LTP/2/1", 0);
+	osc_queu_MSG_float("/tosc/LTP/3/1", 0);
+	osc_queu_MSG_float("/tosc/LTP/4/1", 0);
+	osc_queu_MSG_float("/tosc/LTP/5/1", 0);
+	osc_queu_MSG_float("/tosc/LTP/6/1", 0);
+
+	switch (led_cfg.ledMode)
+	{
+	case 0:
+		osc_queu_MSG_float("/tosc/LTP/1/1", 1);
+		break;
+	case 1:
+		osc_queu_MSG_float("/tosc/LTP/2/1", 1);
+		break;
+	case 2:
+		osc_queu_MSG_float("/tosc/LTP/3/1", 1);
+		break;
+	case 3:;
+		osc_queu_MSG_float("/tosc/LTP/4/1", 1);
+	break;	
+	case 4:
+		osc_queu_MSG_float("/tosc/LTP/5/1", 1);
+	break;
+	case 5:
+		osc_queu_MSG_float("/tosc/LTP/6/1", 1);
+	break;
+	
+	}
+
+	osc_queu_MSG_float("/tosc/DON/1/1", get_bool(DATA1_ENABLE));
+	osc_queu_MSG_float("/tosc/DON/2/1", get_bool(DATA2_ENABLE));
+	osc_queu_MSG_float("/tosc/DON/3/1", get_bool(DATA3_ENABLE));
+	osc_queu_MSG_float("/tosc/DON/4/1", get_bool(DATA4_ENABLE));
+
+	osc_queu_MSG_float("/tosc/WP", get_bool(WIFI_POWER));
+	osc_queu_MSG_float("/tosc/WAP", get_bool(WIFI_ACCESSPOINT));
+
+
+	osc_queu_MSG_float("/tosc/ASUL", float(artnet_cfg.startU));
+	osc_queu_MSG_float("/tosc/ANUL", float(artnet_cfg.numU));
+	osc_queu_MSG_float("/tosc/ANE", float(get_bool(ARTNET_ENABLE)));
+
+	osc_queu_MSG_float(String("/tosc/ESIP"), float(get_bool(STATIC_IP_ENABLED)));
+	osc_queu_MSG_float(String("/tosc/httpd"), float(get_bool(HTTP_ENABLED)));
+	osc_queu_MSG_float(String("/tosc/debug"), float(get_bool(DEBUG_OUT)));
+	osc_queu_MSG_float(String("/tosc/TNdebug"), float(get_bool(DEBUG_TELNET)));
+
+
+
+
+	
+	
+
+	
+
+
+}
+
+
+void osc_tosc_routing(OSCMessage &msg, int addrOffset) 
+{
+	if 		(msg.fullMatch("/bri",addrOffset))										{ led_cfg.bri	= byte(msg.getFloat(0)	* 255); }
+	else if (msg.fullMatch("/ups",addrOffset))										{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/tosc/upsl", float(led_cfg.pal_fps)); }
+ 	else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r		= byte(msg.getFloat(0)	* 255); }
+    else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g		= byte(msg.getFloat(0)	* 255); }
+    else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b		= byte(msg.getFloat(0)	* 255); }
+	else if (msg.fullMatch("/FPS", addrOffset))										osc_queu_MSG_float("/tosc/FPSL", LEDS_get_FPS());
+	
+	else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
+	else if (msg.fullMatch("/RESET", addrOffset) && bool(msg.getFloat(0)) == true)			{ESP.restart(); }
+	else if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); FS_Bools_write(0); }
+	else if (msg.fullMatch("/ARTNETSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_artnet_write(0); }
+		
+	else if (msg.fullMatch("/WAP", addrOffset))												{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
+	else if (msg.fullMatch("/WP", addrOffset))												{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}
+	else if (msg.fullMatch("/ESIP", addrOffset))												{ write_bool(STATIC_IP_ENABLED, bool(msg.getFloat(0)));}
+	
+	
+	// Last page
+	else if (msg.fullMatch("/httpd", addrOffset))											httpd_toggle_webserver();
+	else if (msg.fullMatch("/debug", addrOffset))											{ write_bool(DEBUG_OUT, bool(msg.getFloat(0)));}
+	else if (msg.fullMatch("/TNdebug", addrOffset))											{ write_bool(DEBUG_TELNET, bool(msg.getFloat(0))); }
+	else if (msg.fullMatch("/ANE", addrOffset)) 											osc_toggle_artnet(bool(msg.getFloat(0)));
+
+
+
+	else
+	{
+			char address[13] ;
+			
+			memset(address, 0, sizeof(address));
+			msg.getAddress(address, addrOffset );
+			//debugMe(address);
+
+			if ( address[4]  == '/' )
+			{		// SIP SNM DGW DNS
+				float outval = 0;
+				String string_addr;
+				String string_addr2;
+				memset(address, 0, sizeof(address));
+				msg.getAddress(address, addrOffset +5 , 1);
+
+				for (byte i = 0; i < sizeof(address); i++)  { string_addr = string_addr + address[i]; }
+					uint8_t addr1 =  string_addr.toInt();
+				
+				memset(address, 0, sizeof(address));
+				
+				msg.getAddress(address, addrOffset +7 );
+				
+				for (byte i = 0; i < sizeof(address); i++)  { string_addr2 = string_addr2 + address[i]; }
+					uint8_t addr2 =  string_addr2.toInt();
+				addr1--;
+				addr2--;
+				debugMe(addr1);
+				debugMe(addr2);
+				if (msg.match("/LD1", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					FS_play_conf_read(addr1);
+
+				
+				}
+				else if (msg.match("/LD2", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					FS_play_conf_read(addr1+8);
+
+				
+				}
+				else if (msg.match("/SIP", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					switch (addr1) 
+					{
+						case 0:
+							wifi_cfg.ipStaticLocal[addr2]--;
+							break;
+						case 2:
+							wifi_cfg.ipStaticLocal[addr2]++;
+							break;
+					}
+
+					outval = wifi_cfg.ipStaticLocal[addr2];
+					debugMe(outval);
+				}
+				else if (msg.match("/SNM", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					switch (addr1) 
+					{
+						case 0:
+							wifi_cfg.ipSubnet[addr2]--;
+						
+							break;
+						case 2:
+							wifi_cfg.ipSubnet[addr2]++;
+							break;
+					}
+
+					outval = wifi_cfg.ipSubnet[addr2];
+				}
+				else if (msg.match("/DGW", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					switch (addr1) 
+					{
+						case 0:
+							wifi_cfg.ipDGW[addr2]--;
+						
+							break;
+						case 2:
+							wifi_cfg.ipDGW[addr2]++;
+							break;
+					}
+					outval = wifi_cfg.ipDGW[addr2];
+
+
+				}
+				else if (msg.match("/DNS", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					switch (addr1) 
+					{
+						case 0:
+							wifi_cfg.ipDNS[addr2]--;
+						
+							break;
+						case 2:
+							wifi_cfg.ipDNS[addr2]++;
+							break;
+					}
+					outval = wifi_cfg.ipDNS[addr2];
+
+
+				}
+
+
+				else if (msg.match("/LSL", addrOffset) &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					
+						switch (addr1) 
+						{
+							case 0:
+							
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2] -  100, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+								break;
+							case 1:
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2] -  10, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+								break;
+							case 2:
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2] -  1, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+								break;
+							case 3:
+								if (addr2 == 0)
+									led_cfg.DataStart_leds[addr2]  = 0;
+								else 
+									led_cfg.DataStart_leds[addr2]  = led_cfg.DataNR_leds[addr2-1] + led_cfg.DataStart_leds[addr2-1] ;
+							break;
+							case 4:
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2]  +  1, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+							break;
+							case 5:
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2]  +  10, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+							break;
+							case 6:
+								led_cfg.DataStart_leds[addr2]  = constrain(led_cfg.DataStart_leds[addr2]  +  100, 0, MAX_NUM_LEDS - led_cfg.DataNR_leds[addr2] );
+							break;
+						}
+						outval = led_cfg.DataStart_leds[addr2] ;
+					
+				
+					
+				
+				}
+				else if (msg.match("/LNL", addrOffset) &&  (bool(msg.getFloat(0)) == true)) 
+				{
+					if (addr2 != 4)
+					{
+						switch (addr1) 
+						{
+							case 0:
+							
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2] -  100, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+								break;
+							case 1:
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2] -  10, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+								break;
+							case 2:
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2] -  1, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+								break;
+							case 3:
+								//led_cfg.DataNR_leds[addr2]  = 0;
+							break;
+							case 4:
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2]  +  1, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+							break;
+							case 5:
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2]  +  10, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+							break;
+							case 6:
+								led_cfg.DataNR_leds[addr2]  = constrain(led_cfg.DataNR_leds[addr2]  +  100, 0, MAX_NUM_LEDS - led_cfg.DataStart_leds[addr2] );
+							break;
+						}
+						outval = led_cfg.DataNR_leds[addr2] ;
+					}
+					else
+					{
+						debugMe("in max");
+						switch (addr1) 
+						{
+							case 0:
+							
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  100, 0, MAX_NUM_LEDS  );
+								break;
+							case 1:
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  10, 0, MAX_NUM_LEDS  );
+								break;
+							case 2:
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  1, 0, MAX_NUM_LEDS  );
+								break;
+							case 3:
+								led_cfg.NrLeds  = 0;
+							break;
+							case 4:
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  1, 0, MAX_NUM_LEDS );
+							break;
+							case 5:
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  10, 0, MAX_NUM_LEDS  );
+							break;
+							case 6:
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  100, 0, MAX_NUM_LEDS  );
+							break;
+						}
+						outval = led_cfg.NrLeds ;
+						debugMe(outval);
+					}
+					
+				
+				}
+				else if (msg.match("/DON", addrOffset)) 
+				{
+					//debugMe(addr1);
+					
+					bool result = bool(msg.getFloat(0));
+					//debugMe(result);
+
+					switch (addr1) 
+					{
+						case 0:
+							write_bool(DATA1_ENABLE,result);
+							
+							//debugMe("Data1-toggle");
+							break;
+						case 1:
+							write_bool(DATA2_ENABLE,result);
+							//debugMe("Data2-toggle");
+							break;
+						case 2:
+							write_bool(DATA3_ENABLE,result);
+							//debugMe("Data3-toggle");
+							break;
+						case 3:
+							//debugMe("Data4-toggle");
+							write_bool(DATA4_ENABLE,result);
+							break;	
+						default:
+				
+						break;
+					}
+				
+					outval = result;
+
+
+				}
+				else if (msg.match("/LTP", addrOffset)) 
+				{
+					//debugMe(addr1);
+					osc_queu_MSG_float("/tosc/LTP/1/1"   , 0);
+					osc_queu_MSG_float("/tosc/LTP/2/1"   , 0);
+					osc_queu_MSG_float("/tosc/LTP/3/1"   , 0);
+					osc_queu_MSG_float("/tosc/LTP/4/1"   , 0);
+					osc_queu_MSG_float("/tosc/LTP/5/1"   , 0);
+					osc_queu_MSG_float("/tosc/LTP/6/1"   , 0);
+
+					switch (addr1) 
+					{
+						case 0:
+							led_cfg.ledMode = 0;
+							
+
+							break;
+						case 1:
+							led_cfg.ledMode = 1;
+						
+							break;
+						case 2:
+							led_cfg.ledMode = 2;
+							
+							break;
+						case 3:
+							led_cfg.ledMode = 3;
+							
+							break;
+						case 4:
+							led_cfg.ledMode =4 ;
+							
+							break;	
+						case 5:
+							led_cfg.ledMode =5 ;
+							
+							break;
+					}
+				
+					outval = 1;
+
+
+				}
+
+
+			char outaddr[15] ;
+			memset(outaddr, 0, sizeof(outaddr));
+			msg.getAddress(outaddr, addrOffset, 4);
+			String osc_addr;
+			if ((msg.match("/DON", addrOffset)) ||  (msg.match("/LTP", addrOffset)))
+			{
+				osc_addr = "/tosc"+String(outaddr) + "/" + String(addr1+1) + "/1" ;
+				osc_queu_MSG_float(osc_addr , outval);
+				debugMe(osc_addr);
+			}
+			else if (bool(msg.getFloat(0) == true))
+			{
+				osc_addr = "/tosc/L"+String(outaddr) + "/" + String(addr2) ;
+				osc_queu_MSG_float(osc_addr , outval);
+				debugMe(osc_addr);
+			}
+			
+		}
+			
+
+	
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
 
 
 // Main OSC loop
@@ -2145,6 +2596,8 @@ void OSC_loop()
 
 
 			oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
+
+			oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
 
 			if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
 		}

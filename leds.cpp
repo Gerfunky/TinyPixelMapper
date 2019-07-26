@@ -226,7 +226,10 @@ fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] =
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
+//led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE, 
+							{DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR},
+							{DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS} , DEF_APA102_DATARATE, 5 , 0};			// The basic led config
 
 
 /*
@@ -801,10 +804,10 @@ void LEDS_G_pre_show_processing()
 	}
 	else
 	{
-		if(get_bool(DATA1_ENABLE))  LED_master_rgb(led_cfg.Data1StartLed, led_cfg.Data1NrLeds   );
-		if(get_bool(DATA2_ENABLE))  LED_master_rgb(led_cfg.Data2StartLed, led_cfg.Data2NrLeds   );
-		if(get_bool(DATA3_ENABLE))  LED_master_rgb(led_cfg.Data3StartLed, led_cfg.Data3NrLeds   );
-		if(get_bool(DATA4_ENABLE))  LED_master_rgb(led_cfg.Data4StartLed, led_cfg.Data4NrLeds   );
+		if(get_bool(DATA1_ENABLE))  LED_master_rgb(led_cfg.DataStart_leds[0] , led_cfg.DataNR_leds[0]   );
+		if(get_bool(DATA2_ENABLE))  LED_master_rgb(led_cfg.DataStart_leds[1] , led_cfg.DataNR_leds[1]   );
+		if(get_bool(DATA3_ENABLE))  LED_master_rgb(led_cfg.DataStart_leds[2] , led_cfg.DataNR_leds[2]   );
+		if(get_bool(DATA4_ENABLE))  LED_master_rgb(led_cfg.DataStart_leds[3] , led_cfg.DataNR_leds[3]   );
 	}
 
 	
@@ -1524,26 +1527,26 @@ void LEDS_setup()
 			debugMe("APA102 mode line");
 			if(get_bool(DATA1_ENABLE)) 	switch(led_cfg.apa102data_rate)
 			{
-				case 1: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(1)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 2: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 4: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(4)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 8: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(8)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 12: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(12)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 16: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(16)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				case 24: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(24)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
-				default: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds,led_cfg.Data1StartLed , led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 1: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(1)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 2: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 4: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(4)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 8: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(8)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 12: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(12)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 16: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(16)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				case 24: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(24)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
+				default: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds,led_cfg.DataStart_leds[0]  , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA1+CLK"); } break;
 
 			}
 			if(get_bool(DATA3_ENABLE)) switch(led_cfg.apa102data_rate)
 			{
-				case 1: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(1)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 2: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 4: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(4)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 8: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(8)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 12: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(12)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 16: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(16)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				case 24: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(24)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
-				default: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.Data3StartLed , led_cfg.Data3StartLed).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 1: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(1)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 2: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 4: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(4)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 8: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(8)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 12: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(12)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 16: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(16)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				case 24: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(24)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
+				default: {FastLED.addLeds<APA102,LED_DATA_3_PIN , LED_DATA_4_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.DataStart_leds[2]  , led_cfg.DataStart_leds[2] ).setCorrection(TypicalLEDStrip); debugMe("APA102 leds added on  DATA3+D4CLK"); } break;
 			}
 			
 		break;
@@ -1588,10 +1591,10 @@ void LEDS_setup()
 		break;
 		case 3:
 			debugMe("Mode LINE: WS2812b leds added on  DATA1 to DATA4");
-			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.Data1StartLed, led_cfg.Data1NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA1 on");}
-			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA2 on");}
-			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA3 on");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, GRB>(leds, led_cfg.Data2StartLed, led_cfg.Data2NrLeds).setCorrection(TypicalLEDStrip); debugMe(" DATA4 on");}
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_PIN  , GRB>(leds, led_cfg.DataStart_leds[0] , led_cfg.DataNR_leds[0]).setCorrection(TypicalLEDStrip); debugMe(" DATA1 on");}
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2812,LED_CLK_PIN   , GRB>(leds, led_cfg.DataStart_leds[1] , led_cfg.DataNR_leds[1]).setCorrection(TypicalLEDStrip); debugMe(" DATA2 on");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_3_PIN, GRB>(leds, led_cfg.DataStart_leds[2] , led_cfg.DataNR_leds[2]).setCorrection(TypicalLEDStrip); debugMe(" DATA3 on");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2812,LED_DATA_4_PIN, GRB>(leds, led_cfg.DataStart_leds[3] , led_cfg.DataNR_leds[3]).setCorrection(TypicalLEDStrip); debugMe(" DATA4 on");}
 		break;
 		case 4:
 		debugMe("ws2812 mode Mirror");
@@ -1604,17 +1607,17 @@ void LEDS_setup()
 		debugMe("mix mode Line");
 
 			if(get_bool(DATA1_ENABLE)) switch(led_cfg.apa102data_rate)
-			{	case 1: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(1)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 2: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 4: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(4)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 8: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(8)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 12: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(12)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 16: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(16)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				case 24: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(24)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
-				default: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.Data1StartLed,  uint16_t(constrain(led_cfg.Data1NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data1StartLed)) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+			{	case 1: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(1)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 2: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 4: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(4)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 8: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(8)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 12: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(12)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 16: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(16)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				case 24: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(24)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
+				default: {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.DataStart_leds[0] ,  uint16_t(constrain(led_cfg.DataNR_leds[0], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[0] )) ).setCorrection(TypicalLEDStrip); debugMe("Mode_LINE: APA102 leds added on  DATA1+CLK");}break;
 			}
-			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.Data3StartLed, uint16_t(constrain(led_cfg.Data3NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data3StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
-			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>           (leds, led_cfg.Data4StartLed, uint16_t(constrain(led_cfg.Data4NrLeds, 0,MAX_NUM_LEDS - led_cfg.Data4StartLed)) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (leds, led_cfg.DataStart_leds[2] , uint16_t(constrain(led_cfg.DataNR_leds[2], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[2] )) ).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>           (leds, led_cfg.DataStart_leds[3] , uint16_t(constrain(led_cfg.DataNR_leds[3], 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[3] )) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
 		default:
 			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("APA102 leds added on  DATA1+CLK");}
