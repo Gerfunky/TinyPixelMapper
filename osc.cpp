@@ -1910,8 +1910,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 
 			
 			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  =  led_cfg.DataNR_leds[0] ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.DataStart_leds[1] );}   
-			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.DataStart_leds[2]  =  led_cfg.DataNR_leds[1] + led_cfg.DataStart_leds[1]  ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.DataStart_leds[2] ); }
-			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.DataStart_leds[3]  =  led_cfg.DataNR_leds[2] + led_cfg.DataStart_leds[2]  ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.DataStart_leds[3] );}
+			else if (msg.fullMatch("/data/csl/3",addrOffset))		{ led_cfg.DataStart_leds[2]  =  constrain(  led_cfg.DataNR_leds[1] + led_cfg.DataStart_leds[1] ,0, MAX_NUM_LEDS )  ;  osc_queu_MSG_int("/ostc/master/data/sl/3", 	led_cfg.DataStart_leds[2] ); }
+			else if (msg.fullMatch("/data/csl/4",addrOffset))		{ led_cfg.DataStart_leds[3]  =  constrain(  led_cfg.DataNR_leds[2] + led_cfg.DataStart_leds[2] ,0, MAX_NUM_LEDS ) ;  osc_queu_MSG_int("/ostc/master/data/sl/4", 	led_cfg.DataStart_leds[3] );}
 
 			else if (msg.fullMatch("/data/mode",addrOffset))		{ led_cfg.ledMode = uint8_t(msg.getInt(0) )  ;}
 			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}

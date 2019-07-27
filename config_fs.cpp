@@ -149,7 +149,7 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 void  FS_write_Conf_status(uint8_t play_NR, boolean value)
 {
 
-	boolean return_bool = 0;
+	
 	uint8_t byte_nr = 0;
 	uint8_t bit_nr = play_NR;
 	while (bit_nr > 7)

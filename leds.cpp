@@ -1320,7 +1320,7 @@ void LEDS_load_default_play_conf()
 
 	
 
-	uint8_t strip_no = 0;
+	//uint8_t strip_no = 0;
 				
 /*
 	part[strip_no].start_led = 0;
@@ -2097,13 +2097,14 @@ void LEDS_loop()
 			} 
 
 
-			
+			/* 
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
 			{
 				uint8_t buffer = FFT_fifo.dequeue();
 				debugMe("dequing overflow");
 				buffer = 0;
 			} 
+			*/
 
 		}
 
