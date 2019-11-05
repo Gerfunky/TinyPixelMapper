@@ -940,8 +940,10 @@ void LEDS_pal_reset_index()
 	for (int z = 0; z < _M_NR_FORM_BYTES_; z++) {
 		for (int i = 0; i < 8; i++) {
 
-			form_fx_pal[i+(z * 8)].index = form_fx_pal[i+ (z * 8)].index_start;
+			form_fx_pal[i+(z * 8)].index = constrain(form_fx_pal[i+ (z * 8)].index_start,0,255);
 			form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].index_start;
+			//debugMe(String(i + (z * 8) ) + " -- " + String(form_fx_pal[i + (z * 8)].indexLong));
+			if (form_fx_pal[i + (z * 8)].indexLong  >= 4096) form_fx_pal[i + (z * 8)].indexLong  = form_fx_pal[i + (z * 8)].indexLong -4096;
 		}
 		}
 }
