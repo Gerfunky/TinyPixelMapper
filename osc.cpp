@@ -1667,7 +1667,6 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.match("/fx/dott/pal",addrOffset))  		form_fx_dots[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/dott/typ",addrOffset)) 			{ bitWrite(form_menu_dot[i_bit_int][_M_FORM_DOT_TYPE], 				i_form_nr, bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/dott/run",addrOffset))			{ bitWrite(form_menu_dot[i_bit_int][_M_FORM_DOT_RUN], 				i_form_nr, bool(msg.getInt(0)));  }
-
 			else if		(msg.match("/fx/glit/run",addrOffset))			{ bitWrite(form_menu_glitter[i_bit_int][_M_FORM_GLITTER_RUN], 				i_form_nr, bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/glit/gdb",addrOffset))			{ bitWrite(form_menu_glitter[i_bit_int][_M_FORM_GLITTER_FFT], 				i_form_nr, bool(msg.getInt(0)));  }
 			//else if		(msg.match("/fx/glit/fft",addrOffset))			{ bitWrite(form_menu_glitter[i_bit_int][_M_FORM_GLITTER_FFT], 	i_form_nr, bool(msg.getInt(0)));  ;}

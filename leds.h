@@ -202,7 +202,7 @@
 
 		// GLITTER
 
-	 #define _M_NR_FORM_GLITTER_OPTIONS_ 1
+	 #define _M_NR_FORM_GLITTER_OPTIONS_ 2
 		enum form_glitter_options
 		{
 			_M_FORM_GLITTER_RUN,
