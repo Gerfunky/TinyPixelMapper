@@ -2044,7 +2044,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 	{ 
 		debugMe("Reading bools file");
 		File conf_file = SPIFFS.open(addr, "r");
-		delay(100);
+		
 
 		if (conf_file&& !conf_file.isDirectory())
 		{
@@ -2057,16 +2057,17 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 			while (conf_file.available())
 			{
-
+				//debugMe("pre read");	
 				character = conf_file.read();
-
+				delay(10);
+				//debugMe("1");
 				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 					character = conf_file.read();
 				}
-
+				
 				type = conf_file.read();
 				character = conf_file.read(); // go past the first ":" after the type
-				debugMe("pre_Bool_LOADing in file");
+				//debugMe("pre_Bool_LOADing in file");
 
 				if (type == 'D')
 				{
@@ -2090,7 +2091,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				}
 				else if (type == 'b')
 				{
-					// debugMe("in B");
+					debugMe("in B");
 					write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
 					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
