@@ -40,6 +40,7 @@ boolean get_bool(uint8_t bit_nr)
 		byte_nr++;
 		bit_nr = bit_nr - 8;
 	}
+	if (byte_nr < NR_GLOBAL_OPTIONS_BYTES)
 	return_bool = bitRead(global_options[byte_nr], bit_nr);
 
 	return return_bool;
@@ -67,7 +68,8 @@ void write_bool(uint8_t bit_nr, boolean value)
 		byte_nr++;
 		bit_nr = bit_nr - 8;
 	}
-	bitWrite(global_options[byte_nr], bit_nr, value);
+	if (byte_nr < NR_GLOBAL_OPTIONS_BYTES)
+		bitWrite(global_options[byte_nr], bit_nr, value);
 	//yield();
 }
 

@@ -74,6 +74,8 @@
 	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 
+	#include "mmqt.h"
+	extern mqtt_Struct mqtt_cfg;
 
 //**************** Functions 
 
@@ -2033,6 +2035,122 @@ void FS_Bools_write(uint8_t conf_nr)
 
 }
 
+
+boolean FS_mqtt_read()
+{
+	// read the device config and bools
+	
+	String addr = String("/conf/mqtt.txt");
+
+	if (SPIFFS.exists(addr))
+	{ 
+		debugMe("Reading mqtt file");
+		File conf_file = SPIFFS.open(addr, "r");
+		
+
+		if (conf_file&& !conf_file.isDirectory())
+		{
+			debugMe("in mqtt file");
+			char character;
+			//String settingName;
+			String settingValue;
+			char type;
+
+
+			memset(mqtt_cfg.username, 0, sizeof(mqtt_cfg.username)); 
+			memset(mqtt_cfg.password, 0, sizeof(mqtt_cfg.password)); 
+
+			while (conf_file.available())
+			{
+				//debugMe("pre read");	
+				character = conf_file.read();
+				delay(10);
+				//debugMe("1");
+				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
+					character = conf_file.read();
+				}
+				
+				type = conf_file.read();
+				character = conf_file.read(); // go past the first ":" after the type
+				
+
+				if (type == 'M')
+				{
+					int in_int = 0;
+					write_bool(MQTT_ON, get_bool_conf_value(conf_file, &character));
+					for (uint8_t i = 0; i < 4; i++) mqtt_cfg.mqttIP[i] = get_IP_conf_value(conf_file, &character);
+					in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.mqttPort = uint16_t(in_int);
+
+					settingValue = get_string_conf_value(conf_file, &character);
+				    settingValue.toCharArray(mqtt_cfg.username, settingValue.length() + 1);
+					settingValue = get_string_conf_value(conf_file, &character);
+				    settingValue.toCharArray(mqtt_cfg.password, settingValue.length() + 1);
+					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.publishSec = uint16_t(in_int);}
+
+				}
+				else
+					debugMe("NO_TYPE");
+
+				while ((conf_file.available()) && (character != ']')) character = conf_file.read();   // goto End	
+																									  //if (character == ']') {debugMe("the other side") ;}  // End of getting this strip
+																									  //while ((conf_file.available())) character = conf_file.read();   // goto End
+
+			}
+			conf_file.close();
+			return true;
+		}	// end open conf file
+
+		else
+		{
+			debugMe("error opening " + addr + " Loading defaults ");
+			
+		}
+
+		conf_file.close();
+	}
+	else
+	{
+		debugMe("NO mqtt File");
+	}
+
+	return false;
+}
+
+void FS_mqtt_write()
+{
+	// write out the wifi config
+	String addr = String("/conf/mqtt.txt");
+	//String title = "Main Config for ESP.";
+	File conf_file = SPIFFS.open(addr, "w");
+
+	if (!conf_file && !conf_file.isDirectory())
+	{
+		 debugMe("Cant write MQTT Conf file");
+	}
+	else  // it opens
+	{
+		conf_file.println("M = MQTT :ON =1 off = 0: IP  : PORT  : Username  : Password ");
+		conf_file.print(String("[M:" + String(get_bool(MQTT_ON))));
+		conf_file.print(String(":" + String(mqtt_cfg.mqttIP[0])));
+		conf_file.print(String("." + String(mqtt_cfg.mqttIP[1])));
+		conf_file.print(String("." + String(mqtt_cfg.mqttIP[2])));
+		conf_file.print(String("." + String(mqtt_cfg.mqttIP[3])));
+		conf_file.print(String(":" + String(mqtt_cfg.mqttPort)));
+		conf_file.print(String(":" + String(mqtt_cfg.username)));
+		conf_file.print(String(":" + String(mqtt_cfg.password)));
+		conf_file.print(String(":" + String(mqtt_cfg.publishSec)));
+
+		conf_file.println("] ");
+		conf_file.close();
+
+		 debugMe("MQTT wrote conf");
+	}	// end open conf file
+
+	
+} // end FS_mqtt_write()
+
+
+
 boolean FS_Bools_read(uint8_t conf_nr)
 {
 	// read the device config and bools
@@ -2071,6 +2189,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 				if (type == 'D')
 				{
+					debugMe("D");
 					int in_int = 0;
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 		= uint8_t(constrain(in_int, 0, 5));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 		= uint8_t(constrain(in_int, 0, 255));
@@ -2085,8 +2204,8 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[3] 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[3] ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[3]  	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
-					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint8_t(constrain(in_int, 0,255));
-					if (conf_file.peek()  != ']')  in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint8_t(constrain(in_int, 0,255));
+					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint8_t(constrain(in_int, 0,255));}
+					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint8_t(constrain(in_int, 0,255));}
 
 				}
 				else if (type == 'b')

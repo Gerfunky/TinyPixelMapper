@@ -632,6 +632,15 @@ float LEDS_get_FPS()
 	return float(FastLED.getFPS());
 }
 
+uint8_t  LEDS_get_FPS_setting()
+{	// return the FPS value
+	return led_cfg.pal_fps;
+}
+
+void LEDS_set_FPS(uint8_t fps_setting)
+{	// set the FPS value
+	led_cfg.pal_fps = constrain(fps_setting, 1 , MAX_PAL_FPS);
+}
 
 void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED)
 {

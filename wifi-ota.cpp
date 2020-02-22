@@ -543,6 +543,39 @@ void WiFi_Start_Network_X()
 
 }
 
+
+void WIFI_start_wificlient()
+{
+			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
+			unsigned long currentT = millis();
+			
+			if (get_bool(DEBUG_OUT) == true)
+			{
+				debugMe(String("ssid:" + String(wifi_cfg.ssid)));
+				debugMe(String("pwd:" + String(wifi_cfg.pwd)));
+				debugMe(String("try : " + String(con_try) + "."));
+				debugMe(WiFi.status());
+			}
+
+			WiFi.mode(WIFI_STA);
+			delay(100);
+			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+			
+			
+			while (WiFi.status() != WL_CONNECTED)
+			{
+				delay(500);	
+				debugMe(String("." + String(con_try) + "."), false);
+				if (millis() > currentT + WIFI_CLIENT_CONNECT_TIMEOUT * con_try)
+					break;
+
+			}
+			
+		
+	debugMe("Wifi Signal Strength : " + String(WiFi.RSSI()));
+
+}
+
 void WiFi_Start_Network()
 {
 		// setup the wifi network old version from EPS8266
@@ -579,42 +612,26 @@ void WiFi_Start_Network()
 	else
 	{	
 		debugMe("Starting Wifi Client Setup");
-		unsigned long currentT = millis();
+		
 		LEDS_setall_color(3);
 		LEDS_show();
 
 		if (get_bool(WIFI_MODE) !=  WIFI_ACCESSPOINT)
 		{	
-			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
-
-			if (get_bool(DEBUG_OUT) == true)
-			{
-				debugMe(String("ssid:" + String(wifi_cfg.ssid)));
-				debugMe(String("pwd:" + String(wifi_cfg.pwd)));
-				debugMe(String("try : " + String(con_try) + "."));
-			}
-
-			WiFi.mode(WIFI_STA);
-			//delay(100);
-			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 			
+				 WIFI_start_wificlient();
 
-			while (WiFi.status() != WL_CONNECTED)
-			{
-				delay(500);	
-				debugMe(String("." + String(con_try) + "."), false);
-				if (millis() > currentT + WIFI_CLIENT_CONNECT_TIMEOUT * con_try)
-					break;
 
-			}
-			
-		LEDS_setall_color(2);
-		LEDS_show();
+				LEDS_setall_color(2);
+				LEDS_show();
+
 		}
-		debugMe("Wifi Signal Strength : " + String(WiFi.RSSI()));
+		
 	}
 	debugMe(String("IP : "),false);
 	debugMe(WiFi.localIP());
+	debugMe("wifi status:",false);
+	debugMe(WiFi.status());
 }
 
 
@@ -831,6 +848,7 @@ void wifi_setup()
 void wifi_loop()
 {
 
+		if (WiFi.status() != WL_CONNECTED)	 WIFI_start_wificlient();
 		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
 		//yield();
 		//NTP_parse_response();	// get new packets and flush if not correct.
@@ -842,7 +860,7 @@ void wifi_loop()
 		WiFi_FFT_handle_loop();
 		yield();
 		TelnetDebug.handle();
-		 dnsServer.processNextRequest();
+		dnsServer.processNextRequest();
 
 }
 
