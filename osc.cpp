@@ -836,6 +836,7 @@ void osc_StC_menu_form_fft_adv_ref()
 				
 	
 		osc_queu_MSG_int("/ostc/form/fft/ofs/" + String(formNr), form_fx_fft[formNr].offset );
+		osc_queu_MSG_int("/ostc/form/fft/exd/" + String(formNr), form_fx_fft[formNr].extend );
 		osc_queu_MSG_int("/ostc/form/fft/mix/" + String(formNr), form_fx_fft[formNr].mix_mode );
 		osc_queu_MSG_int("/ostc/form/fft/lvl/"+	String(formNr), form_fx_fft[formNr].level );
 
@@ -1832,6 +1833,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if		(msg.match("/fft/mir",addrOffset))			{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_MIRROR], 		i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/ocl",addrOffset))		{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_ONECOLOR], 		i_form_nr, 	bool(result));  ;}
 						else if  	(msg.match("/fft/ofs",addrOffset))  	form_fx_fft[orig_form_nr].offset = uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/fft/exd",addrOffset))  	form_fx_fft[orig_form_nr].extend = uint8_t(msg.getInt(0))	; 
 						else if		(msg.match("/fft/lvl",addrOffset))		{  form_fx_fft[orig_form_nr].level  =  uint8_t(result)  ;}
 						else if  	(msg.match("/fft/mix",addrOffset))  	form_fx_fft[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 			}

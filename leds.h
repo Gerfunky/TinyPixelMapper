@@ -320,6 +320,7 @@
 			uint8_t mix_mode;
 			uint8_t level;
 			uint8_t offset;
+			uint8_t extend;
 
 		};
 
