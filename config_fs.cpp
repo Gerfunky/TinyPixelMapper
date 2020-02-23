@@ -1213,6 +1213,7 @@ void FS_FS_play_conf_write_form_FFT(String addr)
 			conf_file.print(String(":" + String(form_fx_fft[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx_fft[form].level)));
 			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
+			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
 			
 
 			conf_file.println("] ");
@@ -1496,6 +1497,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_fft[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx_fft[form].level)));
 			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
+			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
 			
 
 			conf_file.println("] ");
@@ -1807,6 +1809,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
+				
+				if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} else {form_fx_fft[strip_no].extend = 0;}
 			}
 			else if ((type == 'T') && (typeb == 'B'))
 			{
