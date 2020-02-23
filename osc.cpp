@@ -42,6 +42,7 @@
 	#include "wifi-ota.h"
 	#include "config_fs.h"
 	#include "httpd.h"
+	
 
 	#define NO_OF_PALLETS 2
 	#define OSC_QEUE_ADD_LEN 30
@@ -102,6 +103,14 @@
 	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
+
+
+
+// from mmqt.cpp
+ #include "mmqt.h"
+ extern mqtt_Struct mqtt_cfg;
+
+
 
 
 //struct OSC_buffer_float master_rgb = { 255,255,255 };
@@ -1308,6 +1317,29 @@ void osc_oStC_menu_master_wifi_ref()
 }	
 
 
+void osc_oStC_menu_master_mqtt_ref()
+{
+		osc_queu_MSG_int("/ostc/master/mqtt/enable", (get_bool(MQTT_ON)));
+
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/0", 	mqtt_cfg.mqttIP[0]) ;
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/1", 	mqtt_cfg.mqttIP[1]) ;
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/2", 	mqtt_cfg.mqttIP[2]) ;
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/3", 	mqtt_cfg.mqttIP[3]) ;
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/4", 	mqtt_cfg.mqttPort );
+		osc_queu_MSG_int("/ostc/master/mqtt/ip/5", 	mqtt_cfg.publishSec );
+		OSCBundle bundle_out;
+		IPAddress ip_out(osc_server.remoteIP());
+
+		bundle_out.add("/ostc/master/mqtt/uname").add(mqtt_cfg.username);
+		bundle_out.add("/ostc/master/mqtt/passwd").add(mqtt_cfg.password);
+		
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+}
+
 void osc_StC_menu_master_ledcfg_ref()
 {
 
@@ -1687,7 +1719,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.match("/fx/fire/run",addrOffset))			{ bitWrite(form_menu_fire[i_bit_int][_M_FORM_FIRE_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/fire/rev",addrOffset))			{ bitWrite(form_menu_fire[i_bit_int][_M_FORM_FIRE_REVERSED], 		i_form_nr,	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/fire/mir",addrOffset))			{ bitWrite(form_menu_fire[i_bit_int][_M_FORM_FIRE_MIRROR], 		i_form_nr,	bool(msg.getInt(0)));  }
-			else if		(msg.match("/fx/fire/lvl",addrOffset))	  	form_fx_fire[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/fire/lvl",addrOffset))	  		form_fx_fire[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 			else if  	(msg.match("/fx/fire/mix",addrOffset))  		form_fx_fire[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/fire/pal",addrOffset))  		form_fx_fire[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/fire/col",addrOffset))  		form_fx_fire[orig_form_nr].cooling = uint8_t(msg.getInt(0))	;
@@ -1818,6 +1850,22 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 ////////////// MASTER IN
 
 
+void osc_StC_master_mqtt_ip_input(OSCMessage &msg, int addrOffset) 
+{
+		if(!msg.isString(0) )
+		{
+			if			(msg.fullMatch("/ip/1",addrOffset))		{ mqtt_cfg.mqttIP[0] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip/2",addrOffset))		{ mqtt_cfg.mqttIP[1] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip/3",addrOffset))		{ mqtt_cfg.mqttIP[2] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip/4",addrOffset))		{ mqtt_cfg.mqttIP[3] = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip/5",addrOffset))		{ mqtt_cfg.mqttPort = uint8_t(msg.getInt(0));}
+			else if 	(msg.fullMatch("/ip/6",addrOffset))		{ mqtt_cfg.publishSec = uint8_t(msg.getInt(0));}
+
+
+		}
+}
+
+
 void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset) 
 {
 		if(!msg.isString(0) )
@@ -1880,9 +1928,10 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		//debugMe("in master routing");
 		
 			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
-			else if (msg.fullMatch("/conn",addrOffset))					{ osc_StC_menu_master_ref();   osc_StC_menu_master_loadsave_ref();   }
-			else if (msg.fullMatch("/ref/wifi",addrOffset))					{ osc_oStC_menu_master_wifi_ref();   }
-			else if (msg.fullMatch("/ref/leds",addrOffset))		{ osc_StC_menu_master_ledcfg_ref(); }
+			else if (msg.fullMatch("/conn",addrOffset))				{ osc_StC_menu_master_ref();   osc_StC_menu_master_loadsave_ref();   }
+			else if (msg.fullMatch("/ref/wifi",addrOffset))			{ osc_oStC_menu_master_wifi_ref();   }
+			else if (msg.fullMatch("/ref/leds",addrOffset))			{ osc_StC_menu_master_ledcfg_ref(); }
+			else if (msg.fullMatch("/ref/mqtt",addrOffset))			{ osc_oStC_menu_master_mqtt_ref(); }
 
 			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
 			//else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); 				osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());  }
@@ -1917,7 +1966,10 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/aparate",addrOffset))		{ led_cfg.apa102data_rate = uint8_t(msg.getInt(0) )  ;}
 
 			
-			else if (msg.fullMatch("/data/save",addrOffset))		{ FS_Bools_write(0) ;}
+			else if (msg.fullMatch("/data/save",addrOffset) 	&& boolean(msg.getInt(0)) == true)			{ FS_Bools_write(0) ;}
+			else if (msg.fullMatch("/artnet/save",addrOffset) 	&& boolean(msg.getInt(0)) == true ) 		{ FS_artnet_write(0); }
+			else if (msg.fullMatch("/mqtt/save",addrOffset) 	&& boolean(msg.getInt(0)) == true )      	{ FS_mqtt_write();}
+
 			else if (msg.fullMatch("/data/boot",addrOffset))		{ ESP.restart(); }
 
 			else if (msg.fullMatch("/data/maxbri",addrOffset))		{ led_cfg.max_bri = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
@@ -1925,8 +1977,9 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/artnet/on",addrOffset))		{ osc_toggle_artnet(boolean(msg.getInt(0)) );  }
 			else if (msg.fullMatch("/artnet/su",addrOffset))		{ artnet_cfg.startU = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
 			else if (msg.fullMatch("/artnet/nu",addrOffset))		{ artnet_cfg.numU  = constrain(uint8_t(msg.getInt(0)) , 0 , 4) ; }
-			else if (msg.fullMatch("/artnet/save",addrOffset) && boolean(msg.getInt(0)) == true ) 		{ FS_artnet_write(0); }
 			
+			
+			else if (msg.fullMatch("/mqtt/enable",addrOffset))		{ write_bool(MQTT_ON, bool(msg.getInt(0) )) ; }
 			
 			
 		
@@ -1980,10 +2033,20 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			}  */
 
 			
-			else   // route it
+			else   // route it or its a string
 			{
+				int length=msg.getDataLength(0);
+				if 			(msg.fullMatch("/mqtt/uname",addrOffset))		{ memset(mqtt_cfg.username, 0, 	 	sizeof(mqtt_cfg.username)		);    	msg.getString( 0,	mqtt_cfg.username,  length ) ;  }
+				else if 	(msg.fullMatch("/mqtt/passwd",addrOffset))    	{ memset(mqtt_cfg.password, 0, 	 	sizeof(mqtt_cfg.password)		);    	msg.getString( 0,	mqtt_cfg.password,  length ) ;  } 
+
+
+				else  // not a string
+				{
 				//msg.route("/conf", osc_StC_master_conf_routing, addrOffset);
-				msg.route("/wifi", osc_StC_master_wifi_routing, addrOffset);
+					msg.route("/wifi", osc_StC_master_wifi_routing, addrOffset);
+					//msg.route("/mqtt/ip", osc_StC_master_mqtt_ip_input, addrOffset);
+				}
+
 
 			}
 

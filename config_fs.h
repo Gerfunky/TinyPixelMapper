@@ -44,6 +44,8 @@ void FS_setup_SPIFFS();
 	void FS_pal_load(uint8_t load_nr,uint8_t pal_no);
 	void FS_pal_save(uint8_t save_no, uint8_t pal_no);
 
+	boolean FS_mqtt_read();
+	void FS_mqtt_write();
 
 #ifndef ARTNET_DISABLED
 	void FS_artnet_write(uint8_t conf_nr);			// osc.cpp
@@ -52,6 +54,8 @@ void FS_setup_SPIFFS();
 
 	boolean FS_Bools_read(uint8_t conf_nr);			// Tools
 	boolean FS_get_PalyConfSatatus(uint8_t bit_nr);
+
+	
 
 #endif
 

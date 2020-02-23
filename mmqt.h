@@ -126,7 +126,7 @@ automation.yaml
 // Functions : /device = Is it on or off
 //              /bri   = Master fader
 //              /play  = Play nummer / config
-//              /
+//              /fps   = Speed
 //
 
 

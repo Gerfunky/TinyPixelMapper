@@ -2081,11 +2081,9 @@ boolean FS_mqtt_read()
 					for (uint8_t i = 0; i < 4; i++) mqtt_cfg.mqttIP[i] = get_IP_conf_value(conf_file, &character);
 					in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.mqttPort = uint16_t(in_int);
 
-					settingValue = get_string_conf_value(conf_file, &character);
-				    settingValue.toCharArray(mqtt_cfg.username, settingValue.length() + 1);
-					settingValue = get_string_conf_value(conf_file, &character);
-				    settingValue.toCharArray(mqtt_cfg.password, settingValue.length() + 1);
-					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.publishSec = uint16_t(in_int);}
+					settingValue = get_string_conf_value(conf_file, &character); settingValue.toCharArray(mqtt_cfg.username, settingValue.length() + 1);
+					settingValue = get_string_conf_value(conf_file, &character); settingValue.toCharArray(mqtt_cfg.password, settingValue.length() + 1);
+					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.publishSec = uint16_t(in_int);} else {mqtt_cfg.publishSec = 60 ; };
 
 				}
 				else
@@ -2129,7 +2127,7 @@ void FS_mqtt_write()
 	}
 	else  // it opens
 	{
-		conf_file.println("M = MQTT :ON =1 off = 0: IP  : PORT  : Username  : Password ");
+		conf_file.println("M = MQTT :ON =1 off = 0: IP  : PORT  : Username  : Password : Publish timeout in seconds");
 		conf_file.print(String("[M:" + String(get_bool(MQTT_ON))));
 		conf_file.print(String(":" + String(mqtt_cfg.mqttIP[0])));
 		conf_file.print(String("." + String(mqtt_cfg.mqttIP[1])));
