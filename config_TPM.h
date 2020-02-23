@@ -33,7 +33,7 @@
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
 	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 
-	#define DEF_AP_NAME			"TinyPixelMapperWZ"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperW3"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!

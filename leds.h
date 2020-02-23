@@ -29,8 +29,12 @@
 		#define MAX_INDEX_LONG 4096 //6			// must stay under this number!
 
 		// Strip/Form settings do not change!!! 
-		#define NR_FORM_PARTS	16				// how many forms? default 16
-		#define NR_STRIPS		32				// how many strips  default 32
+		
+		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8)				// how many forms? default 32
+
+
+	//	#define NR_STRIPS		32				// how many strips  default 32
 		#define NR_PALETTS 		16				// how many pallets do we have = 2
 		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
@@ -73,14 +77,16 @@
 		uint8_t			fire_sparking;		// For fire animation
 		uint8_t			fire_cooling;		// For fire animation
 		uint8_t 		Play_Nr ;			// What sequenca are we in.
-		uint16_t		Data1NrLeds;		// Nr of leds for data1;
+		uint16_t 		DataNR_leds[5]; 
+		uint16_t 		DataStart_leds[4]; 
+		/*uint16_t		Data1NrLeds;		// Nr of leds for data1;
 		uint16_t		Data1StartLed;		// Start led for data1;
 		uint16_t		Data2NrLeds;		// Nr of leds for data2;
 		uint16_t		Data2StartLed;		// Start led for data2;
 		uint16_t		Data3NrLeds;		// Nr of leds for data3;
 		uint16_t		Data3StartLed;		// Start led for data3;
 		uint16_t		Data4NrLeds;		// Nr of leds for data4;
-		uint16_t		Data4StartLed;		// Start led for data4;
+		uint16_t		Data4StartLed;		// Start led for data4;  */
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config
 		uint8_t 		edit_pal;
@@ -89,20 +95,7 @@
 
 	};
 
-	// FFT
 
-	struct fft_data_struct 
-	{
-		//uint8_t bin_on_red;		// bits select what bin to trigger on
-		//uint8_t bin_on_green;		// bits select what bin to trigger on 
-		//uint8_t bin_on_blue;		// bits select what bin to trigger on
-		uint8_t trigger;		// trigger value
-		uint8_t value;			// actual value
-		uint8_t avarage;
-		uint8_t autoFFT;
-		uint8_t max;
-		
-	};
 
 	struct fft_led_cfg_struct
 	{
@@ -128,6 +121,7 @@
 		#define NR_COPY_LED_BYTES 2
 
 // Forms and Parts 
+/*
    struct Strip_FL_Struct
    {
 					uint16_t start_led ;	// where the pallete starts
@@ -141,45 +135,221 @@
 					uint8_t pal_level;
 					uint8_t fft_level;
 					uint8_t 	pal_mix_mode;
-		  			uint8_t 	fft_mix_mode;
+		  		uint8_t 	fft_mix_mode;
 					uint8_t 	pal_pal;
 	};
+*/
+		struct form_Led_Setup_Struct 
+		{
+			uint16_t	start_led;			// where the pallete starts
+			uint16_t	nr_leds;			// how many ?  for mirror how many extra.
+		//	uint8_t		fade_value;			// the fade value
 
-	  struct form_Part_FL_Struct 
-	  {
-		  uint16_t	index_start;		// prev state A
-			int		index_add;			// how much to add onto the index on ....  CHECKME!!
-		  uint16_t	start_led;			// where the pallete starts
-		  uint16_t	nr_leds;			// how many ?  for mirror how many extra.
-		  uint8_t	fade_value;			// the fade value
-		  uint8_t	scroll_speed;		// scoll speed !! NOT implemented!!!
-		  uint8_t	glitter_value;		// glitter value
-		  uint8_t	juggle_nr_dots;		// Nr Juggle Dots or Saw dots
-		  uint8_t	juggle_speed;		// Dot speed in BPM
-		  uint8_t	index;				// the pallete index
-			int		rotate;				// ???
-		  uint8_t	index_add_pal;		// ???
-		  uint16_t	indexLong;
-		  uint8_t 	FX_level;			//
-		  uint8_t 	fft_offset;			//
-		  uint8_t   fx_shim_xscale;
-		  uint8_t   fx_shim_yscale;
-		  uint8_t   fx_shim_beater;
-		  uint8_t 	FX_shim_level;
-		  uint8_t 	pal_level;
-		  uint8_t 	fft_level;
-		  uint8_t 	fire_level;
-		  uint8_t 	pal_mix_mode;
-		  uint8_t 	fft_mix_mode;
-		  uint8_t 	fx1_mix_mode;
-		  uint8_t 	fx_fire_mix_mode;
-		  uint8_t 	fx_shim_mix_mode;
-		  uint8_t 	pal_pal;			// what pallete for pallete run
-		  uint8_t 	pal_fire;			// what pallete for pallete run
-		  uint8_t 	pal_shim;			// what pallete for pallete run
-	  };
+		};
+
+
+
+// PAL
+		#define _M_NR_FORM_PAL_OPTIONS_ 6
+		enum form_pal_options
+		{
+			_M_FORM_PAL_RUN,
+			_M_FORM_PAL_REVERSED,
+			_M_FORM_PAL_MIRROR,
+			_M_FORM_PAL_BLEND,
+			_M_FORM_PAL_ONECOLOR,
+			_M_FORM_PAL_SPEED_FROM_FFT
+		};
+
+
+		struct form_fx_pal_struct
+		{
+					uint8_t 	pal;			// what pallete for pallete run
+					uint8_t 	level;
+					uint8_t 	mix_mode;
+					uint16_t	index_start;		// Where to start at reset
+					uint16_t	index_add_led;			// how much to add onto the index on 
+					uint16_t	index_add_frame;		// ???
+					uint16_t 	indexLong;
+					uint8_t		index;				// the pallete index
+					
+
+		};
+
+
+
+// FX1
+
+		#define _M_NR_FORM_FX1_OPTIONS_ 3
+		enum form_fx1_options
+		{
+			_M_FORM_FX1_RUN,
+			_M_FORM_FX1_REVERSED,
+			_M_FORM_FX1_MIRROR,
+		};
+
+
+	struct form_fx1_struct
+		{
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t fade;
+
+		};
+
+
+
+
+		// GLITTER
+
+	 #define _M_NR_FORM_GLITTER_OPTIONS_ 2
+		enum form_glitter_options
+		{
+			_M_FORM_GLITTER_RUN,
+			_M_FORM_GLITTER_FFT,
+		};
+
+		struct form_fx_glitter_struct
+		{
+			uint8_t pal;
+			//uint8_t mix_mode;
+			uint8_t level;
+			uint8_t	value;
+			//uint8_t color_source;  // 0 = palette, 1 = fft
+			
+		};
+
+
+// DOTS
+
+	#define _M_NR_FORM_DOT_OPTIONS_ 2
+			enum form_dot_options
+		{
+			_M_FORM_DOT_RUN,
+			_M_FORM_DOT_TYPE,  // 0 = sine , 1 = saw
+			//_M_FORM_DOT_COLOR,		// 0 = Pallete , 1  FFT
+
+		};
+
+			enum form_dot_type
+		{	
+			DOT_SAW = 0,
+			DOT_SINE = 1
+			
+		};
+
+
+		struct form_fx_dots_struct
+		{
+			uint8_t pal; 					// "FFT color result": 250,"Rotating Hue": 251   others = pal
+			//uint8_t mix_mode;
+			uint8_t level;
+			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
+		  uint8_t	speed;		// Dot speed in BPM
+			uint16_t 	indexLong;
+			uint16_t  index_add;
+			
+			//uint8_t fft_dot_type;
+			//uint8_t normal_dot_type;
+			//uint8_t normal_dot_color;
+
+
+		};
+
+	
+// Fire
+		#define _M_NR_FORM_FIRE_OPTIONS_ 3
+		enum form_fire_options
+		{
+			_M_FORM_FIRE_RUN,
+			_M_FORM_FIRE_REVERSED,
+			_M_FORM_FIRE_MIRROR,
+			_M_FORM_FIRE_SPK_FFT,
+			_M_FORM_FIRE_COOL_FFT
+
+		};	
+
+
+		struct form_fx_fire_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t cooling;
+			uint8_t sparking;
+
+		};
+
+
+	// FFT
+
+	#define _M_NR_FORM_FFT_OPTIONS_ 4
+		enum form_fft_options
+		{
+			_M_FORM_FFT_RUN,
+			_M_FORM_FFT_REVERSED,
+			_M_FORM_FFT_MIRROR,
+			_M_FORM_FFT_ONECOLOR
+		};
+
+		
+	struct fft_data_struct 
+	{
+		//uint8_t bin_on_red;		// bits select what bin to trigger on
+		//uint8_t bin_on_green;		// bits select what bin to trigger on 
+		//uint8_t bin_on_blue;		// bits select what bin to trigger on
+		uint8_t trigger;		// trigger value
+		uint8_t value;			// actual value
+		uint8_t avarage;
+		uint8_t autoFFT;
+		uint8_t max;
+		
+	};
+
+#define FFT_FX_NR_OF_BINS 20
+	struct fft_fxbin_struct 
+	{
+			uint8_t sum ;					
+			uint8_t set_val ;
+			uint8_t trrig_val;
+			uint8_t menu_select;
+	};
+
+		struct form_fx_fft_struct
+		{
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t offset;
+
+		};
+
+
+
+		// Shimmer
+		
+		#define _M_NR_FORM_SHIMMER_OPTIONS_ 2
+		enum form_shimmer_options
+		{
+			_M_FORM_SHIMMER_RUN,
+			_M_FORM_SHIMMER_BLEND,
+		};
+
+
+		struct form_fx_shim_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t xscale;
+		  uint8_t yscale;
+		  uint8_t beater;
+			uint16_t dist;
+
+
+		};
 	  
-	  struct form_part_fx_shim_struct
+		
+	  struct form_fx_shim_global_struct
 	  {
 		   int waveA;
 		   int waveB;
@@ -200,8 +370,10 @@
 		   uint8_t Cbpm;
 		   int Chigh;
 		   int Clow;
-			uint8_t index_addC;
+			 uint8_t index_addC;
 		   uint8_t indexC;
+
+		
 
 	  };
 
@@ -213,9 +385,12 @@
 
 	  };
 
+#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 
+
+/*
 #define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
-#define _M_NR_FORM_BYTES_ 2				// 2 bytes = 16 forms
+
 	  enum strip_bits
 	  {
 		  _S_7_0_ = 0,					// Strip / Form 0 to 7
@@ -225,8 +400,10 @@
 	  };
 
 
-#define _M_NR_OPTIONS_     40 //10			// hass less options compared to forms!!
-#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
+#define _M_NR_OPTIONS_     16 //40 //10			// hass less options compared to forms!!
+*/ 
+
+//#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
 	 /* enum strip_options {
 		  _M_AUDIO_ = 0,				// Display FFT
 		  _M_AUDIO_REVERSED = 1,
@@ -247,6 +424,16 @@
 		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
 	  }; */
 
+
+
+	
+
+
+	
+
+	
+/*
+
 	  enum strip_options {
 		  _M_AUDIO_REVERSED 	,
 		  _M_AUDIO_ 			,				// Display FFT
@@ -262,7 +449,15 @@
 		  
 		  _M_AUDIO_MIRROR  		,			//
 		  _M_AUDIO_ONECOLOR		,			//
-		  _M_AUDIO_MASK  		,			//
+
+
+			_M_FIRE_				,				// Fire animation
+		  _M_FIRE_PAL			,				// Fire animation
+		  _M_FIRE_MIRROR  		,			//
+		  _M_FIRE_REV			,			//
+*/
+
+		  /*_M_AUDIO_MASK  		,			//
 		  _M_AUDIO_SUBTRACT		,
 
 		  _M_FX_MIRROR  		,				//
@@ -284,7 +479,7 @@
 		  _M_AUDIO_FX5  		,			//
 		  _M_AUDIO_FX6  		,			//
 
-	  	 _M_FX_SHIMMER  		,			//
+	  	_M_FX_SHIMMER  		,			//
 		  _M_FX_SHIM_PAL  		,			//
 		  _M_FX_SHIM_BLEND , 
 		  _M_FX_SHIM_SUBTRACT , 
@@ -303,14 +498,14 @@
 		  _M_FX_SIN_PAL  		,			//
 		  _M_FX_3_SIN	  		,			//40
 		  _M_FX_2_SIN  		,			//
-		 
+		 */
 		
 
 		  
 
-	  };
+	//  };
 
-
+/*
 #define HARD_MIX_TRIGGER 128
 	  enum mix_enum 
 	  {  MIX_ADD 			
@@ -332,7 +527,7 @@
 		
 	  };
 
-
+*/
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
 										// TODO Check me again
@@ -342,8 +537,8 @@
 
 	  };
 
-	#define MAX_LAYERS_SELECT 10
-	#define MAX_LAYERS 7
+	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
+	#define MAX_LAYERS 10					// what is the max layer Number 
 
 
 // Functions
@@ -376,6 +571,13 @@
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
+
+
+	uint8_t LEDS_get_playNr(); 
+	uint8_t LEDS_get_bri();
+	void LEDS_set_bri(uint8_t bri);
+	void LEDS_set_playNr(uint8_t setNr);
+
 	
 #endif
 
