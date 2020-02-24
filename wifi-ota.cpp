@@ -548,7 +548,7 @@ void WIFI_start_wificlient()
 {
 			uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
 			unsigned long currentT = millis();
-			
+
 			if (get_bool(DEBUG_OUT) == true)
 			{
 				debugMe(String("ssid:" + String(wifi_cfg.ssid)));

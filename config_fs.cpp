@@ -1743,7 +1743,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				// debugMe(" . ", false);
 				// debugMe(part[strip_no].start_led);
 			} */
-			else if ((type == 'F') && (typeb == 'C'))   //if (conf_file.peek()  != ']') 
+			else if ((type == 'F') && (typeb == 'C'))   //if (character  != ']') 
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				//in_int = get_int_conf_value(conf_file, &character);
@@ -1809,8 +1809,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
-				
-				if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} else {form_fx_fft[strip_no].extend = 0;}
+
+				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} else {form_fx_fft[strip_no].extend = 0;}
 			}
 			else if ((type == 'T') && (typeb == 'B'))
 			{
@@ -2074,10 +2074,12 @@ boolean FS_mqtt_read()
 					character = conf_file.read();
 				}
 				
+				
+
+
 				type = conf_file.read();
 				character = conf_file.read(); // go past the first ":" after the type
 				
-
 				if (type == 'M')
 				{
 					int in_int = 0;
@@ -2087,8 +2089,9 @@ boolean FS_mqtt_read()
 
 					settingValue = get_string_conf_value(conf_file, &character); settingValue.toCharArray(mqtt_cfg.username, settingValue.length() + 1);
 					settingValue = get_string_conf_value(conf_file, &character); settingValue.toCharArray(mqtt_cfg.password, settingValue.length() + 1);
-					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.publishSec = uint16_t(in_int);} else {mqtt_cfg.publishSec = 60 ; };
 
+					if (character  != ']')  {in_int = get_int_conf_value(conf_file, &character);		mqtt_cfg.publishSec = uint16_t(in_int); } else {mqtt_cfg.publishSec = 60 ; };
+					
 				}
 				else
 					debugMe("NO_TYPE");
@@ -2206,8 +2209,8 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[3] 	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[3] ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[3]  	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate = uint8_t(constrain(in_int, 1,24));
-					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint8_t(constrain(in_int, 0,255));}
-					if (conf_file.peek()  != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint8_t(constrain(in_int, 0,255));}
+					if (character != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMin 	= uint8_t(constrain(in_int, 0,255));}
+					if (character != ']')  {in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.fftAutoMax 	= uint8_t(constrain(in_int, 0,255));}
 
 				}
 				else if (type == 'b')
