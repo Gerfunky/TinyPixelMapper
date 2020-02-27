@@ -40,11 +40,7 @@
 void LEDS_G_artnet_master_out();
 
 
-
-
-
-
-	extern  void osc_StC_FFT_vizIt();			// of open stage controll to send the fft data
+extern  void osc_StC_FFT_vizIt();			// of open stage controll to send the fft data
 
 
 // -- Task handles for use in the notifications
@@ -52,64 +48,26 @@ static TaskHandle_t FastLEDshowTaskHandle = 0;
 static TaskHandle_t userTaskHandle = 0;
 
 
-extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
-
-
-/** show() for ESP32
- *  Call this function instead of FastLED.show(). It signals core 0 to issue a show, 
- *  then waits for a notification that it is done.
- */
-void FastLEDshowESP32()
-{
-    if (userTaskHandle == 0) {
-        // -- Store the handle of the current task, so that the show task can
-        //    notify it when it's done
-        userTaskHandle = xTaskGetCurrentTaskHandle();
-
-        // -- Trigger the show task
-        xTaskNotifyGive(FastLEDshowTaskHandle);
-
-        // -- Wait to be notified that it's done
-        const TickType_t xMaxBlockTime = pdMS_TO_TICKS( 200 );
-        ulTaskNotifyTake(pdTRUE, xMaxBlockTime);
-        userTaskHandle = 0;
-    }
-}
-
-/** show Task
- *  This function runs on core 0 and just waits for requests to call FastLED.show()
- */
-void FastLEDshowTask(void *pvParameters)
-{
-    // -- Run forever...
-    for(;;) {
-        // -- Wait for the trigger
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
-        // -- Do the show (synchronously)
-        FastLED.show();
-
-        // -- Notify the calling task
-        xTaskNotifyGive(userTaskHandle);
-    }
-}
-
-
-
-
-
-
-
-
-
 // *************** External Functions
 // from wifi-ota.cpp
 
 extern artnet_struct artnet_cfg;
-
+extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 
 
 CRGB GlobalColor_result;
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
@@ -185,7 +143,7 @@ fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] =
 	CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
 	//CRGBArray<MAX_NUM_LEDS> led_pal_form_out;	// output from pallete
 	//CRGBArray<MAX_NUM_LEDS> led_pal_strip_out;
-	byte heat[NUM_LEDS];
+	byte heat[MAX_NUM_LEDS];
 
 
 	uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0,0,0,0,0,0,0};
@@ -488,6 +446,56 @@ uint16_t play_conf_time_min[MAX_NR_SAVES] = {5,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 
 uint8_t squencer_bool[2]  = {0,0};		// to hold what saves o play in sequence mode
 
+
+
+/** show() for ESP32
+ *  Call this function instead of FastLED.show(). It signals core 0 to issue a show, 
+ *  then waits for a notification that it is done.
+ */
+void FastLEDshowESP32()
+{
+    if (userTaskHandle == 0) {
+        // -- Store the handle of the current task, so that the show task can
+        //    notify it when it's done
+        userTaskHandle = xTaskGetCurrentTaskHandle();
+
+        // -- Trigger the show task
+        xTaskNotifyGive(FastLEDshowTaskHandle);
+
+        // -- Wait to be notified that it's done
+        const TickType_t xMaxBlockTime = pdMS_TO_TICKS( 200 );
+        ulTaskNotifyTake(pdTRUE, xMaxBlockTime);
+        userTaskHandle = 0;
+    }
+}
+
+/** show Task
+ *  This function runs on core 0 and just waits for requests to call FastLED.show()
+ */
+void FastLEDshowTask(void *pvParameters)
+{
+    // -- Run forever...
+    for(;;) {
+        // -- Wait for the trigger
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        // -- Do the show (synchronously)
+        FastLED.show();
+
+        // -- Notify the calling task
+        xTaskNotifyGive(userTaskHandle);
+    }
+}
+
+
+
+
+
+
+
+
+
+
 void LEDS_write_sequencer(uint8_t play_nr, boolean value)
 {
 	uint8_t bit_nr = play_nr;
@@ -638,8 +646,9 @@ void LEDS_fadeout()
 
 float LEDS_get_FPS()
 {	// return the FPS value
-	if (get_bool(ARTNET_SEND) == true) return led_cfg.pal_fps;
-	else 							   return float(FastLED.getFPS());
+	//if (get_bool(ARTNET_SEND) == true)
+	return led_cfg.realfps;
+	//else 							   return float(FastLED.getFPS());
 }
 
 uint8_t  LEDS_get_FPS_setting()
@@ -730,7 +739,7 @@ void LEDS_G_artnet_master_out()
 	uint8_t  universeCounter = 0;
 
 
-		for (uint8_t nodeNR = 0; nodeNR < ARTNET_NR_NODES_TPM ; nodeNR++  )
+		for (uint8_t nodeNR = 0; nodeNR < ARTNET_NR_NODES_TPM; nodeNR++  )
 		{
 			for (uint8_t setUni = 0; setUni < artnetNode[nodeNR].numU; setUni++ )	
 			{
@@ -2032,9 +2041,23 @@ void LEDS_loop()
 	#endif
 
 
+	// Calculate the real FPS 
+	// increment the led_cfg.framecounter by one on each pass
+	// reset every second.
+	if (currentT > led_cfg.framecounterUpdateTime ) 
+	{
+		led_cfg.framecounterUpdateTime = currentT + 1000000;
+		led_cfg.realfps = led_cfg.framecounter;					// frps = framecounter
+		led_cfg.framecounter = 0	;							// reset framecounter to 0
+	}
+
+
 	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
-		{
+		{	
+			led_cfg.framecounter++;   // increment the framecounter by one to calculate the fps
+			
+
 			//debugMe("IN LED LOOP - disabled fft");
 			if(fft_data_fps == 0)
 				led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
@@ -2109,6 +2132,8 @@ void LEDS_loop()
 			 //debugMe("vizzit");
 
 
+		
+
 		}
 
 		//FS_play_conf_loop();
@@ -2117,7 +2142,12 @@ void LEDS_loop()
 	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) ) LEDS_seqencer_advance();
 
 
-	if (micros() > led_cfg.update_time ) {led_cfg.pal_fps--; debugMe("To slow");}
+
+
+
+
+
+	//if (micros() > led_cfg.update_time ) {led_cfg.pal_fps--; debugMe("To slow");}
 
 	}
 

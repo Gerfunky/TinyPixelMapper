@@ -722,7 +722,7 @@ void osc_toggle_artnet(bool value)
 {
 	//debugMe("in artnet");
 	if (value == true) {
-		debugMe("enable artnet");
+		debugMe("enable artnet recive");
 
 		
 		//FastLED.setBrightness(led_brightness);
@@ -737,7 +737,7 @@ void osc_toggle_artnet(bool value)
 		//writeESP_play_Settings();
 	}
 	else {
-		debugMe("disable artnet");
+		debugMe("disable artnet recive");
 		write_bool(ARTNET_RECIVE, false);  //artnet_enabled = false;
 		FS_artnet_write();
 		//writeESP_play_Settings(),
@@ -1426,7 +1426,7 @@ void osc_StC_menu_master_ref()
 	for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 	{
 			osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	layer_select[layer]	); 
-			debugMe(layer_select[layer]);
+			
 	}
 	
 	//yield();
