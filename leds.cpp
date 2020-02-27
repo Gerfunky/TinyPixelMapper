@@ -61,14 +61,6 @@ CRGB GlobalColor_result;
 
 
 
-
-
-
-
-
-
-
-
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
 	uint8_t FFT_stage1_sample_count = 0;		    	// used to count the samples in FFT Stage 1  for pulling into Stage 2
@@ -143,7 +135,7 @@ fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] =
 	CRGBArray<MAX_NUM_LEDS> led_FX_out;    // make a FX output array. 
 	//CRGBArray<MAX_NUM_LEDS> led_pal_form_out;	// output from pallete
 	//CRGBArray<MAX_NUM_LEDS> led_pal_strip_out;
-	byte heat[MAX_NUM_LEDS];
+	byte heat[MAX_NUM_LEDS	];
 
 
 	uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0,0,0,0,0,0,0};

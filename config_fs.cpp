@@ -663,7 +663,7 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	
 	//File conf_file = SPIFFS.open(addr, "w");
 	//if (conf_file && !conf_file.isDirectory())	
-	{	if( SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt") )  debugMe("deleted save realy"); else debugMe("haha"); }
+	{	if( SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt") )  debugMe("deleted save realy"); else debugMe("haha delete did not work"); }
 	
 
 
@@ -765,7 +765,7 @@ String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 void FS_FS_play_conf_write_layers(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write play conf  failed" ); }
 	else 
 	{
 		//conf_file.println("ly = Layers 1 to 10, ");
@@ -834,7 +834,7 @@ void FS_FS_play_conf_write_audio(String addr)
 void FS_FS_play_conf_write_pal_conf(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form pal failed" ); }
 	else 
 	{
 		//conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
@@ -859,7 +859,7 @@ void FS_FS_play_conf_write_pal_conf(String addr)
 void FS_FS_play_conf_write_copy_leds(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form copy leds failed" ); }
 	else 
 	{
 		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
@@ -883,7 +883,7 @@ void FS_FS_play_conf_write_copy_leds(String addr)
 void FS_FS_play_conf_write_form_fire_switch(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
 	else 
 	{
 		//conf_file.println("IB Form Fire boolean values ");
@@ -904,7 +904,7 @@ void FS_FS_play_conf_write_form_fire_switch(String addr)
 void FS_FS_play_conf_write_form_fire(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
 	else 
 	{
 		//conf_file.println("IF form Fire  ");
@@ -929,7 +929,7 @@ void FS_FS_play_conf_write_form_fire(String addr)
 void FS_FS_play_conf_write_form_shimmer_switch(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
 	else 
 	{
 		//conf_file.println("SB Form Shimmer boolean values ");
@@ -951,7 +951,7 @@ void FS_FS_play_conf_write_form_shimmer_switch(String addr)
 void FS_FS_play_conf_write_form_shimmer(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
 	else 
 	{
 		//conf_file.println("SF shimmer ");
@@ -978,7 +978,7 @@ void FS_FS_play_conf_write_form_shimmer(String addr)
 void FS_FS_play_conf_write_form_fx1_switch(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
 	else 
 	{
 
@@ -1001,7 +1001,7 @@ void FS_FS_play_conf_write_form_fx1_switch(String addr)
 void FS_FS_play_conf_write_form_fx1(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
 	else 
 	{
 		//conf_file.println("XF  FX1 form ");
@@ -1024,7 +1024,7 @@ void FS_FS_play_conf_write_form_fx1(String addr)
 void FS_FS_play_conf_write_form_fx1_glitter_switch(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
 	else 
 	{
 
@@ -1045,7 +1045,7 @@ void FS_FS_play_conf_write_form_fx1_glitter_switch(String addr)
 void FS_FS_play_conf_write_form_fx1_glitter(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
 	else 
 	{
 		//conf_file.println("GF Glitter ");
@@ -1094,7 +1094,7 @@ void FS_FS_play_conf_write_form_fx1_dots_switch(String addr)
 void FS_FS_play_conf_write_form_fx1_dots(String addr)
 {
 	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form dots failed" ); }
 	else 
 	{
 		//conf_file.println("DF dots ");
@@ -1954,7 +1954,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 					{
 					layer_select[layer] = get_int_conf_value(conf_file, &character)	;
-					debugMe(layer_select[layer]);
+					//debugMe(layer_select[layer]);
 					}
 
 			
@@ -2086,7 +2086,7 @@ boolean FS_mqtt_read()
 
 		if (conf_file&& !conf_file.isDirectory())
 		{
-			debugMe("in mqtt file");
+			//debugMe("in mqtt file");
 			char character;
 			//String settingName;
 			String settingValue;

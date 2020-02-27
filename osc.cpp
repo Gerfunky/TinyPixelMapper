@@ -145,8 +145,8 @@ osc_cfg_struct osc_cfg = { OSC_IPMULTI_ ,OSC_PORT_MULTI_,OSC_OUTPORT, OSC_INPORT
 void OSC_setup()
 {
 	osc_server.begin(osc_cfg.inPort);
-	debugMe("OSC Setup Done" );
-	debugMe(String(osc_cfg.inPort) );
+	debugMe("OSC Setup Done Port:", false ); debugMe(String(osc_cfg.inPort) );
+	
 }
 
 
@@ -1551,7 +1551,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 			for (byte i = 0; i < sizeof(address); i++)  { form_no_string = form_no_string + address[i]; }
 			uint8_t i_orig_bin_nr =  form_no_string.toInt();
 				
-			debugMe(i_orig_bin_nr);	
+			//debugMe(i_orig_bin_nr);	
 			
 			if			(msg.match("/fxbin/00",addrOffset))		{ bitWrite(fft_fxbin[0].menu_select, 	6-i_orig_bin_nr, bool(msg.getInt(0))); }
 			else if		(msg.match("/fxbin/01",addrOffset))		{ bitWrite(fft_fxbin[1].menu_select, 	6-i_orig_bin_nr, bool(msg.getInt(0))); }
@@ -1607,7 +1607,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 				uint8_t i_orig_bin_nr =  form_no_string.toInt(); 
 				
 			
-			debugMe(i_orig_bin_nr);
+			//debugMe(i_orig_bin_nr);
 
 
 			if 			(msg.match("/redd",addrOffset))		{ bitWrite(fft_menu[0], 		6-i_orig_bin_nr, bool(msg.getInt(0))); }
@@ -1822,9 +1822,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 						
 						uint8_t result = msg.getInt(0);
-						debugMe(i_form_nr);
-						debugMe(i_bit_int);
-						debugMe(result);
+						//debugMe(i_form_nr);
+						//debugMe(i_bit_int);
+						//debugMe(result);
 						
 
 						
@@ -1917,8 +1917,8 @@ void osc_StC_master_artnet_routing(OSCMessage &msg, int addrOffset)
 		setting =   constrain(address[0] -48, 0, (ARTNET_NR_NODE_SETTINGS -1 ));
 
 
-		debugMe("node : ",false) ; debugMe(node);
-		debugMe("set : ",false) ; debugMe(setting);
+		//debugMe("node : ",false) ; debugMe(node);
+		//debugMe("set : ",false) ; debugMe(setting);
 
 		//for (byte i = 0; i < sizeof(address); i++)  { save_no_string = save_no_string + address[i]; }
 
@@ -2416,8 +2416,8 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 					uint8_t addr2 =  string_addr2.toInt();
 				addr1--;
 				addr2--;
-				debugMe(addr1);
-				debugMe(addr2);
+				//debugMe(addr1);
+				//debugMe(addr2);
 				if (msg.match("/LD1", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
 				{
 					FS_play_conf_read(addr1);
@@ -2443,7 +2443,7 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 					}
 
 					outval = wifi_cfg.ipStaticLocal[addr2];
-					debugMe(outval);
+					//debugMe(outval);
 				}
 				else if (msg.match("/SNM", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
 				{
@@ -2564,7 +2564,7 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 					}
 					else
 					{
-						debugMe("in max");
+						//debugMe("in max");
 						switch (addr1) 
 						{
 							case 0:
@@ -2591,7 +2591,7 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 							break;
 						}
 						outval = led_cfg.NrLeds ;
-						debugMe(outval);
+						//debugMe(outval);
 					}
 					
 				
@@ -2684,13 +2684,13 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 			{
 				osc_addr = "/tosc"+String(outaddr) + "/" + String(addr1+1) + "/1" ;
 				osc_queu_MSG_float(osc_addr , outval);
-				debugMe(osc_addr);
+				//debugMe(osc_addr);
 			}
 			else if (bool(msg.getFloat(0) == true))
 			{
 				osc_addr = "/tosc/L"+String(outaddr) + "/" + String(addr2) ;
 				osc_queu_MSG_float(osc_addr , outval);
-				debugMe(osc_addr);
+				//debugMe(osc_addr);
 			}
 			
 		}
