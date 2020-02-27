@@ -237,7 +237,7 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 void WiFi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
 {
 	// load the wifi vaiables
-
+	//debugMe("Brown x1");
 	// Clean out the Wifi char arrays
 	memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));
 	memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
@@ -245,7 +245,7 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 	memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
 	memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
 
-
+	//debugMe("Brown x2");
 	
 	if (!FS_wifi_read(0) || OVERWRITE_INIT_CONF_ON )		// Get the config of disk,  on fail load defaults.
 	//if (false == false)		// Get the config of disk,  on fail load defaults.
@@ -524,7 +524,7 @@ void WiFi_Start_Network()
 		LEDS_setall_color(1);
 		LEDS_show();
 		WiFi.mode(WIFI_AP);
-		delay(100);
+		delay(500);
 
 		if(btn_read == BUTTON_DOWN )
 		{
@@ -541,7 +541,7 @@ void WiFi_Start_Network()
 				WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
 				debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
 			}
-		delay(200);
+		delay(500);
 		LEDS_setall_color(2);
 		LEDS_show();
 		debugMe("IP:",false);
@@ -747,14 +747,15 @@ void WiFi_FFT_handle_loop()
 void wifi_setup()
 {
 	WiFi.onEvent(WiFi_Event); // Start event handler!
-	
+	debugMe("Brown tets1");
 
 	WiFi_load_settings();
-	
+	debugMe("Brown tets2");
+	//delay(500);
 	
 
 	WiFi_Start_Network();
-
+	debugMe("Brown tets3");
 	if (get_bool(WIFI_POWER))
 	{
 		WiFi_OTA_setup();

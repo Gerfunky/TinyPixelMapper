@@ -1830,9 +1830,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						
 
 						//Form Pallete input
-						if  			(msg.match("/sys/sld",addrOffset))  	form_cfg[orig_form_nr].start_led = uint16_t(msg.getInt(0))	;
-						else if  	(msg.match("/sys/nld",addrOffset))  	form_cfg[orig_form_nr].nr_leds = uint16_t(msg.getInt(0))	;
-						else if  	(msg.match("/sys/csd",addrOffset) && orig_form_nr > 0 )  	{form_cfg[orig_form_nr].start_led = form_cfg[orig_form_nr-1 ].start_led + form_cfg[orig_form_nr-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sys/sld/" + String(orig_form_nr), form_cfg[orig_form_nr].start_led ); } 	
+						if  		(msg.match("/sys/sld",addrOffset))  						{form_cfg[orig_form_nr].start_led 	= constrain(uint16_t(msg.getInt(0)), 0 , (MAX_NUM_LEDS - form_cfg[orig_form_nr].nr_leds ));  osc_queu_MSG_int("/ostc/form/sys/sld/" + String(orig_form_nr), form_cfg[orig_form_nr].start_led );  }
+						else if  	(msg.match("/sys/nld",addrOffset))  						{form_cfg[orig_form_nr].nr_leds 	= constrain(uint16_t(msg.getInt(0)), 0,  (MAX_NUM_LEDS - form_cfg[orig_form_nr].start_led )  );   osc_queu_MSG_int("/ostc/form/sys/nld/" + String(orig_form_nr), form_cfg[orig_form_nr].nr_leds ); }
+						else if  	(msg.match("/sys/csd",addrOffset) && orig_form_nr > 0 )  	{form_cfg[orig_form_nr].start_led 	= form_cfg[orig_form_nr-1 ].start_led + form_cfg[orig_form_nr-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sys/sld/" + String(orig_form_nr), form_cfg[orig_form_nr].start_led ); } 	
 
 						else if		(msg.match("/pal/run",addrOffset))			{ bitWrite(form_menu_pal[i_bit_int][_M_FORM_PAL_RUN], i_form_nr, 				bool(result));  ;}
 						else if		(msg.match("/pal/ocl",addrOffset))			{ bitWrite(form_menu_pal[i_bit_int][_M_FORM_PAL_ONECOLOR], i_form_nr, 	bool(result));  ;}

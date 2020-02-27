@@ -472,39 +472,48 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		//String 
 		//int strip_no = 0;
 		//debugMe("File-opened");
-
+		
 		memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));  // reset them to 0
 		memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
 		memset(wifi_cfg.ssid, 0, sizeof(wifi_cfg.ssid));
 		memset(wifi_cfg.pwd, 0, sizeof(wifi_cfg.pwd));
 		memset(wifi_cfg.ntp_fqdn, 0, sizeof(wifi_cfg.ntp_fqdn));
-
+		
 		while (conf_file.available())
-		{
-			character = conf_file.read();
+		{	
+			
 
+			character = conf_file.read();
+			debugMe(String("."+ String(character)),false);
+			delay(100);
 			while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 				character = conf_file.read();
 			}
-
+			
 			type = conf_file.read();
 			character = conf_file.read(); // go past the first ":" after the type
 
+
+			//delay(500);
+			//debugMe("x1 " + type);
+			//delay(500);
+			//debugMe("x2 " + character);
+			//delay(500);
 			if (type == 'b')   // wifi booleans
 
 			{
-				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));
-				write_bool(WIFI_MODE, get_bool_conf_value(conf_file, &character));
-				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));
-				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));
-				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));
+				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));   		
+				write_bool(WIFI_MODE, get_bool_conf_value(conf_file, &character));				
+				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));		
+				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));			
+				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));			
 
 				
 			}
 
 			else if (type == 'w')   // Changed to 'w' from W' beacuse of new bools settings
 			{
-	
+				
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(wifi_cfg.APname, settingValue.length() + 1);
 
@@ -539,7 +548,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		return true;
 	}	// end open conf file
 	else  debugMe("error opening " + addr);
-
+	debugMe("done wifi load " + addr);
 	return false;
 } // end FS_wifi_read()
 

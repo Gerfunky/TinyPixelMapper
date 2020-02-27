@@ -38,10 +38,13 @@ void setup()
 	}
 	
 	setup_controlls();	// Pottis and Button
+	yield();
 	FS_setup_SPIFFS();  // includes loadbool()
+	yield();
 	
 	LEDS_setup();
-
+	yield();
+	//delay(500);
 	wifi_setup();
 
 	MMQT_setup() ;
