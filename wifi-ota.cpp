@@ -12,11 +12,8 @@
 
 	#include "time.h"
 	#include <RemoteDebug.h> 
-	#ifndef ARTNET_DISABLED 
-		#include <Artnet.h>
-	#endif
-	
 
+	#include "tpm_artnet.h"
 
 
 
@@ -36,12 +33,6 @@ DNSServer dnsServer;
 // wifi
 wifi_Struct wifi_cfg;
 
-// Artnet
-#ifndef ARTNET_DISABLED
-	Artnet artnet;		// make the Artnet server
-#endif
-
-	artnet_struct artnet_cfg = { DEF_ARTNET_STAT_UNIVERSE, DEF_ARTNET_NUMBER_OF_UNIVERSES };
 
 
 // ntp
@@ -241,58 +232,6 @@ void WiFi_telnet_print(IPAddress input, boolean line)
 
 
 
-
-// artnet
-
-#ifndef ARTNET_DISABLED
-	void WiFi_artnet_loop()
-	{
-		// the main artnet loop  calback set to leds function with show
-		artnet.read();
-
-	}
-
-	void WiFi_artnet_Load_Vars()
-	{
-		// configure the Artnet vaiables 
-		// from disk or load the defaults.
-
-		if (!FS_artnet_read(0))
-		{
-			write_bool(ARTNET_ENABLE, DEF_ARTNET_ENABLE);
-			artnet_cfg.startU = DEF_ARTNET_STAT_UNIVERSE;
-			artnet_cfg.numU = DEF_ARTNET_NUMBER_OF_UNIVERSES;
-
-		}
-
-	}
-
-	void WiFi_artnet_enable() 
-	{
-		// enable artnet, This is a exclusice mode other settings dont apply
-		WiFi_artnet_Load_Vars();
-		// byte loc_ip = WiFi.localIP();
-		// debugMe("enable artnet");
-		//byte artnet_mac[] = DEF_ARTNET_MAC ;
-		artnet.begin();
-		//artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
-		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with show
-
-	}
-
-
-	/*void WiFi_artnet_setup()
-	{
-
-		//the Artnet setup 
-		if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable();
-
-
-	}  */
-
-#endif
-
-// basic WiFi
 
 
 void WiFi_load_settings()   // load the wifi settings from SPIFFS or from default Settings.
@@ -825,11 +764,11 @@ void wifi_setup()
 		debugMe("Hello World");
 
 
-		#ifndef ARTNET_DISABLED
-			
-			if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable(); //WiFi_artnet_setup();
 
-		#endif
+			
+			WiFi_artnet_enable(); 
+
+
 
 		OSC_setup();
 		

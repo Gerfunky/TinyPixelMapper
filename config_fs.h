@@ -48,8 +48,8 @@ void FS_setup_SPIFFS();
 	void FS_mqtt_write();
 
 #ifndef ARTNET_DISABLED
-	void FS_artnet_write(uint8_t conf_nr);			// osc.cpp
-	boolean FS_artnet_read(uint8_t conf_nr = 0);			//wifi-ota.cpp
+	void FS_artnet_write();			// osc.cpp
+	boolean FS_artnet_read();			//wifi-ota.cpp
 #endif
 
 	boolean FS_Bools_read(uint8_t conf_nr);			// Tools

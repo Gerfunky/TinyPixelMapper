@@ -14,6 +14,7 @@
 #include "config_TPM.h"
 #include "config_fs.h"
 #include "tools.h"
+#include "tpm_artnet.h"
 
 
 
@@ -32,6 +33,7 @@
 	#include "leds.h"
 	#ifndef ARTNET_DISABLED
 		extern artnet_struct artnet_cfg;
+		extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 	#endif
 
 	extern  form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
@@ -543,11 +545,11 @@ boolean FS_wifi_read(uint8_t conf_nr)
 
 //Artnet
 #ifndef ARTNET_DISABLED
-void	FS_artnet_write(uint8_t conf_nr)
+void	FS_artnet_write()
 {
 	// write the artnet config to disk
 
-	String addr = String("/conf/" + String(conf_nr) + ".artnet.txt");
+	String addr = String("/conf/artnet.txt");
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
@@ -558,11 +560,27 @@ void	FS_artnet_write(uint8_t conf_nr)
 	else  // it opens
 	{
 		conf_file.println("Artnet Config for ESP.");
-		conf_file.print(String("[A:" + String(get_bool(ARTNET_ENABLE))));
+		conf_file.print(String("[A:" + String(get_bool(ARTNET_SEND))));
 		conf_file.print(String(":" + String(artnet_cfg.startU)));
 		conf_file.print(String(":" + String(artnet_cfg.numU)));
+		conf_file.print(String(":" + String(get_bool(ARTNET_RECIVE))));
 
 		conf_file.println("] ");
+
+		conf_file.println("Artnet node Config for , Node Nr:StartU: Number Universe: IP.");
+		for (uint8_t node = 0 ; node < ARTNET_NR_NODES_TPM; node++)
+		{
+			conf_file.print(String("[N:" + String(node)));
+			conf_file.print(String(":" + String(artnetNode[node].startU)));
+			conf_file.print(String(":" + String(artnetNode[node].numU)));
+			conf_file.print(String(":" + String(artnetNode[node].IP[0])));
+			conf_file.print(String("." + String(artnetNode[node].IP[1])));
+			conf_file.print(String("." + String(artnetNode[node].IP[2])));
+			conf_file.print(String("." + String(artnetNode[node].IP[3])));
+			conf_file.println("] ");
+		}
+
+		
 		conf_file.close();
 
 		 debugMe("artnet conf wrote");
@@ -571,11 +589,11 @@ void	FS_artnet_write(uint8_t conf_nr)
 
 }
 
-boolean FS_artnet_read(uint8_t conf_nr)
+boolean FS_artnet_read()
 {
 	// read the artnet config from disk
 
-	String addr = String("/conf/" + String(conf_nr) + ".artnet.txt");
+	String addr = String("/conf/artnet.txt");
 	File conf_file = SPIFFS.open(addr, "r");
 	delay(100);
 	if (!conf_file && !conf_file.isDirectory()) {
@@ -603,12 +621,26 @@ boolean FS_artnet_read(uint8_t conf_nr)
 
 			if (type == 'A')
 			{
-				write_bool(ARTNET_ENABLE,	get_bool_conf_value(conf_file, &character));
+				write_bool(ARTNET_SEND,	get_bool_conf_value(conf_file, &character));
 				artnet_cfg.startU =			get_int_conf_value(conf_file, &character);
 				artnet_cfg.numU =			get_int_conf_value(conf_file, &character);
+				write_bool(ARTNET_RECIVE,	get_bool_conf_value(conf_file, &character));
 
 							
 			}
+			if (type == 'N')
+			{
+				uint8_t nodeNr = get_int_conf_value(conf_file, &character);
+				artnetNode[nodeNr].startU = get_int_conf_value(conf_file, &character);
+				artnetNode[nodeNr].numU   = get_int_conf_value(conf_file, &character);
+				for (uint8_t i = 0; i < 4; i++) artnetNode[nodeNr].IP[i] = get_IP_conf_value(conf_file, &character);
+			}
+							
+			
+
+
+
+
 			while ((conf_file.available()) && (character != ']')) character = conf_file.read();
 		
 
@@ -2350,7 +2382,7 @@ void FS_setup_SPIFFS()
 	delay(100);
 	load_bool();
 	FS_load_PlayConf_status();
-	FS_artnet_read(0);
+	FS_artnet_read();
 	
 
 

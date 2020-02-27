@@ -42,6 +42,7 @@
 	#include "wifi-ota.h"
 	#include "config_fs.h"
 	#include "httpd.h"
+	#include "tpm_artnet.h"
 	
 
 	#define NO_OF_PALLETS 2
@@ -104,7 +105,8 @@
 	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
 //extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
-
+	extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM] ;
+	
 
 // from mmqt.cpp
  #include "mmqt.h"
@@ -727,16 +729,17 @@ void osc_toggle_artnet(bool value)
 		//leds.fadeToBlackBy(255);
 		//FastLED.show();
 
-		write_bool(ARTNET_ENABLE, true); // artnet_enabled = true;		
+		write_bool(ARTNET_RECIVE, true); // artnet_enabled = true;		
 		//enable_artnet();
-		FS_artnet_write(0);
-		WiFi_artnet_enable();
+		FS_artnet_write();
+		led_cfg.bri = led_cfg.max_bri;
+		WiFi_artnet_rc_enable();
 		//writeESP_play_Settings();
 	}
 	else {
 		debugMe("disable artnet");
-		write_bool(ARTNET_ENABLE, false);  //artnet_enabled = false;
-		FS_artnet_write(0);
+		write_bool(ARTNET_RECIVE, false);  //artnet_enabled = false;
+		FS_artnet_write();
 		//writeESP_play_Settings(),
 		//Udp.stop();
 		ESP.restart();
@@ -1341,6 +1344,30 @@ void osc_oStC_menu_master_mqtt_ref()
 
 }
 
+void osc_StC_menu_master_artnet_ref()
+{
+	osc_queu_MSG_int("/ostc/master/artnet/on", 		get_bool(ARTNET_SEND)); 
+	osc_queu_MSG_int("/ostc/master/artnet/rc", 		get_bool(ARTNET_RECIVE)); 
+	osc_queu_MSG_int("/ostc/master/artnet/su", 		artnet_cfg.startU);
+	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
+	
+		uint8_t  universeCounter = 0;
+	for (uint8_t node = 0; node < ARTNET_NR_NODES_TPM ; node++)
+	{
+		//debugMe("in"); debugMe(ARTNET_NR_NODES_TPM); debugMe("in");debugMe(String(node));
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/0", 	artnetNode[node].startU); 
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/1", 	artnetNode[node].numU); 
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/2", 	artnetNode[node].IP[0]); 
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/3", 	artnetNode[node].IP[1]); 
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/4", 	artnetNode[node].IP[2]); 
+		osc_queu_MSG_int("/ostc/master/artnet/node/"+ String(node+1) +  "/5", 	artnetNode[node].IP[3]); 
+		
+		osc_queu_MSG_int("/ostc/master/artnet/nodeSL/"+ String(node+1), (universeCounter * 170) 	) ; 
+		universeCounter = universeCounter + artnetNode[node].numU;  
+
+	}
+
+}
 void osc_StC_menu_master_ledcfg_ref()
 {
 
@@ -1361,10 +1388,13 @@ void osc_StC_menu_master_ledcfg_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/2", 	get_bool(DATA2_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
+	osc_queu_MSG_int("/ostc/master/pots",      		get_bool(POT_DISABLE));
 
-	osc_queu_MSG_int("/ostc/master/artnet/on", 		(get_bool(ARTNET_ENABLE))); 
-	osc_queu_MSG_int("/ostc/master/artnet/su", 		artnet_cfg.startU);
-	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
+
+
+
+
+
 
 
 
@@ -1868,6 +1898,54 @@ void osc_StC_master_mqtt_ip_input(OSCMessage &msg, int addrOffset)
 }
 
 
+void osc_StC_master_artnet_routing(OSCMessage &msg, int addrOffset) 
+{			// 
+
+		char address[6] ;
+		String node_string;
+		uint8_t node  = 0;
+		uint8_t setting = 0;
+
+		memset(address, 0, sizeof(address));
+		msg.getAddress(address, addrOffset + 1, 1);
+
+		node = constrain( (address[0] -48) , 0, (ARTNET_NR_NODES_TPM - 1 ) );
+	
+		memset(address, 0, sizeof(address));
+		msg.getAddress(address, addrOffset + 3, 1);
+
+		setting =   constrain(address[0] -48, 0, (ARTNET_NR_NODE_SETTINGS -1 ));
+
+
+		debugMe("node : ",false) ; debugMe(node);
+		debugMe("set : ",false) ; debugMe(setting);
+
+		//for (byte i = 0; i < sizeof(address); i++)  { save_no_string = save_no_string + address[i]; }
+
+		//sel_save_no = save_no_string.toInt();  
+		switch(setting)
+		{
+			case 0:
+				artnetNode[node-1].startU = uint8_t(msg.getInt(0));
+			break;
+				
+			case 1:
+				artnetNode[node-1].numU = uint8_t(msg.getInt(0));
+			break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				artnetNode[node-1].IP[setting -2] = uint8_t(msg.getInt(0));
+			break;
+
+		}
+
+
+}
+
+
+
 void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset) 
 {
 		if(!msg.isString(0) )
@@ -1934,6 +2012,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/ref/wifi",addrOffset))			{ osc_oStC_menu_master_wifi_ref();   }
 			else if (msg.fullMatch("/ref/leds",addrOffset))			{ osc_StC_menu_master_ledcfg_ref(); }
 			else if (msg.fullMatch("/ref/mqtt",addrOffset))			{ osc_oStC_menu_master_mqtt_ref(); }
+			else if (msg.fullMatch("/ref/artnet",addrOffset))		{ osc_StC_menu_master_artnet_ref(); }
 
 			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
 			//else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); 				osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());  }
@@ -1958,6 +2037,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/select/2",addrOffset))	{ write_bool(DATA2_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/3",addrOffset))	{ write_bool(DATA3_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/4",addrOffset))	{ write_bool(DATA4_ENABLE, bool(msg.getInt(0) )) ; }
+			else if (msg.fullMatch("/pots",addrOffset))		{ write_bool(POT_DISABLE,  bool(msg.getInt(0) )) ; }
 
 			
 			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  =  led_cfg.DataNR_leds[0] ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.DataStart_leds[1] );}   
@@ -1969,14 +2049,15 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 
 			
 			else if (msg.fullMatch("/data/save",addrOffset) 	&& boolean(msg.getInt(0)) == true)			{ FS_Bools_write(0) ;}
-			else if (msg.fullMatch("/artnet/save",addrOffset) 	&& boolean(msg.getInt(0)) == true ) 		{ FS_artnet_write(0); }
+			else if (msg.fullMatch("/artnet/save",addrOffset) 	&& boolean(msg.getInt(0)) == true ) 		{ FS_artnet_write(); }
 			else if (msg.fullMatch("/mqtt/save",addrOffset) 	&& boolean(msg.getInt(0)) == true )      	{ FS_mqtt_write();}
 
 			else if (msg.fullMatch("/data/boot",addrOffset))		{ ESP.restart(); }
 
 			else if (msg.fullMatch("/data/maxbri",addrOffset))		{ led_cfg.max_bri = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
 			
-			else if (msg.fullMatch("/artnet/on",addrOffset))		{ osc_toggle_artnet(boolean(msg.getInt(0)) );  }
+			else if (msg.fullMatch("/artnet/rc",addrOffset))		{ osc_toggle_artnet(boolean(msg.getInt(0)) );  }
+			else if (msg.fullMatch("/artnet/on",addrOffset))		{ write_bool(ARTNET_SEND, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/artnet/su",addrOffset))		{ artnet_cfg.startU = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
 			else if (msg.fullMatch("/artnet/nu",addrOffset))		{ artnet_cfg.numU  = constrain(uint8_t(msg.getInt(0)) , 0 , 4) ; }
 			
@@ -2046,7 +2127,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 				{
 				//msg.route("/conf", osc_StC_master_conf_routing, addrOffset);
 					msg.route("/wifi", osc_StC_master_wifi_routing, addrOffset);
-					//msg.route("/mqtt/ip", osc_StC_master_mqtt_ip_input, addrOffset);
+					msg.route("/artnet/node", osc_StC_master_artnet_routing, addrOffset);
+					//msg.route("/mqtt/ip",,  osc_StC_master_mqtt_ip_input, addrOffset);
 				}
 
 
@@ -2261,7 +2343,7 @@ void osc_tosc_refresh()
 
 	osc_queu_MSG_float("/tosc/ASUL", float(artnet_cfg.startU));
 	osc_queu_MSG_float("/tosc/ANUL", float(artnet_cfg.numU));
-	osc_queu_MSG_float("/tosc/ANE", float(get_bool(ARTNET_ENABLE)));
+	osc_queu_MSG_float("/tosc/ANE", float(get_bool(ARTNET_SEND)));
 
 	osc_queu_MSG_float(String("/tosc/ESIP"), float(get_bool(STATIC_IP_ENABLED)));
 	osc_queu_MSG_float(String("/tosc/httpd"), float(get_bool(HTTP_ENABLED)));
@@ -2292,7 +2374,7 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 	else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
 	else if (msg.fullMatch("/RESET", addrOffset) && bool(msg.getFloat(0)) == true)			{ESP.restart(); }
 	else if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); FS_Bools_write(0); }
-	else if (msg.fullMatch("/ARTNETSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_artnet_write(0); }
+	else if (msg.fullMatch("/ARTNETSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_artnet_write(); }
 		
 	else if (msg.fullMatch("/WAP", addrOffset))												{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
 	else if (msg.fullMatch("/WP", addrOffset))												{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}

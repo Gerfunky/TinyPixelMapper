@@ -18,6 +18,7 @@
 	#include "tools.h"
 	#include "wifi-ota.h"
 	#include "config_fs.h"
+	#include "tpm_artnet.h"
 	//#include "msgeq7_fft.h"
 
 
@@ -36,6 +37,12 @@
 // -- The core to run FastLED.show()
 #define FASTLED_SHOW_CORE 0
 
+void LEDS_G_artnet_master_out();
+
+
+
+
+
 
 	extern  void osc_StC_FFT_vizIt();			// of open stage controll to send the fft data
 
@@ -45,7 +52,7 @@ static TaskHandle_t FastLEDshowTaskHandle = 0;
 static TaskHandle_t userTaskHandle = 0;
 
 
-
+extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 
 
 /** show() for ESP32
@@ -578,7 +585,9 @@ void LEDS_show()
 				FastLED.setBrightness(LEDS_get_real_bri() );
 			else
 				FastLED.setBrightness(led_cfg.bri);
-			 FastLEDshowESP32();
+
+			if (get_bool(ARTNET_SEND) == true) 	LEDS_G_artnet_master_out();  // Send out the artnet data if enabled
+			else FastLEDshowESP32();
 			//FastLED.show();
 			//FastLED[0].showLeds(led_cfg.bri);
 			//FastLED[1].showLeds(led_cfg.bri);
@@ -629,7 +638,8 @@ void LEDS_fadeout()
 
 float LEDS_get_FPS()
 {	// return the FPS value
-	return float(FastLED.getFPS());
+	if (get_bool(ARTNET_SEND) == true) return led_cfg.pal_fps;
+	else 							   return float(FastLED.getFPS());
 }
 
 uint8_t  LEDS_get_FPS_setting()
@@ -690,6 +700,56 @@ void LED_master_rgb(uint16_t Start_led , uint16_t number_of_leds   )
 
 
 
+void LEDS_G_artnet_send_universe(uint8_t node_Nr,uint8_t universe, uint16_t in_pixel , uint8_t nr_pixels = 170)
+{
+
+	// Set the out universe and IP
+	ARTNET_set_node( node_Nr, artnetNode[node_Nr].startU + universe  ); 
+
+	for (uint16_t set_pixel = 0; set_pixel < nr_pixels; set_pixel++)
+	{
+		ARNET_set_pixel( set_pixel,  scale8(leds[in_pixel].r ,led_cfg.bri ) ,  scale8(leds[in_pixel].g,led_cfg.bri ) ,  scale8(leds[in_pixel].b, led_cfg.bri));
+		//ARNET_set_pixel( set_pixel,  255  ,  125 ,  10 );
+		in_pixel++;
+	}
+
+	// Send out the Artnet Frame
+	ARTNET_send_node(node_Nr);
+
+
+ 
+
+}
+
+
+
+
+void LEDS_G_artnet_master_out()
+{
+	uint16_t pixel = 0;
+	uint8_t  universeCounter = 0;
+
+
+		for (uint8_t nodeNR = 0; nodeNR < ARTNET_NR_NODES_TPM ; nodeNR++  )
+		{
+			for (uint8_t setUni = 0; setUni < artnetNode[nodeNR].numU; setUni++ )	
+			{
+				
+				LEDS_G_artnet_send_universe(nodeNR,setUni, pixel ,  170  )		;
+				universeCounter++;
+				pixel = universeCounter * 170;
+				
+				//pixel = universeCounter * 170;
+			}
+
+		}
+
+
+}
+
+
+
+
 void LEDS_G_pre_show_processing()
 {	// the leds pre show prcessing 
 	// run the effects and set the brightness.
@@ -710,6 +770,9 @@ void LEDS_G_pre_show_processing()
 	}
 
 	
+
+
+
 
 	if(!get_bool(POT_DISABLE))
 	{
@@ -1215,7 +1278,7 @@ void LEDS_load_default_play_conf()
 	led_cfg.g					= 255;
 	led_cfg.b					= 255;
 	led_cfg.pal_bri				= 255;
-	led_cfg.pal_fps     		= 255;
+	led_cfg.pal_fps     		= 30;
 	
 	fft_led_cfg.Scale = 0;
 
@@ -1962,12 +2025,14 @@ void LEDS_loop()
 
 	unsigned long currentT = micros();
 
+	
+
 	#ifndef ARTNET_DISABLED
-		if (get_bool(ARTNET_ENABLE)) WiFi_artnet_loop();  //  fetshing data 
+		if (get_bool(ARTNET_RECIVE)) WiFi_artnet_recive_loop();  //  fetshing data 
 	#endif
 
 
-	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_ENABLE) )
+	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
 		{
 			//debugMe("IN LED LOOP - disabled fft");
@@ -2046,17 +2111,21 @@ void LEDS_loop()
 
 		}
 
-		FS_play_conf_loop();
+		//FS_play_conf_loop();
 
 
 	if (currentT > led_cfg.confSwitch_time && get_bool(SEQUENCER_ON) ) LEDS_seqencer_advance();
+
+
+	if (micros() > led_cfg.update_time ) {led_cfg.pal_fps--; debugMe("To slow");}
+
 	}
 
 
 	
 	
 
-
+	
 	//debugMe("leds loop end ", false);
 	//debugMe(String(xPortGetCoreID()));
 }

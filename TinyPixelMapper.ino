@@ -54,9 +54,13 @@ void setup()
 void loop() 
 {
 
-	if (get_bool(WIFI_POWER_ON_BOOT)) wifi_loop();
+	if (get_bool(WIFI_POWER_ON_BOOT)) 
+	{
+		wifi_loop();
+		MMQT_loop();
+	}
 	LEDS_loop();
 
-	MMQT_loop();
+	
 
 } // end loop

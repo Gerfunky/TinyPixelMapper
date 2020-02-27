@@ -20,7 +20,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,OTA_SERVER			= 2		// Enable Arduino OTA
 	,STATIC_IP_ENABLED	= 3		// Static IP?
 	,HTTP_ENABLED		= 4		// enable the HTTP server
-	,ARTNET_ENABLE		= 5		// Artnet mode?
+//	,SPARE_5      		= 5		// Artnet mode?
 	,OSC_EDIT			= 6		// alow Edditing of NR LEds and Start Led ?
 	,FFT_MASTER			= 7		// Master FFT-Server ? if not = slave!
 	,FFT_ENABLE			= 8		// FFT enabled
@@ -41,6 +41,8 @@ enum GLOBAL_OPTIONS_ENUM
 	,POT_DISABLE 		= 23  	// Disable HW Pots BRI & FPS!
 	,SEQUENCER_ON 		= 24
 	,MQTT_ON 			= 25     // Enable Mqtt.
+	,ARTNET_SEND		= 26
+	,ARTNET_RECIVE		= 27
 	
 
 };

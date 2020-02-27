@@ -14,7 +14,7 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   (170*4)  // = 680  = 4 universes			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
+		#define MAX_NUM_LEDS   (170*16		)  //(170*4)  // = 680  = 4 universes			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 
@@ -90,6 +90,7 @@
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config
 		uint8_t 		edit_pal;
+		unsigned long 	update_FIN_time;		// when to update the leds again
 		
 	
 

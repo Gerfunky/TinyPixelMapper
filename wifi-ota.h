@@ -33,11 +33,7 @@
 
 
 
-	struct artnet_struct	// Arnet config Data stucture
-	{
-		byte	startU;		// Arnet Start universe
-		byte	numU;		// Arnetnet Nunmber of universes		
-	};
+
 
 
 	 
@@ -75,12 +71,6 @@
  void WiFi_telnet_print(int input, boolean line);
  void WiFi_telnet_print(IPAddress input, boolean line);
 
-
-#ifndef ARTNET_DISABLED
-	void WiFi_artnet_enable();
-	//void WiFi_artnet_setup();
-	void WiFi_artnet_loop();
-#endif
 
 
 #endif
