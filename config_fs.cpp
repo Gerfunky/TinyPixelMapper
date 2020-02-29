@@ -18,13 +18,6 @@
 
 
 
-
-
-
-
-
-
-
 // ***************** External Structures
 	#include "wifi-ota.h"
 	extern wifi_Struct wifi_cfg;
@@ -388,10 +381,10 @@ void FS_FFT_write(uint8_t conf_nr)
 
 
 // wifi
-void FS_wifi_write(uint8_t conf_nr)
+void FS_wifi_write()
 {
 	// write out the wifi config
-	String addr = String("/conf/" + String(conf_nr) + ".wifi.txt");
+	String addr = String("/conf/wifi.txt");
 	//String title = "Main Config for ESP.";
 	File conf_file = SPIFFS.open(addr, "w");
 
@@ -404,7 +397,7 @@ void FS_wifi_write(uint8_t conf_nr)
 		conf_file.println("Main Wifi Config for ESP.");
 		conf_file.println("b = Wifi-booleans: Wifi Power 0=0ff, 1=on: Mode 0= Client 1 = Access point : 0= DHCP 1= static IP: OTA Update 1=on : HTTP Server 1=on: ");
 		conf_file.print(String("[b:" 	+ String(get_bool(WIFI_POWER))));
-		conf_file.print(String(":" 		+ String(get_bool(WIFI_MODE))));		// Wifi
+		conf_file.print(String(":" 		+ String(get_bool(WIFI_MODE_TPM))));		// Wifi
 		conf_file.print(String(":"	 	+ String(get_bool(STATIC_IP_ENABLED))));
 		conf_file.print(String(":" 		+ String(get_bool(OTA_SERVER))));
 		conf_file.print(String(":" 		+ String(get_bool(HTTP_ENABLED))));
@@ -455,13 +448,23 @@ void FS_wifi_write(uint8_t conf_nr)
 	
 } // end FS_wifi_write()
 
-boolean FS_wifi_read(uint8_t conf_nr)
+boolean FS_wifi_read()
 {
 	// read the wifi config
 	
-	String addr = String("/conf/" + String(conf_nr) + ".wifi.txt");
+	String addr = String("/conf/wifi.txt");
 	File conf_file = SPIFFS.open(addr, "r");
+	
+	if (!conf_file) {
+    debugMe("There was an error opening the file for writing");
+	}
+	else debugMe("conf file here ?");
+
+  
+	
 	delay(100);
+
+
 	if (conf_file && !conf_file.isDirectory())
 	{
 		 debugMe("Loading Wifi conf " + addr);
@@ -471,7 +474,7 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		char type;
 		//String 
 		//int strip_no = 0;
-		//debugMe("File-opened");
+		debugMe("File-opened");
 		
 		memset(wifi_cfg.APname, 0, sizeof(wifi_cfg.APname));  // reset them to 0
 		memset(wifi_cfg.APpassword, 0, sizeof(wifi_cfg.APpassword));
@@ -502,11 +505,16 @@ boolean FS_wifi_read(uint8_t conf_nr)
 			if (type == 'b')   // wifi booleans
 
 			{
-				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));   		
-				write_bool(WIFI_MODE, get_bool_conf_value(conf_file, &character));				
+				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));  
+				debugMe( character , false);		
+				write_bool(WIFI_MODE_TPM, get_bool_conf_value(conf_file, &character));				
 				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));		
 				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));			
-				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));			
+				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));	
+
+				debugMe(":wifi file read mode : ", false );
+				debugMe(get_bool(WIFI_MODE_TPM));
+
 
 				
 			}
@@ -545,10 +553,12 @@ boolean FS_wifi_read(uint8_t conf_nr)
 		}
 		
 		conf_file.close();
+		debugMe("done wifi load " + addr);
 		return true;
 	}	// end open conf file
 	else  debugMe("error opening " + addr);
-	debugMe("done wifi load " + addr);
+	
+	conf_file.close();
 	return false;
 } // end FS_wifi_read()
 
@@ -667,13 +677,16 @@ boolean FS_artnet_read()
 
 void FS_play_conf_clear(uint8_t conf_nr) 
 {
-	String addr = String("/conf/"+ String(conf_nr) + ".conf.txt");
-	debugMe("deleted save " + String(conf_nr));
+	String addr = String("/conf/"+ String(conf_nr) + ".playConf.txt");
+	//String addr = String("/conf/13.playConf.txt");
+	debugMe("deleted save " + addr);
+
 	
 	//File conf_file = SPIFFS.open(addr, "w");
 	//if (conf_file && !conf_file.isDirectory())	
-	{	if( SPIFFS.remove("/conf/"+ String(conf_nr) + ".conf.txt") )  debugMe("deleted save realy"); else debugMe("haha delete did not work"); }
-	
+
+	//{	if( SPIFFS.remove(String("conf/"+ String(conf_nr) + ".conf.txt")) )  debugMe("deleted save realy"); else debugMe("haha delete did not work"); }
+	{	if( SPIFFS.remove(addr.c_str()))  debugMe("deleted save ok"); else debugMe("haha delete did not work"); }
 
 
 	//boolean return_bool = 0;
@@ -771,612 +784,10 @@ String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 }
 
 
-void FS_FS_play_conf_write_layers(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write play conf  failed" ); }
-	else 
-	{
-		//conf_file.println("ly = Layers 1 to 10, ");
-			conf_file.print("[ly:" + String(layer_select[0]) )	;
-			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
-			{
-					conf_file.print(":" + String(layer_select[layer]) )	;
 
-			}
-		conf_file.println("] ");
-	
-		conf_file.close();
-		
-	}  	
 
 
-}
 
-void FS_FS_play_conf_write_audio(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-		//conf_file.println("A = FFT Bin Config : Pal Nr : BIN Nr : Trigger : Into R : Into G : into B ");
-		for (int bin = 0; bin < 7; bin++) 
-		{							// Save FFT settings   
-
-			conf_file.print(String("[AM:" + String(bin)));
-			conf_file.print(String(":" + String(fft_data[bin].trigger)));
-
-			for (int color = 0; color < 3; color++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
-			}
-			for (int color = 0; color < FFT_FX_NR_OF_BINS; color++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[color].menu_select), bin))));
-			}
-			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_bri), bin))));
-			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_bin_autoTrigger), bin))));
-			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
-			
-			
-			conf_file.println("] ");
-		}
-		for (int fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++) 	
-		{
-			conf_file.print(String("[AF:" + String(fxbin)));
-			conf_file.print(String(":" + String(fft_fxbin[fxbin].set_val)));
-			conf_file.print(String(":" + String(fft_fxbin[fxbin].trrig_val)));
-			for (int bin = 0; bin < 7; bin++) 
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[fxbin].menu_select), bin))));
-			}
-
-			conf_file.println("] ");
-		}
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_pal_conf(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form pal failed" ); }
-	else 
-	{
-		//conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
-		for (uint8_t pal = 0; pal < NR_PALETTS; pal++) {
-			conf_file.print(String("[PA:" + String(pal)));
-
-			for (uint8_t color = 0; color < 16; color++) {
-				conf_file.print(String(":" + String(LEDS_pal_read( pal, color, 0))));   // targetPalette[pal][color].r)));
-				conf_file.print(String(":" + String(LEDS_pal_read(pal, color, 1))));
-				conf_file.print(String(":" + String(LEDS_pal_read(pal, color, 2))));
-			}
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_copy_leds(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form copy leds failed" ); }
-	else 
-	{
-		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
-			conf_file.print(String("[cl:" + String(copy_L)));
-			conf_file.print(String(":" + String(copy_leds[copy_L].start_led)));
-			conf_file.print(String(":" + String(copy_leds[copy_L].nr_leds)));
-			conf_file.print(String(":" + String(copy_leds[copy_L].Ref_LED)));
-			conf_file.print(String(":" + String(get_bool_byte(copy_leds_mode[get_strip_menu_bit(copy_L)], copy_L))));
-
-			conf_file.println("] ");
-
-		} 
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_fire_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
-	else 
-	{
-		//conf_file.println("IB Form Fire boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[IB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fire[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-		
-	
-		conf_file.close();
-		
-	}  	
-}
-
-void FS_FS_play_conf_write_form_fire(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
-	else 
-	{
-		//conf_file.println("IF form Fire  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[IF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_fire[form].pal)));
-			conf_file.print(String(":" + String(form_fx_fire[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_fire[form].level)));
-			conf_file.print(String(":" + String(form_fx_fire[form].cooling)));
-			conf_file.print(String(":" + String(form_fx_fire[form].sparking)));
-
-
-			conf_file.println("] ");
-		}
-
-		conf_file.close();
-		
-	}  	
-}
-
-void FS_FS_play_conf_write_form_shimmer_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
-	else 
-	{
-		//conf_file.println("SB Form Shimmer boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[SB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_shimmer[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_shimmer(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
-	else 
-	{
-		//conf_file.println("SF shimmer ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[SF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_shim[form].pal)));
-			conf_file.print(String(":" + String(form_fx_shim[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_shim[form].level)));
-			conf_file.print(String(":" + String(form_fx_shim[form].xscale)));
-			conf_file.print(String(":" + String(form_fx_shim[form].yscale)));
-			conf_file.print(String(":" + String(form_fx_shim[form].beater)));
-
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_fx1_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
-	else 
-	{
-
-		//conf_file.println("XB Form fx1 boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[XB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fx1[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_fx1(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
-	else 
-	{
-		//conf_file.println("XF  FX1 form ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[XF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx1[form].level)));
-			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx1[form].fade)));
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_fx1_glitter_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
-	else 
-	{
-
-		//conf_file.println("GB Form Fire boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[GB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_glitter[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-}
-
-void FS_FS_play_conf_write_form_fx1_glitter(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
-	else 
-	{
-		//conf_file.println("GF Glitter ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[GF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_glitter[form].pal)));
-			//conf_file.print(String(":" + String(form_fx_glitter[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_glitter[form].level)));
-			conf_file.print(String(":" + String(form_fx_glitter[form].value)));
-
-
-			conf_file.println("] ");
-		}
-	
-		conf_file.close();
-		
-	}  	
-}
-
-
-void FS_FS_play_conf_write_form_fx1_dots_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-
-		//conf_file.println("DB Form Dots boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[DB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_dot[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-		
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_fx1_dots(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form dots failed" ); }
-	else 
-	{
-		//conf_file.println("DF dots ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[DF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_dots[form].pal)));
-			//conf_file.print(String(":" + String(form_fx_dots[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_dots[form].level)));
-			conf_file.print(String(":" + String(form_fx_dots[form].nr_dots)));
-			conf_file.print(String(":" + String(form_fx_dots[form].speed)));
-			conf_file.print(String(":" + String(form_fx_dots[form].index_add)));
-
-			conf_file.println("] ");
-		}
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_general(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form leds failed" ); }
-	else 
-	{
-		conf_file.println("Play Config.");
-		conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
-
-			conf_file.print(String("[LS:" + String(led_cfg.fire_cooling)));
-			conf_file.print(String(":" + String(led_cfg.fire_sparking)));
-			conf_file.print(String(":" + String(led_cfg.r)));
-			conf_file.print(String(":" + String(led_cfg.g)));
-			conf_file.print(String(":" + String(led_cfg.b)));
-			conf_file.print(String(":" + String(led_cfg.pal_bri)));
-			conf_file.print(String(":" + String(led_cfg.pal_fps)));	
-			conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
-			conf_file.print(String(":" + String(0 )));
-			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
-			conf_file.print(String(":" + String(led_cfg.bri)));
-			conf_file.println("] ");
-	
-
-
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_leds(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form leds failed" ); }
-	else 
-	{
-	
-			//onf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
-			for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-			{
-				conf_file.print(String("[FC:" + String(form)));
-				conf_file.print(String(":" + String(form_cfg[form].start_led)));
-				conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
-				conf_file.print(String(":" + String(form_fx1[form].fade)));
-
-				conf_file.println("] ");
-
-			} 
-
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-
-void FS_FS_play_conf_write_form_pal_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-
-		//conf_file.println("PB Form Pallete boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[PB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_pal[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-		
-	
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-void FS_FS_play_conf_write_form_pal(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-		//conf_file.println("PF - Pallete FX Form ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[PF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_pal[form].pal)));
-			conf_file.print(String(":" + String(form_fx_pal[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_pal[form].level)));
-			conf_file.print(String(":" + String(form_fx_pal[form].index_start)));
-			conf_file.print(String(":" + String(form_fx_pal[form].index_add_led)));
-			conf_file.print(String(":" + String(form_fx_pal[form].index_add_frame)));
-	
-
-			conf_file.println("] ");
-		}
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-
-
-
-
-
-
-void FS_FS_play_conf_write_form_FFT(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-		//conf_file.println("TF form fft  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[TF:" + String(form)));
-			conf_file.print(String(":" + String(form_fx_fft[form].mix_mode)));
-			conf_file.print(String(":" + String(form_fx_fft[form].level)));
-			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
-			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
-			
-
-			conf_file.println("] ");
-		}
-	
-		
-
-
-		conf_file.close();
-		
-	}  	
-
-
-}
-void FS_FS_play_conf_write_form_FFT_switch(String addr)
-{
-	File conf_file = SPIFFS.open(addr, "w");
-	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
-	else 
-	{
-			//conf_file.println("TB Form FFt switch values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[TB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fft[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-
-
-		conf_file.close();
-		
-	}  	
-
-
-}
-
-
-
-void FS_play_conf_write_new(uint8_t conf_nr)
-{
-	saveloopConfNr = conf_nr;
-	savelooppos = 1;
-}
-
-
-
-	void FS_play_conf_loop()
-{
-
-	if (savelooppos < 250)
-	{
-		String addr = String("/conf/" + String(saveloopConfNr) );
-
-		switch(savelooppos)
-		{
-
-			case 1: 
-				FS_FS_play_conf_write_form_FFT(String( addr +"/form/fft.txt")); 
-			break;
-			case 2:
-				FS_FS_play_conf_write_form_pal(String( addr +"/form/pal.txt")); 
-			break;
-			case 3:
-				FS_FS_play_conf_write_form_leds(String( addr +"/form/leds.txt")); 
-			break;
-			case 4:
-				FS_FS_play_conf_write_form_fx1_dots(String( addr +"/form/dots.txt")); 
-			break;
-			case 5:
-				FS_FS_play_conf_write_form_fx1_glitter(String( addr +"/form/glitter.txt")); 
-			break;
-			case 6:
-				FS_FS_play_conf_write_form_fx1(String( addr +"/form/fx1.txt")); 
-			break;
-			case 7:
-				FS_FS_play_conf_write_form_shimmer(String( addr +"/form/shimmer.txt")); 
-			break;
-			case 8: 
-				FS_FS_play_conf_write_form_FFT_switch(String( addr +"/form/fft_switch.txt")); 
-			break;
-			case 9:
-				FS_FS_play_conf_write_form_pal_switch(String( addr +"/form/pal_switch.txt")); 
-			break;
-			case 10:
-				FS_FS_play_conf_write_form_general(String( addr +"/form/general.txt")); 
-			break;
-			case 11:
-				FS_FS_play_conf_write_form_fx1_dots_switch(String( addr +"/form/dots_switch.txt")); 
-			break;
-			case 12:
-				FS_FS_play_conf_write_form_fx1_glitter_switch(String( addr +"/form/glitter_switch.txt")); 
-			break;
-			case 13:
-				FS_FS_play_conf_write_form_fx1_switch(String( addr +"/form/fx1_switch.txt")); 
-			break;
-			case 14:
-				FS_FS_play_conf_write_form_shimmer_switch(String( addr +"/form/shimmer_switch.txt")); 
-			break;
-			case 15:
-				FS_FS_play_conf_write_copy_leds(String( addr +"/form/copy_leds.txt")); 
-			break;
-			case 16:
-				FS_FS_play_conf_write_audio(String( addr +"/form/audio.txt")); 
-			break;
-			case 17:
-				FS_FS_play_conf_write_layers(String( addr +"/form/layers.txt")); 
-			break;
-			default:
-				savelooppos = 250;
-			break;
-
-		}
-		savelooppos++;
-	}
-
-
-
-
-
-	FS_write_Conf_status(saveloopConfNr, true);
-}
 
 
 
@@ -1471,6 +882,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_pal[form].index_start)));
 			conf_file.print(String(":" + String(form_fx_pal[form].index_add_led)));
 			conf_file.print(String(":" + String(form_fx_pal[form].index_add_frame)));
+			conf_file.print(String(":" + String(form_fx_pal[form].palSpeedBin)));
+			conf_file.print(String(":" + String(form_fx_pal[form].triggerBin)));
 	
 
 			conf_file.println("] ");
@@ -1518,6 +931,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_shim[form].xscale)));
 			conf_file.print(String(":" + String(form_fx_shim[form].yscale)));
 			conf_file.print(String(":" + String(form_fx_shim[form].beater)));
+			conf_file.print(String(":" + String(form_fx_shim[form].triggerBin)));
 
 			conf_file.println("] ");
 		}
@@ -1539,6 +953,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_fft[form].level)));
 			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
 			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
+			conf_file.print(String(":" + String(form_fx_fft[form].triggerBin)));
 			
 
 			conf_file.println("] ");
@@ -1562,6 +977,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_fire[form].level)));
 			conf_file.print(String(":" + String(form_fx_fire[form].cooling)));
 			conf_file.print(String(":" + String(form_fx_fire[form].sparking)));
+			conf_file.print(String(":" + String(form_fx_fire[form].triggerBin)));
 
 
 			conf_file.println("] ");
@@ -1605,6 +1021,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx1[form].level)));
 			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx1[form].fade)));
+			conf_file.print(String(":" + String(form_fx1[form].triggerBin)));
 			conf_file.println("] ");
 		}
 
@@ -1791,6 +1208,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_cfg[strip_no].start_led);
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].triggerBin = in_int;} else form_fx1[strip_no].triggerBin = 255;
 			}
 			else if ((type == 'P') && (typeb == 'F'))
 			{
@@ -1801,6 +1219,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_start = in_int ;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_led = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_frame = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].palSpeedBin = in_int;} 	else  form_fx_pal[strip_no].palSpeedBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].triggerBin = in_int;}		else  form_fx_pal[strip_no].triggerBin = 255;
+				
 				
 
 			}
@@ -1836,6 +1257,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].xscale = in_int; 
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].yscale = in_int; 
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].beater = in_int; 
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].triggerBin = in_int; } else  form_fx_shim[strip_no].triggerBin = 255;
 
 			}	
 			else if ((type == 'S') && (typeb == 'B'))
@@ -1850,8 +1272,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
-
-				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} else {form_fx_fft[strip_no].extend = 0;}
+				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} 	else {form_fx_fft[strip_no].extend = 0;}
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].triggerBin = in_int; }else  form_fx_fft[strip_no].triggerBin  = 255;
 			}
 			else if ((type == 'T') && (typeb == 'B'))
 			{
@@ -1868,6 +1290,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].cooling = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].sparking = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].triggerBin = in_int;} else form_fx_fire[strip_no].triggerBin;
 
 
 			}
@@ -1899,6 +1322,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].triggerBin = in_int; } else form_fx1[strip_no].triggerBin = 255;
 			}
 			else if ((type == 'X') && (typeb == 'B'))
 			{
@@ -2400,9 +1824,628 @@ void FS_setup_SPIFFS()
 
 
 
+/*
+
+void FS_FS_play_conf_write_layers(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write play conf  failed" ); }
+	else 
+	{
+		//conf_file.println("ly = Layers 1 to 10, ");
+			conf_file.print("[ly:" + String(layer_select[0]) )	;
+			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
+			{
+					conf_file.print(":" + String(layer_select[layer]) )	;
+
+			}
+		conf_file.println("] ");
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+
+
+void FS_FS_play_conf_write_pal_conf(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form pal failed" ); }
+	else 
+	{
+		//conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
+		for (uint8_t pal = 0; pal < NR_PALETTS; pal++) {
+			conf_file.print(String("[PA:" + String(pal)));
+
+			for (uint8_t color = 0; color < 16; color++) {
+				conf_file.print(String(":" + String(LEDS_pal_read( pal, color, 0))));   // targetPalette[pal][color].r)));
+				conf_file.print(String(":" + String(LEDS_pal_read(pal, color, 1))));
+				conf_file.print(String(":" + String(LEDS_pal_read(pal, color, 2))));
+			}
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+
+
+void FS_FS_play_conf_write_audio(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+		//conf_file.println("A = FFT Bin Config : Pal Nr : BIN Nr : Trigger : Into R : Into G : into B ");
+		for (int bin = 0; bin < 7; bin++) 
+		{							// Save FFT settings   
+
+			conf_file.print(String("[AM:" + String(bin)));
+			conf_file.print(String(":" + String(fft_data[bin].trigger)));
+
+			for (int color = 0; color < 3; color++)
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_menu[color]), bin))));
+			}
+			for (int color = 0; color < FFT_FX_NR_OF_BINS; color++)
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[color].menu_select), bin))));
+			}
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_bri), bin))));
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_bin_autoTrigger), bin))));
+			conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_data_fps), bin))));
+			
+			
+			conf_file.println("] ");
+		}
+		for (int fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++) 	
+		{
+			conf_file.print(String("[AF:" + String(fxbin)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].set_val)));
+			conf_file.print(String(":" + String(fft_fxbin[fxbin].trrig_val)));
+			for (int bin = 0; bin < 7; bin++) 
+			{
+				conf_file.print(String(":" + String(get_bool_byte(uint8_t(fft_fxbin[fxbin].menu_select), bin))));
+			}
+
+			conf_file.println("] ");
+		}
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+
+
+void FS_FS_play_conf_write_copy_leds(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form copy leds failed" ); }
+	else 
+	{
+		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
+			conf_file.print(String("[cl:" + String(copy_L)));
+			conf_file.print(String(":" + String(copy_leds[copy_L].start_led)));
+			conf_file.print(String(":" + String(copy_leds[copy_L].nr_leds)));
+			conf_file.print(String(":" + String(copy_leds[copy_L].Ref_LED)));
+			conf_file.print(String(":" + String(get_bool_byte(copy_leds_mode[get_strip_menu_bit(copy_L)], copy_L))));
+
+			conf_file.println("] ");
+
+		} 
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_fire_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
+	else 
+	{
+		//conf_file.println("IB Form Fire boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[IB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fire[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+		
+	
+		conf_file.close();
+		
+	}  	
+}
+
+void FS_FS_play_conf_write_form_fire(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fire failed" ); }
+	else 
+	{
+		//conf_file.println("IF form Fire  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[IF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_fire[form].pal)));
+			conf_file.print(String(":" + String(form_fx_fire[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_fire[form].level)));
+			conf_file.print(String(":" + String(form_fx_fire[form].cooling)));
+			conf_file.print(String(":" + String(form_fx_fire[form].sparking)));
+
+
+			conf_file.println("] ");
+		}
+
+		conf_file.close();
+		
+	}  	
+}
+
+void FS_FS_play_conf_write_form_shimmer_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
+	else 
+	{
+		//conf_file.println("SB Form Shimmer boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[SB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_shimmer[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_shimmer(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form shimmer failed" ); }
+	else 
+	{
+		//conf_file.println("SF shimmer ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[SF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_shim[form].pal)));
+			conf_file.print(String(":" + String(form_fx_shim[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_shim[form].level)));
+			conf_file.print(String(":" + String(form_fx_shim[form].xscale)));
+			conf_file.print(String(":" + String(form_fx_shim[form].yscale)));
+			conf_file.print(String(":" + String(form_fx_shim[form].beater)));
+
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_fx1_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
+	else 
+	{
+
+		//conf_file.println("XB Form fx1 boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[XB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fx1[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_fx1(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fx1 failed" ); }
+	else 
+	{
+		//conf_file.println("XF  FX1 form ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[XF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx1[form].level)));
+			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx1[form].fade)));
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_fx1_glitter_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
+	else 
+	{
+
+		//conf_file.println("GB Form Fire boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[GB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_glitter[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+}
+
+void FS_FS_play_conf_write_form_fx1_glitter(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form glitter failed" ); }
+	else 
+	{
+		//conf_file.println("GF Glitter ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[GF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].pal)));
+			//conf_file.print(String(":" + String(form_fx_glitter[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].level)));
+			conf_file.print(String(":" + String(form_fx_glitter[form].value)));
+
+
+			conf_file.println("] ");
+		}
+	
+		conf_file.close();
+		
+	}  	
+}
+
+
+void FS_FS_play_conf_write_form_fx1_dots_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+
+		//conf_file.println("DB Form Dots boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[DB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_dot[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+		
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_fx1_dots(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form dots failed" ); }
+	else 
+	{
+		//conf_file.println("DF dots ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[DF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_dots[form].pal)));
+			//conf_file.print(String(":" + String(form_fx_dots[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_dots[form].level)));
+			conf_file.print(String(":" + String(form_fx_dots[form].nr_dots)));
+			conf_file.print(String(":" + String(form_fx_dots[form].speed)));
+			conf_file.print(String(":" + String(form_fx_dots[form].index_add)));
+
+			conf_file.println("] ");
+		}
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_general(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form leds failed" ); }
+	else 
+	{
+		conf_file.println("Play Config.");
+		conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
+
+			conf_file.print(String("[LS:" + String(led_cfg.fire_cooling)));
+			conf_file.print(String(":" + String(led_cfg.fire_sparking)));
+			conf_file.print(String(":" + String(led_cfg.r)));
+			conf_file.print(String(":" + String(led_cfg.g)));
+			conf_file.print(String(":" + String(led_cfg.b)));
+			conf_file.print(String(":" + String(led_cfg.pal_bri)));
+			conf_file.print(String(":" + String(led_cfg.pal_fps)));	
+			conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
+			conf_file.print(String(":" + String(0 )));
+			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
+			conf_file.print(String(":" + String(led_cfg.bri)));
+			conf_file.println("] ");
+	
+
+
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_leds(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form leds failed" ); }
+	else 
+	{
+	
+			//onf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
+			for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+			{
+				conf_file.print(String("[FC:" + String(form)));
+				conf_file.print(String(":" + String(form_cfg[form].start_led)));
+				conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
+				conf_file.print(String(":" + String(form_fx1[form].fade)));
+
+				conf_file.println("] ");
+
+			} 
+
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+
+void FS_FS_play_conf_write_form_pal_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+
+		//conf_file.println("PB Form Pallete boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[PB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_pal[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+		
+	
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+void FS_FS_play_conf_write_form_pal(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+		//conf_file.println("PF - Pallete FX Form ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[PF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_pal[form].pal)));
+			conf_file.print(String(":" + String(form_fx_pal[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_pal[form].level)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_start)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_add_led)));
+			conf_file.print(String(":" + String(form_fx_pal[form].index_add_frame)));
+	
+
+			conf_file.println("] ");
+		}
+		conf_file.close();
+		
+	}  	
+
+
+}
 
 
 
 
 
 
+
+void FS_FS_play_conf_write_form_FFT(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+		//conf_file.println("TF form fft  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[TF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_fft[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_fft[form].level)));
+			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
+			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
+			
+
+			conf_file.println("] ");
+		}
+	
+		
+
+
+		conf_file.close();
+		
+	}  	
+
+
+}
+void FS_FS_play_conf_write_form_FFT_switch(String addr)
+{
+	File conf_file = SPIFFS.open(addr, "w");
+	if (!conf_file && !conf_file.isDirectory()) { debugMe("write conf form fft failed" ); }
+	else 
+	{
+			//conf_file.println("TB Form FFt switch values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[TB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_fft[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+
+
+		conf_file.close();
+		
+	}  	
+
+
+}
+
+
+
+
+
+
+void FS_play_conf_write_new(uint8_t conf_nr)
+{
+	saveloopConfNr = conf_nr;
+	savelooppos = 1;
+}
+
+
+
+	void FS_play_conf_loop()
+{
+
+	if (savelooppos < 250)
+	{
+		String addr = String("/conf/" + String(saveloopConfNr) );
+
+		switch(savelooppos)
+		{
+
+			case 1: 
+				FS_FS_play_conf_write_form_FFT(String( addr +"/form/fft.txt")); 
+			break;
+			case 2:
+				FS_FS_play_conf_write_form_pal(String( addr +"/form/pal.txt")); 
+			break;
+			case 3:
+				FS_FS_play_conf_write_form_leds(String( addr +"/form/leds.txt")); 
+			break;
+			case 4:
+				FS_FS_play_conf_write_form_fx1_dots(String( addr +"/form/dots.txt")); 
+			break;
+			case 5:
+				FS_FS_play_conf_write_form_fx1_glitter(String( addr +"/form/glitter.txt")); 
+			break;
+			case 6:
+				FS_FS_play_conf_write_form_fx1(String( addr +"/form/fx1.txt")); 
+			break;
+			case 7:
+				FS_FS_play_conf_write_form_shimmer(String( addr +"/form/shimmer.txt")); 
+			break;
+			case 8: 
+				FS_FS_play_conf_write_form_FFT_switch(String( addr +"/form/fft_switch.txt")); 
+			break;
+			case 9:
+				FS_FS_play_conf_write_form_pal_switch(String( addr +"/form/pal_switch.txt")); 
+			break;
+			case 10:
+				FS_FS_play_conf_write_form_general(String( addr +"/form/general.txt")); 
+			break;
+			case 11:
+				FS_FS_play_conf_write_form_fx1_dots_switch(String( addr +"/form/dots_switch.txt")); 
+			break;
+			case 12:
+				FS_FS_play_conf_write_form_fx1_glitter_switch(String( addr +"/form/glitter_switch.txt")); 
+			break;
+			case 13:
+				FS_FS_play_conf_write_form_fx1_switch(String( addr +"/form/fx1_switch.txt")); 
+			break;
+			case 14:
+				FS_FS_play_conf_write_form_shimmer_switch(String( addr +"/form/shimmer_switch.txt")); 
+			break;
+			case 15:
+				FS_FS_play_conf_write_copy_leds(String( addr +"/form/copy_leds.txt")); 
+			break;
+			case 16:
+				FS_FS_play_conf_write_audio(String( addr +"/form/audio.txt")); 
+			break;
+			case 17:
+				FS_FS_play_conf_write_layers(String( addr +"/form/layers.txt")); 
+			break;
+			default:
+				savelooppos = 250;
+			break;
+
+		}
+		savelooppos++;
+	}
+
+
+
+
+
+	FS_write_Conf_status(saveloopConfNr, true);
+}
+
+
+
+
+
+
+
+*/

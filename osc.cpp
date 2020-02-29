@@ -842,6 +842,7 @@ void osc_StC_menu_form_fft_adv_ref()
 		osc_queu_MSG_int("/ostc/form/fft/exd/" + String(formNr), form_fx_fft[formNr].extend );
 		osc_queu_MSG_int("/ostc/form/fft/mix/" + String(formNr), form_fx_fft[formNr].mix_mode );
 		osc_queu_MSG_int("/ostc/form/fft/lvl/"+	String(formNr), form_fx_fft[formNr].level );
+		osc_queu_MSG_int("/ostc/form/fft/tgp/"+	String(formNr), form_fx_fft[formNr].triggerBin );
 
 		}		
 }
@@ -907,6 +908,7 @@ uint8_t bit = 0;
 			osc_queu_MSG_int("/ostc/form/fx/fire/pal/" + String(formNr), form_fx_fire[formNr].pal );
 			osc_queu_MSG_int("/ostc/form/fx/fire/col/" + String(formNr), form_fx_fire[formNr].cooling );
 			osc_queu_MSG_int("/ostc/form/fx/fire/spk/" + String(formNr), form_fx_fire[formNr].sparking );
+			osc_queu_MSG_int("/ostc/form/fx/fire/tgp/" + String(formNr), form_fx_fire[formNr].triggerBin );
 		}
 
 	//	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
@@ -998,6 +1000,7 @@ void osc_StC_menu_form_shim_adv_ref()
 		osc_queu_MSG_int( "/ostc/form/fx/shim/x_s/" + String(formNr),	 form_fx_shim[formNr].xscale);
 		osc_queu_MSG_int( "/ostc/form/fx/shim/y_s/" + String(formNr),	 form_fx_shim[formNr].yscale);
 		osc_queu_MSG_int( "/ostc/form/fx/shim/bet/" + String(formNr),	 form_fx_shim[formNr].beater);
+		osc_queu_MSG_int( "/ostc/form/fx/shim/tgp/" + String(formNr),	 form_fx_shim[formNr].triggerBin);
 		}		
 }
 /*
@@ -1069,6 +1072,7 @@ void osc_StC_menu_form_fx1_adv_ref()
 		//osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_fx_glitter[formNr].value );
 		osc_queu_MSG_int("/ostc/form/fx/fade/lvl/" +	String(formNr) , form_fx1[formNr].fade );
 		osc_queu_MSG_int("/ostc/form/fx/fx01/mix/" + String(formNr), form_fx1[formNr].mix_mode );
+		osc_queu_MSG_int("/ostc/form/fx/fx01/tgp/" + String(formNr), form_fx1[formNr].triggerBin );
 
 		}		
 
@@ -1120,8 +1124,11 @@ void osc_StC_menu_form_pal_adv_ref()
 		
 		osc_queu_MSG_int("/ostc/form/pal/mix/" + String(formNr), form_fx_pal[formNr].mix_mode );
 		osc_queu_MSG_int("/ostc/form/pal/pal/" + String(formNr), form_fx_pal[formNr].pal );
+		
 		osc_queu_MSG_int("/ostc/form/pal/lvl/" + String(formNr), form_fx_pal[formNr].level );
 
+		osc_queu_MSG_int("/ostc/form/pal/tgp/" + String(formNr), form_fx_pal[formNr].triggerBin );
+		osc_queu_MSG_int("/ostc/form/pal/stg/" + String(formNr), form_fx_pal[formNr].palSpeedBin );
 		
 		osc_queu_MSG_int("/ostc/form/pal/ald/" + String(formNr), form_fx_pal[formNr].index_add_led );
 		osc_queu_MSG_int("/ostc/form/pal/afm/" + String(formNr), form_fx_pal[formNr].index_add_frame );
@@ -1272,7 +1279,7 @@ void osc_oStC_menu_master_wifi_ref()
 
 
 
-		osc_queu_MSG_int("/ostc/master/wifi/mode", 	get_bool(WIFI_MODE) );
+		osc_queu_MSG_int("/ostc/master/wifi/mode", 	get_bool(WIFI_MODE_TPM) );
 		osc_queu_MSG_int("/ostc/master/wifi/dhcp", 	get_bool(STATIC_IP_ENABLED) );
 		osc_queu_MSG_int("/ostc/master/wifi/power", get_bool(WIFI_POWER) );
 
@@ -1696,6 +1703,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.fullMatch("/fx/shim/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref();}
 		else if  	(msg.fullMatch("/fx/glit/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref();}
 		else if  	(msg.fullMatch("/fx/dott/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref();}
+		else if  	(msg.fullMatch("/fx/fx01/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref();}
 	
 		else if 	(msg.match("/fx",addrOffset))	
 		{
@@ -1742,6 +1750,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.match("/fx/fade/lvl",addrOffset))			{  form_fx1[orig_form_nr].fade  =  uint8_t(msg.getInt(0))  ;}
 			else if		(msg.match("/fx/fx01/lvl",addrOffset))			{  form_fx1[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;}
 			else if		(msg.match("/fx/fx01/mix",addrOffset))			{  form_fx1[orig_form_nr].mix_mode  =  uint8_t(msg.getInt(0))  ;}
+			else if		(msg.match("/fx/fx01/tgp",addrOffset))			{  form_fx1[orig_form_nr].mix_mode  =  uint8_t(msg.getInt(0))  ;}
 			else if		(msg.match("/fx/fx01/run",addrOffset))			{ bitWrite(form_menu_fx1[i_bit_int][_M_FORM_FX1_RUN], 			i_form_nr, bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/fx01/mir",addrOffset))			{ bitWrite(form_menu_fx1[i_bit_int][_M_FORM_FX1_MIRROR], 			i_form_nr, bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/fx01/rev",addrOffset))			{ bitWrite(form_menu_fx1[i_bit_int][_M_FORM_FX1_REVERSED], 			i_form_nr, bool(msg.getInt(0)));  }
@@ -1755,6 +1764,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.match("/fx/fire/pal",addrOffset))  		form_fx_fire[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/fire/col",addrOffset))  		form_fx_fire[orig_form_nr].cooling = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/fire/spk",addrOffset))  		form_fx_fire[orig_form_nr].sparking = uint8_t(msg.getInt(0))	;
+			else if  	(msg.match("/fx/fire/tgp",addrOffset))  		form_fx_fire[orig_form_nr].triggerBin = uint8_t(msg.getInt(0))	;
 
 			else if		(msg.match("/fx/shim/run",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_RUN], i_form_nr,	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/shim/bld",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_BLEND], i_form_nr,	bool(msg.getInt(0)));  }
@@ -1764,6 +1774,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.match("/fx/shim/lvl",addrOffset))			form_fx_shim[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 			else if  	(msg.match("/fx/shim/mix",addrOffset))  		form_fx_shim[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/shim/pal",addrOffset))  		form_fx_shim[orig_form_nr].pal = uint8_t(msg.getInt(0))	;
+			else if  	(msg.match("/fx/shim/tgp",addrOffset))  		form_fx_shim[orig_form_nr].triggerBin = uint8_t(msg.getInt(0))	;
 		}  //   /FX
 
 		//else if		(msg.fullMatch("/fx/3sin",addrOffset))				{ bitWrite(form_menu[bit_int][_M_FX_3_SIN], form_nr,	bool(msg.getInt(0)));  ;}
@@ -1845,27 +1856,26 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/pal/afm",addrOffset))  	form_fx_pal[orig_form_nr].index_add_frame = uint16_t(msg.getInt(0))	;   
 						else if  	(msg.match("/pal/sid",addrOffset))  	form_fx_pal[orig_form_nr].index_start = uint16_t(msg.getInt(0))	; 
 						
-						else if		(msg.match("/pal/mix",addrOffset))  	form_fx_pal[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	; 
-						else if  	(msg.match("/pal/pal",addrOffset))  	form_fx_pal[orig_form_nr].pal = uint8_t(msg.getInt(0))	; 
-						else if		(msg.match("/pal/lvl",addrOffset))		{  form_fx_pal[orig_form_nr].level  =  uint8_t(result)  ;}
+						else if		(msg.match("/pal/mix",addrOffset))  	form_fx_pal[orig_form_nr].mix_mode 		= uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pal/pal",addrOffset))  	form_fx_pal[orig_form_nr].pal 			= uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pal/tgp",addrOffset))  	form_fx_pal[orig_form_nr].triggerBin 	= uint8_t(msg.getInt(0))	; 
+						else if  	(msg.match("/pal/stg",addrOffset))  	form_fx_pal[orig_form_nr].palSpeedBin 	= uint8_t(msg.getInt(0))	; 
+						else if		(msg.match("/pal/lvl",addrOffset))		{  form_fx_pal[orig_form_nr].level  	=  uint8_t(result)  ;}
 
 			   
 
 						//else if		(msg.match("/fx/sys/lvl",addrOffset))			{  form_fx1[orig_form_nr].level  =  uint8_t(result)  ;}
-						
-						
+												
 
-						
-						
-
-						else if		(msg.match("/fft/run",addrOffset))			{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_RUN], 			i_form_nr, 	bool(result));  ;}
-						else if		(msg.match("/fft/rev",addrOffset))			{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_REVERSED], 	i_form_nr, 	bool(result));  ;}
-						else if		(msg.match("/fft/mir",addrOffset))			{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_MIRROR], 		i_form_nr, 	bool(result));  ;}
+						else if		(msg.match("/fft/run",addrOffset))		{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_RUN], 			i_form_nr, 	bool(result));  ;}
+						else if		(msg.match("/fft/rev",addrOffset))		{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_REVERSED], 	i_form_nr, 	bool(result));  ;}
+						else if		(msg.match("/fft/mir",addrOffset))		{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_MIRROR], 		i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/ocl",addrOffset))		{ bitWrite(form_menu_fft[i_bit_int][_M_FORM_FFT_ONECOLOR], 		i_form_nr, 	bool(result));  ;}
 						else if  	(msg.match("/fft/ofs",addrOffset))  	form_fx_fft[orig_form_nr].offset = uint8_t(msg.getInt(0))	; 
 						else if  	(msg.match("/fft/exd",addrOffset))  	form_fx_fft[orig_form_nr].extend = uint8_t(msg.getInt(0))	; 
 						else if		(msg.match("/fft/lvl",addrOffset))		{  form_fx_fft[orig_form_nr].level  =  uint8_t(result)  ;}
 						else if  	(msg.match("/fft/mix",addrOffset))  	form_fx_fft[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fft/tgp",addrOffset))  	form_fx_fft[orig_form_nr].triggerBin 	= uint8_t(msg.getInt(0))	;
 			}
 		}
 
@@ -1950,7 +1960,7 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 {
 		if(!msg.isString(0) )
 		{
-			if 			(msg.fullMatch("/save",addrOffset))		{ FS_wifi_write(0); }
+			if 			(msg.fullMatch("/save",addrOffset))		{ FS_wifi_write(); }
 			else if		(msg.fullMatch("/ip/1",addrOffset))		{ wifi_cfg.ipStaticLocal[0] = uint8_t(msg.getInt(0));}
 			else if 	(msg.fullMatch("/ip/2",addrOffset))		{ wifi_cfg.ipStaticLocal[1] = uint8_t(msg.getInt(0));}
 			else if 	(msg.fullMatch("/ip/3",addrOffset))		{ wifi_cfg.ipStaticLocal[2] = uint8_t(msg.getInt(0));}
@@ -1979,7 +1989,7 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 
 			else if 	(msg.fullMatch("/power",addrOffset))  { write_bool(WIFI_POWER, 			bool(msg.getInt(0) )) ; }
 			else if 	(msg.fullMatch("/dhcp",addrOffset))   { write_bool(STATIC_IP_ENABLED, 	bool(msg.getInt(0) )) ; }
-			else if 	(msg.fullMatch("/mode",addrOffset))   { write_bool(WIFI_MODE,			bool(msg.getInt(0) )) ; }
+			else if 	(msg.fullMatch("/mode",addrOffset))   { write_bool(WIFI_MODE_TPM,			bool(msg.getInt(0) )) ; }
 
 			
 
@@ -2373,10 +2383,10 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 	
 	else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
 	else if (msg.fullMatch("/RESET", addrOffset) && bool(msg.getFloat(0)) == true)			{ESP.restart(); }
-	else if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); FS_Bools_write(0); }
+	else if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(); FS_Bools_write(0); }
 	else if (msg.fullMatch("/ARTNETSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_artnet_write(); }
 		
-	else if (msg.fullMatch("/WAP", addrOffset))												{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
+	else if (msg.fullMatch("/WAP", addrOffset))												{ write_bool(WIFI_MODE_TPM, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE_TPM)); }
 	else if (msg.fullMatch("/WP", addrOffset))												{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}
 	else if (msg.fullMatch("/ESIP", addrOffset))												{ write_bool(STATIC_IP_ENABLED, bool(msg.getFloat(0)));}
 	

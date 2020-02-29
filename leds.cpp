@@ -231,7 +231,25 @@ struct form_fx_test_val form_fx_test = {0,0,0};
 
 struct form_Led_Setup_Struct form_cfg[NR_FORM_PARTS] =
 {
-	{0,NUM_LEDS},
+	{0,200},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+	{0,0},
+
+	{0,0},
 	{0,0},
 	{0,0},
 	{0,0},
@@ -252,111 +270,201 @@ struct form_Led_Setup_Struct form_cfg[NR_FORM_PARTS] =
 
 struct form_fx_pal_struct form_fx_pal[NR_FORM_PARTS] = 
 {
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
 
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0},
-	{0,255,MIX_ADD,0,16,8,0,0}
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255},
+	{0,255,MIX_ADD,0,16,8,0,0,255,255}
 
 };
 
 struct form_fx_shim_struct form_fx_shim[NR_FORM_PARTS] = 
 {
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
 
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7},
-	{0,MIX_ADD,255,6,5,7}
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255},
+	{0,MIX_ADD,255,6,5,7,255}
 
 };
 
 struct form_fx_fire_struct form_fx_fire[NR_FORM_PARTS] = 
 {
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
 
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255},
-	{0,MIX_ADD,255}
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255},
+	{0,MIX_ADD,255,55,120,255}
 
 };
 
 struct form_fx_fft_struct form_fx_fft[NR_FORM_PARTS] = 
 {
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
 
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0},
-	{MIX_ADD,255,0,0}
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255},
+	{MIX_ADD,255,0,0,255}
 
 };
 
 struct form_fx1_struct form_fx1[NR_FORM_PARTS]= 
 {
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
 
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255},
-	{MIX_ADD,255}
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255},
+	{MIX_ADD,255,0,255}
 
 };
 
@@ -378,11 +486,47 @@ struct form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS] =
 	{0,255,15},
 	{0,255,15},
 	{0,255,15},
+	{0,255,15},
+
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
+	{0,255,15},
 	{0,255,15}
 };
 
 struct form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] =
 {
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+	{0,255,1,20,16,16},
+
 	{0,255,1,20,16,16},
 	{0,255,1,20,16,16},
 	{0,255,1,20,16,16},
@@ -618,11 +762,11 @@ void  LEDS_setall_color(uint8_t color = 0) {
 
 	switch(color) {
 
-		case 0: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(180, 	180, 	180));	break;
-		case 1: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(0,		127, 	0));	break;
-		case 2: fill_solid(&(leds[0]), MAX_NUM_LEDS,	CRGB(0,		0, 		0));	break;
-		case 3: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(127, 	0, 		0));	break;
-	   default: fill_solid(&(leds[0]), MAX_NUM_LEDS, 	CRGB(180,	180, 	180)); break;	
+		case 0: fill_solid(&(leds[0]), MAX_NUM_LEDS_BOOT, 	CRGB(180, 	180, 	180));	break;
+		case 1: fill_solid(&(leds[0]), MAX_NUM_LEDS_BOOT, 	CRGB(0,		127, 	0));	break;
+		case 2: fill_solid(&(leds[0]), MAX_NUM_LEDS_BOOT,	CRGB(0,		0, 		0));	break;
+		case 3: fill_solid(&(leds[0]), MAX_NUM_LEDS_BOOT, 	CRGB(127, 	0, 		0));	break;
+	   default: fill_solid(&(leds[0]), MAX_NUM_LEDS_BOOT, 	CRGB(180,	180, 	180)); break;	
 	}
 	//debugMe("Setall Leds to : " + String(color));	
 }
@@ -1712,36 +1856,62 @@ uint8_t LEDS_data_or_fftbin(uint8_t inval)
 
 void LEDS_run_fft(uint8_t z, uint8_t i )
 {
-	tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), form_fx_fft[i + (z * 8)].offset, form_fx_fft[i + (z * 8)].extend  );
+	if ( ( form_fx_fft[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx_fft[i + (z * 8)].triggerBin  )        != 0 ))
+	{
+		tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(form_fx_fft[i + (z * 8)].mix_mode),  form_fx_fft[i + (z * 8)].level, bitRead(form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), form_fx_fft[i + (z * 8)].offset, form_fx_fft[i + (z * 8)].extend  );
+	}
 }
+
+
+
+
+
 
 void LEDS_run_pal(uint8_t z, uint8_t i )
 {
-	
-	tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , form_fx_pal[i + (z * 8)].index_add_led,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
-	tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), form_fx_pal[i + (z * 8)].level , bitRead(form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
 
-	uint16_t pal_speed	= form_fx_pal[i + (z * 8)].index_add_frame   ;
-	if(bitRead(form_menu_pal[z][_M_FORM_PAL_SPEED_FROM_FFT], i)) pal_speed = LEDS_data_or_fftbin(form_fx_pal[i + (z * 8)].index_add_frame) *8; 
+	if ( ( form_fx_pal[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].triggerBin  )        != 0 ))
+	{
+		uint16_t speed_select ;
+		
 
-	//debugMe("palSpeed" + String(pal_speed));
-	form_fx_pal[i + (z * 8)].index = form_fx_pal[i + (z * 8)].index + pal_speed;
-	form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong + pal_speed;
-	//if (MAX_INDEX_LONG <= form_fx_pal[i + (z * 8)].indexLong)
-	//			form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
+		if (form_fx_pal[i + (z * 8)].palSpeedBin != 255)
+
+			speed_select =   LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].palSpeedBin  )  ;
+
+		else 
+			speed_select = form_fx_pal[i + (z * 8)].index_add_led; 
+
+
+		
+		
+			tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , speed_select ,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
+			tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), form_fx_pal[i + (z * 8)].level , bitRead(form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
+		
+
+
+		uint16_t pal_speed	= form_fx_pal[i + (z * 8)].index_add_frame   ;
+		if(bitRead(form_menu_pal[z][_M_FORM_PAL_SPEED_FROM_FFT], i)) pal_speed = LEDS_data_or_fftbin(form_fx_pal[i + (z * 8)].index_add_frame) *8; 
+
+		//debugMe("palSpeed" + String(pal_speed));
+		form_fx_pal[i + (z * 8)].index = form_fx_pal[i + (z * 8)].index + pal_speed;
+		form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong + pal_speed;
+		//if (MAX_INDEX_LONG <= form_fx_pal[i + (z * 8)].indexLong)
+		//			form_fx_pal[i + (z * 8)].indexLong = form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
+	}
 
 }
 
 void LEDS_run_fx1_glitter(uint8_t z, uint8_t i )
 {
+
+	
  	uint8_t glitt_val = form_fx_glitter[i + (z * 8)].value;
 	 
 	 if (bitRead(form_menu_glitter[z][_M_FORM_GLITTER_FFT], i) == true)   glitt_val = LEDS_data_or_fftbin(form_fx_glitter[i + (z * 8)].value);
 
 	if (form_fx_glitter[i + (z * 8)].pal  != 250)   // 250 = from FFT,  other = from Pallete
 	{
-
-
 
 			tpm_fx.AddGlitter(led_FX_out,  ColorFromPalette(LEDS_pal_get(form_fx_glitter[i + (z * 8)].pal)  , random8(), form_fx_glitter[i + (z * 8)].level , LINEARBLEND)  ,  glitt_val  , form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds);	
 			
@@ -1797,20 +1967,24 @@ void LEDS_run_fx1_dot(uint8_t z, uint8_t i )
 
 void LEDS_run_fire(uint8_t z, uint8_t i )
 {
- 	uint8_t spk_val = LEDS_data_or_fftbin( form_fx_fire[i + (z * 8)].sparking);
-	uint8_t cool_val = LEDS_data_or_fftbin( form_fx_fire[i + (z * 8)].cooling);
+	if ( ( form_fx_fire[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx_fire[i + (z * 8)].triggerBin  )        != 0 ))
+	{
+		uint8_t spk_val = LEDS_data_or_fftbin( form_fx_fire[i + (z * 8)].sparking);
+		uint8_t cool_val = LEDS_data_or_fftbin( form_fx_fire[i + (z * 8)].cooling);
 
-	tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_get(form_fx_fire[i + (z * 8)].pal),  form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, 255 , cool_val ,spk_val , MixModeType(MIX_REPLACE)  );
-	tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_fire[z][_M_FORM_FIRE_REVERSED], i), bitRead(form_menu_fire[z][_M_FORM_FIRE_MIRROR], i)   , MixModeType(form_fx_fire[i + (z * 8)].mix_mode), form_fx_fire[i + (z * 8)].level , false );
-
+		tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_get(form_fx_fire[i + (z * 8)].pal),  form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, 255 , cool_val ,spk_val , MixModeType(MIX_REPLACE)  );
+		tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_fire[z][_M_FORM_FIRE_REVERSED], i), bitRead(form_menu_fire[z][_M_FORM_FIRE_MIRROR], i)   , MixModeType(form_fx_fire[i + (z * 8)].mix_mode), form_fx_fire[i + (z * 8)].level , false );
+	}
 
 }
 
 void LEDS_run_shimmer(uint8_t z, uint8_t i )
 {
- 	uint8_t beater_val = LEDS_data_or_fftbin( form_fx_shim[i + (z * 8)].beater);
-	form_fx_shim[i + (z * 8)].dist =  tpm_fx.Shimmer(leds,  LEDS_pal_get(form_fx_shim[i + (z * 8)].pal) , form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_shim[i + (z * 8)].dist, form_fx_shim[i + (z * 8)].xscale, form_fx_shim[i + (z * 8)].yscale, beater_val ,  MixModeType(form_fx_shim[i + (z * 8)].mix_mode), form_fx_shim[i + (z * 8)].level,  TBlendType(bitRead(form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
-
+	if ( ( form_fx_fire[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx_fire[i + (z * 8)].triggerBin  )        != 0 ))
+	{
+		uint8_t beater_val = LEDS_data_or_fftbin( form_fx_shim[i + (z * 8)].beater);
+		form_fx_shim[i + (z * 8)].dist =  tpm_fx.Shimmer(leds,  LEDS_pal_get(form_fx_shim[i + (z * 8)].pal) , form_cfg[i + (z * 8)].start_led, form_cfg[i + (z * 8)].nr_leds, form_fx_shim[i + (z * 8)].dist, form_fx_shim[i + (z * 8)].xscale, form_fx_shim[i + (z * 8)].yscale, beater_val ,  MixModeType(form_fx_shim[i + (z * 8)].mix_mode), form_fx_shim[i + (z * 8)].level,  TBlendType(bitRead(form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
+	}
 
 }
 
@@ -1891,7 +2065,8 @@ void LEDS_run_layers()
 											}	  
 											// Mix FX1 onto output.
 											led_cfg.hue++;	
-											tpm_fx.mixOntoLedArray(led_FX_out , leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fx1[z][_M_FORM_FX1_REVERSED], i), bitRead(form_menu_fx1[z][_M_FORM_FX1_MIRROR], i),MixModeType(form_fx1[i + (z * 8)].mix_mode),  form_fx1[i + (z * 8)].level  , false );
+											if ( ( form_fx1[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx1[i + (z * 8)].triggerBin  )        != 0 ))
+												tpm_fx.mixOntoLedArray(led_FX_out , leds, form_cfg[i + (z * 8)].nr_leds, form_cfg[i + (z * 8)].start_led, bitRead(form_menu_fx1[z][_M_FORM_FX1_REVERSED], i), bitRead(form_menu_fx1[z][_M_FORM_FX1_MIRROR], i),MixModeType(form_fx1[i + (z * 8)].mix_mode),  form_fx1[i + (z * 8)].level  , false );
 
 											
 										

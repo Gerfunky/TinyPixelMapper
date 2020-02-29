@@ -2693,7 +2693,7 @@ void osc_DS_refresh()
 
 
 			osc_queu_MSG_float(String("/DS/WP"), float(get_bool(WIFI_POWER))); 
-			osc_queu_MSG_float(String("/DS/WAP"), float(get_bool(WIFI_MODE)));  //debugMe(get_bool(WIFI_MODE));
+			osc_queu_MSG_float(String("/DS/WAP"), float(get_bool(WIFI_MODE_TPM)));  //debugMe(get_bool(WIFI_MODE_TPM));
 			osc_send_MSG_String("/DS/SSID", String(wifi_cfg.ssid));
 			osc_send_MSG_String("/DS/WPW", String(wifi_cfg.pwd));
 			osc_send_MSG_String("/DS/WAPNL", String(wifi_cfg.APname));
@@ -3421,7 +3421,7 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	if (msg.fullMatch("/debug", addrOffset))		{ osc_send_MSG_String("/DS/INFO", String("Debug : "+ String(bool(msg.getFloat(0)))));	 debugMe(String("Debug : "+ String(bool(msg.getFloat(0))))); write_bool(DEBUG_OUT, bool(msg.getFloat(0)));}
 	if (msg.fullMatch("/TNdebug", addrOffset))			{ write_bool(DEBUG_TELNET, bool(msg.getFloat(0))); }
 	if (msg.fullMatch("/ESIP", addrOffset))			{ osc_send_MSG_String("/DS/INFO", String("Static IP : " + String(bool(msg.getFloat(0)))));	write_bool(STATIC_IP_ENABLED, bool(msg.getFloat(0))); }
-	if (msg.fullMatch("/WAP", addrOffset))			{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
+	if (msg.fullMatch("/WAP", addrOffset))			{ write_bool(WIFI_MODE_TPM, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE_TPM)); }
 	if (msg.fullMatch("/WP", addrOffset))			{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}
 
 	if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); osc_send_MSG_String("/DS/INFO", String("IP saved")); }

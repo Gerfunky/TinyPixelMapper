@@ -300,9 +300,9 @@ void httpd_handle_default_args()
 
 			ssid_STR.toCharArray(wifi_cfg.ssid, sizeof(wifi_cfg.ssid));
 			PWD_STR.toCharArray(wifi_cfg.pwd, sizeof(wifi_cfg.pwd));
-			write_bool(WIFI_MODE, 1);
+			write_bool(WIFI_MODE_TPM, 1);
 			//wifiMode =  wifiMmode_STR[0]; 
-			FS_wifi_write(0);
+			FS_wifi_write();
 
 
 
@@ -313,7 +313,7 @@ void httpd_handle_default_args()
 			debugMe(wifi_cfg.pwd);
 
 			debugMe("Setting wifi_mode to ", false);
-			debugMe(get_bool(WIFI_MODE));
+			debugMe(get_bool(WIFI_MODE_TPM));
 			
 
 		}
@@ -323,14 +323,14 @@ void httpd_handle_default_args()
 			String wifiMmode_STR = httpd.arg("wifiMode");
 
 			APname_STR.toCharArray(wifi_cfg.APname, 32);
-			write_bool(WIFI_MODE, 0 );
-			FS_wifi_write(0);
+			write_bool(WIFI_MODE_TPM, 0 );
+			FS_wifi_write();
 
 			debugMe("Setting APname to ", false);
 			debugMe(wifi_cfg.APname);
 
 			debugMe("Setting wifi_mode to ", false);
-			debugMe(get_bool(WIFI_MODE));
+			debugMe(get_bool(WIFI_MODE_TPM));
 			
 
 		}
@@ -425,7 +425,7 @@ void httpd_handleRequestSettings()
 
 	httpd.onNotFound([]() {if (!httpd_handleFileRead(httpd.uri()))  httpd.send(404, "text/plain", "FileNotFound im sorry check in the next 2'n dimension on the left"); });
 
-	httpd.on("/wifiMode", []() { httpd.send(200, "text/plain", String(get_bool(WIFI_MODE)));   });
+	httpd.on("/wifiMode", []() { httpd.send(200, "text/plain", String(get_bool(WIFI_MODE_TPM)));   });
 	httpd.on("/ssid", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.ssid);  });
 	httpd.on("/password", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.pwd);   });
 	httpd.on("/APname", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.APname);   });

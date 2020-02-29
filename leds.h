@@ -15,6 +15,7 @@
 // defines , DO NOT CHANGE!!!!
 
 		#define MAX_NUM_LEDS   (170*16		)  //(170*4)  // = 680  = 4 universes			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
+		#define MAX_NUM_LEDS_BOOT  20 //	only set the first 20 for boot info green=ap / red= clinet
 		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
 
 
@@ -100,7 +101,7 @@
 		uint8_t			fps;				// FFT
 		uint8_t			fftAutoMax;			// FFT Auto mode maximum trigger
 		uint8_t			fftAutoMin;			// FFT Auto mode minimum trigger
-		uint16_t			Scale;
+		uint16_t		Scale;
 		uint8_t 		viz_fps;
 
 
@@ -164,11 +165,12 @@
 					uint8_t 	level;
 					uint8_t 	mix_mode;
 					uint16_t	index_start;		// Where to start at reset
-					uint16_t	index_add_led;			// how much to add onto the index on 
-					uint16_t	index_add_frame;		// ???
+					uint16_t	index_add_led;		// how much to add onto the index on 
+					uint16_t	index_add_frame;	// ???
 					uint16_t 	indexLong;
 					uint8_t		index;				// the pallete index
-					
+					uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
+					uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
 
 		};
 
@@ -190,6 +192,7 @@
 			uint8_t mix_mode;
 			uint8_t level;
 			uint8_t fade;
+			uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
 
 		};
 
@@ -273,6 +276,7 @@
 			uint8_t level;
 			uint8_t cooling;
 			uint8_t sparking;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
 
 		};
 
@@ -317,6 +321,7 @@
 			uint8_t level;
 			uint8_t offset;
 			uint8_t extend;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
 
 		};
 
@@ -338,9 +343,12 @@
 			uint8_t mix_mode;
 			uint8_t level;
 			uint8_t xscale;
-		  uint8_t yscale;
-		  uint8_t beater;
+		  	uint8_t yscale;
+		  	uint8_t beater;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+
 			uint16_t dist;
+			
 
 
 		};
@@ -556,7 +564,8 @@
 	void LEDS_setall_color(uint8_t color);																	 // wifi-ota
 	void LEDS_FFT_enqueue(uint8_t invalue);													 // wifi-ota
 	uint8_t LEDS_FFT_get_value(uint8_t bit);													 // wifi-ota
-	void LEDS_show(); 																		//wifi-ota
+	void LEDS_show(); 
+	void FastLEDshowESP32();																		//wifi-ota
 	void LEDS_PAL_invert(uint8_t pal );
 	void LEDS_Copy_strip(uint16_t start_LED, int nr_LED, uint16_t ref_LED);
 	 //CRGB ColorFrom_LONG_Palette(boolean pal, uint16_t longIndex, uint8_t brightness = 255, TBlendType blendType = LINEARBLEND) // made a new fuction to spread out the 255 index/color  pallet to 16*255 = 4080 colors

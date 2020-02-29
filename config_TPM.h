@@ -52,7 +52,7 @@
 	#define WIFI_CLIENT_CONNECT_TRYS		1					// how many times to try to connect to the wifi 
 
 	// Default Artnet
-	#define DEF_ARTNET_SEND_ENABLE 				true					// enable Artnet  ?
+	#define DEF_ARTNET_SEND_ENABLE 				false					// enable Artnet  ?
 	#define DEF_ARTNET_RECIVE_ENABLE 			false					// enable Artnet  ?
 	#define DEF_ARTNET_STAT_UNIVERSE 		5						// Default Artnet Start universe
 	#define DEF_ARTNET_NUMBER_OF_UNIVERSES 	4						// Default Arnet NR of universes MAX 4 !!!! TODO 

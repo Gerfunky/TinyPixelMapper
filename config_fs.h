@@ -24,8 +24,8 @@ void FS_setup_SPIFFS();
 
 
 // Wifi
-	void FS_wifi_write(uint8_t conf_nr = 0);		// wifi-ota , osc
-	boolean FS_wifi_read(uint8_t conf_nr = 0);		// wifi-ota
+	void FS_wifi_write();		// wifi-ota , osc
+	boolean FS_wifi_read();		// wifi-ota
 
 
 
