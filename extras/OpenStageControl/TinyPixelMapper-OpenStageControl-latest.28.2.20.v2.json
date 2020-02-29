@@ -4302,7 +4302,7 @@
                   "width": "100%",
                   "height": "12%",
                   "css": "",
-                  "left": 0,
+                  "left": -10,
                   "top": 0,
                   "id": "clone_8",
                   "props": {},
@@ -6364,8 +6364,8 @@
                           "left": "90%",
                           "id": "FX1Run2",
                           "linkId": "",
-                          "width": "10%",
-                          "height": "25%",
+                          "width": "9%",
+                          "height": "15%",
                           "label": false,
                           "color": "auto",
                           "css": "",
@@ -6583,6 +6583,28 @@
                               "19 : SV - Sum > Tg else 255": 19
                             }
                           }
+                        },
+                        {
+                          "type": "push",
+                          "top": "90%",
+                          "left": "90%",
+                          "id": "form_SL_NL_ref12",
+                          "linkId": "",
+                          "width": "9%",
+                          "height": "10%",
+                          "label": "<---  refresh",
+                          "color": "auto",
+                          "css": "",
+                          "value": "",
+                          "preArgs": [],
+                          "address": "/ostc/form/fx/fx01/adv",
+                          "on": 1,
+                          "off": 0,
+                          "norelease": true,
+                          "precision": 0,
+                          "target": "@{target}",
+                          "bypass": false,
+                          "doubleTap": false
                         }
                       ],
                       "tabs": []
