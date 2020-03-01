@@ -867,6 +867,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_cfg[form].start_led)));
 			conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
 			conf_file.print(String(":" + String(form_fx1[form].fade)));
+			
 
 			conf_file.println("] ");
 
@@ -884,6 +885,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_pal[form].index_add_frame)));
 			conf_file.print(String(":" + String(form_fx_pal[form].palSpeedBin)));
 			conf_file.print(String(":" + String(form_fx_pal[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_pal[form].lvl_bin)));
 	
 
 			conf_file.println("] ");
@@ -932,6 +934,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_shim[form].yscale)));
 			conf_file.print(String(":" + String(form_fx_shim[form].beater)));
 			conf_file.print(String(":" + String(form_fx_shim[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_shim[form].lvl_bin)));
 
 			conf_file.println("] ");
 		}
@@ -954,6 +957,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_fft[form].offset)));
 			conf_file.print(String(":" + String(form_fx_fft[form].extend)));
 			conf_file.print(String(":" + String(form_fx_fft[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_fft[form].lvl_bin)));
 			
 
 			conf_file.println("] ");
@@ -978,6 +982,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx_fire[form].cooling)));
 			conf_file.print(String(":" + String(form_fx_fire[form].sparking)));
 			conf_file.print(String(":" + String(form_fx_fire[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_fire[form].lvl_bin)));
 
 
 			conf_file.println("] ");
@@ -1022,6 +1027,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(form_fx1[form].mix_mode)));
 			conf_file.print(String(":" + String(form_fx1[form].fade)));
 			conf_file.print(String(":" + String(form_fx1[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx1[form].lvl_bin)));
 			conf_file.println("] ");
 		}
 
@@ -1209,6 +1215,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_cfg[strip_no].start_led);
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].triggerBin = in_int;} else form_fx1[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].lvl_bin = in_int;}    else form_fx1[strip_no].lvl_bin = 255;
 			}
 			else if ((type == 'P') && (typeb == 'F'))
 			{
@@ -1220,7 +1227,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_led = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].index_add_frame = in_int;
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].palSpeedBin = in_int;} 	else  form_fx_pal[strip_no].palSpeedBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].triggerBin = in_int;}		else  form_fx_pal[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].triggerBin  = in_int;}    else  form_fx_pal[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_pal[strip_no].lvl_bin     = in_int;}	else  form_fx_pal[strip_no].lvl_bin = 255;
 				
 				
 
@@ -1258,6 +1266,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].yscale = in_int; 
 				in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].beater = in_int; 
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].triggerBin = in_int; } else  form_fx_shim[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_shim[strip_no].lvl_bin = in_int; } else  form_fx_shim[strip_no].lvl_bin = 255;
 
 			}	
 			else if ((type == 'S') && (typeb == 'B'))
@@ -1274,6 +1283,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].offset = in_int;
 				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].extend = in_int;} 	else {form_fx_fft[strip_no].extend = 0;}
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].triggerBin = in_int; }else  form_fx_fft[strip_no].triggerBin  = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fft[strip_no].lvl_bin = in_int; }   else  form_fx_fft[strip_no].lvl_bin  = 255;
 			}
 			else if ((type == 'T') && (typeb == 'B'))
 			{
@@ -1291,6 +1301,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].cooling = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].sparking = in_int;
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].triggerBin = in_int;} else form_fx_fire[strip_no].triggerBin;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx_fire[strip_no].lvl_bin = in_int;}    else form_fx_fire[strip_no].lvl_bin;
 
 
 			}
@@ -1323,6 +1334,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].mix_mode = in_int;
 				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].triggerBin = in_int; } else form_fx1[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].lvl_bin = in_int; }    else form_fx1[strip_no].lvl_bin = 255;
 			}
 			else if ((type == 'X') && (typeb == 'B'))
 			{

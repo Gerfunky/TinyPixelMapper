@@ -171,6 +171,7 @@
 					uint8_t		index;				// the pallete index
 					uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
 					uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
+					uint8_t 	lvl_bin;			// whats the lvl bin to add to the lvl   , 255 = none
 
 		};
 
@@ -192,7 +193,8 @@
 			uint8_t mix_mode;
 			uint8_t level;
 			uint8_t fade;
-			uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
 
 		};
 
@@ -277,6 +279,7 @@
 			uint8_t cooling;
 			uint8_t sparking;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
 
 		};
 
@@ -303,16 +306,19 @@
 		uint8_t avarage;
 		uint8_t autoFFT;
 		uint8_t max;
+		uint8_t result; 
+		
 		
 	};
 
-#define FFT_FX_NR_OF_BINS 20
+#define FFT_FX_NR_OF_BINS 50
 	struct fft_fxbin_struct 
 	{
 			uint8_t sum ;					
 			uint8_t set_val ;
 			uint8_t trrig_val;
 			uint8_t menu_select;
+			uint8_t result;
 	};
 
 		struct form_fx_fft_struct
@@ -322,6 +328,7 @@
 			uint8_t offset;
 			uint8_t extend;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
 
 		};
 
@@ -346,6 +353,7 @@
 		  	uint8_t yscale;
 		  	uint8_t beater;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
 
 			uint16_t dist;
 			
