@@ -139,18 +139,9 @@ fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] =
 
 
 	uint8_t layer_select[MAX_LAYERS_SELECT]  = {2,1,4,3,5,6,7,0,0,0,0,0,0,0,0,0};
-
-
-			/*			0 = none
-						1 = Form FFT
-						2 = Strip FFT
-						3 = Form pallete
-						4 = Strip pallete
-						5 = FX1
-						6 = Fire
-						7 = Shimmer
+			//"values": { "None": 0, "00-15 FFT ": 1, "00-15 Pal": 2, "00-15 FX1": 3, "00-15 Fire ": 4, "00-15 Shimmer ": 5, "16-31 FFT ": 6, "16-31 Pal": 7, "16-31 FX1": 8, "16-31 Fire ": 9, "16-31 Shimmer ": 10 }
 						
-			*/
+		
 
 	byte  copy_leds_mode[NR_COPY_LED_BYTES] = { 0,0 };
 	led_Copy_Struct copy_leds[NR_COPY_STRIPS] = 
@@ -969,6 +960,7 @@ boolean LEDS_checkIfAudioSelected()
 	if(fft_fxbin[1].menu_select != 0) return true;
 	if(fft_fxbin[2].menu_select != 0) return true;
 	if(fft_data_fps != 0) return true;
+	
 	return false;
 
 }
@@ -1351,7 +1343,7 @@ CRGB LEDS_FFT_process()
 		//if (bitRead(fft_data_menu[2], i) == true) fft_color_result_data[2] = constrain((fft_color_result_data[2] + bins[i]), 0, 255);
 
 	}
-	for( uint8_t z = 0; z < FFT_FX_NR_OF_BINS ; z++)  fft_fxbin[z].result  =   LEDS_fft_calc_fxbin_result(z);
+	for( uint8_t z = 0; z < FFT_FX_NR_OF_BINS ; z++)  if ( fft_fxbin[z].menu_select != 0)  fft_fxbin[z].result  =   LEDS_fft_calc_fxbin_result(z);
 
 	//debugMe(fft_color_result_data[1]);	
 	//debugMe(fft_data_menu[0], false);
@@ -1890,7 +1882,7 @@ void LEDS_run_pal(uint8_t z, uint8_t i )
 
 	if ( ( form_fx_pal[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].triggerBin  )        != 0 ))
 	{
-		uint16_t speed_select ;
+		
 		uint8_t lvl_select;
 
 
@@ -1898,24 +1890,28 @@ void LEDS_run_pal(uint8_t z, uint8_t i )
 			 lvl_select = LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].lvl_bin);
 		else lvl_select = form_fx_pal[i + (z * 8)].level ;
 
-		if (form_fx_pal[i + (z * 8)].palSpeedBin != 255)
-
-			speed_select = form_fx_pal[i + (z * 8)].index_add_led + LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].palSpeedBin  )  ;
-
-		else 
-			speed_select = form_fx_pal[i + (z * 8)].index_add_led; 
+		
 
 		
 
 		
 		
-		tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , speed_select ,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
+		tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(form_fx_pal[i + (z * 8)].pal ), form_cfg[i + (z * 8)].start_led,form_cfg[i + (z * 8)].nr_leds  , form_fx_pal[i + (z * 8)].indexLong , form_fx_pal[i + (z * 8)].index_add_led  ,  MIX_REPLACE, 255,  TBlendType(bitRead(form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
 		tpm_fx.mixOntoLedArray(tmp_array, leds, form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led,  bitRead(form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(form_fx_pal[i + (z * 8)].mix_mode), lvl_select , bitRead(form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
 		
 
 
-		uint16_t pal_speed	= form_fx_pal[i + (z * 8)].index_add_frame   ;
-		if(bitRead(form_menu_pal[z][_M_FORM_PAL_SPEED_FROM_FFT], i)) pal_speed = LEDS_data_or_fftbin(form_fx_pal[i + (z * 8)].index_add_frame) *8; 
+		uint16_t pal_speed; 	 // = form_fx_pal[i + (z * 8)].index_add_frame   ;
+
+		if (form_fx_pal[i + (z * 8)].palSpeedBin != 255)
+
+			pal_speed = LEDS_fft_get_fxbin_result(form_fx_pal[i + (z * 8)].palSpeedBin  )  ;
+
+		else 
+			pal_speed = form_fx_pal[i + (z * 8)].index_add_frame;  
+
+
+		//if(bitRead(form_menu_pal[z][_M_FORM_PAL_SPEED_FROM_FFT], i)) pal_speed = LEDS_data_or_fftbin(form_fx_pal[i + (z * 8)].index_add_frame) *8; 
 
 		//debugMe("palSpeed" + String(pal_speed));
 		form_fx_pal[i + (z * 8)].index = form_fx_pal[i + (z * 8)].index + pal_speed;

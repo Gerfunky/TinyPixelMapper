@@ -810,40 +810,27 @@ void osc_StC_menu_form_led_adv_ref()
 		}	
 }
 
-void osc_StC_menu_form_fft_adv_ref()
+void osc_StC_menu_form_fft_adv_ref(uint8_t bit)
 {
 	
-		uint8_t bit = 0;
+		//uint8_t bit = 0;
 
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
 		{
 			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
+			uint8_t formNr = bit *8 + bit_formNr ;
 
-				}
-					
-					osc_queu_MSG_int( "/ostc/form/fft/rev/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		real_formNr)));  		
-					osc_queu_MSG_int( "/ostc/form/fft/run/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 			real_formNr)));  		
-					osc_queu_MSG_int( "/ostc/form/fft/ocl/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		real_formNr)));  		
-					osc_queu_MSG_int( "/ostc/form/fft/mir/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 		real_formNr)));  
+			osc_queu_MSG_int( "/ostc/form/fft/rev/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_REVERSED], 		bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fft/run/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_RUN], 			bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fft/ocl/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_ONECOLOR], 		bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fft/mir/" + String(formNr),	(bitRead(form_menu_fft[bit][_M_FORM_FFT_MIRROR], 		bit_formNr)));  
 
-					
-
-
-
-				
-	
-		osc_queu_MSG_int("/ostc/form/fft/ofs/" + String(formNr), form_fx_fft[formNr].offset );
-		osc_queu_MSG_int("/ostc/form/fft/exd/" + String(formNr), form_fx_fft[formNr].extend );
-		osc_queu_MSG_int("/ostc/form/fft/mix/" + String(formNr), form_fx_fft[formNr].mix_mode );
-		osc_queu_MSG_int("/ostc/form/fft/lvl/"+	String(formNr), form_fx_fft[formNr].level );
-		osc_queu_MSG_int("/ostc/form/fft/tgp/"+	String(formNr), form_fx_fft[formNr].triggerBin );
-		osc_queu_MSG_int("/ostc/form/fft/lvb/"+	String(formNr), form_fx_fft[formNr].lvl_bin );
+			osc_queu_MSG_int("/ostc/form/fft/ofs/" + String(formNr), form_fx_fft[formNr].offset );
+			osc_queu_MSG_int("/ostc/form/fft/exd/" + String(formNr), form_fx_fft[formNr].extend );
+			osc_queu_MSG_int("/ostc/form/fft/mix/" + String(formNr), form_fx_fft[formNr].mix_mode );
+			osc_queu_MSG_int("/ostc/form/fft/lvl/"+	String(formNr), form_fx_fft[formNr].level );
+			osc_queu_MSG_int("/ostc/form/fft/tgp/"+	String(formNr), form_fx_fft[formNr].triggerBin );
+			osc_queu_MSG_int("/ostc/form/fft/lvb/"+	String(formNr), form_fx_fft[formNr].lvl_bin );
 
 		}		
 }
@@ -882,28 +869,19 @@ uint8_t bit = 0;
 
 
 
-void osc_StC_menu_form_fx_fire_adv_ref()
+void osc_StC_menu_form_fx_fire_adv_ref(uint8_t bit)
 {
-uint8_t bit = 0;	
 
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
 		{
 		
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
+			uint8_t formNr = bit *8 + bit_formNr ;
 					
-					osc_queu_MSG_int( "/ostc/form/fx/fire/run/" + String(formNr),		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  		
-					osc_queu_MSG_int( "/ostc/form/fx/fire/mir/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_MIRROR], 	real_formNr)));  		
-					osc_queu_MSG_int( "/ostc/form/fx/fire/rev/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_REVERSED], 		real_formNr)));  		
-				
-										
-		
+			osc_queu_MSG_int( "/ostc/form/fx/fire/run/" + String(formNr),		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/fire/mir/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_MIRROR], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/fire/rev/" + String(formNr),	(bitRead(form_menu_fire[bit][_M_FORM_FIRE_REVERSED], 		bit_formNr)));  		
+
 			osc_queu_MSG_int("/ostc/form/fx/fire/lvl/" + String(formNr) , form_fx_fire[formNr].level );
 			osc_queu_MSG_int("/ostc/form/fx/fire/mix/" + String(formNr), form_fx_fire[formNr].mix_mode );
 			osc_queu_MSG_int("/ostc/form/fx/fire/pal/" + String(formNr), form_fx_fire[formNr].pal );
@@ -913,277 +891,133 @@ uint8_t bit = 0;
 			osc_queu_MSG_int("/ostc/form/fx/fire/lvb/" + String(formNr), form_fx_fire[formNr].lvl_bin );
 		}
 
-	//	osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
-	//	osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
+
 }
 
 
-void osc_StC_menu_form_dot_adv_ref()
+void osc_StC_menu_form_dot_adv_ref(uint8_t bit)
 {
-	uint8_t bit = 0;	
 
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
 		{
 			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
+			uint8_t formNr = bit *8 + bit_formNr ;
 
 		
-		//osc_queu_MSG_int( "/ostc/form/fx/dott/saw/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SAW], 		real_formNr)));  		
-		//osc_queu_MSG_int( "/ostc/form/fx/dott/jug/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SINE], 		real_formNr)));  	
-		//osc_queu_MSG_int( "/ostc/form/fx/dott/fft/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_FFT], 	real_formNr)));  	
+			//osc_queu_MSG_int( "/ostc/form/fx/dott/saw/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SAW], 		real_formNr)));  		
+			//osc_queu_MSG_int( "/ostc/form/fx/dott/jug/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_SINE], 		real_formNr)));  	
+			//osc_queu_MSG_int( "/ostc/form/fx/dott/fft/" + 	String(formNr),		(bitRead(form_menu_dot[bit][_M_FORM_DOT_FFT], 	real_formNr)));  	
 
-		osc_queu_MSG_int("/ostc/form/fx/dott/pal/" + String(formNr), form_fx_dots[formNr].pal );
-		osc_queu_MSG_int("/ostc/form/fx/dott/lvl/" + String(formNr), form_fx_dots[formNr].level );
-		//osc_queu_MSG_int("/ostc/form/fx/dott/mix/" + String(formNr), form_fx_dots[formNr].mix );
-		osc_queu_MSG_int("/ostc/form/fx/dott/num/" + String(formNr), form_fx_dots[formNr].nr_dots );
-		osc_queu_MSG_int("/ostc/form/fx/dott/bpm/" + String(formNr), form_fx_dots[formNr].speed );
-		osc_queu_MSG_int("/ostc/form/fx/dott/pbm/" + String(formNr), form_fx_dots[formNr].index_add );
+			osc_queu_MSG_int("/ostc/form/fx/dott/pal/" + String(formNr), form_fx_dots[formNr].pal );
+			osc_queu_MSG_int("/ostc/form/fx/dott/lvl/" + String(formNr), form_fx_dots[formNr].level );
+			//osc_queu_MSG_int("/ostc/form/fx/dott/mix/" + String(formNr), form_fx_dots[formNr].mix );
+			osc_queu_MSG_int("/ostc/form/fx/dott/num/" + String(formNr), form_fx_dots[formNr].nr_dots );
+			osc_queu_MSG_int("/ostc/form/fx/dott/bpm/" + String(formNr), form_fx_dots[formNr].speed );
+			osc_queu_MSG_int("/ostc/form/fx/dott/pbm/" + String(formNr), form_fx_dots[formNr].index_add );
 
-		osc_queu_MSG_int("/ostc/form/fx/dott/run/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_RUN], 		real_formNr)) );
-		osc_queu_MSG_int("/ostc/form/fx/dott/typ/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_TYPE], 		real_formNr)));
+			osc_queu_MSG_int("/ostc/form/fx/dott/run/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_RUN], 		bit_formNr)) );
+			osc_queu_MSG_int("/ostc/form/fx/dott/typ/" + String(formNr), 	(bitRead(form_menu_dot[bit][_M_FORM_DOT_TYPE], 		bit_formNr)));
 
 		}		
 }
 
-void osc_StC_menu_form_glit_adv_ref()
+void osc_StC_menu_form_glit_adv_ref(uint8_t bit)
 {
-	uint8_t bit = 0;	
-
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
-		{
-			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
-
-		osc_queu_MSG_int( "/ostc/form/fx/glit/run/" +	String(formNr),		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_RUN], 	real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/fx/glit/gdb/" +	String(formNr),		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_FFT], 	real_formNr)));  		
-		//osc_queu_MSG_int( "/ostc/form/fx/glit/fft/" + String(formNr),		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_FFT], 	real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/fx/glit/lvl/" + String(formNr),	 form_fx_glitter[formNr].level);
-		//osc_queu_MSG_int( "/ostc/form/fx/glit/mix/" + String(formNr),	 form_fx_glitter[real_formNr].mix_mode);
-		osc_queu_MSG_int( "/ostc/form/fx/glit/pal/" + String(formNr),	 form_fx_glitter[formNr].pal);
-		osc_queu_MSG_int( "/ostc/form/fx/glit/val/" + String(formNr),	 form_fx_glitter[formNr].value);
-		}		
-}
-
-void osc_StC_menu_form_shim_adv_ref()
-{
-	uint8_t bit = 0;	
-
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
-		{
-			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )			
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
-
-		osc_queu_MSG_int( "/ostc/form/fx/shim/run/" +	String(formNr),		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/fx/shim/bld/" + String(formNr),		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_BLEND], 	real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/fx/shim/lvl/" + String(formNr),	 form_fx_shim[formNr].level);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/mix/" + String(formNr),	 form_fx_shim[formNr].mix_mode);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/pal/" + String(formNr),	 form_fx_shim[formNr].pal);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/x_s/" + String(formNr),	 form_fx_shim[formNr].xscale);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/y_s/" + String(formNr),	 form_fx_shim[formNr].yscale);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/bet/" + String(formNr),	 form_fx_shim[formNr].beater);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/tgp/" + String(formNr),	 form_fx_shim[formNr].triggerBin);
-		osc_queu_MSG_int( "/ostc/form/fx/shim/lvb/" + String(formNr),	 form_fx_shim[formNr].lvl_bin);
-		}		
-}
-/*
-void osc_StC_menu_form_fx_shim_adv_ref()
-{
-	uint8_t bit = 0;	
-	for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
-		{
-			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
-		
-				
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimmer" , formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/shimblend",formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_BLEND], 	real_formNr)));  		
-
-					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/layon" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		
-				
-
-
 	
-			
 
-			osc_queu_MSG_SEL_VAL("/ostc/form/fx/shim/level" , (formNr), form_fx_shim[formNr].level );
-			osc_queu_MSG_int("/ostc/form/fx/shm_xs/" + String(formNr), form_fx_shim[formNr].xscale );
-			osc_queu_MSG_int("/ostc/form/fx/shm_ys/" + String(formNr), form_fx_shim[formNr].yscale );
-			osc_queu_MSG_int("/ostc/form/fx/shm_bt/" + String(formNr), form_fx_shim[formNr].beater );
-
-			osc_queu_MSG_int("/ostc/form/mix/shi/" + String(formNr), form_fx_shim[formNr].mix_mode );
-			osc_queu_MSG_int("/ostc/form/shi/pal/" + String(formNr), form_fx_shim[formNr].pal );
-		
-		}
-
-} */
-
-
-void osc_StC_menu_form_fx1_adv_ref()
-{
-	uint8_t bit = 0;	
-
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
 		{
 			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
+			uint8_t formNr = bit *8 + bit_formNr ;
 
-				}
-				
+			osc_queu_MSG_int( "/ostc/form/fx/glit/run/" +	String(formNr),		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_RUN], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/glit/gdb/" +	String(formNr),		(bitRead(form_menu_glitter[bit][_M_FORM_GLITTER_FFT], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/glit/lvl/" + String(formNr),	 form_fx_glitter[formNr].level);
+			osc_queu_MSG_int( "/ostc/form/fx/glit/pal/" + String(formNr),	 form_fx_glitter[formNr].pal);
+			osc_queu_MSG_int( "/ostc/form/fx/glit/val/" + String(formNr),	 form_fx_glitter[formNr].value);
+		}		
+}
 
-						//case _M_FX_MASK: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/mask" , 	formNr,		(bitRead(form_menu[bit][_M_FX_MASK], 		real_formNr)));  	
-						//case _M_FX_SUBTRACT: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/pm" , 		formNr,		(bitRead(form_menu[bit][_M_FX_SUBTRACT], 	real_formNr)));  		
+void osc_StC_menu_form_shim_adv_ref(uint8_t bit)
+{
+	
+
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
+		{
+			
+			uint8_t formNr = bit *8 + bit_formNr ;
+
+			osc_queu_MSG_int( "/ostc/form/fx/shim/run/" +	String(formNr),		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/shim/bld/" + String(formNr),		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_BLEND], bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/shim/lvl/" + String(formNr),	 form_fx_shim[formNr].level);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/mix/" + String(formNr),	 form_fx_shim[formNr].mix_mode);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/pal/" + String(formNr),	 form_fx_shim[formNr].pal);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/x_s/" + String(formNr),	 form_fx_shim[formNr].xscale);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/y_s/" + String(formNr),	 form_fx_shim[formNr].yscale);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/bet/" + String(formNr),	 form_fx_shim[formNr].beater);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/tgp/" + String(formNr),	 form_fx_shim[formNr].triggerBin);
+			osc_queu_MSG_int( "/ostc/form/fx/shim/lvb/" + String(formNr),	 form_fx_shim[formNr].lvl_bin);
+		}		
+}
+
+
+
+void osc_StC_menu_form_fx1_adv_ref(uint8_t bit)
+{
+
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
+		{
+			
+			uint8_t formNr = bit *8 + bit_formNr ;	
+	
+			osc_queu_MSG_int( "/ostc/form/fx/fx01/run/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		bit_formNr)));  	
+			osc_queu_MSG_int( "/ostc/form/fx/fx01/mir/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_MIRROR], 		bit_formNr)));  	
+			osc_queu_MSG_int( "/ostc/form/fx/fx01/rev/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_REVERSED], 		bit_formNr)));  	
 		
-		
-		osc_queu_MSG_int( "/ostc/form/fx/fx01/run/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  	
-		osc_queu_MSG_int( "/ostc/form/fx/fx01/mir/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_MIRROR], 		real_formNr)));  	
-		osc_queu_MSG_int( "/ostc/form/fx/fx01/rev/" +	String(formNr),		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_REVERSED], 		real_formNr)));  	
- 	
-		osc_queu_MSG_int("/ostc/form/fx/fx01/lvl/" + String(formNr) , form_fx1[formNr].level );
-		//osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_fx_glitter[formNr].value );
-		osc_queu_MSG_int("/ostc/form/fx/fade/lvl/" +	String(formNr) , form_fx1[formNr].fade );
-		osc_queu_MSG_int("/ostc/form/fx/fx01/mix/" + String(formNr), form_fx1[formNr].mix_mode );
-		osc_queu_MSG_int("/ostc/form/fx/fx01/tgp/" + String(formNr), form_fx1[formNr].triggerBin );
-		osc_queu_MSG_int("/ostc/form/fx/fx01/lvb/" + String(formNr), form_fx1[formNr].lvl_bin );
+			osc_queu_MSG_int("/ostc/form/fx/fx01/lvl/" + String(formNr) , form_fx1[formNr].level );
+			//osc_queu_MSG_int("/ostc/form/gv/" + String(formNr), form_fx_glitter[formNr].value );
+			osc_queu_MSG_int("/ostc/form/fx/fade/lvl/" +	String(formNr) , form_fx1[formNr].fade );
+			osc_queu_MSG_int("/ostc/form/fx/fx01/mix/" + String(formNr), form_fx1[formNr].mix_mode );
+			osc_queu_MSG_int("/ostc/form/fx/fx01/tgp/" + String(formNr), form_fx1[formNr].triggerBin );
+			osc_queu_MSG_int("/ostc/form/fx/fx01/lvb/" + String(formNr), form_fx1[formNr].lvl_bin );
 
 		}		
 
 }
 
-
-/*
-void osc_StC_menu_form_leds_ref()
+void osc_StC_menu_form_pal_adv_ref(uint8_t bit)
 {
 		//debugMe("inFormRef ostc");
-	
-		
-		
 
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
-		{
-			osc_queu_MSG_int("/ostc/form/sl/" + String(formNr), form_cfg[formNr].start_led );
-			osc_queu_MSG_int("/ostc/form/nl/" + String(formNr), form_cfg[formNr].nr_leds );
-		}
-
-}
-*/
-
-void osc_StC_menu_form_pal_adv_ref()
-{
-		//debugMe("inFormRef ostc");
-	
-		
-		uint8_t bit = 0;
-
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
+		for (uint8_t bit_formNr = 0; bit_formNr < 8 ; bit_formNr++)
 		{
 			
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
+			uint8_t formNr = bit *8 + bit_formNr ;		
 
-				}
 
-		osc_queu_MSG_int( "/ostc/form/pal/run/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_RUN], 	real_formNr)));		
-		osc_queu_MSG_int( "/ostc/form/pal/ocl/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_ONECOLOR], 	real_formNr)));
-		osc_queu_MSG_int( "/ostc/form/pal/rev/"   + String(formNr), 			(bitRead(form_menu_pal[bit][_M_FORM_PAL_REVERSED], 	real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/pal/mir/"  + String(formNr), 			(bitRead(form_menu_pal[bit][_M_FORM_PAL_MIRROR], 		real_formNr)));  		
-		osc_queu_MSG_int( "/ostc/form/pal/bld/" + String(formNr), 			(bitRead(form_menu_pal[bit][_M_FORM_PAL_BLEND], 		real_formNr)));  	 
-		osc_queu_MSG_int( "/ostc/form/pal/ifm/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_SPEED_FROM_FFT], 	real_formNr)));	
-		
-		osc_queu_MSG_int("/ostc/form/pal/mix/" + String(formNr), form_fx_pal[formNr].mix_mode );
-		osc_queu_MSG_int("/ostc/form/pal/pal/" + String(formNr), form_fx_pal[formNr].pal );
-		
-		osc_queu_MSG_int("/ostc/form/pal/lvl/" + String(formNr), form_fx_pal[formNr].level );
+			osc_queu_MSG_int( "/ostc/form/pal/run/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_RUN], 		bit_formNr)));		
+			osc_queu_MSG_int( "/ostc/form/pal/ocl/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_ONECOLOR], 	bit_formNr)));
+			osc_queu_MSG_int( "/ostc/form/pal/rev/" + String(formNr),   (bitRead(form_menu_pal[bit][_M_FORM_PAL_REVERSED], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/pal/mir/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/pal/bld/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_BLEND], 	bit_formNr)));  	 
+			osc_queu_MSG_int( "/ostc/form/pal/ifm/" + String(formNr), 	(bitRead(form_menu_pal[bit][_M_FORM_PAL_SPEED_FROM_FFT], 	bit_formNr)));	
+			
+			osc_queu_MSG_int("/ostc/form/pal/mix/" + String(formNr), form_fx_pal[formNr].mix_mode );
+			osc_queu_MSG_int("/ostc/form/pal/pal/" + String(formNr), form_fx_pal[formNr].pal );
+			
+			osc_queu_MSG_int("/ostc/form/pal/lvl/" + String(formNr), form_fx_pal[formNr].level );
 
-		osc_queu_MSG_int("/ostc/form/pal/tgp/" + String(formNr), form_fx_pal[formNr].triggerBin );
-		osc_queu_MSG_int("/ostc/form/pal/stg/" + String(formNr), form_fx_pal[formNr].palSpeedBin );
-		osc_queu_MSG_int("/ostc/form/pal/lvb/" + String(formNr), form_fx_pal[formNr].lvl_bin );
-		
-		osc_queu_MSG_int("/ostc/form/pal/ald/" + String(formNr), form_fx_pal[formNr].index_add_led );
-		osc_queu_MSG_int("/ostc/form/pal/afm/" + String(formNr), form_fx_pal[formNr].index_add_frame );
-		osc_queu_MSG_int("/ostc/form/pal/sid/" + String(formNr), form_fx_pal[formNr].index_start );
+			osc_queu_MSG_int("/ostc/form/pal/tgp/" + String(formNr), form_fx_pal[formNr].triggerBin );
+			osc_queu_MSG_int("/ostc/form/pal/stg/" + String(formNr), form_fx_pal[formNr].palSpeedBin );
+			osc_queu_MSG_int("/ostc/form/pal/lvb/" + String(formNr), form_fx_pal[formNr].lvl_bin );
+			
+			osc_queu_MSG_int("/ostc/form/pal/ald/" + String(formNr), form_fx_pal[formNr].index_add_led );
+			osc_queu_MSG_int("/ostc/form/pal/afm/" + String(formNr), form_fx_pal[formNr].index_add_frame );
+			osc_queu_MSG_int("/ostc/form/pal/sid/" + String(formNr), form_fx_pal[formNr].index_start );
 		}		
 } 
-/*
-void osc_StC_menu_form_FX_layers_ref()
-{
-	//debugMe("inFormRef ostc");
-	
-		
-		uint8_t bit = 0;
 
-		for (uint8_t formNr = 0; formNr < NR_FORM_PARTS; formNr++)
-		{
-				uint8_t real_formNr = formNr;
-				 bit = 0;
-				while (real_formNr >= 8 )
-				{
-					bit++;
-					real_formNr = real_formNr - 8;	
-
-				}
-			
-					//	osc_queu_MSG_SEL_VAL( "/ostc/form/fxL/run" , 	formNr,		(bitRead(form_menu_fx1[bit][_M_FORM_FX1_RUN], 		real_formNr)));  		
-
-					osc_queu_MSG_int( "/ostc/form/fx/fire/run/" + formNr,		(bitRead(form_menu_fire[bit][_M_FORM_FIRE_RUN], 			real_formNr)));  	
-
-						osc_queu_MSG_int( "/ostc/form/fx/shim/run/" + formNr,		(bitRead(form_menu_shimmer[bit][_M_FORM_SHIMMER_RUN], 	real_formNr)));  		
-
-						//case _M_FX_3_SIN: 					osc_queu_MSG_SEL_VAL( "/ostc/form/fx/3sin" , 	formNr,		(bitRead(form_menu[bit][_M_FX_3_SIN], 		real_formNr)));  		break;
-						//case _M_FX_SIN_PAL: 				osc_queu_MSG_SEL_VAL( "/ostc/form/fx/sinpal" , 	formNr,		(bitRead(form_menu[bit][_M_FX_SIN_PAL], 	real_formNr)));  		break;
-						
-
-			
-
-
-
-		
-			osc_queu_MSG_int("/ostc/form/fx/shim/lvl/" + formNr, form_fx_shim[formNr].level );
-			osc_queu_MSG_int("/ostc/form/fx/fire/lvl/" +	formNr , form_fx_fire[formNr].level );
-		
-		
-
-		}		
-		osc_queu_MSG_int("/ostc/master/fireCool", 			led_cfg.fire_cooling );
-		osc_queu_MSG_int("/ostc/master/fireSpark",			led_cfg.fire_sparking );
-}
-*/
 
 void osc_StC_menu_form_level_ref()
 {
@@ -1557,7 +1391,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 				for (byte i = 0; i < 2 ; i++)  { binAddr_string = binAddr_string + address[i]; }
 					uint8_t binAddr =  constrain(binAddr_string.toInt(), 0 , FFT_FX_NR_OF_BINS-1) ;
 				debugMe("bin :",false);debugMe(binAddr);
-				
+
 				bitWrite(fft_fxbin[binAddr].menu_select, 	6-i_orig_bin_nr, bool(msg.getInt(0)));
 			
 
@@ -1660,33 +1494,41 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			
 			
 		}
-		else if		(msg.fullMatch("/menu/ref/adv0",addrOffset))							
-		{
-			switch(msg.getInt(0))
-			{
-				case 0: osc_StC_menu_form_pal_adv_ref();  break;
-				case 1: osc_StC_menu_form_fft_adv_ref(); break; 
-				case 2: osc_StC_menu_form_fx_fire_adv_ref(); break; 
-				case 3: osc_StC_menu_form_shim_adv_ref(); break;
-				case 4: {osc_StC_menu_form_fx1_adv_ref(); osc_StC_menu_form_glit_adv_ref(); osc_StC_menu_form_dot_adv_ref(); }break; 
+	//	else if		(msg.fullMatch("/menu/ref/adv0",addrOffset))							
+		//{
+	//		switch(msg.getInt(0))
+		//	{
+				//case 0: osc_StC_menu_form_pal_adv_ref();  break;
+				//case 1: osc_StC_menu_form_fft_adv_ref(); break; 
+				//case 2: osc_StC_menu_form_fx_fire_adv_ref(); break; 
+				//case 3: osc_StC_menu_form_shim_adv_ref(); break;
+				//case 4: {osc_StC_menu_form_fx1_adv_ref(); osc_StC_menu_form_glit_adv_ref(); osc_StC_menu_form_dot_adv_ref(); }break; 
 				//case 2: osc_StC_menu_form_FX_layers_ref();break;
 
-			}
+		//	}
 			
 			
-		}
+		//}
 
 		else if  	(msg.fullMatch("/play/ref",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_play_ref();}
 		else if  	(msg.fullMatch("/level/ref",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_level_ref();}
 
-		else if  	(msg.fullMatch("/pal/adv",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref();}
-		else if  	(msg.fullMatch("/fft/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref();}
+		else if  	(msg.fullMatch("/pal/adv/0",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(0);osc_StC_menu_form_pal_adv_ref(1);}
+		else if  	(msg.fullMatch("/pal/adv/1",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(2);osc_StC_menu_form_pal_adv_ref(3);}
+		
+		else if  	(msg.fullMatch("/fft/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(0);osc_StC_menu_form_fft_adv_ref(1);}
+		else if  	(msg.fullMatch("/fft/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(2);osc_StC_menu_form_fft_adv_ref(3);}
 		else if  	(msg.fullMatch("/leds/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_led_adv_ref();}
-		else if  	(msg.fullMatch("/fx/fire/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref();}
-		else if  	(msg.fullMatch("/fx/shim/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref();}
-		else if  	(msg.fullMatch("/fx/glit/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref();}
-		else if  	(msg.fullMatch("/fx/dott/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref();}
-		else if  	(msg.fullMatch("/fx/fx01/adv",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref();}
+		else if  	(msg.fullMatch("/fx/fire/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref(0);osc_StC_menu_form_fx_fire_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/fire/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref(2);osc_StC_menu_form_fx_fire_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/shim/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref(0);osc_StC_menu_form_shim_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/shim/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref(2);osc_StC_menu_form_shim_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/glit/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref(0);osc_StC_menu_form_glit_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/glit/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref(2);osc_StC_menu_form_glit_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/dott/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref(0);osc_StC_menu_form_dot_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/dott/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref(2);osc_StC_menu_form_dot_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/fx01/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref(0);osc_StC_menu_form_fx1_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/fx01/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref(2);osc_StC_menu_form_fx1_adv_ref(3);}
 	
 		else if 	(msg.match("/fx",addrOffset))	
 		{
