@@ -5661,32 +5661,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     }
                   ],
                   "tabs": []
@@ -6413,32 +6388,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     },
                     {
                       "type": "text",
@@ -6884,32 +6834,7 @@
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
-                          "props": {
-                            "label": false,
-                            "values": {
-                              "None": 255,
-                              "00 : SV + Sum > Tg else 0": 0,
-                              "01 : SV + Sum > Tg else 0": 1,
-                              "02 : SV + Sum > Tg else SV": 2,
-                              "03 : SV + Sum > Tg else SV": 3,
-                              "04 : SV + Sum > Tg else SV": 4,
-                              "05 : SV + Sum > Tg else SV": 5,
-                              "06 : SV + Sum > Tg else SV": 6,
-                              "07 : SV + Sum > Tg else SV": 7,
-                              "08 : SV + Sum > Tg else SV": 8,
-                              "09 : SV + Sum > Tg else SV": 9,
-                              "10 : SV - Sum > Tg else SV": 10,
-                              "11 : SV - Sum > Tg else SV": 11,
-                              "12 : SV - Sum > Tg else SV": 12,
-                              "13 : SV - Sum > Tg else SV": 13,
-                              "14 : SV - Sum > Tg else SV": 14,
-                              "15 : SV - Sum > Tg else SV": 15,
-                              "16 : SV - Sum > Tg else SV": 16,
-                              "17 : SV - Sum > Tg else SV": 17,
-                              "18 : SV - Sum > Tg else 255": 18,
-                              "19 : SV - Sum > Tg else 255": 19
-                            }
-                          }
+                          "props": "@{pal_lvl_bin_matrix.props}"
                         }
                       ],
                       "tabs": []
@@ -7783,41 +7708,7 @@
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
-                          "props": {
-                            "label": false,
-                            "values": {
-                              "FFT color result": 250,
-                              "C0 : Custom 0": 0,
-                              "C1 :Custom 1": 1,
-                              "C2 : Custom 2": 2,
-                              "C3 :Custom 3": 3,
-                              "C4 : Custom 4": 4,
-                              "C5 :Custom 5": 5,
-                              "C6 : Custom 6": 6,
-                              "C7 :Custom 7": 7,
-                              "C8 :Custom 8": 8,
-                              "C9 : Custom 9": 9,
-                              "C10 :Custom 11": 10,
-                              "C11 : Custom 10": 11,
-                              "C12 :Custom 12": 12,
-                              "C13 : Custom 13": 13,
-                              "C14 :Custom 14": 14,
-                              "C15 :Custom 15": 15,
-                              "RB : Rainbow": 20,
-                              "RBS : Rainbow Striped": 21,
-                              "Cloudy": 22,
-                              "Party": 23,
-                              "Ocean": 24,
-                              "Forest": 25,
-                              "4 Fire effect": 26,
-                              "Lava": 27,
-                              "RG :Red Green": 28,
-                              "RB :Red Blue": 29,
-                              "GB :Green Blue": 30,
-                              "BWN : Black white narrow": 31,
-                              "BWW : Black white wide": 32
-                            }
-                          },
+                          "props": "@{pal_selpal_matrix.props}",
                           "default": "",
                           "value": "",
                           "precision": 0,
@@ -8974,32 +8865,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "Level, No bin": 255,
-                          "00 : Lvl + (SV + Sum > Tg else 0)": 0,
-                          "01 : Lvl + (SV + Sum > Tg else 0)": 1,
-                          "02 : Lvl + (SV + Sum > Tg else SV)": 2,
-                          "03 : Lvl + (SV + Sum > Tg else SV)": 3,
-                          "04 : Lvl + (SV + Sum > Tg else SV)": 4,
-                          "05 : Lvl + (SV + Sum > Tg else SV)": 5,
-                          "06 : Lvl + (SV + Sum > Tg else SV)": 6,
-                          "07 : Lvl + (SV + Sum > Tg else SV)": 7,
-                          "08 : Lvl + (SV + Sum > Tg else SV)": 8,
-                          "09 : Lvl + (SV + Sum > Tg else SV)": 9,
-                          "10 : Lvl + (SV - Sum > Tg else SV)": 10,
-                          "11 : Lvl + (SV - Sum > Tg else SV)": 11,
-                          "12 : Lvl + (SV - Sum > Tg else SV)": 12,
-                          "13 : Lvl + (SV - Sum > Tg else SV)": 13,
-                          "14 : Lvl + (SV - Sum > Tg else SV)": 14,
-                          "15 : Lvl + (SV - Sum > Tg else SV)": 15,
-                          "16 : Lvl + (SV - Sum > Tg else SV)": 16,
-                          "17 : Lvl + (SV - Sum > Tg else SV)": 17,
-                          "18 : Lvl + (SV - Sum > Tg else 255)": 18,
-                          "19 : Lvl + (SV - Sum > Tg else 255)": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     }
                   ],
                   "tabs": []
@@ -9295,40 +9161,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "C0 : Custom 0": 0,
-                          "C1 :Custom 1": 1,
-                          "C2 : Custom 2": 2,
-                          "C3 :Custom 3": 3,
-                          "C4 : Custom 4": 4,
-                          "C5 :Custom 5": 5,
-                          "C6 : Custom 6": 6,
-                          "C7 :Custom 7": 7,
-                          "C8 :Custom 8": 8,
-                          "C9 : Custom 9": 9,
-                          "C10 :Custom 11": 10,
-                          "C11 : Custom 10": 11,
-                          "C12 :Custom 12": 12,
-                          "C13 : Custom 13": 13,
-                          "C14 :Custom 14": 14,
-                          "C15 :Custom 15": 15,
-                          "RB : Rainbow": 20,
-                          "RBS : Rainbow Striped": 21,
-                          "Cloudy": 22,
-                          "Party": 23,
-                          "Ocean": 24,
-                          "Forest": 25,
-                          "4 Fire effect": 26,
-                          "Lava": 27,
-                          "RG :Red Green": 28,
-                          "RB :Red Blue": 29,
-                          "GB :Green Blue": 30,
-                          "BWN : Black white narrow": 31,
-                          "BWW : Black white wide": 32
-                        }
-                      }
+                      "props": "@{pal_selpal_matrix.props}"
                     },
                     {
                       "type": "text",
@@ -9668,26 +9501,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "+ ADD": 0,
-                          "- SUBTRACT": 1,
-                          "MASK": 2,
-                          "OR": 3,
-                          "XOR": 4,
-                          "AND": 5,
-                          "DIFF": 6,
-                          "HARD": 7,
-                          "* MULTIPLY": 8,
-                          "HL HardLight": 9,
-                          "OVERLAY": 10,
-                          "TADA": 11,
-                          "DARKEN": 12,
-                          "LIGHTEN": 13,
-                          "LINEAR BURN": 14
-                        }
-                      }
+                      "props": "@{pal_mix_matrix.props}"
                     },
                     {
                       "type": "text",
@@ -9735,32 +9549,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     }
                   ],
                   "tabs": []
@@ -10258,32 +10047,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     }
                   ],
                   "tabs": []
@@ -10739,32 +10503,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     }
                   ],
                   "tabs": []
@@ -11736,32 +11475,7 @@
                       "spacing": 0,
                       "traversing": true,
                       "border": true,
-                      "props": {
-                        "label": false,
-                        "values": {
-                          "None": 255,
-                          "00 : SV + Sum > Tg else 0": 0,
-                          "01 : SV + Sum > Tg else 0": 1,
-                          "02 : SV + Sum > Tg else SV": 2,
-                          "03 : SV + Sum > Tg else SV": 3,
-                          "04 : SV + Sum > Tg else SV": 4,
-                          "05 : SV + Sum > Tg else SV": 5,
-                          "06 : SV + Sum > Tg else SV": 6,
-                          "07 : SV + Sum > Tg else SV": 7,
-                          "08 : SV + Sum > Tg else SV": 8,
-                          "09 : SV + Sum > Tg else SV": 9,
-                          "10 : SV - Sum > Tg else SV": 10,
-                          "11 : SV - Sum > Tg else SV": 11,
-                          "12 : SV - Sum > Tg else SV": 12,
-                          "13 : SV - Sum > Tg else SV": 13,
-                          "14 : SV - Sum > Tg else SV": 14,
-                          "15 : SV - Sum > Tg else SV": 15,
-                          "16 : SV - Sum > Tg else SV": 16,
-                          "17 : SV - Sum > Tg else SV": 17,
-                          "18 : SV - Sum > Tg else 255": 18,
-                          "19 : SV - Sum > Tg else 255": 19
-                        }
-                      }
+                      "props": "@{pal_lvl_bin_matrix.props}"
                     },
                     {
                       "type": "text",
@@ -12105,7 +11819,7 @@
                           "wrap": false,
                           "align": "",
                           "default": "",
-                          "value": "FX 1 Fade",
+                          "value": "FX 1 Fade ",
                           "preArgs": [],
                           "address": "/text_1"
                         },
@@ -12360,32 +12074,7 @@
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
-                          "props": {
-                            "label": false,
-                            "values": {
-                              "None": 255,
-                              "00 : SV + Sum > Tg else 0": 0,
-                              "01 : SV + Sum > Tg else 0": 1,
-                              "02 : SV + Sum > Tg else SV": 2,
-                              "03 : SV + Sum > Tg else SV": 3,
-                              "04 : SV + Sum > Tg else SV": 4,
-                              "05 : SV + Sum > Tg else SV": 5,
-                              "06 : SV + Sum > Tg else SV": 6,
-                              "07 : SV + Sum > Tg else SV": 7,
-                              "08 : SV + Sum > Tg else SV": 8,
-                              "09 : SV + Sum > Tg else SV": 9,
-                              "10 : SV - Sum > Tg else SV": 10,
-                              "11 : SV - Sum > Tg else SV": 11,
-                              "12 : SV - Sum > Tg else SV": 12,
-                              "13 : SV - Sum > Tg else SV": 13,
-                              "14 : SV - Sum > Tg else SV": 14,
-                              "15 : SV - Sum > Tg else SV": 15,
-                              "16 : SV - Sum > Tg else SV": 16,
-                              "17 : SV - Sum > Tg else SV": 17,
-                              "18 : SV - Sum > Tg else 255": 18,
-                              "19 : SV - Sum > Tg else 255": 19
-                            }
-                          }
+                          "props": "@{pal_lvl_bin_matrix.props}"
                         }
                       ],
                       "tabs": []
@@ -12769,42 +12458,7 @@
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
-                          "props": {
-                            "label": false,
-                            "values": {
-                              "FFT color result": 250,
-                              "Rotating Hue": 251,
-                              "C0 : Custom 0": 0,
-                              "C1 :Custom 1": 1,
-                              "C2 : Custom 2": 2,
-                              "C3 :Custom 3": 3,
-                              "C4 : Custom 4": 4,
-                              "C5 :Custom 5": 5,
-                              "C6 : Custom 6": 6,
-                              "C7 :Custom 7": 7,
-                              "C8 :Custom 8": 8,
-                              "C9 : Custom 9": 9,
-                              "C10 :Custom 11": 10,
-                              "C11 : Custom 10": 11,
-                              "C12 :Custom 12": 12,
-                              "C13 : Custom 13": 13,
-                              "C14 :Custom 14": 14,
-                              "C15 :Custom 15": 15,
-                              "RB : Rainbow": 20,
-                              "RBS : Rainbow Striped": 21,
-                              "Cloudy": 22,
-                              "Party": 23,
-                              "Ocean": 24,
-                              "Forest": 25,
-                              "4 Fire effect": 26,
-                              "Lava": 27,
-                              "RG :Red Green": 28,
-                              "RB :Red Blue": 29,
-                              "GB :Green Blue": 30,
-                              "BWN : Black white narrow": 31,
-                              "BWW : Black white wide": 32
-                            }
-                          },
+                          "props": "@{FX1-dot-color.props}",
                           "default": "",
                           "value": "",
                           "precision": 0,
@@ -13135,41 +12789,7 @@
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
-                          "props": {
-                            "label": false,
-                            "values": {
-                              "FFT color result": 250,
-                              "C0 : Custom 0": 0,
-                              "C1 :Custom 1": 1,
-                              "C2 : Custom 2": 2,
-                              "C3 :Custom 3": 3,
-                              "C4 : Custom 4": 4,
-                              "C5 :Custom 5": 5,
-                              "C6 : Custom 6": 6,
-                              "C7 :Custom 7": 7,
-                              "C8 :Custom 8": 8,
-                              "C9 : Custom 9": 9,
-                              "C10 :Custom 11": 10,
-                              "C11 : Custom 10": 11,
-                              "C12 :Custom 12": 12,
-                              "C13 : Custom 13": 13,
-                              "C14 :Custom 14": 14,
-                              "C15 :Custom 15": 15,
-                              "RB : Rainbow": 20,
-                              "RBS : Rainbow Striped": 21,
-                              "Cloudy": 22,
-                              "Party": 23,
-                              "Ocean": 24,
-                              "Forest": 25,
-                              "4 Fire effect": 26,
-                              "Lava": 27,
-                              "RG :Red Green": 28,
-                              "RB :Red Blue": 29,
-                              "GB :Green Blue": 30,
-                              "BWN : Black white narrow": 31,
-                              "BWW : Black white wide": 32
-                            }
-                          },
+                          "props": "@{pal_selpal_matrix.props}",
                           "default": "",
                           "value": "",
                           "precision": 0,
