@@ -8,7 +8,7 @@ It is a PixelMapping software for a ESP32 Chip.
 
 The main LED driving library is [FastLed](https://github.com/FastLED/FastLED).
 
-Configuration is done over OSC, [TouchOSC](https://hexler.net/touchosc) interfaces are included.
+Configuration is done over [Open Stage control](https://github.com/jean-emmanuel/open-stage-control/releases)
 
 Ther are 3 main modes: Artnet Recive, Arntet Send (16 universes) and Normal Led output.
 
