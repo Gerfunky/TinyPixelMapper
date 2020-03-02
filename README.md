@@ -35,7 +35,7 @@ The PCB has 2 variable resistors, one for Brightness and the other for FPS. One 
 
 All configurations are saved to the SPIFFS. And can be edited over HTTP once the editor is working again on the ESP32 (problem in the esp core/fix is tested and working).
 
-Some of the newest settings are still missing from the OSC configuration.
+Read the Wiki to understand whats going on. howto configure it.
 
 
 ## Required Library's
@@ -64,7 +64,7 @@ Some of the newest settings are still missing from the OSC configuration.
 
 
 ## Installation 
-TODO in wiki ?
+Goto the Wiki
 
 ## Configuration
 The configuration is done in the config_TPM.h settings loaded from the SPIFFS will have a huger priority than what is hardcoded in this file. Only use it for initial setup.
