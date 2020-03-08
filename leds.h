@@ -216,6 +216,7 @@
 			//uint8_t mix_mode;
 			uint8_t level;
 			uint8_t	value;
+			uint8_t glit_bin;
 			//uint8_t color_source;  // 0 = palette, 1 = fft
 			
 		};
@@ -283,6 +284,81 @@
 
 		};
 
+// Strobe
+		#define _M_NR_FORM_STROBE_OPTIONS_ 1
+		enum form_strobe_options
+		{
+			_M_FORM_STROBE_RUN,
+
+
+		};	
+
+
+		struct form_fx_strobe_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t on_frames;
+			uint8_t off_frames;
+			uint16_t frame_pos; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
+			uint8_t triggerBin;
+
+		};
+
+
+// eyea
+		#define _M_NR_FORM_EYES_OPTIONS_ 1
+		enum form_eyes_options
+		{
+			_M_FORM_EYES_RUN,
+
+
+		};	
+
+
+		struct form_fx_eyes_struct
+		{
+			uint8_t color; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint16_t on_frames;
+			uint16_t EyeWidth;
+			uint16_t EyeSpace;
+			uint8_t lvl_bin;
+			uint8_t triggerBin;
+			uint16_t frame_pos; 
+			uint16_t eye_pos;
+			uint8_t  fadeval;		
+
+		};
+
+// eyea
+		#define _M_NR_FORM_METEOR_OPTIONS_ 2
+		enum form_meteor_options
+		{
+			_M_FORM_METEOR_RUN,
+			_M_FORM_METEOR_RANDOMDECAY
+		//	_M_FORM_METEOR_MIRROR,
+		//	_M_FORM_METEOR_REVERSED
+
+
+		};	
+
+
+		struct form_fx_meteor_struct
+		{
+			uint8_t color; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint16_t meteorSize;
+			uint8_t meteorTrailDecay;
+			uint8_t lvl_bin;
+			uint8_t triggerBin;
+			uint16_t frame_pos; 		
+
+		};
 
 	// FFT
 
@@ -551,7 +627,7 @@
 	  };
 
 	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
-	#define MAX_LAYERS 10					// what is the max layer Number 
+	#define MAX_LAYERS 14 				// what is the max layer Number 
 
 
 // Functions
