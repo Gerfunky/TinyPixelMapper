@@ -137,8 +137,8 @@
 
 
 
-		#define FASTLED_ALLOW_INTERRUPTS 0
-		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
+		//#define FASTLED_ALLOW_INTERRUPTS 0
+		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 		#define DEF_VIZ_UPDATE_TIME_FPS 3
 

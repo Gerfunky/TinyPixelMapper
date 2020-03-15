@@ -14,9 +14,9 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   (170*16		)  //(170*4)  // = 680  = 4 universes			// what is the max it can be set to in the config     340*4 = 20 FPS        170*4 = 29
-		#define MAX_NUM_LEDS_BOOT  20 //	only set the first 20 for boot info green=ap / red= clinet
-		#define POT_SENSE_DEF 4   // only take Variable resistor value if it changes more than this.
+		#define MAX_NUM_LEDS   (170*16)  		// what is the max it can be set to in the config    
+		#define MAX_NUM_LEDS_BOOT  20 			//	only set the first 20 for boot info green=ap / red= clinet
+		#define POT_SENSE_DEF 4   				// only take Variable resistor value if it changes more than this.
 
 
 		#define MAX_FADE_VALUE 20 // 90 is to much			// maximum for FADE effect on each frame in  amount 0-255 
@@ -51,10 +51,6 @@
 		uint8_t PotBriLast;
 		uint8_t PotFPSLast;
 		uint8_t PotSens;		// the sensitivity
-
-
-
-
 	};
 
 
@@ -83,9 +79,9 @@
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config for sequencer
 		uint8_t 		edit_pal;
-	//	unsigned long 	update_FIN_time;		// when to update the leds again
-		uint8_t 		realfps;			// whats the real fps that we have at the moment.
-		uint8_t 		framecounter;		// for counting FPS
+	//	unsigned long 	update_FIN_time;			// when to update the leds again
+		uint8_t 		realfps;					// whats the real fps that we have at the moment.
+		uint8_t 		framecounter;				// for counting FPS
 		unsigned long	framecounterUpdateTime; 	// for calculationg fps
 		
 	
@@ -107,46 +103,50 @@
 
 
 	};
-		
-		struct led_Copy_Struct				// copy strips data structure
-		{
-			uint16_t	start_led;
-			int			nr_leds;
-			uint16_t	Ref_LED;
-		};
-		#define NR_COPY_STRIPS 16
-		#define NR_COPY_LED_BYTES 2
 
-// Forms and Parts 
-/*
-   struct Strip_FL_Struct
-   {
-					uint16_t start_led ;	// where the pallete starts
-                    uint16_t nr_leds;		// how many ?  for mirror how many extra.
-					uint16_t index_start;	// prev state A
-                        int index_add;		//
-                    uint8_t index ;			// the index position
-					uint8_t index_add_pal;	// how much to add onto the pallet on each frame        TODO: CHECK my descrition
-					uint16_t index_long; 
-					uint8_t 	fft_offset;			//
-					uint8_t pal_level;
-					uint8_t fft_level;
-					uint8_t 	pal_mix_mode;
-		  		uint8_t 	fft_mix_mode;
-					uint8_t 	pal_pal;
-	};
-*/
+
+
+		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 		struct form_Led_Setup_Struct 
 		{
 			uint16_t	start_led;			// where the pallete starts
 			uint16_t	nr_leds;			// how many ?  for mirror how many extra.
-		//	uint8_t		fade_value;			// the fade value
+		
 
 		};
 
+// *************** Layers  ************************
 
 
-// PAL
+	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
+	#define MAX_LAYERS 16 				// what is the max layer Number
+
+	enum layer_options
+	{
+		_M_LAYER_00_FFT = 1,
+		_M_LAYER_00_PAL = 2,
+		_M_LAYER_00_FX01 = 3,
+		_M_LAYER_00_FIRE = 4,
+		_M_LAYER_00_SHIMMER = 5,
+		_M_LAYER_00_STROBE = 11,
+		_M_LAYER_00_EYES = 13,
+		_M_LAYER_00_ROTATE = 15,
+
+		_M_LAYER_16_FFT = 6,
+		_M_LAYER_16_PAL = 7,
+		_M_LAYER_16_FX01 = 8,
+		_M_LAYER_16_FIRE = 9,
+		_M_LAYER_16_SHIMMER = 10,
+		_M_LAYER_16_STROBE = 12,
+		_M_LAYER_16_EYES = 14,
+		_M_LAYER_16_ROTATE = 16,
+
+
+
+	};
+
+// ***************Palette  ************************
+
 		#define _M_NR_FORM_PAL_OPTIONS_ 6
 		enum form_pal_options
 		{
@@ -157,7 +157,6 @@
 			_M_FORM_PAL_ONECOLOR,
 			_M_FORM_PAL_SPEED_FROM_FFT
 		};
-
 
 		struct form_fx_pal_struct
 		{
@@ -177,7 +176,7 @@
 
 
 
-// FX1
+// ***************FX 01 ************************
 
 		#define _M_NR_FORM_FX1_OPTIONS_ 3
 		enum form_fx1_options
@@ -198,10 +197,7 @@
 
 		};
 
-
-
-
-		// GLITTER
+// *************** FX01 Glitter ************************
 
 	 #define _M_NR_FORM_GLITTER_OPTIONS_ 2
 		enum form_glitter_options
@@ -222,7 +218,7 @@
 		};
 
 
-// DOTS
+// *************** FX01 Dots BPM ************************
 
 	#define _M_NR_FORM_DOT_OPTIONS_ 2
 			enum form_dot_options
@@ -257,84 +253,7 @@
 
 
 		};
-
-	
-// Fire
-		#define _M_NR_FORM_FIRE_OPTIONS_ 3
-		enum form_fire_options
-		{
-			_M_FORM_FIRE_RUN,
-			_M_FORM_FIRE_REVERSED,
-			_M_FORM_FIRE_MIRROR,
-			_M_FORM_FIRE_SPK_FFT,
-			_M_FORM_FIRE_COOL_FFT
-
-		};	
-
-
-		struct form_fx_fire_struct
-		{
-			uint8_t pal; 
-			uint8_t mix_mode;
-			uint8_t level;
-			uint8_t cooling;
-			uint8_t sparking;
-			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
-			uint8_t lvl_bin;
-
-		};
-
-// Strobe
-		#define _M_NR_FORM_STROBE_OPTIONS_ 1
-		enum form_strobe_options
-		{
-			_M_FORM_STROBE_RUN,
-
-
-		};	
-
-
-		struct form_fx_strobe_struct
-		{
-			uint8_t pal; 
-			uint8_t mix_mode;
-			uint8_t level;
-			uint8_t on_frames;
-			uint8_t off_frames;
-			uint16_t frame_pos; 		// what fft fx bin to trigger from 255 = none.
-			uint8_t lvl_bin;
-			uint8_t triggerBin;
-
-		};
-
-
-// eyea
-		#define _M_NR_FORM_EYES_OPTIONS_ 1
-		enum form_eyes_options
-		{
-			_M_FORM_EYES_RUN,
-
-
-		};	
-
-
-		struct form_fx_eyes_struct
-		{
-			uint8_t color; 
-			uint8_t mix_mode;
-			uint8_t level;
-			uint16_t on_frames;
-			uint16_t EyeWidth;
-			uint16_t EyeSpace;
-			uint8_t lvl_bin;
-			uint8_t triggerBin;
-			uint16_t frame_pos; 
-			uint16_t eye_pos;
-			uint8_t  fadeval;		
-
-		};
-
-// eyea
+// *************** FX01 Meteor ************************
 		#define _M_NR_FORM_METEOR_OPTIONS_ 2
 		enum form_meteor_options
 		{
@@ -359,8 +278,86 @@
 			uint16_t frame_pos; 		
 
 		};
+	
+// *************** Fire  ************************
+		#define _M_NR_FORM_FIRE_OPTIONS_ 3
+		enum form_fire_options
+		{
+			_M_FORM_FIRE_RUN,
+			_M_FORM_FIRE_REVERSED,
+			_M_FORM_FIRE_MIRROR,
+			_M_FORM_FIRE_SPK_FFT,
+			_M_FORM_FIRE_COOL_FFT
 
-	// FFT
+		};	
+
+
+		struct form_fx_fire_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t cooling;
+			uint8_t sparking;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
+
+		};
+
+// *************** Strobe ************************
+		#define _M_NR_FORM_STROBE_OPTIONS_ 1
+		enum form_strobe_options
+		{
+			_M_FORM_STROBE_RUN,
+
+
+		};	
+
+
+		struct form_fx_strobe_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint8_t on_frames;
+			uint8_t off_frames;
+			uint16_t frame_pos; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
+			uint8_t triggerBin;
+
+		};
+
+
+// *************** Eyes ************************
+		#define _M_NR_FORM_EYES_OPTIONS_ 1
+		enum form_eyes_options
+		{
+			_M_FORM_EYES_RUN,
+
+
+		};	
+
+
+		struct form_fx_eyes_struct
+		{
+			uint8_t color; 
+			uint8_t mix_mode;
+			uint8_t level;
+			uint16_t on_frames;
+			uint16_t EyeWidth;
+			uint16_t EyeSpace;
+			uint8_t lvl_bin;
+			uint8_t triggerBin;
+			uint16_t frame_pos; 
+			uint16_t eye_pos;
+			uint8_t  fadeval;	
+			uint16_t pause_frames;	
+
+		};
+
+
+
+// *************** FFT ************************
 
 	#define _M_NR_FORM_FFT_OPTIONS_ 4
 		enum form_fft_options
@@ -410,7 +407,7 @@
 
 
 
-		// Shimmer
+// *************** Shimmer ************************
 		
 		#define _M_NR_FORM_SHIMMER_OPTIONS_ 2
 		enum form_shimmer_options
@@ -466,157 +463,46 @@
 
 	  };
 
-	  struct form_fx_test_val
-	  {
-		  uint8_t 	val_0;
-		  uint8_t 	val_1;
-		  uint8_t 	val_2;
 
-	  };
+// ********* Modify**********************
+#	define _M_NR_FORM_MODIFY_OPTIONS_ 2
+	enum form_modify_options
+	{
+		_M_FORM_MODIFY_ROTATE,
+		_M_FORM_MODIFY_MIRROR,
+	};
 
-#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
-
-
-/*
-#define _M_NR_STRIP_BYTES_ 4			// 4 bytes = 32 strips  
-
-	  enum strip_bits
-	  {
-		  _S_7_0_ = 0,					// Strip / Form 0 to 7
-		  _S_15_8_ = 1,					// Strip / Form 8 to 15
-		  _S_23_16_ = 2,				// Strip 16 to 23
-		  _S_31_24_ = 3					// Strip 24 to 31
-	  };
+	struct  form_fx_modify_struct
+	{
+		uint16_t RotateFullFrames;
+		uint16_t RotateFixed;
+		uint8_t RotateTriggerBin;
+		//uint8_t RotateMixMode;
 
 
-#define _M_NR_OPTIONS_     16 //40 //10			// hass less options compared to forms!!
-*/ 
+		uint16_t RotateFramePos;
 
-//#define _M_NR_FORM_OPTIONS_  60			// Nr of options for forms 
-	 /* enum strip_options {
-		  _M_AUDIO_ = 0,				// Display FFT
-		  _M_AUDIO_REVERSED = 1,
-		  _M_STRIP_ = 2,				// Display Strip
-  		  _M_REVERSED_ = 3,				// reversed mode
-		  _M_MIRROR_OUT_ = 4,			// Mirror it
-		  _M_PALETTE_ = 5,				// Pallete 0 or 1
-		  _M_BLEND_ = 6,				// Fade or Hard Blend
-		  _M_ONE_COLOR_ = 7,			// Make all the leds show one color
-		  _M_FIRE_	= 8,				// Fire animation
-		  //_M_FADE_ = 8,				// Fade the leds by amount
-		  _M_RBOW_GLITTER_ = 9,			// Random Glitter
-		  _M_GLITTER_ = 10,				// White Glitter
-		  _M_AUDIO_DOT_ = 11,			// Audio Glitter
-		  _M_JUGGLE_ = 12,				// Sine wave dots
-		  _M_SAW_DOT_ = 13,				// Saw wave dots
-		  _M_TEST_FX = 14,
-		  _M_FX_SUBTRACT = 15				// add the FX channel to the leds
-	  }; */
+	};
 
 
 
-	
+// ***************Copy Leds ************************
+		struct led_Copy_Struct				// copy strips data structure
+		{
+			uint16_t	start_led;
+			int			nr_leds;
+			uint16_t	Ref_LED;
+		};
+		#define NR_COPY_STRIPS 16
+		#define NR_COPY_LED_BYTES 2
 
 
-	
-
-	
-/*
-
-	  enum strip_options {
-		  _M_AUDIO_REVERSED 	,
-		  _M_AUDIO_ 			,				// Display FFT
-		  _M_AUDIO_PAL_MASK		,			// use the pallete to mask the fft data or +-
-		  _M_AUDIO_SUB_FROM_FFT ,		//  add or subtract the pallete from the FFT data
-		  _M_MIRROR_OUT_ 		,			// Mirror it
-		  _M_ONE_COLOR_ 		,			// Make all the leds show one color
-		  _M_STRIP_				,				// Display Strip
-		  _M_REVERSED_ 			,				// reversed mod
-		  _M_PALETTE_			,				// Pallete 0 or 1
-		  _M_BLEND_ 			,				// Fade or Hard Blend
-
-		  
-		  _M_AUDIO_MIRROR  		,			//
-		  _M_AUDIO_ONECOLOR		,			//
 
 
-			_M_FIRE_				,				// Fire animation
-		  _M_FIRE_PAL			,				// Fire animation
-		  _M_FIRE_MIRROR  		,			//
-		  _M_FIRE_REV			,			//
-*/
 
-		  /*_M_AUDIO_MASK  		,			//
-		  _M_AUDIO_SUBTRACT		,
 
-		  _M_FX_MIRROR  		,				//
-		  _M_FX_REVERSED		,	
-		  _M_FX_MASK			,
-		  _M_FX_SUBTRACT		,				// add the FX channel to the leds
-		  _M_FX1_ON  			,			//
-		  _M_FX_LAYERS_ON		, 
 
-		  
-		  _M_GLITTER_FROM_FFT_DATA1  , 
-		  _M_RBOW_GLITTER_ 		,			// Random Glitter
-		  _M_GLITTER_			,				// White Glitter
-		  _M_JUGGLE_ 			,				// Sine wave dots
-		  _M_SAW_DOT_ 			,				// Saw wave dots
-		  _M_AUDIO_DOT_ 		,			// 
 
-		  _M_AUDIO_FX4  		,			// 
-		  _M_AUDIO_FX5  		,			//
-		  _M_AUDIO_FX6  		,			//
-
-	  	_M_FX_SHIMMER  		,			//
-		  _M_FX_SHIM_PAL  		,			//
-		  _M_FX_SHIM_BLEND , 
-		  _M_FX_SHIM_SUBTRACT , 
-		  _M_FX_SHIM_MASK , 
-		 	
-		  
-		  _M_FIRE_				,				// Fire animation
-		  _M_FIRE_PAL			,				// Fire animation
-		  _M_FIRE_MIRROR  		,			//
-		  _M_FIRE_REV			,			//
-		  _M_FIRE_SUBTRACT		,			//
-		  _M_FIRE_MASK			,			//
-
-		
-				  			//
-		  _M_FX_SIN_PAL  		,			//
-		  _M_FX_3_SIN	  		,			//40
-		  _M_FX_2_SIN  		,			//
-		 */
-		
-
-		  
-
-	//  };
-
-/*
-#define HARD_MIX_TRIGGER 128
-	  enum mix_enum 
-	  {  MIX_ADD 			
-	  	,MIX_SUBTRACT		
-		,MIX_MASK			
-		,MIX_OR		
-		,MIX_XOR
-		,MIX_AND
-		,MIX_DIFF
-		,MIX_HARD
-		,MIX_MULTIPLY
-		,MIX_HARD_LIGHT
-		,MIX_OVERLAY
-		,MIX_TADA
-		,MIX_DARKEN
-		,MIX_LIGHTEN
-		,MIX_LINEAR_BURN
-		,MIX_SCREEN
-		
-	  };
-
-*/
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
 										// TODO Check me again
@@ -626,8 +512,7 @@
 
 	  };
 
-	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
-	#define MAX_LAYERS 14 				// what is the max layer Number 
+
 
 
 // Functions

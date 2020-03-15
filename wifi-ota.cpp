@@ -2,7 +2,7 @@
 #include "config_TPM.h"
 
 
-	#include <WiFi.h>	
+	#include <WiFiMulti.h>	
 	#include <WiFiUdp.h>
 
 	#include "AsyncUDP.h"
@@ -281,11 +281,12 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON) FS_wifi_write();
 	}
 
-	
+	write_bool(WIFI_POWER, true);
+
 	write_bool(WIFI_POWER_ON_BOOT, get_bool(WIFI_POWER));
 
 		// Set the Static IP if static ip is selected.
-		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT)   // if were static and a wifi client, configure the wifi connection
+		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT && get_bool(WIFI_POWER))   // if were static and a wifi client, configure the wifi connection
 		{
 			if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS))
 				debugMe("WiFi: Client config Static IP FAILED ");
@@ -537,15 +538,12 @@ void WiFi_Start_Network()
 	{
 		write_bool(WIFI_MODE_BOOT, WIFI_ACCESSPOINT);
 		//debugMe("c0");
-		LEDS_setall_color(1);
-		
-		FastLEDshowESP32();
-		
-		delay(500);
+		LEDS_setall_color(1); FastLEDshowESP32(); delay(500);
 		//WiFi.mode(WIFI_MODE_AP);
 		debugMe("c1x");
 		//delay(500);
-	
+		
+
 		if(btn_read == BUTTON_DOWN )
 		{
 			if(get_bool(STATIC_IP_ENABLED))  WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); 
@@ -562,6 +560,7 @@ void WiFi_Start_Network()
 				//debugMe("c2");
 					if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
 					//debugMe("c2x");
+					
 					delay(1000);
 					WiFi.softAP(wifi_cfg.APname, wifi_cfg.APpassword);
 
@@ -571,20 +570,24 @@ void WiFi_Start_Network()
 			}
 		//debugMe("c4");
 		//delay(500);
-		LEDS_setall_color(2);
-		FastLEDshowESP32();
+		LEDS_setall_color(2); FastLEDshowESP32(); delay(500);
 		debugMe("IP:",false);
 		if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal);
 		else debugMe("192.168.4.1");
+
+		debugMe(String("IP : "),false);
+		debugMe(WiFi.localIP());
+		debugMe("wifi status:",false);
+		debugMe(WiFi.status());
+
 	}
-	else  if (  get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT )	
+	else  if (  get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT &&  get_bool(WIFI_POWER_ON_BOOT)   )	
 	{	
-		debugMe("x01");
+		
 
 		debugMe("Starting Wifi Client Setup");
 		
-		LEDS_setall_color(3);
-		FastLEDshowESP32();
+		LEDS_setall_color(3); FastLEDshowESP32(); delay(500);
 
 	
 		write_bool(WIFI_MODE_BOOT, false);
@@ -592,16 +595,15 @@ void WiFi_Start_Network()
 		WIFI_start_wificlient();
 
 
-		LEDS_setall_color(2);
-		FastLEDshowESP32();
-		delay(500);
+		//LEDS_setall_color(2); FastLEDshowESP32(); delay(500);
 		
+		debugMe(String("IP : "),false);
+		debugMe(WiFi.localIP());
+		debugMe("wifi status:",false);
+		debugMe(WiFi.status());
 		
 	}
-	debugMe(String("IP : "),false);
-	debugMe(WiFi.localIP());
-	debugMe("wifi status:",false);
-	debugMe(WiFi.status());
+	
 }
 
 
@@ -777,19 +779,22 @@ void WiFi_FFT_handle_loop()
 // The main Wifi Setup
 void wifi_setup()
 {
-	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
 
 	WiFi_load_settings();
 	
 	
-	
+	//WiFi.onEvent(WiFi_Event); // Start event handler!
 	//delay(5000);
 	WiFi_Start_Network();
 	
 	
-	if (get_bool(WIFI_POWER))
+	if (get_bool(WIFI_POWER_ON_BOOT))
 	{
+		
+		
+	
+
 		WiFi_OTA_setup();
 		WiFi_NTP_setup();   //ESP32 NOK
 		TelnetDebug.begin(wifi_cfg.APname);
@@ -807,10 +812,10 @@ void wifi_setup()
 		
 		httpd_setup();
 
-		if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "tpm", wifi_cfg.ipStaticLocal);// WiFi.localIP());
-		else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
+		//if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "tpm", wifi_cfg.ipStaticLocal);// WiFi.localIP());
+		//else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
 
-		WiFi_FFT_Setup();
+		//WiFi_FFT_Setup();
 	}
 }
 
@@ -820,12 +825,15 @@ void wifi_setup()
 void wifi_loop()
 {
 
-		if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) ) 
+		if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
 		{	
 			 
 			WIFI_start_wificlient(); 
 			
 		}
+		if  ((get_bool(WIFI_POWER_ON_BOOT))) 
+		{
+
 		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
 		//yield();
 		//NTP_parse_response();	// get new packets and flush if not correct.
@@ -837,7 +845,12 @@ void wifi_loop()
 		//WiFi_FFT_handle_loop();
 		yield();
 		TelnetDebug.handle();
-		dnsServer.processNextRequest();
+		//dnsServer.processNextRequest();
+
+
+
+		}
+		
 
 }
 

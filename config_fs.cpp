@@ -37,7 +37,10 @@
 	extern  form_fx1_struct form_fx1[NR_FORM_PARTS];
 	extern  form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS];
 	extern  form_fx_dots_struct form_fx_dots[NR_FORM_PARTS] ;
-
+	extern  form_fx_strobe_struct form_fx_strobe[NR_FORM_PARTS];
+	extern  form_fx_eyes_struct form_fx_eyes[NR_FORM_PARTS];
+	extern  form_fx_meteor_struct form_fx_meteor[NR_FORM_PARTS];
+	extern  form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
 
 
 	extern byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
@@ -47,7 +50,10 @@
 	extern byte form_menu_dot[_M_NR_FORM_BYTES_][_M_NR_FORM_DOT_OPTIONS_];
 	extern byte form_menu_shimmer[_M_NR_FORM_BYTES_][_M_NR_FORM_SHIMMER_OPTIONS_];
 	extern byte form_menu_fx1[_M_NR_FORM_BYTES_][_M_NR_FORM_FX1_OPTIONS_];
-
+	extern byte form_menu_strobe[_M_NR_FORM_BYTES_][_M_NR_FORM_STROBE_OPTIONS_];
+	extern byte form_menu_eyes[_M_NR_FORM_BYTES_][_M_NR_FORM_EYES_OPTIONS_];
+	extern byte form_menu_meteor[_M_NR_FORM_BYTES_][_M_NR_FORM_METEOR_OPTIONS_];
+	extern byte form_menu_modify[_M_NR_FORM_BYTES_][_M_NR_FORM_MODIFY_OPTIONS_];
 
 	extern fft_ip_cfg_struct fft_ip_cfg;
 	//extern Strip_FL_Struct part[NR_STRIPS];
@@ -831,42 +837,13 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(led_cfg.bri)));
 			conf_file.println("] ");
 
-			//conf_file.println("sp = Strips Config : Start Led : Nr Leds : Start Index : index add Led : index add frame : rest is on off selection ");
-	/*	for (int strip = 0; strip < NR_STRIPS; strip++) 
-		{
-			conf_file.print(String("[sp:" + String(strip)));
-
-			conf_file.print(String(":" + String(part[strip].start_led)));
-			conf_file.print(String(":" + String(part[strip].nr_leds)));
-			conf_file.print(String(":" + String(part[strip].index_start)));
-			conf_file.print(String(":" + String(part[strip].index_add)));
-			conf_file.print(String(":" + String(part[strip].index_add_pal)));
-
-			for (int setting_x = 0; setting_x < _M_NR_OPTIONS_; setting_x++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(strip_menu[get_strip_menu_bit(strip)][setting_x]), strip))));
-			}
-			for (int setting_x = 0; setting_x < _M_NR_GLOBAL_OPTIONS_; setting_x++)
-			{
-				conf_file.print(String(":" + String(get_bool_byte(uint8_t(global_strip_opt[get_strip_menu_bit(strip)][setting_x]), strip))));
-			}
-
-			conf_file.print(String(":" + String(part[strip].fft_offset)));
-			conf_file.print(String(":" + String(part[strip].pal_mix_mode)));
-			conf_file.print(String(":" + String(part[strip].fft_mix_mode)));
-			conf_file.print(String(":" + String(part[strip].pal_pal)));
-
-			conf_file.println("] ");
-
-		}   */
-		
 		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[FC:" + String(form)));
 			conf_file.print(String(":" + String(form_cfg[form].start_led)));
 			conf_file.print(String(":" + String(form_cfg[form].nr_leds)));
-			conf_file.print(String(":" + String(form_fx1[form].fade)));
+			
 			
 
 			conf_file.println("] ");
@@ -997,6 +974,87 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.println("] ");
 		}
 
+
+		//conf_file.println("EF form eyes  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[EF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].color)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].level)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].lvl_bin)));
+
+			conf_file.print(String(":" + String(form_fx_eyes[form].on_frames)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].EyeWidth)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].EyeSpace)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].fadeval)));
+			conf_file.print(String(":" + String(form_fx_eyes[form].pause_frames)));
+			conf_file.println("] ");
+		}
+
+		//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[EB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_eyes[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+
+		//conf_file.println("TF form eyes  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[OF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].pal)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].level)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].lvl_bin)));
+
+			conf_file.print(String(":" + String(form_fx_strobe[form].on_frames)));
+			conf_file.print(String(":" + String(form_fx_strobe[form].off_frames)));
+
+			conf_file.println("] ");
+		}
+
+		//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[OB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_strobe[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+
+		//conf_file.println("TF form eyes  ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[MF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].color)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].mix_mode)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].level)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].triggerBin)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].lvl_bin)));
+
+			conf_file.print(String(":" + String(form_fx_meteor[form].meteorSize)));
+			conf_file.print(String(":" + String(form_fx_meteor[form].meteorTrailDecay)));
+
+			conf_file.println("] ");
+		}
+
+		//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[MB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_meteor[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
+
+
+
+
 		//conf_file.println("GF Glitter ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
@@ -1123,6 +1181,51 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 {
 	// Read the Play config NR
 
+	/*
+		LS LED DEvice Settings
+		FC Form Config
+
+		PF Palette FX
+		PB Palette FX Booleans
+
+		DF FX Dots
+		DB FX Dots Bools
+
+		SF FX Shimm
+		SB FX Shimm bools
+
+		TF FX FFT
+		TB
+
+		IF FX Fire
+		IB 
+
+		MF Meteor
+		MB 
+
+		OF Strobe
+		OB
+
+		EF FX Eye
+		EB
+
+		GF Glitter
+		GB
+
+		XF FX01
+		XB
+
+		CL Copy Leds
+
+		PA Palette
+
+		AM Audio FFT 
+		AF FX Bins
+
+		ly Layers
+
+	*/
+
 	String addr = String("/conf/" + String(conf_nr) + ".playConf.txt");
 	 debugMe("READ Conf " + addr);
 	File conf_file = SPIFFS.open(addr, "r");
@@ -1168,54 +1271,13 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
 				// debugMe(led_cfg.max_bri);
 			}
-	/*		else if ((type == 's') && (typeb == 'p'))
-			{
-				strip_no = get_int_conf_value(conf_file, &character);
-				
-				// debugMe(get_int_conf_value(conf_file, &character));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
-				//part[strip_no].start_led = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds));
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].nr_leds = constrain(in_int, 0,MAX_NUM_LEDS);
-				
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_start = in_int;
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add = in_int; 	
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].index_add_pal = in_int;
-				
-
-				//part[strip_no].nr_leds = uint16_t(constrain(get_int_conf_value(conf_file, &character), 0, led_cfg.NrLeds - part[strip_no].start_led));
-				//part[strip_no].index_start = uint8_t(get_int_conf_value(conf_file, &character));
-				//part[strip_no].index_add = get_int_conf_value(conf_file, &character);
-				//part[strip_no].index_add_pal = uint8_t(get_int_conf_value(conf_file, &character));
-
-				//for (int setting_x = 0; setting_x < _M_NR_OPTIONS_ ; setting_x++)
-				//conf_file.print(String( ":" + String(get_bool_byte(uint8_t(strip_menu[get_strip_menu_bit(strip)][setting_x]) , strip ) ))); 
-
-				for (uint8_t setting_x = 0; setting_x < _M_NR_OPTIONS_; setting_x++)
-				{
-					bitWrite(strip_menu[get_strip_menu_bit(strip_no)][setting_x], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-				}
-				for (uint8_t setting_x = 0; setting_x < _M_NR_GLOBAL_OPTIONS_; setting_x++)
-				{
-					bitWrite(global_strip_opt[get_strip_menu_bit(strip_no)][setting_x], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-				}
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_offset = in_int;
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].fft_mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); part[strip_no].pal_pal = in_int;
-
-				// debugMe(strip_no,false);
-				// debugMe(" . ", false);
-				// debugMe(part[strip_no].start_led);
-			} */
+	
 			else if ((type == 'F') && (typeb == 'C'))   //if (character  != ']') 
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				//in_int = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].start_led = constrain(in_int, 0, MAX_NUM_LEDS);
 				in_int = get_int_conf_value(conf_file, &character); form_cfg[strip_no].nr_leds = constrain(in_int, 0, MAX_NUM_LEDS - form_cfg[strip_no].start_led);
-				in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].fade = in_int;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].triggerBin = in_int;} else form_fx1[strip_no].triggerBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); form_fx1[strip_no].lvl_bin = in_int;}    else form_fx1[strip_no].lvl_bin = 255;
 			}
 			else if ((type == 'P') && (typeb == 'F'))
 			{
@@ -1343,7 +1405,66 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 					bitWrite(form_menu_fx1[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 			}
 
+			else if ((type == 'M') && (typeb == 'F'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].color = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].lvl_bin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].meteorSize = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_meteor[strip_no].meteorTrailDecay = in_int;
+				
+			}
+			else if ((type == 'M') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) 
+					bitWrite(form_menu_meteor[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
+
+			else if ((type == 'O') && (typeb == 'F'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].lvl_bin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].on_frames = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_strobe[strip_no].off_frames = in_int;
+				
+			}
+			else if ((type == 'O') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) 
+					bitWrite(form_menu_strobe[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} 
 		
+		   else if ((type == 'E') && (typeb == 'F'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].color = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].lvl_bin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].on_frames = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].EyeWidth = in_int;
+
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].EyeSpace = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].fadeval = in_int;
+				in_int = get_int_conf_value(conf_file, &character); form_fx_eyes[strip_no].pause_frames = in_int;
+				
+			}
+			else if ((type == 'E') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) 
+					bitWrite(form_menu_eyes[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
 
 			else if  ((type == 'c') && (typeb == 'l'))	
 			{

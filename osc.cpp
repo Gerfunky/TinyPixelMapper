@@ -3,61 +3,36 @@
 // expand all ctl+k+j
 // 
 
-
-//  Todo : 
-
-
-
 #include "config_TPM.h"   // include the main Defines
 #include "osc.h"
-#include "leds.h"
 
-#ifndef USE_OSC
-// clapse all ctl+m +o    +l = expand
+#include <WiFiUdp.h>
 
-//#ifdef ESP8266
-
-//#define OSC_MC_SERVER_DISABLED
-
-		#define OSC_BUNDLE_SEND_COUNT 20				// how many OSC messages to send in one bundle.
-		#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from touchosc
-
-		#define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
-		#define VIZ_FPS_MAX 15
-	#include <WiFiUdp.h>
-
-#ifdef ESP8266
-	#include <ESP8266WiFi.h>
-#endif
 #ifdef ESP32
 	#include <WiFi.h>
 #endif
-	#include <OSCMessage.h>
-	#include <OSCBundle.h>
-	#include <OSCData.h>
-	#include <QueueArray.h>
 
+#include <OSCMessage.h>
+#include <OSCBundle.h>
+#include <OSCData.h>
+#include <QueueArray.h>
 
-	#include "tools.h"								// include the Tools enums for reading and writing bools
-	#include "wifi-ota.h"
-	#include "config_fs.h"
-	#include "httpd.h"
-	#include "tpm_artnet.h"
+#include "tools.h"								// include the Tools enums for reading and writing bools
+
+#include "config_fs.h"
+#include "httpd.h"
+#include "tpm_artnet.h"
 	
 
-	#define NO_OF_PALLETS 2
-	#define OSC_QEUE_ADD_LEN 30
+
 // External Variables/ Structures
 
 
-	extern fft_data_struct fft_data[7];
+	#include "wifi-ota.h"
 	extern wifi_Struct wifi_cfg;
 	extern artnet_struct artnet_cfg;
 
-
-
-
-// from leds
+	#include "leds.h"
 	extern  form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
 	extern  form_fx_pal_struct form_fx_pal[NR_FORM_PARTS] ;
 	extern  form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
@@ -69,6 +44,7 @@
 	extern  form_fx_strobe_struct form_fx_strobe[NR_FORM_PARTS];
 	extern  form_fx_eyes_struct form_fx_eyes[NR_FORM_PARTS];
 	extern  form_fx_meteor_struct form_fx_meteor[NR_FORM_PARTS];
+	extern  form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
 
 	extern byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
 	extern byte form_menu_fft[_M_NR_FORM_BYTES_][_M_NR_FORM_FFT_OPTIONS_];
@@ -80,79 +56,67 @@
 	extern byte form_menu_strobe[_M_NR_FORM_BYTES_][_M_NR_FORM_STROBE_OPTIONS_];
 	extern byte form_menu_eyes[_M_NR_FORM_BYTES_][_M_NR_FORM_EYES_OPTIONS_];
 	extern byte form_menu_meteor[_M_NR_FORM_BYTES_][_M_NR_FORM_METEOR_OPTIONS_];
-
-	extern uint8_t LEDS_fft_get_fxbin_result(uint8_t fxbin);
-
+	extern byte form_menu_modify[_M_NR_FORM_BYTES_][_M_NR_FORM_MODIFY_OPTIONS_];
 
 	extern led_cfg_struct led_cfg;
 	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
-	//extern Strip_FL_Struct part[NR_STRIPS];
-
 	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
-	//extern byte strip_menu[_M_NR_STRIP_BYTES_][_M_NR_OPTIONS_];
-	//extern byte form_menu[_M_NR_FORM_BYTES_][_M_NR_FORM_OPTIONS_];
-	//extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
-	extern byte fft_menu[3];
-	//extern byte fft_data_menu[3];
-	extern byte fft_data_bri;
-	extern fft_led_cfg_struct fft_led_cfg;
-	extern uint8_t fft_bin_autoTrigger;
-	extern byte fft_data_fps;
 
-	extern fft_fxbin_struct  fft_fxbin[FFT_FX_NR_OF_BINS];
-	//extern uint8_t fft_color_result_data[3]; // 
+	extern fft_led_cfg_struct fft_led_cfg;
+	extern byte fft_menu[3];
+	extern fft_data_struct fft_data[7];
+	extern byte fft_data_bri;
+	extern byte fft_data_fps;
 	extern uint8_t fft_color_result_bri ;
-	//extern uint8_t fft_bin_autoTrigger;
+
+	extern uint8_t fft_bin_autoTrigger;
 	extern uint8_t fft_color_fps;
 
-	extern form_fx_test_val form_fx_test;
+	extern uint8_t LEDS_fft_get_fxbin_result(uint8_t fxbin);
 
+	extern fft_fxbin_struct  fft_fxbin[FFT_FX_NR_OF_BINS];
+	
 	extern uint16_t play_conf_time_min[MAX_NR_SAVES];
 	extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
-//extern CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
 	extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM] ;
 	
+	//extern uint8_t global_strip_opt[_M_NR_STRIP_BYTES_][_M_NR_GLOBAL_OPTIONS_];
 
 // from mmqt.cpp
- #include "mmqt.h"
- extern mqtt_Struct mqtt_cfg;
+	#include "mmqt.h"
+	extern mqtt_Struct mqtt_cfg;
 
 
 
-
-//struct OSC_buffer_float master_rgb = { 255,255,255 };
-
-
-//from coms
-//extern void comms_S_FPS(uint8_t fps);
+// ************* Local Variables
 
 
-QueueArray <char> osc_out_float_addr;
-QueueArray <float> osc_out_float_value;
-QueueArray <char> osc_out_rgb_addr;
-QueueArray <uint8_t> osc_out_rgb_value;
-QueueArray <char> osc_out_SelVal_addr;
-QueueArray <int> osc_out_SelVal_value;
-QueueArray <char> osc_out_int_addr;
-QueueArray <int> osc_out_int_value;
+	// Queues for outgoing OSC messages 
+	QueueArray <char> osc_out_float_addr;
+	QueueArray <float> osc_out_float_value;
+	QueueArray <char> osc_out_rgb_addr;
+	QueueArray <uint8_t> osc_out_rgb_value;
+	QueueArray <char> osc_out_SelVal_addr;
+	QueueArray <int> osc_out_SelVal_value;
+	QueueArray <char> osc_out_int_addr;
+	QueueArray <int> osc_out_int_value;
 
 
+	// OSC configuration
+	osc_cfg_struct osc_cfg = { OSC_IPMULTI_ ,OSC_PORT_MULTI_,OSC_OUTPORT, OSC_INPORT, 0,1 };
 
-osc_cfg_struct osc_cfg = { OSC_IPMULTI_ ,OSC_PORT_MULTI_,OSC_OUTPORT, OSC_INPORT, 0,1 };
-
-
-
-
+	// The OSC Server
 	WiFiUDP osc_server;				// the normal osc server
 
 
 
+
 void OSC_setup()
-{
+{	// OSC Setup function 
 	osc_server.begin(osc_cfg.inPort);
-	debugMe("OSC Setup Done Port:", false ); debugMe(String(osc_cfg.inPort) );
-	
+	debugMe("OSC Setup Done In Port: ", false ); debugMe(String(osc_cfg.inPort), true  );
+	debugMe(" - Out Port: ", false );debugMe(String(osc_cfg.outPort), true  );
 }
 
 
@@ -161,7 +125,8 @@ void OSC_setup()
 /////////////////////////////////////////// OSC  SEND / gerneral functions
 //
 //
-float osc_byte_tofloat(byte value, uint8_t max_value = 255) {
+float osc_byte_tofloat(byte value, uint8_t max_value = 255)
+ {	// convert int 0-255 to float 0-1 value
 
 	float float_out = float(value) / max_value;
 
@@ -170,7 +135,8 @@ float osc_byte_tofloat(byte value, uint8_t max_value = 255) {
 
 
 void osc_send_MSG_rgb(String addr_string , uint8_t  red = 128, uint8_t  green = 128, uint8_t  blue = 128  ) 
-{
+{	// Send out a color Directly to the OCS target not bufferd for bundle
+
 	char address_out[30];
 	addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
 
@@ -187,22 +153,24 @@ void osc_send_MSG_rgb(String addr_string , uint8_t  red = 128, uint8_t  green = 
 	msg_out.send(osc_server);
 	osc_server.endPacket();
 	msg_out.empty();
-	
-
 
 }
 
 
+void osc_send_MSG_led(String addr_string , uint8_t  state  )    
+{	// Send out a predifined color Directly to the OCS target not bufferd for bundle
+	// 0 = black
+	// 1 = red
+	// 2 = green
+	// 3 = blue
+	// 4 = white
 
-void osc_send_MSG_led(String addr_string , uint8_t  state  )    // set a led to a color  0 = black , 1 = red, 2 = green, 3 = blue, 4 = white
-{
 	char address_out[30];
 	addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
 
 	//IPAddress ip_out(osc_server.remoteIP());
 	OSCMessage msg_out(address_out);
-	//debugMe("o2: ",false);
-	//debugMe(String(address_out));
+	
 	switch(state)
 	{
 		case 0:   // black 
@@ -245,7 +213,8 @@ void osc_send_MSG_led(String addr_string , uint8_t  state  )    // set a led to 
 
 
 void osc_queu_MSG_SEL_VAL(String addr_string, int select, int value)
-{
+{	// Queue a Message to bundle output with 2 options
+	// 
 	for (int i = 0; i < addr_string.length(); i++)
 		osc_out_SelVal_addr.enqueue(addr_string.charAt(i));
 
@@ -253,11 +222,12 @@ void osc_queu_MSG_SEL_VAL(String addr_string, int select, int value)
 	osc_out_SelVal_value.enqueue(select);
 	osc_out_SelVal_value.enqueue(value);
 
-
 }
 
 
-void osc_queu_MSG_float(String addr_string, float value) {
+void osc_queu_MSG_float(String addr_string, float value) 
+{	// Queue a float value message to the bundle output 
+
 	IPAddress ip_out(osc_server.remoteIP());
 	osc_cfg.return_ip_LB = ip_out[3];
 
@@ -266,13 +236,11 @@ void osc_queu_MSG_float(String addr_string, float value) {
 
 	osc_out_float_addr.enqueue(0);	// add a null on the end 
 	osc_out_float_value.enqueue(value);
-
-
-
 }
 
 
-void osc_queu_MSG_int(String addr_string, int value) {
+void osc_queu_MSG_int(String addr_string, int value) 
+{  // Queue a int value message to the bundle output 
 	IPAddress ip_out(osc_server.remoteIP());
 	osc_cfg.return_ip_LB = ip_out[3];
 
@@ -281,14 +249,11 @@ void osc_queu_MSG_int(String addr_string, int value) {
 
 	osc_out_int_addr.enqueue(0);	// add a null on the end 
 	osc_out_int_value.enqueue(value);
-
-
-
 }
 
 
-
-void osc_queu_MSG_rgb(String addr_string, uint8_t red,uint8_t green,uint8_t blue) {
+void osc_queu_MSG_rgb(String addr_string, uint8_t red,uint8_t green,uint8_t blue) 
+{  // Queue a RGB value message to the bundle output 
 	IPAddress ip_out(osc_server.remoteIP());
 	osc_cfg.return_ip_LB = ip_out[3];
 
@@ -304,11 +269,11 @@ void osc_queu_MSG_rgb(String addr_string, uint8_t red,uint8_t green,uint8_t blue
 }
 
 
-void osc_send_MSG_String(String addr_string, String value) {
+void osc_send_MSG_String(String addr_string, String value) 
+{ // Send out a String directly to osc target
+
 	char address_out[20];
 	char message[20];
-
-
 
 	addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
 
@@ -325,7 +290,9 @@ void osc_send_MSG_String(String addr_string, String value) {
 }
 // Other Functions like Sending loop
 void osc_send_out_float_MSG_buffer() 
-{
+{ 	// Send out the Queues as Bundles
+	// Max bundle size = OSC_BUNDLE_SEND_COUNT
+
 	if (osc_out_float_value.isEmpty() != true || osc_out_rgb_value .isEmpty() != true || osc_out_SelVal_value.isEmpty() != true || osc_out_int_value.isEmpty() != true) 
 	{
 
@@ -340,32 +307,23 @@ void osc_send_out_float_MSG_buffer()
 		int menu_select = 0;
 		int menu_value = 0;
 
-
-		//msg_out_data = osc_out_float.dequeue();
-
-		//addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
-		//msg_out_data.addr.toCharArray(address_out, msg_out_data.addr.length() + 1); //address_out
 		if (osc_out_float_value.count() != 0 ||  (osc_out_rgb_value.count()) != 0 ||  (osc_out_SelVal_value.count())   != 0 ||  (osc_out_int_value.count())   != 0)
 		{
-			//debugMe(String(osc_out_float_value.count()));
-			//debugMe(String(osc_out_rgb_value.count()));
-			//debugMe(String(osc_out_SelVal_value.count()));
-
-
-
+		
 			OSCBundle bundle_out;
 			//IPAddress ip_out(WiFi.localIP());
 			IPAddress ip_out(osc_server.remoteIP());
-			//ip_out[3] = osc_cfg.return_ip_LB;
+		
 			uint8_t bundlecount = 0;
+
 			while ( bundlecount <= OSC_BUNDLE_SEND_COUNT)
 			{
-				for (uint8_t z = 0; z <osc_out_float_value.count(); z++)
+				for (uint8_t z = 0; z < osc_out_float_value.count(); z++)
 				{
 					if(osc_out_float_value.isEmpty() != true)
 					{
 						i = 0;
-						while (osc_out_float_addr.peek() != 0 && i <OSC_QEUE_ADD_LEN)
+						while (osc_out_float_addr.peek() != 0 && i < OSC_QEUE_ADD_LEN)
 						{
 							address_out[i] = osc_out_float_addr.dequeue();
 							i++;
@@ -378,7 +336,7 @@ void osc_send_out_float_MSG_buffer()
 						yield();
 						memset(address_out, 0, OSC_QEUE_ADD_LEN);
 					}
-				if	( bundlecount >= OSC_BUNDLE_SEND_COUNT) { break; }
+					if	( bundlecount >= OSC_BUNDLE_SEND_COUNT) { break; }
 				}
 				if	( bundlecount >= OSC_BUNDLE_SEND_COUNT) { break; }
 				for (uint8_t z = 0; z < (osc_out_rgb_value.count() /3 ); z++)
@@ -521,7 +479,7 @@ void osc_send_out_float_MSG_buffer()
 
 
 void osc_multiply_send()
-{
+{	// TouchOSC M
 	for (uint8_t x = 1;x <= 11  ; x++ )
 	{
 		//debugMe((String("/multipl/") + String(x) + String("/1")));
@@ -531,7 +489,7 @@ void osc_multiply_send()
 			osc_queu_MSG_float((String("/multipl/") + String(x) + String("/1")), 1); 
 		//debugMe((String("/multipl/") + String(x) + String("/1")));
 	}
-}
+} 
 
 uint16_t osc_miltiply_get()
 {
@@ -760,7 +718,8 @@ void osc_toggle_artnet(bool value)
 
 
 void osc_StC_FFT_vizIt()
-{
+{	// Send out the values x times a second  for visualisation
+
 	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
 	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
 	osc_queu_MSG_int("/ostc/audio/sum/bri", 	fft_color_result_bri);
@@ -815,6 +774,28 @@ void osc_StC_menu_form_led_adv_ref()
 
 		}	
 }
+
+void osc_StC_menu_form_modify_adv_ref(uint8_t bit)
+{
+	
+		for (uint8_t bit_formNr = 0; bit_formNr < 8; bit_formNr++)
+		{
+			
+			uint8_t formNr = bit *8 + bit_formNr ;
+
+			//osc_queu_MSG_int( "/ostc/form/mod/rev/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_FFT_REVERSED], 		bit_formNr)));  		
+			osc_queu_MSG_int( "/ostc/form/fx/rota/run/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_MODIFY_ROTATE], 		bit_formNr)));  				
+			osc_queu_MSG_int("/ostc/form/fx/rota/rot/"  +	String(formNr), form_fx_modify[formNr].RotateFixed );
+			osc_queu_MSG_int("/ostc/form/fx/rota/rff/"  +	String(formNr), form_fx_modify[formNr].RotateFullFrames );
+			osc_queu_MSG_int("/ostc/form/fx/rota/tgp/"  +	String(formNr), form_fx_modify[formNr].RotateTriggerBin );
+			
+			osc_queu_MSG_int( "/ostc/form/fx/miro/run/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_MODIFY_MIRROR], 		bit_formNr)));  
+
+		}		
+}
+
+
+
 
 void osc_StC_menu_form_fft_adv_ref(uint8_t bit)
 {
@@ -912,6 +893,7 @@ void osc_StC_menu_form_fx_eyes_adv_ref(uint8_t bit)
 			osc_queu_MSG_int("/ostc/form/fx/eyes/eyW/" + String(formNr), form_fx_eyes[formNr].EyeWidth  );
 			osc_queu_MSG_int("/ostc/form/fx/eyes/eyS/" + String(formNr), form_fx_eyes[formNr].EyeSpace  );
 			osc_queu_MSG_int("/ostc/form/fx/eyes/onF/" + String(formNr), form_fx_eyes[formNr].on_frames );
+			osc_queu_MSG_int("/ostc/form/fx/eyes/paF/" + String(formNr), form_fx_eyes[formNr].pause_frames );
 			osc_queu_MSG_int("/ostc/form/fx/eyes/tgp/" + String(formNr), form_fx_eyes[formNr].triggerBin );
 			osc_queu_MSG_int("/ostc/form/fx/eyes/lvb/" + String(formNr), form_fx_eyes[formNr].lvl_bin );
 			osc_queu_MSG_int("/ostc/form/fx/eyes/fad/" + String(formNr), form_fx_eyes[formNr].fadeval );
@@ -1612,7 +1594,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.fullMatch("/fx/meto/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_meteor_adv_ref(2);osc_StC_menu_form_fx_meteor_adv_ref(3);}
 		else if  	(msg.fullMatch("/fx/eyes/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(0);osc_StC_menu_form_fx_eyes_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/eyes/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(2);osc_StC_menu_form_fx_eyes_adv_ref(3);}
-	
+		else if  	(msg.fullMatch("/fx/modify/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(0);osc_StC_menu_form_modify_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/modify/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(2);osc_StC_menu_form_modify_adv_ref(3);}
+
 		else if 	(msg.match("/fx",addrOffset))	
 		{
 										//debugMe("ohh");
@@ -1685,13 +1669,14 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.match("/fx/strb/tgp",addrOffset))  		form_fx_strobe[orig_form_nr].triggerBin = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/strb/lvb",addrOffset))  		form_fx_strobe[orig_form_nr].lvl_bin = uint8_t(msg.getInt(0))	;
 
-			else if		(msg.match("/fx/eyes/run",addrOffset))			{ bitWrite(form_menu_meteor[i_bit_int][_M_FORM_METEOR_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/eyes/run",addrOffset))			{ bitWrite(form_menu_eyes[i_bit_int][_M_FORM_EYES_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/eyes/lvl",addrOffset))	  	   	form_fx_eyes[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 			else if  	(msg.match("/fx/eyes/mix",addrOffset))  		form_fx_eyes[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/pal",addrOffset))  		form_fx_eyes[orig_form_nr].color  = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/eyW",addrOffset))  		form_fx_eyes[orig_form_nr].EyeWidth = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/eyS",addrOffset))  		form_fx_eyes[orig_form_nr].EyeSpace = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/onF",addrOffset))  		form_fx_eyes[orig_form_nr].on_frames = uint8_t(msg.getInt(0))	;
+			else if  	(msg.match("/fx/eyes/paF",addrOffset))  		form_fx_eyes[orig_form_nr].pause_frames = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/fad",addrOffset))  		form_fx_eyes[orig_form_nr].fadeval = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/tgp",addrOffset))  		form_fx_eyes[orig_form_nr].triggerBin = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/eyes/lvb",addrOffset))  		form_fx_eyes[orig_form_nr].lvl_bin = uint8_t(msg.getInt(0))	;
@@ -1706,7 +1691,13 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.match("/fx/meto/mSZ",addrOffset))  		form_fx_meteor[orig_form_nr].meteorSize = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/meto/mTR",addrOffset))  		form_fx_meteor[orig_form_nr].meteorTrailDecay = uint8_t(msg.getInt(0))	;
 
+			else if		(msg.match("/fx/rota/run",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_ROTATE], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/rota/rot",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateFixed  =  uint16_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/rota/rff",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateFullFrames  =  uint16_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/rota/tgp",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateTriggerBin  =  uint8_t(msg.getInt(0))  ;
 
+			else if		(msg.match("/fx/miro/run",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_MIRROR], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			
 			else if		(msg.match("/fx/shim/run",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_RUN], i_form_nr,	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/shim/bld",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_BLEND], i_form_nr,	bool(msg.getInt(0)));  }
 			else if  	(msg.match("/fx/shim/x_s",addrOffset))  		form_fx_shim[orig_form_nr].xscale = uint8_t(msg.getInt(0))	;
@@ -1724,9 +1715,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		//else if		(msg.fullMatch("/fx/sinpal",addrOffset))			{ bitWrite(form_menu[bit_int][_M_FX_SHIM_PAL], form_nr,	bool(msg.getInt(0)));  ;}
 
 
-		else if		(msg.fullMatch("/fx/tester/0",addrOffset))			{  form_fx_test.val_0 =  uint8_t(msg.getInt(0))  ;}
-		else if		(msg.fullMatch("/fx/tester/1",addrOffset))			{  form_fx_test.val_1 =  uint8_t(msg.getInt(0))  ;}
-		else if		(msg.fullMatch("/fx/tester/2",addrOffset))			{  form_fx_test.val_2 =  uint8_t(msg.getInt(0))  ;}
+		//else if		(msg.fullMatch("/fx/tester/0",addrOffset))			{  form_fx_test.val_0 =  uint8_t(msg.getInt(0))  ;}
+		//else if		(msg.fullMatch("/fx/tester/1",addrOffset))			{  form_fx_test.val_1 =  uint8_t(msg.getInt(0))  ;}
+		//else if		(msg.fullMatch("/fx/tester/2",addrOffset))			{  form_fx_test.val_2 =  uint8_t(msg.getInt(0))  ;}
 
 
 		// Palette input 
@@ -2714,5 +2705,3 @@ void OSC_loop()
 }
 
 
-#endif // OAC
-//

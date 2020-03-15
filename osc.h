@@ -12,6 +12,16 @@
 #include "IPAddress.h"
 
 
+#define OSC_BUNDLE_SEND_COUNT 20				// how many OSC messages to send in one bundle.
+#define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
+#define VIZ_FPS_MAX 15
+#define OSC_QEUE_ADD_LEN 30
+//#define OSC_MC_SERVER_DISABLED
+
+
+//#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from touchosc
+//#define NO_OF_PALLETS 2
+
 struct osc_cfg_struct				// OSC configuration structure
 {
 	IPAddress		ipMulti;		// holder of the Multicast dest IP address for OSC brodcasts
