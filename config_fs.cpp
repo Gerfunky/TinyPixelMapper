@@ -184,7 +184,7 @@ bool get_bool_byte(uint8_t in_byte, uint8_t in_bit)
 
 }
 
-int	get_int_conf_value(File myFile, char *character) 
+int	get_int_conf_value(File myFile, char *character, int def_value = 0 ) 
 {
 	// When reading from a file give back a INT value
 
@@ -192,7 +192,8 @@ int	get_int_conf_value(File myFile, char *character)
 	String settingName;
 	String settingValue;
 
-	if (*character != ']') {
+	if (*character != ']') 
+	{
 		*character = myFile.read();
 		while ((myFile.available()) && (*character != ':')  && (*character != '.') && *character != ']') {
 			settingValue = settingValue + *character;
@@ -207,11 +208,11 @@ int	get_int_conf_value(File myFile, char *character)
 			return outval;
 		}
 		else {
-			return 0;
+			return def_value;
 			}
 	}
 	else
-		return 0;
+		return def_value;
 }
 
 bool get_bool_conf_value(File myFile, char *character) 
