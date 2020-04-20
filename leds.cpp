@@ -14,6 +14,7 @@
 
 	#include "config_TPM.h"    // Load the main config
 	#include "leds.h"
+	#include "leds_def_values.h"		// include the default values for led settings
 
 	#include "tools.h"
 	#include "wifi-ota.h"
@@ -1969,14 +1970,10 @@ void LEDS_run_FX_rotate(uint8_t z, uint8_t i )
 		
 		if (form_fx_modify[i + (z * 8)].RotateFullFrames != 0) 
 		{	
-			tpm_fx.rotate(leds , form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led, form_fx_modify[i + (z * 8)].RotateFullFrames  ,  form_fx_modify[i + (z * 8)].RotateFramePos  );
+			tpm_fx.rotate(leds , form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led, form_fx_modify[i + (z * 8)].RotateFullFrames  ,  form_fx_modify[i + (z * 8)].RotateFramePos,form_menu_modify[z][_M_FORM_MODIFY_ROTATE_REVERSED]  );
 			form_fx_modify[i + (z * 8)].RotateFramePos++;
 			if (form_fx_modify[i + (z * 8)].RotateFramePos >= form_fx_modify[i + (z * 8)].RotateFullFrames  )  	form_fx_modify[i + (z * 8)].RotateFramePos = 0;
 		}
-		
-
-
-
 
 	
 	}

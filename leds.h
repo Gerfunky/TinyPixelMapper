@@ -8,6 +8,7 @@
 #endif
 #include "leds_palletes.h"
 
+
 //#include <FastLED.h>	
 	//#include <pixeltypes.h>
 	//#include "pixeltypes.h"
@@ -469,6 +470,7 @@
 	enum form_modify_options
 	{
 		_M_FORM_MODIFY_ROTATE,
+		_M_FORM_MODIFY_ROTATE_REVERSED,
 		_M_FORM_MODIFY_MIRROR,
 	};
 

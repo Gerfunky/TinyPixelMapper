@@ -784,7 +784,8 @@ void osc_StC_menu_form_modify_adv_ref(uint8_t bit)
 			uint8_t formNr = bit *8 + bit_formNr ;
 
 			//osc_queu_MSG_int( "/ostc/form/mod/rev/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_FFT_REVERSED], 		bit_formNr)));  		
-			osc_queu_MSG_int( "/ostc/form/fx/rota/run/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_MODIFY_ROTATE], 		bit_formNr)));  				
+			osc_queu_MSG_int( "/ostc/form/fx/rota/run/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_MODIFY_ROTATE], 		bit_formNr)));  	
+			osc_queu_MSG_int( "/ostc/form/fx/rota/rev/" + String(formNr),	(bitRead(form_menu_modify[bit][_M_FORM_MODIFY_ROTATE_REVERSED], 		bit_formNr)));  				
 			osc_queu_MSG_int("/ostc/form/fx/rota/rot/"  +	String(formNr), form_fx_modify[formNr].RotateFixed );
 			osc_queu_MSG_int("/ostc/form/fx/rota/rff/"  +	String(formNr), form_fx_modify[formNr].RotateFullFrames );
 			osc_queu_MSG_int("/ostc/form/fx/rota/tgp/"  +	String(formNr), form_fx_modify[formNr].RotateTriggerBin );
@@ -1692,11 +1693,12 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.match("/fx/meto/mTR",addrOffset))  		form_fx_meteor[orig_form_nr].meteorTrailDecay = uint8_t(msg.getInt(0))	;
 
 			else if		(msg.match("/fx/rota/run",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_ROTATE], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/rota/rev",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_ROTATE_REVERSED], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/rota/rot",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateFixed  =  uint16_t(msg.getInt(0))  ;
 			else if		(msg.match("/fx/rota/rff",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateFullFrames  =  uint16_t(msg.getInt(0))  ;
 			else if		(msg.match("/fx/rota/tgp",addrOffset))	  	   	form_fx_modify[orig_form_nr].RotateTriggerBin  =  uint8_t(msg.getInt(0))  ;
 
-			else if		(msg.match("/fx/miro/run",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_MIRROR], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			//else if		(msg.match("/fx/miro/run",addrOffset))			{ bitWrite(form_menu_modify[i_bit_int][_M_FORM_MODIFY_MIRROR], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			
 			else if		(msg.match("/fx/shim/run",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_RUN], i_form_nr,	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/shim/bld",addrOffset))			{ bitWrite(form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_BLEND], i_form_nr,	bool(msg.getInt(0)));  }

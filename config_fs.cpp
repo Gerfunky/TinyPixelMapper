@@ -24,6 +24,7 @@
 
 
 	#include "leds.h"
+	#include "leds_def_values.h"		// include the default values for led settings
 	#ifndef ARTNET_DISABLED
 		extern artnet_struct artnet_cfg;
 		extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
@@ -1098,7 +1099,24 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 			conf_file.println("] ");
 		}
+		//conf_file.println("Modify ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[YF:" + String(form)));
+			conf_file.print(String(":" + String(form_fx_modify[form].RotateFixed)));
+			conf_file.print(String(":" + String(form_fx_modify[form].RotateFullFrames)));
+			conf_file.print(String(":" + String(form_fx_modify[form].RotateTriggerBin)));
+			conf_file.println("] ");
+		}
 
+		//conf_file.println("XB Form modify1 boolean values ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			conf_file.print(String("[YB:" + String(form)));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(form_menu_modify[get_strip_menu_bit(form)][setting], form))));
+
+			conf_file.println("] ");
+		}
 
 		
 		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
@@ -1215,6 +1233,9 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 
 		XF FX01
 		XB
+
+		YF  MOdify
+		YB 
 
 		CL Copy Leds
 
@@ -1466,7 +1487,20 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) 
 					bitWrite(form_menu_eyes[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
 			}
-
+			else if ((type == 'Y') && (typeb == 'F'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED); 		form_fx_modify[strip_no].RotateFixed = in_int;
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFULLFRAMES); 	form_fx_modify[strip_no].RotateFullFrames = in_int;
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATETRIGGERBIN); 	form_fx_modify[strip_no].RotateTriggerBin = in_int;
+				
+			}
+			else if ((type == 'Y') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) 
+					bitWrite(form_menu_modify[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}
 			else if  ((type == 'c') && (typeb == 'l'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1488,6 +1522,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 
 
 			} 
+			
 			else if  ((type == 'A') && (typeb == 'M'))	
 			{
 				uint8_t bit_no = get_int_conf_value(conf_file, &character);
