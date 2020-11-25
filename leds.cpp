@@ -64,6 +64,7 @@ CRGB GlobalColor_result;
 
 
 
+deck_struct deck[2] ;
 
 
 // ************** FFT Variables
@@ -759,6 +760,10 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 
 // ************* FUNCTIONS
 
+
+
+
+
 	
 void LEDS_fadeout()
 {
@@ -1000,21 +1005,65 @@ void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color , uint8_t value)
 
 uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color)
 {	// read the color info for 1 color in a pallete
-	switch(color)
-	{
-		case 0:
-			return LEDS_pal_cur[pal][no].r;
-		break;
-		case 1:
-			return LEDS_pal_cur[pal][no].g;
-		break;
-		case 2:
-			return LEDS_pal_cur[pal][no].b;
-		break;
 
-	
+	if (pal < NR_PALETTS)
+	{
+		switch(color)
+		{
+			case 0:
+				return LEDS_pal_cur[pal][no].r;
+			break;
+			case 1:
+				return LEDS_pal_cur[pal][no].g;
+			break;
+			case 2:
+				return LEDS_pal_cur[pal][no].b;
+			break;
+
+		
+		}
+		return 0;
 	}
-	return 0;
+	if (pal >=NR_PALETTS && pal <= 32)
+	{
+		CRGBPalette16 TempPal; 	
+
+		switch (pal)
+		{
+			case 16: TempPal = RainbowColors_p; break;
+			case 17: TempPal = RainbowStripeColors_p; break;
+			case 18: TempPal = CloudColors_p; break;
+			case 19: TempPal = PartyColors_p; break;
+			case 20: TempPal = OceanColors_p; break;
+			case 21: TempPal = ForestColors_p; break;
+			case 22: TempPal = HeatColors_p; break;
+			case 23: TempPal = LavaColors_p; break;
+			case 24: TempPal = pal_red_green; break;
+			case 25: TempPal = pal_red_blue; break;
+			case 26: TempPal = pal_green_blue; break;
+			case 27: TempPal = pal_black_white_Narrow; break;
+			case 28: TempPal = pal_black_white_wide; break;
+		}
+
+		switch(color)
+		{
+			case 0:
+				return TempPal[no].r;
+			break;
+			case 1:
+				return TempPal[no].g;
+			break;
+			case 2:
+				return TempPal[no].b;
+			break;
+
+		
+		}
+		return 0;
+
+
+	}
+
 	
 
 }
@@ -1474,6 +1523,10 @@ void LEDS_load_default_play_conf()
 {
 
 
+	
+
+
+
 	led_cfg.bri					= 255;
 	led_cfg.fire_cooling		= DEF_FIRE_COOLING ;
 	led_cfg.fire_sparking		= DEF_FIRE_SPARKING ;
@@ -1503,24 +1556,24 @@ void LEDS_load_default_play_conf()
 	//bitWrite(strip_menu[0][_M_STRIP_],0, true);
 	uint8_t form_nr = 0;
 
-	form_cfg[form_nr].start_led = 0;
-	form_cfg[form_nr].nr_leds = MAX_NUM_LEDS;
-	form_fx1[form_nr].fade = 1;
+	deck[0].form_cfg[form_nr].start_led = 0;
+	deck[0].form_cfg[form_nr].nr_leds = MAX_NUM_LEDS;
+	deck[0].form_fx1[form_nr].fade = 1;
 
-	form_fx_pal[form_nr].index_start = 0 ;
-	form_fx_pal[form_nr].index_add_led = 64;
-	form_fx_pal[form_nr].index_add_frame = 32;
+	deck[0].form_fx_pal[form_nr].index_start = 0 ;
+	deck[0].form_fx_pal[form_nr].index_add_led = 64;
+	deck[0].form_fx_pal[form_nr].index_add_frame = 32;
 
 	
-	form_fx1[form_nr].level = 255;
-	form_fx_glitter[form_nr].value = 20;
-	form_fx_dots[form_nr].nr_dots = 2;
-	form_fx_dots[form_nr].speed = 10;
+	deck[0].form_fx1[form_nr].level = 255;
+	deck[0].form_fx_glitter[form_nr].value = 20;
+	deck[0].form_fx_dots[form_nr].nr_dots = 2;
+	deck[0].form_fx_dots[form_nr].speed = 10;
 	
-	form_fx_fft[form_nr].offset = 0;
+	deck[0].form_fx_fft[form_nr].offset = 0;
 
 
-	bitWrite(form_menu_pal[0][_M_FORM_PAL_RUN],0, true);
+	bitWrite(deck[0].form_menu_pal[0][_M_FORM_PAL_RUN],0, true);
 	bitWrite(form_menu_fft[0][_M_FORM_FFT_RUN],0, true);
 	//bitWrite(form_menu[0][_M_AUDIO_SUB_FROM_FFT],0, false);
 
@@ -1970,7 +2023,7 @@ void LEDS_run_FX_rotate(uint8_t z, uint8_t i )
 		
 		if (form_fx_modify[i + (z * 8)].RotateFullFrames != 0) 
 		{	
-			tpm_fx.rotate(leds , form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led, form_fx_modify[i + (z * 8)].RotateFullFrames  ,  form_fx_modify[i + (z * 8)].RotateFramePos,form_menu_modify[z][_M_FORM_MODIFY_ROTATE_REVERSED]  );
+			tpm_fx.rotate(leds , form_cfg[i + (z * 8)].nr_leds , form_cfg[i + (z * 8)].start_led, form_fx_modify[i + (z * 8)].RotateFullFrames  ,  form_fx_modify[i + (z * 8)].RotateFramePos, bitRead(form_menu_modify[z][_M_FORM_MODIFY_ROTATE_REVERSED],i  )  );
 			form_fx_modify[i + (z * 8)].RotateFramePos++;
 			if (form_fx_modify[i + (z * 8)].RotateFramePos >= form_fx_modify[i + (z * 8)].RotateFullFrames  )  	form_fx_modify[i + (z * 8)].RotateFramePos = 0;
 		}

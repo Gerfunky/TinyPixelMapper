@@ -515,6 +515,46 @@
 	  };
 
 
+struct deck_struct
+{
+	uint8_t layer_select[MAX_LAYERS_SELECT] ;
+	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
+	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];
+	form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
+	form_fx_fire_struct form_fx_fire[NR_FORM_PARTS]; 
+	form_fx_fft_struct form_fx_fft[NR_FORM_PARTS];
+	form_fx1_struct form_fx1[NR_FORM_PARTS];
+	form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS];
+	form_fx_dots_struct form_fx_dots[NR_FORM_PARTS];
+	form_fx_strobe_struct form_fx_strobe[NR_FORM_PARTS] ;
+	form_fx_eyes_struct form_fx_eyes[NR_FORM_PARTS];
+	form_fx_meteor_struct form_fx_meteor[NR_FORM_PARTS];
+	form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
+
+
+	byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
+	byte form_menu_fft[_M_NR_FORM_BYTES_][_M_NR_FORM_FFT_OPTIONS_];
+	byte form_menu_fire[_M_NR_FORM_BYTES_][_M_NR_FORM_FIRE_OPTIONS_];
+	byte form_menu_shimmer[_M_NR_FORM_BYTES_][_M_NR_FORM_SHIMMER_OPTIONS_];
+	byte form_menu_fx1[_M_NR_FORM_BYTES_][_M_NR_FORM_FX1_OPTIONS_];
+	byte form_menu_dot[_M_NR_FORM_BYTES_][_M_NR_FORM_DOT_OPTIONS_];
+	byte form_menu_glitter[_M_NR_FORM_BYTES_][_M_NR_FORM_GLITTER_OPTIONS_];
+	byte form_menu_strobe[_M_NR_FORM_BYTES_][_M_NR_FORM_STROBE_OPTIONS_];
+	byte form_menu_eyes[_M_NR_FORM_BYTES_][_M_NR_FORM_EYES_OPTIONS_];
+	byte form_menu_meteor[_M_NR_FORM_BYTES_][_M_NR_FORM_METEOR_OPTIONS_];
+	byte form_menu_modify[_M_NR_FORM_BYTES_][_M_NR_FORM_MODIFY_OPTIONS_];
+
+
+
+
+};
+
+
+
+
+
+
+
 
 
 // Functions

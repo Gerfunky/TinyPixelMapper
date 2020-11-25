@@ -471,6 +471,9 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 
 void WiFi_Start_Network_X()
 {
+	
+	WiFi.disconnect();
+	
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
 	int x = 0;
@@ -827,7 +830,7 @@ void wifi_loop()
 
 		if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
 		{	
-			 
+			//WiFi.disconnect(); 
 			WIFI_start_wificlient(); 
 			
 		}
