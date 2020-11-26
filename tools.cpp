@@ -82,6 +82,9 @@ void load_bool()
 	debugMe("pre_Bool_LOAD");
 	//debugMe(FS_Bools_read(0));
 	//debugMe("PAST_BOOL_LOAD");
+	write_bool(WIFI_EVENTS, DEF_WIFI_EVENTS);
+
+	
 	if (!FS_Bools_read(0) || OVERWRITE_INIT_CONF_ON )
 	{
 		debugMe("Loading default device config");
@@ -113,6 +116,8 @@ void load_bool()
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
 
 		write_bool(POT_DISABLE,DEF_DISABLE_HW_POTS);
+
+		write_bool(WIFI_EVENTS, DEF_WIFI_EVENTS);
 
 		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON ) FS_Bools_write(0);
 	}

@@ -327,6 +327,7 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 	//ip4_addr_t  infoIP4;
 	IPAddress infoIP;
 	
+	if (get_bool(WIFI_EVENTS) == true || event == 7 )   // DHCP response (7) or all
 
 	switch (event) {
 	case  SYSTEM_EVENT_SCAN_DONE:					/**< 1 ESP32 finish scanning AP */
@@ -493,41 +494,49 @@ void WiFi_Start_Network_X()
 }
 
 
-void WIFI_start_wificlient()
+void WiFi_Start_Network_CLIENT()
 {
-			
-
-			//uint8_t con_try = WIFI_CLIENT_CONNECT_TRYS;
-	unsigned long currentT = millis();
-	if (currentT > wifi_cfg.connectTimeout )
-	{
-			wifi_cfg.connectTimeout = currentT + 10000;
-			debugMe("reconnect wifi:"); 
-			debugMe(String("ssid:" + String(wifi_cfg.ssid)));
-			debugMe(String("pwd:" + String(wifi_cfg.pwd)));
-				//debugMe(String("try : " + String(con_try) + "."));
-				//debugMe(WiFi.status());
-
-
-			WiFi.mode(WIFI_STA);
-			//delay(100);
-			WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-			
-			
-			/*
-			while (WiFi.status() != WL_CONNECTED)
-			{
-				delay(500);	
-				debugMe(String("." + String(con_try) + "."), false);
-				if (millis() > currentT + WIFI_CLIENT_CONNECT_TIMEOUT * con_try)
-					break;
-
-			}
-			*/
+		debugMe("Wifi_Client_Connect : ");
+		WiFi.persistent(false);
+		WiFi.disconnect(true);
+		WiFi.mode(WIFI_OFF);
+		WiFi.mode(WIFI_STA);
+		if (get_bool(STATIC_IP_ENABLED))
+			WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS);
+		WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+		debugMe("SSID : ",false);
+		debugMe(wifi_cfg.ssid);
+		debugMe("PWD : ",false);
+		debugMe(wifi_cfg.pwd);
+		//while (WiFi.status() != WL_CONNECTED) {
+		//	delay(500);
+		//	debugMe(".",false);
+		//}
 		
-	//debugMe("Wifi Signal Strength : " + String(WiFi.RSSI()));
-	}
+	
 }
+
+
+void WiFi_print_settings()
+{
+
+
+		debugMe("");
+		debugMe("WiFi connected!");
+		debugMe("IP address: ",false);
+		debugMe(WiFi.localIP());
+		debugMe("ESP Mac Address: ",false);
+		debugMe(WiFi.macAddress());
+		debugMe("Subnet Mask: ",false);
+		debugMe(WiFi.subnetMask());
+		debugMe("Gateway IP: ",false);
+		debugMe(WiFi.gatewayIP());
+		debugMe("DNS: ",false);
+		debugMe(WiFi.dnsIP());
+}
+
+
+
 
 
 
@@ -586,25 +595,16 @@ void WiFi_Start_Network()
 	}
 	else  if (  get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT &&  get_bool(WIFI_POWER_ON_BOOT)   )	
 	{	
-		
 
 		debugMe("Starting Wifi Client Setup");
 		
 		LEDS_setall_color(3); FastLEDshowESP32(); delay(500);
 
-	
 		write_bool(WIFI_MODE_BOOT, false);
 			
-		WIFI_start_wificlient();
+		WiFi_Start_Network_CLIENT();
 
-
-		//LEDS_setall_color(2); FastLEDshowESP32(); delay(500);
-		
-		debugMe(String("IP : "),false);
-		debugMe(WiFi.localIP());
-		debugMe("wifi status:",false);
-		debugMe(WiFi.status());
-		
+	
 	}
 	
 }
@@ -786,8 +786,8 @@ void wifi_setup()
 
 	WiFi_load_settings();
 	
+	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
-	//WiFi.onEvent(WiFi_Event); // Start event handler!
 	//delay(5000);
 	WiFi_Start_Network();
 	
@@ -798,8 +798,9 @@ void wifi_setup()
 		
 	
 
-		WiFi_OTA_setup();
-		WiFi_NTP_setup();   //ESP32 NOK
+		//WiFi_OTA_setup();
+		//WiFi_NTP_setup();   //ESP32 NOK
+		
 		TelnetDebug.begin(wifi_cfg.APname);
 
 		debugMe("Hello World");
@@ -807,7 +808,7 @@ void wifi_setup()
 
 
 			
-		WiFi_artnet_enable(); 
+		//WiFi_artnet_enable(); 
 
 
 
@@ -819,6 +820,8 @@ void wifi_setup()
 		//else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
 
 		//WiFi_FFT_Setup();
+
+		WiFi_print_settings();
 	}
 }
 
@@ -830,14 +833,23 @@ void wifi_loop()
 
 		if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
 		{	
+			unsigned long currentT = millis();
+			if (currentT > wifi_cfg.connectTimeout )
+			{
+				wifi_cfg.connectTimeout = currentT + 10000;
 			//WiFi.disconnect(); 
-			WIFI_start_wificlient(); 
+			//WIFI_start_wificlient(); 
+			//WiFi_Start_Network();
+			
+				WiFi_Start_Network_CLIENT();
+				WiFi_print_settings();
+			}
 			
 		}
 		if  ((get_bool(WIFI_POWER_ON_BOOT))) 
 		{
 
-		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
+		//ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
 		//yield();
 		//NTP_parse_response();	// get new packets and flush if not correct.
 		yield();
