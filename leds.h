@@ -116,6 +116,9 @@
 
 		};
 
+
+
+
 // *************** Layers  ************************
 
 
@@ -515,6 +518,9 @@
 	  };
 
 
+
+
+//******************** DEcks *******************
 struct deck_struct
 {
 	uint8_t layer_select[MAX_LAYERS_SELECT] ;
@@ -550,7 +556,14 @@ struct deck_struct
 };
 
 
+		//struct Master_Leds_struct
+		//{
+			//led_cfg_struct led_cfg;									// Main Config
+			//struct form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];  // the Lines / forms
 
+			//CRGBPalette16 LEDS_pal_cur[NR_PALETTS];	  //pallets
+
+		//};
 
 
 
