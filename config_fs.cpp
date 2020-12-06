@@ -75,7 +75,7 @@ boolean FS_get_PalyConfSatatus(uint8_t play_NR)
 	//else debugMe("Ohh no where is it");
 	if(conf_file && conf_file.isDirectory() == false) 
 	{ //exists and its a file 
-		//conf_file.close();
+		conf_file.close();
 		//debugMe("return true");
 		return true;
 	}

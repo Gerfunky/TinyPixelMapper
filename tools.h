@@ -43,7 +43,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,MQTT_ON 			= 25     // Enable Mqtt.
 	,ARTNET_SEND		= 26
 	,ARTNET_RECIVE		= 27
-	,WIFI_MODE_BOOT		=	28
+	,WIFI_MODE_BOOT		= 28
 	
 
 };

@@ -1229,11 +1229,17 @@ void LEDS_seqencer_advance()
 {
 		uint8_t orig_play_nr = led_cfg.Play_Nr;
 
+
+
+
+	if (get_bool(SEQUENCER_ON))	
+	{	
 		if (orig_play_nr < MAX_NR_SAVES-1 )
 		{
 			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
 			{
 						//debugMe("Play switch test to " + String(play_nr));
+
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
@@ -1264,6 +1270,45 @@ void LEDS_seqencer_advance()
 		led_cfg.confSwitch_time = micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
 
 	}
+	else   // Sequencer OFF
+	{
+
+		if (orig_play_nr < MAX_NR_SAVES-1 )
+		{
+			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+			{
+
+						if( FS_check_Conf_Available(play_nr ) )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
+						if (play_nr == orig_play_nr ) break;
+			}
+		}
+		else
+		{
+			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
+			{
+						
+						if( FS_check_Conf_Available(play_nr ) )
+						{
+							FS_play_conf_read(play_nr);
+							break;
+							
+						}
+						
+			}			
+			
+		}
+
+
+	}
+
+
+}
 
 
 
