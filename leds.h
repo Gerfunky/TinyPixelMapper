@@ -33,7 +33,7 @@
 		// Strip/Form settings do not change!!! 
 		
 		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
-		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8)				// how many forms? default 32
+		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 64
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
@@ -107,7 +107,7 @@
 
 
 
-		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		//#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 		struct form_Led_Setup_Struct 
 		{
 			uint16_t	start_led;			// where the pallete starts

@@ -13,6 +13,7 @@
 
 
 #define OSC_BUNDLE_SEND_COUNT 20				// how many OSC messages to send in one bundle.
+#define OSC_FX_BUNDLE_SEND_COUNT 6				// how many OSC messages to send in one bundle.
 #define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
 #define VIZ_FPS_MAX 15
 #define OSC_QEUE_ADD_LEN 30
