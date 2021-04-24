@@ -16,7 +16,7 @@
 // defines , DO NOT CHANGE!!!!
 
 		#define MAX_NUM_LEDS   (170*16)  		// what is the max it can be set to in the config    
-		#define MAX_NUM_LEDS_BOOT  20 			//	only set the first 20 for boot info green=ap / red= clinet
+		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
 		#define POT_SENSE_DEF 4   				// only take Variable resistor value if it changes more than this.
 
 
@@ -32,7 +32,7 @@
 
 		// Strip/Form settings do not change!!! 
 		
-		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		#define _M_NR_FORM_BYTES_ 6				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 64
 
 
@@ -122,8 +122,8 @@
 // *************** Layers  ************************
 
 
-	#define MAX_LAYERS_SELECT 16  // up to how many layers can you add
-	#define MAX_LAYERS 16 				// what is the max layer Number
+	#define MAX_LAYERS_SELECT 32  // up to how many layers can you add
+	#define MAX_LAYERS 32 				// what is the max layer Number
 
 	enum layer_options
 	{
@@ -406,6 +406,8 @@
 			uint8_t extend;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
 			uint8_t lvl_bin;
+			uint8_t color;
+			uint8_t extend_tick;
 
 		};
 

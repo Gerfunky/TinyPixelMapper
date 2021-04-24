@@ -957,6 +957,7 @@ void osc_StC_menu_form_fft_adv_ref(uint8_t bit)
 			osc_queu_MSG_int("/ostc/form/fft/lvl/"+	String(formNr), deck[0].form_fx_fft[formNr].level );
 			osc_queu_MSG_int("/ostc/form/fft/tgp/"+	String(formNr), deck[0].form_fx_fft[formNr].triggerBin );
 			osc_queu_MSG_int("/ostc/form/fft/lvb/"+	String(formNr), deck[0].form_fx_fft[formNr].lvl_bin );
+			osc_queu_MSG_int("/ostc/form/fft/clr/"+	String(formNr), deck[0].form_fx_fft[formNr].color );
 
 		}		
 }
@@ -1952,6 +1953,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/fft/mix",addrOffset))  	deck[0].form_fx_fft[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
 						else if  	(msg.match("/fft/tgp",addrOffset))  	deck[0].form_fx_fft[orig_form_nr].triggerBin 	= uint8_t(msg.getInt(0))	;
 						else if  	(msg.match("/fft/lvb",addrOffset))  	deck[0].form_fx_fft[orig_form_nr].lvl_bin 	= uint8_t(msg.getInt(0))	;
+						else if  	(msg.match("/fft/clr",addrOffset))  	deck[0].form_fx_fft[orig_form_nr].color 	= uint8_t(msg.getInt(0))	;
 			}
 		}
 

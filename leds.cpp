@@ -471,6 +471,7 @@ void LEDS_pal_reset_index()
 			deck[0].form_fx_pal[i+(z * 8)].index = constrain(deck[0].form_fx_pal[i+ (z * 8)].index_start,0,255);
 			deck[0].form_fx_pal[i + (z * 8)].indexLong = deck[0].form_fx_pal[i + (z * 8)].index_start;
 			deck[0].form_fx_modify[i + (z * 8)].RotateFramePos = 0;
+			deck[0].form_fx_fft[i + (z * 8)].extend_tick = 0;
 			//debugMe(String(i + (z * 8) ) + " -- " + String(deck[0].form_fx_pal[i + (z * 8)].indexLong));
 			if (deck[0].form_fx_pal[i + (z * 8)].indexLong  >= 4096) deck[0].form_fx_pal[i + (z * 8)].indexLong  = deck[0].form_fx_pal[i + (z * 8)].indexLong -4096;
 		}
@@ -1437,7 +1438,17 @@ void LEDS_run_fft(uint8_t z, uint8_t i )
 	{
 		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[0].form_fx_fft[i + (z * 8)].lvl_bin, deck[0].form_fx_fft[i + (z * 8)].level ); 
 
-		tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, deck[0].form_cfg[i + (z * 8)].nr_leds, deck[0].form_cfg[i + (z * 8)].start_led, bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(deck[0].form_fx_fft[i + (z * 8)].mix_mode),  lvl_select , bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), deck[0].form_fx_fft[i + (z * 8)].offset, deck[0].form_fx_fft[i + (z * 8)].extend  );
+		tpm_fx.mixHistoryOntoLedArray(leds_FFT_history, leds, deck[0].form_cfg[i + (z * 8)].nr_leds, deck[0].form_cfg[i + (z * 8)].start_led, bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(deck[0].form_fx_fft[i + (z * 8)].mix_mode),  lvl_select , bitRead(deck[0].form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), deck[0].form_fx_fft[i + (z * 8)].offset, deck[0].form_fx_fft[i + (z * 8)].extend ,deck[0].form_fx_fft[i + (z * 8)].extend_tick ,deck[0].form_fx_fft[i + (z * 8)].color );
+
+		if (deck[0].form_fx_fft[i + (z * 8)].extend != 0)
+		{
+			deck[0].form_fx_fft[i + (z * 8)].extend_tick++ ;
+			if (deck[0].form_fx_fft[i + (z * 8)].extend_tick > deck[0].form_fx_fft[i + (z * 8)].extend) 
+				deck[0].form_fx_fft[i + (z * 8)].extend_tick = 0;
+			
+			
+
+		}
 	}
 }
 
