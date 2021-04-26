@@ -1714,28 +1714,50 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 		else if  	(msg.fullMatch("/pal/adv/0",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(0);osc_StC_menu_form_pal_adv_ref(1);}
 		else if  	(msg.fullMatch("/pal/adv/1",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(2);osc_StC_menu_form_pal_adv_ref(3);}
+		else if  	(msg.fullMatch("/pal/adv/2",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(4);osc_StC_menu_form_pal_adv_ref(5);}
 		
 		else if  	(msg.fullMatch("/fft/adv/0",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(0);osc_StC_menu_form_fft_adv_ref(1);}
 		else if  	(msg.fullMatch("/fft/adv/1",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(2);osc_StC_menu_form_fft_adv_ref(3);}
+		else if  	(msg.fullMatch("/fft/adv/2",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(4);osc_StC_menu_form_fft_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/leds/adv",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_led_adv_ref();}
+
+
 		else if  	(msg.fullMatch("/fx/fire/adv/0",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref(0);osc_StC_menu_form_fx_fire_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/fire/adv/1",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref(2);osc_StC_menu_form_fx_fire_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/fire/adv/2",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_fire_adv_ref(4);osc_StC_menu_form_fx_fire_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/shim/adv/0",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref(0);osc_StC_menu_form_shim_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/shim/adv/1",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref(2);osc_StC_menu_form_shim_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/shim/adv/2",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_shim_adv_ref(4);osc_StC_menu_form_shim_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/glit/adv/0",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref(0);osc_StC_menu_form_glit_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/glit/adv/1",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref(2);osc_StC_menu_form_glit_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/glit/adv/2",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_glit_adv_ref(4);osc_StC_menu_form_glit_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/dott/adv/0",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref(0);osc_StC_menu_form_dot_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/dott/adv/1",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref(2);osc_StC_menu_form_dot_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/dott/adv/2",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_dot_adv_ref(4);osc_StC_menu_form_dot_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/fx01/adv/0",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref(0);osc_StC_menu_form_fx1_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/fx01/adv/1",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref(2);osc_StC_menu_form_fx1_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/fx01/adv/2",addrOffset)		&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx1_adv_ref(4);osc_StC_menu_form_fx1_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/strobe/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_strobe_adv_ref(0);osc_StC_menu_form_fx_strobe_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/strobe/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_strobe_adv_ref(2);osc_StC_menu_form_fx_strobe_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/strobe/adv/2",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_strobe_adv_ref(4);osc_StC_menu_form_fx_strobe_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/meto/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_meteor_adv_ref(0);osc_StC_menu_form_fx_meteor_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/meto/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_meteor_adv_ref(2);osc_StC_menu_form_fx_meteor_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/meto/adv/2",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_meteor_adv_ref(4);osc_StC_menu_form_fx_meteor_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/eyes/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(0);osc_StC_menu_form_fx_eyes_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/eyes/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(2);osc_StC_menu_form_fx_eyes_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/eyes/adv/2",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(4);osc_StC_menu_form_fx_eyes_adv_ref(5);}
+
 		else if  	(msg.fullMatch("/fx/modify/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(0);osc_StC_menu_form_modify_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/modify/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(2);osc_StC_menu_form_modify_adv_ref(3);}
+		else if  	(msg.fullMatch("/fx/modify/adv/2",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(4);osc_StC_menu_form_modify_adv_ref(5);}
 
 		else if 	(msg.match("/fx",addrOffset))	
 		{

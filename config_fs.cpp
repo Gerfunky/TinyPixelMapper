@@ -914,6 +914,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(deck[0].form_fx_fft[form].extend)));
 			conf_file.print(String(":" + String(deck[0].form_fx_fft[form].triggerBin)));
 			conf_file.print(String(":" + String(deck[0].form_fx_fft[form].lvl_bin)));
+			conf_file.print(String(":" + String(deck[0].form_fx_fft[form].color)));
 			
 
 			conf_file.println("] ");
@@ -1345,6 +1346,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); deck[0].form_fx_fft[strip_no].extend = in_int;} 	else {deck[0].form_fx_fft[strip_no].extend = 0;}
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); deck[0].form_fx_fft[strip_no].triggerBin = in_int; }else  deck[0].form_fx_fft[strip_no].triggerBin  = 255;
 				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); deck[0].form_fx_fft[strip_no].lvl_bin = in_int; }   else  deck[0].form_fx_fft[strip_no].lvl_bin  = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); deck[0].form_fx_fft[strip_no].color = in_int; }   else  deck[0].form_fx_fft[strip_no].color  = 0;
+
 			}
 			else if ((type == 'T') && (typeb == 'B'))
 			{

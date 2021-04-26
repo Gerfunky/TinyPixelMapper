@@ -33,7 +33,7 @@
 		// Strip/Form settings do not change!!! 
 		
 		#define _M_NR_FORM_BYTES_ 6				// 2 bytes = 16 forms   // 4 bytes = 32 forms
-		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 64
+		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 6*8 = 64
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
@@ -144,6 +144,15 @@
 		_M_LAYER_16_STROBE = 12,
 		_M_LAYER_16_EYES = 14,
 		_M_LAYER_16_ROTATE = 16,
+
+		_M_LAYER_32_FFT = 17,
+		_M_LAYER_32_PAL = 18,
+		_M_LAYER_32_FX01 = 19,
+		_M_LAYER_32_FIRE = 20,
+		_M_LAYER_32_SHIMMER = 21,
+		_M_LAYER_32_STROBE = 22,
+		_M_LAYER_32_EYES = 23,
+		_M_LAYER_32_ROTATE = 24,
 
 
 

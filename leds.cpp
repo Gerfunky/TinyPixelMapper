@@ -1688,7 +1688,7 @@ void LEDS_run_layers()
 			else if (layer_select[layer] ==_M_LAYER_00_SHIMMER ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i);
 			else if (layer_select[layer] ==_M_LAYER_00_STROBE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i);
 			else if (layer_select[layer] ==_M_LAYER_00_EYES ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i);
-			else if (layer_select[layer] ==_M_LAYER_00_ROTATE ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i);
+			else if (layer_select[layer] ==_M_LAYER_00_ROTATE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i);
 
 
 			// LAYERS 16 to 31   *** Z =2 ; Z<4
@@ -1700,6 +1700,15 @@ void LEDS_run_layers()
 			else if (layer_select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i);
 			else if (layer_select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i);
 			else if (layer_select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i);
+
+			else if (layer_select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_PAL ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_FX01 ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_FIRE ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_SHIMMER ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_STROBE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_EYES ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i);
+			else if (layer_select[layer] ==_M_LAYER_32_ROTATE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i);
 
 		}
 
