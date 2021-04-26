@@ -534,6 +534,7 @@
 //******************** DEcks *******************
 struct deck_struct
 {
+	char confname[32];
 	uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
 	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];

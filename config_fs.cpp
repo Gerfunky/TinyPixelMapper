@@ -800,6 +800,19 @@ void FS_play_conf_write(uint8_t conf_nr)
 	}
 	else {   // yeah its open
 		debugMe("Write Conf File");
+		
+		conf_file.print(String("[NM:"+ String(deck[0].confname))); 
+			//for (uint8_t i=0; i< sizeof(deck[0].confname) ; i++ ) conf_file.print(deck[0].confname[i]);
+		
+		conf_file.println("] ");	
+					
+
+			
+
+
+
+
+		
 		//conf_file.println("Play Config.");
 		//conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
 
@@ -1229,6 +1242,8 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".playConf.txt");
 	 debugMe("READ Conf " + addr);
 	File conf_file = SPIFFS.open(addr, "r");
+	String settingValue;
+
 	delay(100);
 	if (conf_file && !conf_file.isDirectory())
 	{
@@ -1256,7 +1271,20 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 			
 			int  in_int = 0;
 
-			if ((type == 'L') && (typeb == 'S'))
+			
+
+			if ((type == 'N') && (typeb == 'M'))
+			{
+				debugMe("Loading Conf :", false);
+				debugMe(String(deck[0].confname));
+				memset(deck[0].confname, 0, sizeof(deck[0].confname));
+				settingValue = get_string_conf_value(conf_file, &character);
+				settingValue.toCharArray(deck[0].confname, settingValue.length() + 1);
+				
+			}
+			
+
+			else if ((type == 'L') && (typeb == 'S'))
 			{
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.fire_cooling		= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		led_cfg.fire_sparking		= uint8_t(constrain(in_int, 0, 255));
@@ -1569,6 +1597,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 
 		led_cfg.Play_Nr = conf_nr; 
 		LEDS_pal_reset_index();
+		
 		return true;
 	}
 	else
@@ -1577,6 +1606,7 @@ boolean FS_play_conf_read(uint8_t conf_nr)
 		Serial.println("error opening " + addr);
 	}
 	 debugMe("play-File-Closed");
+
 
 	return false;
 }

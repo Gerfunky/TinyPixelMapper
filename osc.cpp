@@ -1312,6 +1312,7 @@ void osc_oStC_menu_master_wifi_ref()
 		bundle_out.add("/ostc/master/wifi/ssid").add(wifi_cfg.ssid);
 		bundle_out.add("/ostc/master/wifi/ntp").add(wifi_cfg.ntp_fqdn);
 
+		
 
 		osc_server.beginPacket(ip_out, OSC_OUTPORT);    // osc_server.remotePort());//
 		bundle_out.send(osc_server);
@@ -1348,6 +1349,9 @@ void osc_oStC_menu_master_wifi_ref()
 
 void osc_oStC_menu_master_mqtt_ref()
 {
+		OSCBundle bundle_out;
+		IPAddress ip_out(osc_server.remoteIP());
+
 		osc_queu_MSG_int("/ostc/master/mqtt/enable", (get_bool(MQTT_ON)));
 
 		osc_queu_MSG_int("/ostc/master/mqtt/ip/0", 	mqtt_cfg.mqttIP[0]) ;
@@ -1356,8 +1360,7 @@ void osc_oStC_menu_master_mqtt_ref()
 		osc_queu_MSG_int("/ostc/master/mqtt/ip/3", 	mqtt_cfg.mqttIP[3]) ;
 		osc_queu_MSG_int("/ostc/master/mqtt/ip/4", 	mqtt_cfg.mqttPort );
 		osc_queu_MSG_int("/ostc/master/mqtt/ip/5", 	mqtt_cfg.publishSec );
-		OSCBundle bundle_out;
-		IPAddress ip_out(osc_server.remoteIP());
+
 
 		bundle_out.add("/ostc/master/mqtt/uname").add(mqtt_cfg.username);
 		bundle_out.add("/ostc/master/mqtt/passwd").add(mqtt_cfg.password);
@@ -1437,9 +1440,14 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
 	osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
 	
+	OSCBundle bundle_out;
+	IPAddress ip_out(osc_server.remoteIP());
+	bundle_out.add("/ostc/master/confname").add(deck[0].confname);
+	osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+	bundle_out.send(osc_server);
+	osc_server.endPacket();
+	bundle_out.empty();
 
-	
-	
 
 
 	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
@@ -2206,12 +2214,31 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 								
 								//debugMe(conf_NR);
 								if 			(msg.match("/save",addrOffset))		{ FS_play_conf_write(sel_save_no);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); }
-								else if 	(msg.match("/load",addrOffset))		{ FS_play_conf_read(sel_save_no);   LEDS_pal_reset_index();  }
+								else if 	(msg.match("/load",addrOffset))		
+									{ 
+										FS_play_conf_read(sel_save_no);   
+										LEDS_pal_reset_index();  
+											OSCBundle bundle_out;
+											IPAddress ip_out(osc_server.remoteIP());
+											bundle_out.add("/ostc/master/confname").add(deck[0].confname);
+											
+											char ConfOutAddress[25] ;
+											String CounfOutString = "/ostc/master/savename/" + String(sel_save_no);
+											
+											CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
+											bundle_out.add(ConfOutAddress ).add(deck[0].confname);
+											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+											bundle_out.send(osc_server);
+											osc_server.endPacket();
+											bundle_out.empty();
+									}
 								else if 	(msg.match("/cler",addrOffset))	{ FS_play_conf_clear(sel_save_no);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 255,0,0); }
 							
 							}
 
 			}
+			else if   	(msg.fullMatch("/confname",addrOffset))		{ int length=msg.getDataLength(0); memset(deck[0].confname, 0, 	 	sizeof(deck[0].confname)		);    	msg.getString( 0,	deck[0].confname,  		length ) ;  debugMe(String(deck[0].confname));  }
+			
 
 		/*
 			else if (msg.fullMatch("/conf/ref" ,addrOffset) )
