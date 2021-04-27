@@ -834,7 +834,7 @@ void osc_toggle_artnet(bool value)
 		write_bool(ARTNET_RECIVE, true); // artnet_enabled = true;		
 		//enable_artnet();
 		FS_artnet_write();
-		led_cfg.bri = led_cfg.max_bri;
+		deck[0].led_master_cfg.bri = led_cfg.max_bri;
 		WiFi_artnet_rc_enable();
 		//writeESP_play_Settings();
 	}
@@ -1430,12 +1430,12 @@ void osc_StC_menu_master_ledcfg_ref()
 
 void osc_StC_menu_master_ref()
 {
-	osc_queu_MSG_int("/ostc/master/bri", 		led_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
-	osc_queu_MSG_int("/ostc/master/r", 			led_cfg.r);
-	osc_queu_MSG_int("/ostc/master/g", 			led_cfg.g);
-	osc_queu_MSG_int("/ostc/master/b", 			led_cfg.b);
-	osc_queu_MSG_int("/ostc/master/palbri", 	led_cfg.pal_bri);
-	osc_queu_MSG_int("/ostc/master/fps", 		led_cfg.pal_fps);
+	osc_queu_MSG_int("/ostc/master/bri", 		deck[0].led_master_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
+	osc_queu_MSG_int("/ostc/master/r", 			deck[0].led_master_cfg.r);
+	osc_queu_MSG_int("/ostc/master/g", 			deck[0].led_master_cfg.g);
+	osc_queu_MSG_int("/ostc/master/b", 			deck[0].led_master_cfg.b);
+	osc_queu_MSG_int("/ostc/master/palbri", 	deck[0].led_master_cfg.pal_bri);
+	osc_queu_MSG_int("/ostc/master/fps", 		deck[0].led_master_cfg.pal_fps);
 	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
 	osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
@@ -2125,20 +2125,20 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 {
 		//debugMe("in master routing");
 		
-			if 		(msg.fullMatch("/bri",addrOffset))				{ led_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
+			if 		(msg.fullMatch("/bri",addrOffset))				{ deck[0].led_master_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
 			else if (msg.fullMatch("/conn",addrOffset))				{ osc_StC_menu_master_ref();   osc_StC_menu_master_loadsave_ref();   }
 			else if (msg.fullMatch("/ref/wifi",addrOffset))			{ osc_oStC_menu_master_wifi_ref();   }
 			else if (msg.fullMatch("/ref/leds",addrOffset))			{ osc_StC_menu_master_ledcfg_ref(); }
 			else if (msg.fullMatch("/ref/mqtt",addrOffset))			{ osc_oStC_menu_master_mqtt_ref(); }
 			else if (msg.fullMatch("/ref/artnet",addrOffset))		{ osc_StC_menu_master_artnet_ref(); }
 
-			else if (msg.fullMatch("/fps",addrOffset))				{ led_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
+			else if (msg.fullMatch("/fps",addrOffset))				{ deck[0].led_master_cfg.pal_fps		= constrain(uint8_t(msg.getInt(0) ) , 1 , MAX_PAL_FPS);  	osc_queu_MSG_int("/ostc/audio/rfps", LEDS_get_FPS());    }
 			//else if (msg.fullMatch("/palbri",addrOffset))			{ led_cfg.pal_bri		= constrain(uint8_t(msg.getInt(0)), 0, 255); 				osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());  }
-			else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
-			else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g				= constrain(uint8_t(msg.getInt(0)), 0, 255); }
-			else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
-			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ led_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
-			else if (msg.fullMatch("/fireSpark",addrOffset))		{ led_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
+			else if (msg.fullMatch("/r",addrOffset))				{ deck[0].led_master_cfg.r				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
+			else if (msg.fullMatch("/g",addrOffset))				{ deck[0].led_master_cfg.g				= constrain(uint8_t(msg.getInt(0)), 0, 255); }
+			else if (msg.fullMatch("/b",addrOffset))				{ deck[0].led_master_cfg.b				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
+			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ deck[0].led_master_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
+			else if (msg.fullMatch("/fireSpark",addrOffset))		{ deck[0].led_master_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
 
 			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.DataStart_leds[0]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[0]); }
 			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[1]); }
@@ -2186,7 +2186,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		
 			
 			else if (msg.fullMatch("/seq",addrOffset))    		{ write_bool(SEQUENCER_ON,		bool(msg.getInt(0) )) ;  led_cfg.confSwitch_time = ( micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN )  ;  }
-			else if (msg.fullMatch("/playnr",addrOffset))   	{  FS_play_conf_read(uint8_t(msg.getInt(0) )); }
+			else if (msg.fullMatch("/playnr",addrOffset))   	{  FS_play_conf_read(uint8_t(msg.getInt(0) ) ,&deck[0]); }
 
 			else if (	(msg.match("/tmin",addrOffset))
 					|| (msg.match("/laye",addrOffset))
@@ -2213,10 +2213,27 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 							{
 								
 								//debugMe(conf_NR);
-								if 			(msg.match("/save",addrOffset))		{ FS_play_conf_write(sel_save_no);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); }
+								if 			(msg.match("/save",addrOffset))		
+								{
+									 FS_play_conf_write(sel_save_no);  
+									 osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); 
+									 		OSCBundle bundle_out;
+											IPAddress ip_out(osc_server.remoteIP());
+																						
+											char ConfOutAddress[25] ;
+											String CounfOutString = "/ostc/master/savename/" + String(sel_save_no);
+											
+											CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
+											bundle_out.add(ConfOutAddress ).add(deck[0].confname);
+											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+											bundle_out.send(osc_server);
+											osc_server.endPacket();
+											bundle_out.empty();
+									 
+									 }
 								else if 	(msg.match("/load",addrOffset))		
 									{ 
-										FS_play_conf_read(sel_save_no);   
+										FS_play_conf_read(sel_save_no,&deck[0]);   
 										LEDS_pal_reset_index();  
 											OSCBundle bundle_out;
 											IPAddress ip_out(osc_server.remoteIP());
@@ -2311,9 +2328,9 @@ void osc_StC_pal_rec(OSCMessage &msg, int addrOffset)
 	//debugMe(pal_no);
 	//debugMe(color_no);
 
-	LEDS_pal_write(led_cfg.edit_pal, color_no, 0, uint8_t(msg.getInt(0)));
-	LEDS_pal_write(led_cfg.edit_pal, color_no, 1, uint8_t(msg.getInt(1)));
-	LEDS_pal_write(led_cfg.edit_pal, color_no, 2, uint8_t(msg.getInt(2)));
+	LEDS_pal_write(&deck[0].LEDS_pal_cur[led_cfg.edit_pal] ,led_cfg.edit_pal, color_no, 0, uint8_t(msg.getInt(0)));
+	LEDS_pal_write(&deck[0].LEDS_pal_cur[led_cfg.edit_pal] ,led_cfg.edit_pal, color_no, 1, uint8_t(msg.getInt(1)));
+	LEDS_pal_write(&deck[0].LEDS_pal_cur[led_cfg.edit_pal] ,led_cfg.edit_pal, color_no, 2, uint8_t(msg.getInt(2)));
 
 }
 
@@ -2327,7 +2344,7 @@ void osc_StC_pal_routing(OSCMessage &msg, int addrOffset)
 {
 	
 	if 		(msg.fullMatch("/edit/edit",addrOffset))			{ led_cfg.edit_pal = uint8_t(msg.getInt(0));  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
-	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load(  led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load( &deck[0] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
 	else if (msg.fullMatch("/fs/load",addrOffset))				{FS_pal_load(uint8_t(msg.getInt(0)), led_cfg.edit_pal); osc_StC_menu_pal_ref(led_cfg.edit_pal);}
 	else if (msg.fullMatch("/fs/save",addrOffset)) 				{FS_pal_save(uint8_t(msg.getInt(0)),  led_cfg.edit_pal);}
 	else
@@ -2550,9 +2567,9 @@ void osc_api_pal_rec(OSCMessage &msg, int addrOffset)
 
 	if(PalNr>= 0 && PalNr < NR_PALETTS && ColorNr>= 0 && ColorNr < 16   ) 
 	{
-		LEDS_pal_write(PalNr, ColorNr, 0, uint8_t(msg.getInt(2)));
-		LEDS_pal_write(PalNr, ColorNr, 1, uint8_t(msg.getInt(3)));
-		LEDS_pal_write(PalNr, ColorNr, 2, uint8_t(msg.getInt(4)));
+		LEDS_pal_write(&deck[0].LEDS_pal_cur[PalNr] ,PalNr, ColorNr, 0, uint8_t(msg.getInt(2)));
+		LEDS_pal_write(&deck[0].LEDS_pal_cur[PalNr] ,PalNr, ColorNr, 1, uint8_t(msg.getInt(3)));
+		LEDS_pal_write(&deck[0].LEDS_pal_cur[PalNr] ,PalNr, ColorNr, 2, uint8_t(msg.getInt(4)));
 	}
 }
 
@@ -2567,7 +2584,7 @@ void osc_api_pal(OSCMessage &msg, int addrOffset)
 	msg.route("/set", 		osc_api_pal_rec , 	addrOffset);   // Routing for PALLETE TAB -  API 
 	if (msg.fullMatch("/ref",addrOffset))	   	osc_api_pal_ref(constrain(msg.getInt(0),0,255) ) ;   //
 	if (msg.fullMatch("/refall",addrOffset))	osc_api_pal_refall() ;   //
-	if (msg.fullMatch("/loadin",addrOffset)) 	{LEDS_pal_load(  constrain(msg.getInt(0),0,NR_PALETTS-1 ), constrain(msg.getInt(1),0,NR_PALETTS_SELECT-1)  );  osc_api_pal_ref(constrain(msg.getInt(0),0,NR_PALETTS -1) ) ;   }
+	if (msg.fullMatch("/loadin",addrOffset)) 	{LEDS_pal_load( &deck[0], constrain(msg.getInt(0),0,NR_PALETTS-1 ), constrain(msg.getInt(1),0,NR_PALETTS_SELECT-1)  );  osc_api_pal_ref(constrain(msg.getInt(0),0,NR_PALETTS -1) ) ;   }
 	//if (msg.fullMatch("/copyPal",addrOffset))	osc_api_pal_copy();  LEDS_pal_load(  constrain(msg.getInt(0),0,NR_PALETTS)	, uint8_t(msg.getInt(1)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }  //
 	
 }
@@ -2833,14 +2850,14 @@ void osc_api_routing(OSCMessage &msg, int addrOffset)
 
 void osc_tosc_refresh()
 {
-	osc_queu_MSG_float("/tosc/bri", byte_tofloat(led_cfg.bri, 255)) ;
-	osc_queu_MSG_float("/tosc/bril", float(led_cfg.bri));
-	osc_queu_MSG_float("/tosc/ups", byte_tofloat(led_cfg.pal_fps, MAX_PAL_FPS));
-	osc_queu_MSG_float("/tosc/upsl", float(led_cfg.pal_fps));
+	osc_queu_MSG_float("/tosc/bri", byte_tofloat(deck[0].led_master_cfg.bri, 255)) ;
+	osc_queu_MSG_float("/tosc/bril", float(deck[0].led_master_cfg.bri));
+	osc_queu_MSG_float("/tosc/ups", byte_tofloat(deck[0].led_master_cfg.pal_fps, MAX_PAL_FPS));
+	osc_queu_MSG_float("/tosc/upsl", float(deck[0].led_master_cfg.pal_fps));
 	osc_queu_MSG_float("/tosc/FPSL", LEDS_get_FPS());
-	osc_queu_MSG_float("/tosc/r", byte_tofloat(led_cfg.r,255));
-	osc_queu_MSG_float("/tosc/g", byte_tofloat(led_cfg.g,255));
-	osc_queu_MSG_float("/tosc/b", byte_tofloat(led_cfg.b,255));
+	osc_queu_MSG_float("/tosc/r", byte_tofloat(deck[0].led_master_cfg.r,255));
+	osc_queu_MSG_float("/tosc/g", byte_tofloat(deck[0].led_master_cfg.g,255));
+	osc_queu_MSG_float("/tosc/b", byte_tofloat(deck[0].led_master_cfg.b,255));
 	
 	osc_send_MSG_String("/tosc/SSID", String(wifi_cfg.ssid));
 	osc_send_MSG_String("/tosc/WPW", String(wifi_cfg.pwd));
@@ -2929,11 +2946,11 @@ void osc_tosc_refresh()
 
 void osc_tosc_routing(OSCMessage &msg, int addrOffset) 
 {
-	if 		(msg.fullMatch("/bri",addrOffset))										{ led_cfg.bri	= byte(msg.getFloat(0)	* 255); }
-	else if (msg.fullMatch("/ups",addrOffset))										{ led_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/tosc/upsl", float(led_cfg.pal_fps)); }
- 	else if (msg.fullMatch("/r",addrOffset))				{ led_cfg.r		= byte(msg.getFloat(0)	* 255); }
-    else if (msg.fullMatch("/g",addrOffset))				{ led_cfg.g		= byte(msg.getFloat(0)	* 255); }
-    else if (msg.fullMatch("/b",addrOffset))				{ led_cfg.b		= byte(msg.getFloat(0)	* 255); }
+	if 		(msg.fullMatch("/bri",addrOffset))										{ deck[0].led_master_cfg.bri	= byte(msg.getFloat(0)	* 255); }
+	else if (msg.fullMatch("/ups",addrOffset))										{ deck[0].led_master_cfg.pal_fps = constrain(byte(msg.getFloat(0) * MAX_PAL_FPS), 1, MAX_PAL_FPS); osc_queu_MSG_float("/tosc/upsl", float(deck[0].led_master_cfg.pal_fps)); }
+ 	else if (msg.fullMatch("/r",addrOffset))				{ deck[0].led_master_cfg.r		= byte(msg.getFloat(0)	* 255); }
+    else if (msg.fullMatch("/g",addrOffset))				{ deck[0].led_master_cfg.g		= byte(msg.getFloat(0)	* 255); }
+    else if (msg.fullMatch("/b",addrOffset))				{ deck[0].led_master_cfg.b		= byte(msg.getFloat(0)	* 255); }
 	else if (msg.fullMatch("/FPS", addrOffset))										osc_queu_MSG_float("/tosc/FPSL", LEDS_get_FPS());
 	
 	else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
@@ -2985,13 +3002,13 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 				//debugMe(addr2);
 				if (msg.match("/LD1", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
 				{
-					FS_play_conf_read(addr1);
+					FS_play_conf_read(addr1,&deck[0]);
 
 				
 				}
 				else if (msg.match("/LD2", addrOffset)  &&  (bool(msg.getFloat(0)) == true)) 
 				{
-					FS_play_conf_read(addr1+8);
+					FS_play_conf_read(addr1+8,&deck[0]);
 
 				
 				}

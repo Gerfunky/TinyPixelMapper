@@ -66,6 +66,10 @@ CRGB GlobalColor_result;
 // ***************** the 2 decks
 deck_struct deck[2] ;
 
+// ***************** the 16 Saves in memory
+deck_struct mem_confs[16] ;
+
+
 
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
@@ -173,17 +177,15 @@ fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] =
 
 
 // ******** LED Pallete
-	CRGBPalette16 *LEDS_pal_work[NR_PALETTS];			// Make 2 pallets pointers
-	CRGBPalette16 LEDS_pal_cur[NR_PALETTS];				//	Make 2 real current pallets to hold the data
+	//CRGBPalette16 *LEDS_pal_work[NR_PALETTS];			// Make 2 pallets pointers
+	//CRGBPalette16 LEDS_pal_cur[NR_PALETTS];				//	Make 2 real current pallets to hold the data
 	//CRGBPalette16 LEDS_pal_target[NR_PALETTS];
 
 
 	led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };  // global 
 
-//led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
-led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI, 255,255,255,0, 0,30, 200, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_FIRE_SPARKING,DEF_FIRE_COOLING,DEF_PLAY_MODE, 
-							{DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR},
-							{DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS} , DEF_APA102_DATARATE, 5 , 0};			// The basic led config
+//led_cfg_struct led_cfg = { DEF_MAX_BRI , DEF_BRI,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE,DEF_DATA1_START_NR,DEF_DATA2_NR_LEDS,DEF_DATA2_START_NR,DEF_DATA3_NR_LEDS,DEF_DATA3_START_NR,DEF_DATA4_NR_LEDS,DEF_DATA4_START_NR, DEF_VIZ_UPDATE_TIME_FPS , 0};			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0};			// The basic led config
 
 
 
@@ -244,14 +246,14 @@ void LEDS_show()
 			if(fft_data_bri != 0)
 				FastLED.setBrightness(LEDS_get_real_bri() );
 			else
-				FastLED.setBrightness(led_cfg.bri);
+				FastLED.setBrightness(deck[0].led_master_cfg.bri);
 
 			if (get_bool(ARTNET_SEND) == true) 	LEDS_G_artnet_master_out();  // Send out the artnet data if enabled
 			else FastLEDshowESP32();
 			//FastLED.show();
-			//FastLED[0].showLeds(led_cfg.bri);
-			//FastLED[1].showLeds(led_cfg.bri);
-			//FastLED[2].showLeds(led_cfg.bri);
+			//FastLED[0].showLeds(deck[0].led_master_cfg.bri);
+			//FastLED[1].showLeds(deck[0].led_master_cfg.bri);
+			//FastLED[2].showLeds(deck[0].led_master_cfg.bri);
 }
 
 void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
@@ -314,15 +316,15 @@ void LEDS_G_flipstrip(uint16_t start_LED, uint16_t nr_leds)
 void LED_master_rgb(uint16_t Start_led , uint16_t number_of_leds   )
 {
 		// fade RGB if we are not on full
-		if (led_cfg.r != 255)
+		if (deck[0].led_master_cfg.r != 255)
 			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].r = leds[i].r  * led_cfg.r / 255;
-		if (led_cfg.g != 255)
+				leds[i].r = leds[i].r  * deck[0].led_master_cfg.r / 255;
+		if (deck[0].led_master_cfg.g != 255)
 			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].g = leds[i].g * led_cfg.g / 255;
-		if (led_cfg.b != 255)
+				leds[i].g = leds[i].g * deck[0].led_master_cfg.g / 255;
+		if (deck[0].led_master_cfg.b != 255)
 			for (int i = Start_led; i < Start_led + number_of_leds; i++)
-				leds[i].b = leds[i].b * led_cfg.b / 255;
+				leds[i].b = leds[i].b * deck[0].led_master_cfg.b / 255;
 
 
 }
@@ -358,34 +360,34 @@ void LEDS_G_pre_show_processing()
 
 	if(!get_bool(POT_DISABLE))
 	{
-		//uint8_t bri = led_cfg.max_bri * led_cfg.bri / 255;
+		//uint8_t bri = led_cfg.max_bri * deck[0].led_master_cfg.bri / 255;
 		uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
 		if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
 		{
-			led_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
+			deck[0].led_master_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
 			led_cnt.PotBriLast = bri;
 		}
 
-		//FastLED.setBrightness(led_cfg.bri);  moved to show
+		//FastLED.setBrightness(deck[0].led_master_cfg.bri);  moved to show
 		
-		//debugMe(led_cfg.bri);
+		//debugMe(deck[0].led_master_cfg.bri);
 		
 		
 
 		uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 		
-		//led_cfg.pal_fps = fps /4;
+		//deck[0].led_master_cfg.pal_fps = fps /4;
 		///*
 		if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
 		{
-			led_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
+			deck[0].led_master_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
 			led_cnt.PotFPSLast = fps;
 		}
 	//Serial.println(fps);  
 	}
 	
 	//LED_G_bit_run();
-		//= led_cfg.max_br * led_cfg.bri / 255
+		//= led_cfg.max_br * deck[0].led_master_cfg.bri / 255
 }
 
 
@@ -406,49 +408,55 @@ boolean LEDS_checkIfAudioSelected()
 
 // **************************Pallets **************
 
-void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu)
+void LEDS_pal_load(deck_struct* deckref, uint8_t pal_no, uint8_t pal_menu)
 {
+		
+	deck_struct localDEckCopy;
+	localDEckCopy = *deckref;
+	//*deckref = localDEckCopy;
+
+
 	// load a pallete from the default (FastLed)
 	//debugMe("Load pal" + String(pal_menu));
 	if (pal_no < NR_PALETTS && pal_menu < NR_PALETTS_SELECT + 1 )
 	switch (pal_menu)
 	{
-	case 0: LEDS_pal_cur[pal_no] = LEDS_pal_cur[0]; break;
-	case 1: LEDS_pal_cur[pal_no] = LEDS_pal_cur[1]; break;
-	case 2: LEDS_pal_cur[pal_no] = LEDS_pal_cur[2]; break;
-	case 3: LEDS_pal_cur[pal_no] = LEDS_pal_cur[3]; break;
-	case 4: LEDS_pal_cur[pal_no] = LEDS_pal_cur[4]; break;
-	case 5: LEDS_pal_cur[pal_no] = LEDS_pal_cur[5]; break;
-	case 6: LEDS_pal_cur[pal_no] = LEDS_pal_cur[6]; break;
-	case 7: LEDS_pal_cur[pal_no] = LEDS_pal_cur[7]; break;
-	case 8: LEDS_pal_cur[pal_no] = LEDS_pal_cur[8]; break;
-	case 9: LEDS_pal_cur[pal_no] = LEDS_pal_cur[9]; break;
-	case 10: LEDS_pal_cur[pal_no] = LEDS_pal_cur[10]; break;
-	case 11: LEDS_pal_cur[pal_no] = LEDS_pal_cur[11]; break;
-	case 12: LEDS_pal_cur[pal_no] = LEDS_pal_cur[12]; break;
-	case 13: LEDS_pal_cur[pal_no] = LEDS_pal_cur[13]; break;
-	case 14: LEDS_pal_cur[pal_no] = LEDS_pal_cur[14]; break;
-	case 15: LEDS_pal_cur[pal_no] = LEDS_pal_cur[15]; break;
+	case 0: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[0]; break;
+	case 1: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[1]; break;
+	case 2: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[2]; break;
+	case 3: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[3]; break;
+	case 4: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[4]; break;
+	case 5: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[5]; break;
+	case 6: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[6]; break;
+	case 7: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[7]; break;
+	case 8: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[8]; break;
+	case 9: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[9]; break;
+	case 10: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[10]; break;
+	case 11: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[11]; break;
+	case 12: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[12]; break;
+	case 13: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[13]; break;
+	case 14: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[14]; break;
+	case 15: localDEckCopy.LEDS_pal_cur[pal_no] = localDEckCopy.LEDS_pal_cur[15]; break;
 
-	case 19: for (int i = 0; i < 16; i++) { LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
-	case 20: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
-	case 21: LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
-	case 22: LEDS_pal_cur[pal_no] = CloudColors_p; break;
-	case 23: LEDS_pal_cur[pal_no] = PartyColors_p; break;
-	case 24: LEDS_pal_cur[pal_no] = OceanColors_p; break;
-	case 25: LEDS_pal_cur[pal_no] = ForestColors_p; break;
-	case 26: LEDS_pal_cur[pal_no] = HeatColors_p; break;
-	case 27: LEDS_pal_cur[pal_no] = LavaColors_p; break;
-	case 28: LEDS_pal_cur[pal_no] = pal_red_green; break;
-	case 29: LEDS_pal_cur[pal_no] = pal_red_blue; break;
-	case 30: LEDS_pal_cur[pal_no] = pal_green_blue; break;
-	case 31: LEDS_pal_cur[pal_no] = pal_black_white_Narrow; break;
-	case 32: LEDS_pal_cur[pal_no] = pal_black_white_wide; break;
+	case 19: for (int i = 0; i < 16; i++) {  localDEckCopy.LEDS_pal_cur[pal_no][i] = CHSV(random8(), 255, random8());} break;
+	case 20: localDEckCopy.LEDS_pal_cur[pal_no] = RainbowColors_p; break;
+	case 21: localDEckCopy.LEDS_pal_cur[pal_no] = RainbowStripeColors_p; break;
+	case 22: localDEckCopy.LEDS_pal_cur[pal_no] = CloudColors_p; break;
+	case 23: localDEckCopy.LEDS_pal_cur[pal_no] = PartyColors_p; break;
+	case 24: localDEckCopy.LEDS_pal_cur[pal_no] = OceanColors_p; break;
+	case 25: localDEckCopy.LEDS_pal_cur[pal_no] = ForestColors_p; break;
+	case 26: localDEckCopy.LEDS_pal_cur[pal_no] = HeatColors_p; break;
+	case 27: localDEckCopy.LEDS_pal_cur[pal_no] = LavaColors_p; break;
+	case 28: localDEckCopy.LEDS_pal_cur[pal_no] = pal_red_green; break;
+	case 29: localDEckCopy.LEDS_pal_cur[pal_no] = pal_red_blue; break;
+	case 30: localDEckCopy.LEDS_pal_cur[pal_no] = pal_green_blue; break;
+	case 31: localDEckCopy.LEDS_pal_cur[pal_no] = pal_black_white_Narrow; break;
+	case 32: localDEckCopy.LEDS_pal_cur[pal_no] = pal_black_white_wide; break;
 	
 	
-	default: LEDS_pal_cur[pal_no] = RainbowColors_p; break;
+	default: localDEckCopy.LEDS_pal_cur[pal_no] = RainbowColors_p; break;
 		
-
+	*deckref = localDEckCopy;
 	}
 
 }
@@ -483,9 +491,9 @@ void LEDS_PAL_invert(uint8_t pal = 0)
 
 		for(int pal_pos = 0; pal_pos < 16; pal_pos++)
 		{
-		LEDS_pal_cur[pal][pal_pos].r = qsub8(255, LEDS_pal_cur[pal][pal_pos].r );
-		LEDS_pal_cur[pal][pal_pos].g = qsub8(255, LEDS_pal_cur[pal][pal_pos].g );
-		LEDS_pal_cur[pal][pal_pos].b = qsub8(255, LEDS_pal_cur[pal][pal_pos].b );
+		deck[0].LEDS_pal_cur[pal][pal_pos].r = qsub8(255, deck[0].LEDS_pal_cur[pal][pal_pos].r );
+		deck[0].LEDS_pal_cur[pal][pal_pos].g = qsub8(255, deck[0].LEDS_pal_cur[pal][pal_pos].g );
+		deck[0].LEDS_pal_cur[pal][pal_pos].b = qsub8(255, deck[0].LEDS_pal_cur[pal][pal_pos].b );
 		}
 
 }
@@ -496,17 +504,42 @@ void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color , uint8_t value)
 	switch (color)
 	{
 		case 0:
-			LEDS_pal_cur[pal][no].r = value;
+			deck[0].LEDS_pal_cur[pal][no].r = value;
 		break;
 		case 1:
-			LEDS_pal_cur[pal][no].g = value;
+			deck[0].LEDS_pal_cur[pal][no].g = value;
 		break;
 		case 2:
-			LEDS_pal_cur[pal][no].b = value;
+			deck[0].LEDS_pal_cur[pal][no].b = value;
 		break;
 
 
 	}
+
+}
+
+void LEDS_pal_write(CRGBPalette16* palref, uint8_t pal, uint8_t no, uint8_t color , uint8_t value)
+{
+	CRGBPalette16 LocalPalCopy;
+	LocalPalCopy = *palref;
+
+	// write incoming color information into a pallete entry
+	switch (color)
+	{
+		case 0:
+			LocalPalCopy[no].r = value;
+		break;
+		case 1:
+			LocalPalCopy[no].g = value;
+		break;
+		case 2:
+			LocalPalCopy[no].b = value;
+		break;
+
+
+	}
+
+	*palref = LocalPalCopy;
 
 }
 
@@ -518,13 +551,81 @@ uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color)
 		switch(color)
 		{
 			case 0:
-				return LEDS_pal_cur[pal][no].r;
+				return deck[0].LEDS_pal_cur[pal][no].r;
 			break;
 			case 1:
-				return LEDS_pal_cur[pal][no].g;
+				return deck[0].LEDS_pal_cur[pal][no].g;
 			break;
 			case 2:
-				return LEDS_pal_cur[pal][no].b;
+				return deck[0].LEDS_pal_cur[pal][no].b;
+			break;
+
+		
+		}
+		return 0;
+	}
+	if (pal >=NR_PALETTS && pal <= 32)
+	{
+		CRGBPalette16 TempPal; 	
+
+		switch (pal)
+		{
+			case 16: TempPal = RainbowColors_p; break;
+			case 17: TempPal = RainbowStripeColors_p; break;
+			case 18: TempPal = CloudColors_p; break;
+			case 19: TempPal = PartyColors_p; break;
+			case 20: TempPal = OceanColors_p; break;
+			case 21: TempPal = ForestColors_p; break;
+			case 22: TempPal = HeatColors_p; break;
+			case 23: TempPal = LavaColors_p; break;
+			case 24: TempPal = pal_red_green; break;
+			case 25: TempPal = pal_red_blue; break;
+			case 26: TempPal = pal_green_blue; break;
+			case 27: TempPal = pal_black_white_Narrow; break;
+			case 28: TempPal = pal_black_white_wide; break;
+		}
+
+		switch(color)
+		{
+			case 0:
+				return TempPal[no].r;
+			break;
+			case 1:
+				return TempPal[no].g;
+			break;
+			case 2:
+				return TempPal[no].b;
+			break;
+
+		
+		}
+		return 0;
+
+
+	}
+
+	
+
+}
+
+uint8_t LEDS_pal_read(CRGBPalette16* palref, uint8_t pal, uint8_t no, uint8_t color)
+{	// read the color info for 1 color in a pallete
+
+	CRGBPalette16 LocalPalCopy;
+	LocalPalCopy = *palref;
+
+	if (pal < NR_PALETTS)
+	{
+		switch(color)
+		{
+			case 0:
+				return LocalPalCopy[no].r;
+			break;
+			case 1:
+				return LocalPalCopy[no].g;
+			break;
+			case 2:
+				return LocalPalCopy[no].b;
 			break;
 
 		
@@ -577,7 +678,6 @@ uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color)
 
 
 
-
 // ****************************** ARTNET 
 
 void LEDS_G_artnet_send_universe(uint8_t node_Nr,uint8_t universe, uint16_t in_pixel , uint8_t nr_pixels = 170)
@@ -588,7 +688,7 @@ void LEDS_G_artnet_send_universe(uint8_t node_Nr,uint8_t universe, uint16_t in_p
 
 	for (uint16_t set_pixel = 0; set_pixel < nr_pixels; set_pixel++)
 	{
-		ARNET_set_pixel( set_pixel,  scale8(leds[in_pixel].r ,led_cfg.bri ) ,  scale8(leds[in_pixel].g,led_cfg.bri ) ,  scale8(leds[in_pixel].b, led_cfg.bri));
+		ARNET_set_pixel( set_pixel,  scale8(leds[in_pixel].r ,deck[0].led_master_cfg.bri ) ,  scale8(leds[in_pixel].g,deck[0].led_master_cfg.bri ) ,  scale8(leds[in_pixel].b, deck[0].led_master_cfg.bri));
 		//ARNET_set_pixel( set_pixel,  255  ,  125 ,  10 );
 		in_pixel++;
 	}
@@ -677,7 +777,7 @@ void LEDS_FFT_enqueue(uint8_t invalue)
 
 void LEDS_FFT_auto()
 {	// automatically calculate the trigger value and set it
-	if (FFT_stage1_sample_count >= led_cfg.pal_fps)				// trigger on the FPS so that we get one stage 2 sammple a second
+	if (FFT_stage1_sample_count >= deck[0].led_master_cfg.pal_fps)				// trigger on the FPS so that we get one stage 2 sammple a second
 	{
 		fft_bin0stage2.addValue(fft_data[0].avarage);
 		fft_bin1stage2.addValue(fft_data[1].avarage);
@@ -840,9 +940,9 @@ CRGB LEDS_FFT_process()
 	// fade the RGB 
 
 	/*
-	if (led_cfg.r != 255) color_result.r = color_result.r * led_cfg.r / 255 ;
-	if (led_cfg.g != 255) color_result.g = color_result.g * led_cfg.g / 255 ;
-	if (led_cfg.b != 255) color_result.b = color_result.b * led_cfg.b / 255 ;
+	if (deck[0].led_master_cfg.r != 255) color_result.r = color_result.r * deck[0].led_master_cfg.r / 255 ;
+	if (deck[0].led_master_cfg.g != 255) color_result.g = color_result.g * deck[0].led_master_cfg.g / 255 ;
+	if (deck[0].led_master_cfg.b != 255) color_result.b = color_result.b * deck[0].led_master_cfg.b / 255 ;
 	*/
 
 	if (0 != fft_led_cfg.Scale)
@@ -932,12 +1032,12 @@ float LEDS_get_FPS()
 
 uint8_t  LEDS_get_FPS_setting()
 {	// return the FPS value
-	return led_cfg.pal_fps;
+	return deck[0].led_master_cfg.pal_fps;
 }
 
 void LEDS_set_FPS(uint8_t fps_setting)
 {	// set the FPS value
-	led_cfg.pal_fps = constrain(fps_setting, 1 , MAX_PAL_FPS);
+	deck[0].led_master_cfg.pal_fps = constrain(fps_setting, 1 , MAX_PAL_FPS);
 }
 
 
@@ -945,7 +1045,7 @@ void LEDS_set_FPS(uint8_t fps_setting)
 CRGBPalette16 LEDS_pal_get(uint8_t pal_no)
 {
 	if (pal_no < 16)
-		return LEDS_pal_cur[pal_no];
+		return deck[0].LEDS_pal_cur[pal_no];
 
 	// else 
 	CRGBPalette16 tmp_palette = RainbowColors_p;
@@ -969,13 +1069,13 @@ CRGBPalette16 LEDS_pal_get(uint8_t pal_no)
 
 void LEDS_set_bri(uint8_t bri)
 {
-	led_cfg.bri = bri;
+	deck[0].led_master_cfg.bri = bri;
 
 }
 
 uint8_t LEDS_get_bri()
 {
-	return led_cfg.bri;
+	return deck[0].led_master_cfg.bri;
 
 }
 
@@ -983,7 +1083,7 @@ uint8_t LEDS_get_bri()
 uint8_t LEDS_get_real_bri()
 {
 
-	return qadd8(led_cfg.bri,fft_color_result_bri ); 
+	return qadd8(deck[0].led_master_cfg.bri,fft_color_result_bri ); 
 }
 
 uint8_t LEDS_FFT_get_MAX_value(uint8_t bit)
@@ -1018,7 +1118,7 @@ return led_cfg.Play_Nr;
 }
 void LEDS_set_playNr(uint8_t setNr)
 {
-	FS_play_conf_read(setNr);
+	FS_play_conf_read(setNr,&deck[0]);
 }
 
 
@@ -1053,14 +1153,14 @@ void LEDS_init_config(uint8_t selected_Deck)
 
 void LEDS_load_default_play_conf()
 {
-	led_cfg.bri					= 255;
-	led_cfg.fire_cooling		= DEF_FIRE_COOLING ;
-	led_cfg.fire_sparking		= DEF_FIRE_SPARKING ;
-	led_cfg.r					= 255;
-	led_cfg.g					= 255;
-	led_cfg.b					= 255;
-	led_cfg.pal_bri				= 255;
-	led_cfg.pal_fps     		= 30;
+	deck[0].led_master_cfg.bri					= 255;
+	deck[0].led_master_cfg.fire_cooling		= DEF_FIRE_COOLING ;
+	deck[0].led_master_cfg.fire_sparking		= DEF_FIRE_SPARKING ;
+	deck[0].led_master_cfg.r					= 255;
+	deck[0].led_master_cfg.g					= 255;
+	deck[0].led_master_cfg.b					= 255;
+	deck[0].led_master_cfg.pal_bri				= 255;
+	deck[0].led_master_cfg.pal_fps     		= 30;
 	
 	fft_led_cfg.Scale = 0;
 
@@ -1244,7 +1344,7 @@ void LEDS_seqencer_advance()
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr);
+							FS_play_conf_read(play_nr,&deck[0]);
 							break;
 							
 						}
@@ -1259,7 +1359,7 @@ void LEDS_seqencer_advance()
 						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr);
+							FS_play_conf_read(play_nr,&deck[0]);
 							break;
 							
 						}
@@ -1281,7 +1381,7 @@ void LEDS_seqencer_advance()
 
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr);
+							FS_play_conf_read(play_nr,&deck[0]);
 							break;
 							
 						}
@@ -1296,7 +1396,7 @@ void LEDS_seqencer_advance()
 						
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr);
+							FS_play_conf_read(play_nr,&deck[0]);
 							break;
 							
 						}
@@ -1857,18 +1957,18 @@ void LEDS_setup()
 
 	for (int i = 0; i < NR_PALETTS; i++) 
 	{
-#ifdef BLEND_PATTERN
+//#ifdef BLEND_PATTERN
 		//for ( int i = 0 ; i < NR_STRIPS ; i++)
-		LEDS_pal_work[i] = &LEDS_pal_cur[i];
-#else
-		LEDS_pal_work[i] = &LEDS_pal_cur[i];
-#endif
+//		LEDS_pal_work[i] = &LEDS_pal_cur[i];
+//#else
+//		LEDS_pal_work[i] = &LEDS_pal_cur[i];
+//#endif
 	}
-	LEDS_pal_cur[0] = pal_red_green;
-	LEDS_pal_cur[1] = pal_red_green;
+	//LEDS_pal_cur[0] = pal_red_green;
+	//LEDS_pal_cur[1] = pal_red_green;
 
 
-	//led_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
+	//deck[0].led_master_cfg.bri = led_cfg.startup_bri;				// set the bri to the startup bri
 
 	uint8_t core = xPortGetCoreID();
     debugMe("Main code running on core " + String(core));
@@ -1877,7 +1977,7 @@ void LEDS_setup()
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
 
-	if (FS_play_conf_read(0) == false)	 LEDS_load_default_play_conf();			
+	if (FS_play_conf_read(0,&deck[0]) == false)	 LEDS_load_default_play_conf();			
 
 	LEDS_pal_reset_index();
 
@@ -1926,9 +2026,9 @@ void LEDS_loop()
 
 			//debugMe("IN LED LOOP - disabled fft");
 			if(fft_data_fps == 0)
-				led_cfg.update_time = currentT + (1000000 / led_cfg.pal_fps);
+				led_cfg.update_time = currentT + (1000000 / deck[0].led_master_cfg.pal_fps);
 			else
-				led_cfg.update_time = currentT + (1000000 / map( fft_color_fps,  0 ,255 , led_cfg.pal_fps, MAX_PAL_FPS )) ;     // if we are adding FFT data to FPS speed 
+				led_cfg.update_time = currentT + (1000000 / map( fft_color_fps,  0 ,255 , deck[0].led_master_cfg.pal_fps, MAX_PAL_FPS )) ;     // if we are adding FFT data to FPS speed 
 
 			leds.fadeToBlackBy(255);				// fade the whole led array to black so that we can add from different sources amd mix it up!
 
@@ -2013,7 +2113,7 @@ void LEDS_loop()
 
 
 
-	//if (micros() > led_cfg.update_time ) {led_cfg.pal_fps--; debugMe("To slow");}
+	//if (micros() > led_cfg.update_time ) {deck[0].led_master_cfg.pal_fps--; debugMe("To slow");}
 
 	}
 

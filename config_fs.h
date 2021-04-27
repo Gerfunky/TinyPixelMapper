@@ -9,7 +9,7 @@
 	#include "WProgram.h"
 #endif
 
-
+#include "leds.h"
 
 #define MAX_NR_SAVES 16
 
@@ -32,7 +32,7 @@ void FS_setup_SPIFFS();
 // OSC
 	void FS_Bools_write(uint8_t conf_nr);			// osc.cpp
 	void FS_osc_delete_all_saves();					//osc.cpp
-	boolean FS_play_conf_read(uint8_t conf_nr);		//osc.cpp  , leds.cpp
+	boolean FS_play_conf_read(uint8_t conf_nr, deck_struct* targetDeck );		//osc.cpp  , leds.cpp
 	boolean FS_check_Conf_Available(uint8_t play_NR); // leds.cpp
 	void FS_play_conf_write(uint8_t conf_nr);		//osc.cpp
 

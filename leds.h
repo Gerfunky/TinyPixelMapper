@@ -58,22 +58,22 @@
 	struct led_cfg_struct					// LED config structure
 	{										// 
 		uint8_t 		max_bri;			// max Bri
-		uint8_t 		bri;				// actual BRI
+//		uint8_t 		bri;				// actual BRI
 		uint8_t 		startup_bri;		// the startup brightness
-		uint8_t 		r;					// max Red
-		uint8_t 		g;					// max green
-		uint8_t 		b;					// max blue
+//		uint8_t 		r;					// max Red
+//		uint8_t 		g;					// max green
+//		uint8_t 		b;					// max blue
 		uint8_t 		hue;				// HSV hue used for effects, every frame increments by one automatically
 		unsigned long 	update_time;		// when to update the leds again
-		uint8_t 		pal_fps;			// pallete FPS ... FFT FPS overrides this if FFT is enabled
-		uint8_t 		pal_bri;			// Pallete bri so that we can dimm it down to the FFT 
+//		uint8_t 		pal_fps;			// pallete FPS ... FFT FPS overrides this if FFT is enabled
+//		uint8_t 		pal_bri;			// Pallete bri so that we can dimm it down to the FFT 
 		uint8_t 		bpm;				// BPM , used to time the pallete to a bpm
 		unsigned long 	bpm_lastT;			// timing for BMP
 		unsigned long 	bpm_diff;			// 
 		uint8_t 		ledMode;			// type of led  0= APA102, 1 = WS2812 , 2 = SK6822 
 		uint16_t 		NrLeds;				// how many leds total  not fully implemented TODO!!!
-		uint8_t			fire_sparking;		// For fire animation
-		uint8_t			fire_cooling;		// For fire animation
+//		uint8_t			fire_sparking;		// For fire animation
+//		uint8_t			fire_cooling;		// For fire animation
 		uint8_t 		Play_Nr ;			// What sequenca are we in.
 		uint16_t 		DataNR_leds[5]; 
 		uint16_t 		DataStart_leds[4]; 
@@ -84,11 +84,23 @@
 		uint8_t 		realfps;					// whats the real fps that we have at the moment.
 		uint8_t 		framecounter;				// for counting FPS
 		unsigned long	framecounterUpdateTime; 	// for calculationg fps
-		
-	
 
 	};
+	struct led_master_conf
+	{
+		uint8_t			fire_sparking;		// For fire animation
+		uint8_t			fire_cooling;		// For fire animation
+		uint8_t 		r;					// max Red
+		uint8_t 		g;					// max green
+		uint8_t 		b;					// max blue
 
+		uint8_t 		pal_fps;			// pallete FPS ... FFT FPS overrides this if FFT is enabled
+		uint8_t 		pal_bri;			// Pallete bri so that we can dimm it down to the FFT 
+
+		uint8_t 		bri;				// actual BRI
+
+
+	};
 
 
 	struct fft_led_cfg_struct
@@ -256,7 +268,7 @@
 			//uint8_t mix_mode;
 			uint8_t level;
 			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
-		  uint8_t	speed;		// Dot speed in BPM
+		    uint8_t	speed;		// Dot speed in BPM
 			uint16_t 	indexLong;
 			uint16_t  index_add;
 			
@@ -536,6 +548,7 @@ struct deck_struct
 {
 	char confname[32];
 	uint8_t layer_select[MAX_LAYERS_SELECT] ;
+	led_master_conf led_master_cfg;
 	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
 	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];
 	form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
@@ -548,6 +561,8 @@ struct deck_struct
 	form_fx_eyes_struct form_fx_eyes[NR_FORM_PARTS];
 	form_fx_meteor_struct form_fx_meteor[NR_FORM_PARTS];
 	form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
+
+	CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
 
 	byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
@@ -590,9 +605,14 @@ struct deck_struct
 	float LEDS_get_FPS(); // osc.cpp
 
 	void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
+	void LEDS_pal_write(CRGBPalette16* palref, uint8_t pal, uint8_t no, uint8_t color , uint8_t value);
+
 	uint8_t LEDS_pal_read(uint8_t pal, uint8_t no, uint8_t color);				 // used in config_fs. osc.cpp
+	uint8_t LEDS_pal_read(CRGBPalette16* palref, uint8_t pal, uint8_t no, uint8_t color);
+
 	void LEDS_pal_reset_index();															//osc.cpp
-	void LEDS_pal_load(uint8_t pal_no, uint8_t pal_menu);									//osc.cpp
+	void LEDS_pal_load(deck_struct* deckref, uint8_t pal_no, uint8_t pal_menu)	;
+								//osc.cpp
 
 	void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
 	void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);  // wifi-ota
