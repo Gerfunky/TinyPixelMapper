@@ -15,7 +15,7 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   (170*16)  		// what is the max it can be set to in the config    
+		#define MAX_NUM_LEDS   (170*9)  		// what is the max it can be set to in the config    
 		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
 		#define POT_SENSE_DEF 4   				// only take Variable resistor value if it changes more than this.
 
@@ -394,28 +394,20 @@
 		};
 
 		
-	struct fft_data_struct 
-	{
-		//uint8_t bin_on_red;		// bits select what bin to trigger on
-		//uint8_t bin_on_green;		// bits select what bin to trigger on 
-		//uint8_t bin_on_blue;		// bits select what bin to trigger on
-		uint8_t trigger;		// trigger value
-		uint8_t value;			// actual value
-		uint8_t avarage;
-		uint8_t autoFFT;
-		uint8_t max;
-		uint8_t result; 
-		
-		
-	};
+
 
 #define FFT_FX_NR_OF_BINS 50
 	struct fft_fxbin_struct 
 	{
-			uint8_t sum ;					
+				
 			uint8_t set_val ;
 			uint8_t trrig_val;
 			uint8_t menu_select;
+
+	};
+	struct fft_fxbin_run_struct 
+	{
+			uint8_t sum ;					
 			uint8_t result;
 	};
 
@@ -541,14 +533,74 @@
 	  };
 
 
+	struct fft_data_struct   // run values
+	{
+		//uint8_t bin_on_red;		// bits select what bin to trigger on
+		//uint8_t bin_on_green;		// bits select what bin to trigger on 
+		//uint8_t bin_on_blue;		// bits select what bin to trigger on
+
+		//uint8_t value;			// actual value
+		uint8_t avarage;
+	//	uint8_t autoFFT;
+		uint8_t max;
+		uint8_t result; 
+	};
+	struct fft_config_struct  // Config Values
+	{
+		byte fft_menu[3] = { 3,7,200 };	// 3 fft data bins for RGB 
+		byte fft_menu_bri = 0;			// howmuch to add to bri based on fft data 	
+		byte fft_menu_fps = 0;   		// howmuch to add to the FPS based on FFT data selected.
+		//fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
+		uint8_t fft_bin_autoTrigger = 0;
+		uint8_t trigger[7];		// trigger value
+
+		//uint8_t fft_color_result_bri = 0;
+		//uint8_t fft_color_fps = 0;
+		//CRGB GlobalColor_result;
+		fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] ;
+		
+	};
+	struct fft_run_struct  // run vals 
+	{
+		
+		//byte fft_data_bri = 0;			// howmuch to add to bri based on fft data 	
+		//byte fft_data_fps = 0;   		// howmuch to add to the FPS based on FFT data selected.
+		//fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
+		uint8_t fft_color_result_bri = 0;
+		uint8_t fft_color_fps = 0;
+		CRGB GlobalColor_result;
+
+		fft_fxbin_run_struct  fft_fxbin[FFT_FX_NR_OF_BINS] ;
+		
+	};
+		
+
 
 
 //******************** DEcks *******************
-struct deck_struct
+
+struct deck_run_struct
+{
+		CRGBArray<MAX_NUM_LEDS> leds_FFT_history;
+		CRGBArray<MAX_NUM_LEDS> led_FX_out; 
+		CRGBArray<MAX_NUM_LEDS> leds;
+		//CRGB leds_FFT_history[MAX_NUM_LEDS];
+		//CRGB led_FX_out[MAX_NUM_LEDS]; 
+		//CRGB leds[MAX_NUM_LEDS];
+		byte heat[MAX_NUM_LEDS	];
+		fft_data_struct 	fft_data[7];
+		fft_run_struct  	fft;
+};
+
+struct deck_cfg_struct
 {
 	char confname[32];
 	uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	led_master_conf led_master_cfg;
+
+
+	fft_config_struct 	fft_config;
+
 	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
 	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];
 	form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
@@ -582,6 +634,12 @@ struct deck_struct
 
 };
 
+struct deck_struct
+{
+	deck_cfg_struct cfg;
+	deck_run_struct run;
+};
+
 
 		//struct Master_Leds_struct
 		//{
@@ -593,7 +651,7 @@ struct deck_struct
 		//};
 
 
-
+ 
 
 
 
@@ -630,7 +688,7 @@ struct deck_struct
 
 	uint8_t getrand8() ;  // returns a random number from 0-255 
 	uint8_t LEDS_get_real_bri();   // gets the real BRi including fft shift
-	uint8_t LEDS_FFT_get_color_result(uint8_t color );   // Get the FFT color result 0= red 1= green 2 = blue
+	uint8_t LEDS_FFT_get_color_result(uint8_t deckNo, uint8_t color );   // Get the FFT color result 0= red 1= green 2 = blue
 
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
