@@ -47,6 +47,10 @@ void FS_setup_SPIFFS();
 	boolean FS_mqtt_read();
 	void FS_mqtt_write();
 
+	unsigned int FS_get_UsedBytes();
+	unsigned int FS_get_TotalBytes();
+	unsigned int FS_get_leftBytes();
+
 #ifndef ARTNET_DISABLED
 	void FS_artnet_write();			// osc.cpp
 	boolean FS_artnet_read();			//wifi-ota.cpp

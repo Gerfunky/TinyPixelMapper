@@ -66,6 +66,27 @@ uint8_t saveloopConfNr = 255;
 // Play conf - keep save status in memory so we dont have to ready every time (interrups led playback)
 
 
+unsigned int FS_get_UsedBytes()
+{
+
+	return SPIFFS.usedBytes();
+
+}
+
+unsigned int FS_get_TotalBytes()
+{
+
+	return SPIFFS.totalBytes();
+
+}
+
+unsigned int FS_get_leftBytes()
+{
+
+	return (SPIFFS.totalBytes()-SPIFFS.usedBytes() );
+
+}
+
 boolean FS_get_PalyConfSatatus(uint8_t play_NR)
 {
 

@@ -1440,6 +1440,10 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
 	osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
 	
+	osc_queu_MSG_int("/ostc/master/usedBytes",   FS_get_UsedBytes()  ); 
+	osc_queu_MSG_int("/ostc/master/totalBytes",  FS_get_TotalBytes()  );
+	osc_queu_MSG_int("/ostc/master/leftBytes",  FS_get_leftBytes()  );
+	
 	OSCBundle bundle_out;
 	IPAddress ip_out(osc_server.remoteIP());
 	bundle_out.add("/ostc/master/confname").add(deck[0].confname);
@@ -2215,8 +2219,9 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 								//debugMe(conf_NR);
 								if 			(msg.match("/save",addrOffset))		
 								{
-									 FS_play_conf_write(sel_save_no);  
-									 osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); 
+									    FS_play_conf_write(sel_save_no) ;
+									 	{  
+									 		osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); 
 									 		OSCBundle bundle_out;
 											IPAddress ip_out(osc_server.remoteIP());
 																						
@@ -2229,8 +2234,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 											bundle_out.send(osc_server);
 											osc_server.endPacket();
 											bundle_out.empty();
-									 
-									 }
+									 	}
+								}
 								else if 	(msg.match("/load",addrOffset))		
 									{ 
 										FS_play_conf_read(sel_save_no,&deck[0]);   
@@ -2344,7 +2349,7 @@ void osc_StC_pal_routing(OSCMessage &msg, int addrOffset)
 {
 	
 	if 		(msg.fullMatch("/edit/edit",addrOffset))			{ led_cfg.edit_pal = uint8_t(msg.getInt(0));  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
-	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load( &deck[0] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load( &deck[0].LEDS_pal_cur[led_cfg.edit_pal] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
 	else if (msg.fullMatch("/fs/load",addrOffset))				{FS_pal_load(uint8_t(msg.getInt(0)), led_cfg.edit_pal); osc_StC_menu_pal_ref(led_cfg.edit_pal);}
 	else if (msg.fullMatch("/fs/save",addrOffset)) 				{FS_pal_save(uint8_t(msg.getInt(0)),  led_cfg.edit_pal);}
 	else

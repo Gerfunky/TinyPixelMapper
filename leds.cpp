@@ -407,10 +407,62 @@ boolean LEDS_checkIfAudioSelected()
 
 
 // **************************Pallets **************
+void LEDS_pal_load(CRGBPalette16* palref, uint8_t pal_no, uint8_t pal_menu)
+{
+		
+//	deck_struct localDEckCopy;
+//	localDEckCopy = *deckref;
+	//*deckref = localDEckCopy;
+
+
+	// load a pallete from the default (FastLed)
+	//debugMe("Load pal" + String(pal_menu));
+	if (pal_no < NR_PALETTS && pal_menu < NR_PALETTS_SELECT + 1 )
+	switch (pal_menu)
+	{
+	case 0: *palref = deck[0].LEDS_pal_cur[0]; break;
+	case 1: *palref = deck[0].LEDS_pal_cur[1]; break;
+	case 2: *palref = deck[0].LEDS_pal_cur[2]; break;
+	case 3: *palref = deck[0].LEDS_pal_cur[3]; break;
+	case 4: *palref = deck[0].LEDS_pal_cur[4]; break;
+	case 5: *palref = deck[0].LEDS_pal_cur[5]; break;
+	case 6: *palref = deck[0].LEDS_pal_cur[6]; break;
+	case 7: *palref = deck[0].LEDS_pal_cur[7]; break;
+	case 8: *palref = deck[0].LEDS_pal_cur[8]; break;
+	case 9: *palref = deck[0].LEDS_pal_cur[9]; break;
+	case 10: *palref = deck[0].LEDS_pal_cur[10]; break;
+	case 11: *palref = deck[0].LEDS_pal_cur[11]; break;
+	case 12: *palref = deck[0].LEDS_pal_cur[12]; break;
+	case 13: *palref = deck[0].LEDS_pal_cur[13]; break;
+	case 14: *palref = deck[0].LEDS_pal_cur[14]; break;
+	case 15: *palref = deck[0].LEDS_pal_cur[15]; break;
+
+	case 19: for (int i = 0; i < 16; i++) { *palref[i] = CHSV(random8(), 255, random8());} break;
+	case 20: *palref = RainbowColors_p; break;
+	case 21: *palref = RainbowStripeColors_p; break;
+	case 22: *palref = CloudColors_p; break;
+	case 23: *palref = PartyColors_p; break;
+	case 24: *palref = OceanColors_p; break;
+	case 25: *palref = ForestColors_p; break;
+	case 26: *palref = HeatColors_p; break;
+	case 27: *palref = LavaColors_p; break;
+	case 28: *palref = pal_red_green; break;
+	case 29: *palref = pal_red_blue; break;
+	case 30: *palref = pal_green_blue; break;
+	case 31: *palref = pal_black_white_Narrow; break;
+	case 32: *palref = pal_black_white_wide; break;
+	
+	
+	default: *palref = RainbowColors_p; break;
+		
+	//*deckref = localDEckCopy;
+	}
+
+}
 
 void LEDS_pal_load(deck_struct* deckref, uint8_t pal_no, uint8_t pal_menu)
 {
-		
+// NOK not loading!
 	deck_struct localDEckCopy;
 	localDEckCopy = *deckref;
 	//*deckref = localDEckCopy;

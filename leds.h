@@ -32,7 +32,7 @@
 
 		// Strip/Form settings do not change!!! 
 		
-		#define _M_NR_FORM_BYTES_ 6				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		#define _M_NR_FORM_BYTES_ 4				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 6*8 = 64
 
 
@@ -612,6 +612,8 @@ struct deck_struct
 
 	void LEDS_pal_reset_index();															//osc.cpp
 	void LEDS_pal_load(deck_struct* deckref, uint8_t pal_no, uint8_t pal_menu)	;
+	void LEDS_pal_load(CRGBPalette16* palref, uint8_t pal_no, uint8_t pal_menu) ;
+	
 								//osc.cpp
 
 	void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
