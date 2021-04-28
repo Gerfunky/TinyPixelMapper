@@ -67,7 +67,8 @@ extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 deck_struct deck[2] ;
 
 // ***************** the 16 Saves in memory
-//deck_cfg_struct mem_confs[7] ;
+//deck_cfg_struct *mem_confs[8] ;
+//deck_cfg_struct mem_confs[8] ;
 
 
 
@@ -2055,6 +2056,11 @@ void LEDS_setup()
 	fft_led_cfg.viz_fps = DEF_VIZ_UPDATE_TIME_FPS ;
 
 	led_cfg.confSwitch_time = micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+
+
+	//static deck_cfg_struct mem_confs_real[5] ;
+	//mem_confs[0] = &mem_confs_real[0] ;
+
 
 	debugMe("end LEDS setup");
 }
