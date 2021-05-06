@@ -64,7 +64,7 @@ extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 
 
 // ***************** the 2 decks
-deck_struct deck[2] ;
+deck_struct deck[1] ;
 
 // ***************** the 16 Saves in memory
 //deck_cfg_struct *mem_confs[8] ;
@@ -1202,9 +1202,15 @@ void LEDS_init_config(uint8_t selected_Deck)
 			deck[selected_Deck].cfg.form_fx_eyes[Form_Part_No] 			= {254,MIX_ADD,255,60,1,1,255,255,0};
 			deck[selected_Deck].cfg.form_fx_meteor[Form_Part_No] 		= {254,MIX_ADD,255,2,40,255,255,0};
 			deck[selected_Deck].cfg.form_fx_modify[Form_Part_No] 		= {0,0,255,0};
+			
 
 		}
-		
+	for(uint8_t layerNo = 0 ;layerNo < NO_OF_SAVE_LAYERS; layerNo++)
+		{
+			deck[selected_Deck].cfg.layer_save_lvl[layerNo] 	= 255;
+			deck[selected_Deck].cfg.layer_save_mix[layerNo]	= MIX_ADD;
+
+		}
 	deck[selected_Deck].cfg.form_cfg[0] = {0,200};
 
 
@@ -1222,7 +1228,7 @@ void LEDS_load_default_play_conf()
 	deck[0].cfg.led_master_cfg.g					= 255;
 	deck[0].cfg.led_master_cfg.b					= 255;
 	deck[0].cfg.led_master_cfg.pal_bri				= 255;
-	deck[0].cfg.led_master_cfg.pal_fps     		= 30;
+	deck[0].cfg.led_master_cfg.pal_fps     		   = 30;
 	
 	fft_led_cfg.Scale = 0;
 
@@ -1832,6 +1838,13 @@ void LEDS_run_fx01(uint8_t z, uint8_t i, uint8_t DeckNo, CRGB *OutPutLedArray  )
 
 }
 
+void LEDS_RUN_MIX_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
+{
+		tpm_fx.mixOntoLedArray(deck[DeckNo].run.SaveLayers[SaveArrayNo] , leds, MAX_NUM_LEDS  , 0, false, false ,MixModeType(deck[DeckNo].cfg.layer_save_mix[SaveArrayNo]),  deck[DeckNo].cfg.layer_save_lvl[SaveArrayNo] , false );
+
+
+}
+
 
 
 
@@ -1865,7 +1878,16 @@ void LEDS_run_layers(uint8_t deckSelected)
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
-			
+
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_ALPHA )     {  deck[deckSelected].run.SaveLayers[0].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[0]  = leds ;  leds.fadeToBlackBy(255); }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_ALPHA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,0) ;  }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_BETA )     {  deck[deckSelected].run.SaveLayers[1].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[1]  = leds ;  leds.fadeToBlackBy(255); }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_BETA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,1) ;  }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_GAMMA )     {  deck[deckSelected].run.SaveLayers[2].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[2]  = leds ;  leds.fadeToBlackBy(255); }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_GAMMA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,2) ;  }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_OMEGA )     {  deck[deckSelected].run.SaveLayers[3].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[3]  = leds ;  leds.fadeToBlackBy(255); }       
+				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_OMEGA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,3) ;  }       
+
 
 			else if (MAX_LAYERS >= _M_LAYER_32_FFT )
 			{
@@ -1879,6 +1901,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_EYES ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_ROTATE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
 			}
+			
 		}
 
 

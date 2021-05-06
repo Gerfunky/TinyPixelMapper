@@ -135,7 +135,7 @@
 
 
 	#define MAX_LAYERS_SELECT 48  // up to how many layers can you add
-	#define MAX_LAYERS 24				// what is the max layer Number
+	#define MAX_LAYERS 32				// what is the max layer Number
 
 	enum layer_options
 	{
@@ -166,6 +166,15 @@
 		_M_LAYER_32_EYES = 23,
 		_M_LAYER_32_ROTATE = 24,
 
+		_M_LAYER_SAVE_ALPHA = 25,
+		_M_LAYER_SAVE_BETA = 26,
+		_M_LAYER_SAVE_GAMMA = 27,
+		_M_LAYER_SAVE_OMEGA = 28,
+
+		_M_LAYER_RUN_ALPHA = 29,
+		_M_LAYER_RUN_BETA = 30,
+		_M_LAYER_RUN_GAMMA = 31,
+		_M_LAYER_RUN_OMEGA = 32,
 
 
 	};
@@ -579,6 +588,8 @@
 
 //******************** DEcks *******************
 
+#define NO_OF_SAVE_LAYERS 4
+
 struct deck_run_struct
 {
 		CRGBArray<MAX_NUM_LEDS> leds_FFT_history;
@@ -590,6 +601,7 @@ struct deck_run_struct
 		byte heat[MAX_NUM_LEDS	];
 		fft_data_struct 	fft_data[7];
 		fft_run_struct  	fft;
+		CRGBArray<MAX_NUM_LEDS> SaveLayers[NO_OF_SAVE_LAYERS];
 };
 
 struct deck_cfg_struct
@@ -598,6 +610,8 @@ struct deck_cfg_struct
 	uint8_t layer_select[MAX_LAYERS_SELECT] ;
 	led_master_conf led_master_cfg;
 
+	uint8_t layer_save_mix[NO_OF_SAVE_LAYERS];
+	uint8_t layer_save_lvl[NO_OF_SAVE_LAYERS];
 
 	fft_config_struct 	fft_config;
 
