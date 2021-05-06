@@ -42,6 +42,9 @@
 
 	extern fft_led_cfg_struct fft_led_cfg;
 	extern uint8_t fft_bin_results[7];
+
+
+	extern void LEDS_load_default_play_conf();
 	//extern byte fft_menu[3];
 	//extern fft_data_struct fft_data[7];
 	//extern byte fft_data_bri;
@@ -2350,7 +2353,7 @@ void osc_StC_pal_routing(OSCMessage &msg, int addrOffset)
 {
 	
 	if 		(msg.fullMatch("/edit/edit",addrOffset))			{ led_cfg.edit_pal = uint8_t(msg.getInt(0));  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
-	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load( &deck[0].cfg.LEDS_pal_cur[led_cfg.edit_pal] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_load_default_play_conf(); LEDS_pal_load( &deck[0].cfg.LEDS_pal_cur[led_cfg.edit_pal] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
 	else if (msg.fullMatch("/fs/load",addrOffset))				{FS_pal_load(uint8_t(msg.getInt(0)), led_cfg.edit_pal); osc_StC_menu_pal_ref(led_cfg.edit_pal);}
 	else if (msg.fullMatch("/fs/save",addrOffset)) 				{FS_pal_save(uint8_t(msg.getInt(0)),  led_cfg.edit_pal);}
 	else
@@ -2590,7 +2593,7 @@ void osc_api_pal(OSCMessage &msg, int addrOffset)
 	msg.route("/set", 		osc_api_pal_rec , 	addrOffset);   // Routing for PALLETE TAB -  API 
 	if (msg.fullMatch("/ref",addrOffset))	   	osc_api_pal_ref(constrain(msg.getInt(0),0,255) ) ;   //
 	if (msg.fullMatch("/refall",addrOffset))	osc_api_pal_refall() ;   //
-	if (msg.fullMatch("/loadin",addrOffset)) 	{LEDS_pal_load( &deck[0], constrain(msg.getInt(0),0,NR_PALETTS-1 ), constrain(msg.getInt(1),0,NR_PALETTS_SELECT-1)  );  osc_api_pal_ref(constrain(msg.getInt(0),0,NR_PALETTS -1) ) ;   }
+	if (msg.fullMatch("/loadin",addrOffset)) 	{ LEDS_load_default_play_conf(); LEDS_pal_load( &deck[0], constrain(msg.getInt(0),0,NR_PALETTS-1 ), constrain(msg.getInt(1),0,NR_PALETTS_SELECT-1)  );  osc_api_pal_ref(constrain(msg.getInt(0),0,NR_PALETTS -1) ) ;   }
 	//if (msg.fullMatch("/copyPal",addrOffset))	osc_api_pal_copy();  LEDS_pal_load(  constrain(msg.getInt(0),0,NR_PALETTS)	, uint8_t(msg.getInt(1)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }  //
 	
 }

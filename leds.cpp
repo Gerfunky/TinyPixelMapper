@@ -1033,9 +1033,9 @@ void LEDS_FFT_history_run(CRGB color_result, uint8_t deckNo )
 		}
 
 	deck[deckNo].run.leds_FFT_history[0] = color_result;
-	for (int i = 0 ; i < 3 ; i++)	
+	//for (int i = 0 ; i < 3 ; i++)	
 	//debugMe(String(leds_FFT_history[i].red)); 
-	debugMe(String(deck[deckNo].run.leds_FFT_history[i].red) + " : "  + String(deck[deckNo].run.leds_FFT_history[i].green) + " : " + String(deck[deckNo].run.leds_FFT_history[i].blue) + " x " + i );
+	//debugMe(String(deck[deckNo].run.leds_FFT_history[i].red) + " : "  + String(deck[deckNo].run.leds_FFT_history[i].green) + " : " + String(deck[deckNo].run.leds_FFT_history[i].blue) + " x " + i );
  
 	
 }
@@ -1213,6 +1213,8 @@ void LEDS_init_config(uint8_t selected_Deck)
 
 void LEDS_load_default_play_conf()
 {
+	
+	//deck[0].cfg.confname 							= String("def");
 	deck[0].cfg.led_master_cfg.bri					= 255;
 	deck[0].cfg.led_master_cfg.fire_cooling		= DEF_FIRE_COOLING ;
 	deck[0].cfg.led_master_cfg.fire_sparking		= DEF_FIRE_SPARKING ;
@@ -1854,8 +1856,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 
 
 			// LAYERS 16 to 31   *** Z =2 ; Z<4
-			else if (MAX_LAYERS_SELECT >= 32 )
-			{
+			
 				if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_FFT ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_PAL ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_FX01 ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i);
@@ -1864,10 +1865,11 @@ void LEDS_run_layers(uint8_t deckSelected)
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i);
-			}
+			
 
-			else if (MAX_LAYERS_SELECT >= 48 )
+			else if (MAX_LAYERS >= _M_LAYER_32_FFT )
 			{
+				//debugMe(layer);
 				if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_PAL ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i);
 				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_FX01 ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i);
@@ -2043,8 +2045,8 @@ void LEDS_setup()
     // -- Create the FastLED show task
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
-
-	if (FS_play_conf_read(0,&deck[0].cfg) == false)	 LEDS_load_default_play_conf();			
+	LEDS_load_default_play_conf();	
+	FS_play_conf_read(0,&deck[0].cfg) ;	
 
 	LEDS_pal_reset_index();
 
