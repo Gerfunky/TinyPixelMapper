@@ -1207,11 +1207,17 @@ void LEDS_init_config(uint8_t selected_Deck)
 		}
 	for(uint8_t layerNo = 0 ;layerNo < NO_OF_SAVE_LAYERS; layerNo++)
 		{
-			deck[selected_Deck].cfg.layer_save_lvl[layerNo] 	= 255;
-			deck[selected_Deck].cfg.layer_save_mix[layerNo]	= MIX_ADD;
+			deck[selected_Deck].cfg.layer.save_lvl[layerNo] 		= 255;
+			deck[selected_Deck].cfg.layer.save_mix[layerNo]			= MIX_ADD;
+			deck[selected_Deck].cfg.layer.save_NrLeds[layerNo]		= MAX_NUM_LEDS;
+			deck[selected_Deck].cfg.layer.save_startLed[layerNo]	= 0;
 
 		}
-	deck[selected_Deck].cfg.form_cfg[0] = {0,200};
+		deck[selected_Deck].cfg.layer.clear_start_led = 0 ;
+		deck[selected_Deck].cfg.layer.clear_Nr_leds = MAX_NUM_LEDS ;
+
+		
+		deck[selected_Deck].cfg.form_cfg[0] = {0,200};
 
 
 }
@@ -1840,13 +1846,18 @@ void LEDS_run_fx01(uint8_t z, uint8_t i, uint8_t DeckNo, CRGB *OutPutLedArray  )
 
 void LEDS_RUN_MIX_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
 {
-		tpm_fx.mixOntoLedArray(deck[DeckNo].run.SaveLayers[SaveArrayNo] , leds, MAX_NUM_LEDS  , 0, false, false ,MixModeType(deck[DeckNo].cfg.layer_save_mix[SaveArrayNo]),  deck[DeckNo].cfg.layer_save_lvl[SaveArrayNo] , false );
+		tpm_fx.mixOntoLedArray(deck[DeckNo].run.SaveLayers[SaveArrayNo] , leds, deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo]  , deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], false, false ,MixModeType(deck[DeckNo].cfg.layer.save_mix[SaveArrayNo]),  deck[DeckNo].cfg.layer.save_lvl[SaveArrayNo] , false );
 
 
 }
 
+void LEDS_RUN_save_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
+{
+	deck[DeckNo].run.SaveLayers[SaveArrayNo](deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo]  -1).fadeToBlackBy(255); 
+	deck[DeckNo].run.SaveLayers[SaveArrayNo](deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 )  = leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ) ;  
+	leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ).fadeToBlackBy(255); 
 
-
+}
 
 // ********************************************************** 
 
@@ -1855,51 +1866,53 @@ void LEDS_run_layers(uint8_t deckSelected)
 	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
 	{
 				
-		if( deck[deckSelected].cfg.layer_select[layer] != 0 &&  deck[deckSelected].cfg.layer_select[layer] <= MAX_LAYERS )
+		if( deck[deckSelected].cfg.layer.select[layer] != 0 &&  deck[deckSelected].cfg.layer.select[layer] <= MAX_LAYERS )
 		{
 			// LAYERS 00 to 15   *** Z =0 ; Z<2  
-			if 		( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_FFT  ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_PAL  ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_FX01 )		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_FIRE ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_SHIMMER ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_STROBE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_EYES ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
-			else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_00_ROTATE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
+			if 		( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_FFT  ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_PAL  ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_FX01 )		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_FIRE ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_SHIMMER ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_STROBE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_EYES ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_ROTATE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
 
 
 			// LAYERS 16 to 31   *** Z =2 ; Z<4
 			
-				if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_FFT ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_PAL ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_FX01 ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_FIRE ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_SHIMMER ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
+				if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_FFT ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_PAL ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_FX01 ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_FIRE ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_SHIMMER ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
 
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_ALPHA )     {  deck[deckSelected].run.SaveLayers[0].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[0]  = leds ;  leds.fadeToBlackBy(255); }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_ALPHA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,0) ;  }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_BETA )     {  deck[deckSelected].run.SaveLayers[1].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[1]  = leds ;  leds.fadeToBlackBy(255); }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_BETA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,1) ;  }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_GAMMA )     {  deck[deckSelected].run.SaveLayers[2].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[2]  = leds ;  leds.fadeToBlackBy(255); }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_GAMMA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,2) ;  }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_SAVE_OMEGA )     {  deck[deckSelected].run.SaveLayers[3].fadeToBlackBy(255); deck[deckSelected].run.SaveLayers[3]  = leds ;  leds.fadeToBlackBy(255); }       
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_RUN_OMEGA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,3) ;  }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_ALPHA )     {  LEDS_RUN_save_saved_layer(deckSelected,0); }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_RUN_ALPHA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,0) ;  }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_BETA )       {  LEDS_RUN_save_saved_layer(deckSelected,1); }  
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_RUN_BETA )       {  LEDS_RUN_MIX_saved_layer(deckSelected,1) ;  }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_GAMMA )     {  LEDS_RUN_save_saved_layer(deckSelected,2); }  
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_RUN_GAMMA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,2) ;  }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_OMEGA )     {  LEDS_RUN_save_saved_layer(deckSelected,3); }  
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_RUN_OMEGA )      {  LEDS_RUN_MIX_saved_layer(deckSelected,3) ;  }       
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_CLEAR)     		{  leds(deck[deckSelected].cfg.layer.clear_start_led, deck[deckSelected].cfg.layer.clear_start_led+ deck[deckSelected].cfg.layer.clear_Nr_leds -1 ).fadeToBlackBy(255); }       
 
+					// (deck[deckSelected].cfg.layer.save_startLed[1], deck[deckSelected].cfg.layer.save_NrLeds[1] ) 
 
 			else if (MAX_LAYERS >= _M_LAYER_32_FFT )
 			{
 				//debugMe(layer);
-				if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_PAL ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_FX01 ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_FIRE ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_SHIMMER ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_STROBE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_EYES ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
-				else if ( deck[deckSelected].cfg.layer_select[layer] ==_M_LAYER_32_ROTATE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
+				if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_PAL ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_FX01 ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fx01(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_FIRE ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fire(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_SHIMMER ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_shimmer(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_STROBE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_EYES ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, leds);
+				else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_ROTATE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, leds);
 			}
 			
 		}

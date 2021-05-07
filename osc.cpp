@@ -1466,9 +1466,19 @@ void osc_StC_menu_master_ref()
 
 	for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 	{
-			osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer_select[layer]	); 
+			osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); 
 			
 	}
+	for (uint8_t layersv = 0 ; layersv < NO_OF_SAVE_LAYERS ; layersv++)
+	{
+			osc_queu_MSG_int("/ostc/master/lymx/" + String(layersv) , 	deck[0].cfg.layer.save_mix[layersv]	); 
+			osc_queu_MSG_int("/ostc/master/lylv/" + String(layersv) , 	deck[0].cfg.layer.save_lvl[layersv]	); 
+			osc_queu_MSG_int("/ostc/master/lynl/" + String(layersv) , 	deck[0].cfg.layer.save_NrLeds[layersv]	); 
+			osc_queu_MSG_int("/ostc/master/lysl/" + String(layersv) , 	deck[0].cfg.layer.save_startLed[layersv]	); 
+	}
+	osc_queu_MSG_int("/ostc/master/lycs"  , 	deck[0].cfg.layer.clear_start_led	);
+	osc_queu_MSG_int("/ostc/master/lycn"  , 	deck[0].cfg.layer.clear_Nr_leds	);
+
 	
 	//yield();
 
@@ -2190,11 +2200,12 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			
 			else if (msg.fullMatch("/mqtt/enable",addrOffset))		{ write_bool(MQTT_ON, bool(msg.getInt(0) )) ; }
 			
-			
+			else if  	(msg.fullMatch("/lycs",addrOffset))  	 	deck[0].cfg.layer.clear_start_led = constrain(uint16_t(msg.getInt(0)),0,MAX_NUM_LEDS)	;
+			else if  	(msg.fullMatch("/lycn",addrOffset))  		deck[0].cfg.layer.clear_Nr_leds =  constrain(uint16_t(msg.getInt(0)),1,MAX_NUM_LEDS)	;
 		
 			
 			else if (msg.fullMatch("/seq",addrOffset))    		{ write_bool(SEQUENCER_ON,		bool(msg.getInt(0) )) ;  led_cfg.confSwitch_time = ( micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN )  ;  }
-			else if (msg.fullMatch("/playnr",addrOffset))   	{  FS_play_conf_read(uint8_t(msg.getInt(0) ) ,&deck[0].cfg); }
+			else if (msg.fullMatch("/playnr",addrOffset))   	{ FS_play_conf_read(uint8_t(msg.getInt(0) ) ,&deck[0].cfg); }
 
 			else if (	(msg.match("/tmin",addrOffset))
 					|| (msg.match("/laye",addrOffset))
@@ -2202,6 +2213,10 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 					|| (msg.match("/save",addrOffset))
 					|| (msg.match("/load",addrOffset))
 					|| (msg.match("/cler",addrOffset))
+					|| (msg.match("/lymx",addrOffset))
+					|| (msg.match("/lylv",addrOffset))
+					|| (msg.match("/lynl",addrOffset))
+					|| (msg.match("/lysl",addrOffset))
 			) 
 			{
 							char address[5] ;
@@ -2214,8 +2229,12 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 
 							sel_save_no = save_no_string.toInt();  
 
-							if  			(msg.match("/tmin",addrOffset))  	play_conf_time_min[sel_save_no] = uint16_t(msg.getInt(0))	;
-							else if  	(msg.match("/laye",addrOffset))  	deck[0].cfg.layer_select[sel_save_no] = uint16_t(msg.getInt(0))	;
+							if  		(msg.match("/tmin",addrOffset))  	play_conf_time_min[sel_save_no] = uint16_t(msg.getInt(0))	;
+							else if  	(msg.match("/laye",addrOffset))  	deck[0].cfg.layer.select[sel_save_no] = uint8_t(msg.getInt(0))	;
+							else if  	(msg.match("/lymx",addrOffset))  	deck[0].cfg.layer.save_mix[sel_save_no] = uint8_t(msg.getInt(0))	;
+							else if  	(msg.match("/lylv",addrOffset))  	deck[0].cfg.layer.save_lvl[sel_save_no] = uint8_t(msg.getInt(0))	;
+							else if  	(msg.match("/lynl",addrOffset))  	deck[0].cfg.layer.save_NrLeds[sel_save_no] = uint16_t(msg.getInt(0))	;
+							else if  	(msg.match("/lysl",addrOffset))  	deck[0].cfg.layer.save_startLed[sel_save_no] = uint16_t(msg.getInt(0))	;
 							else if		(msg.match("/auto",addrOffset))		{ LEDS_write_sequencer( uint8_t(sel_save_no), boolean(msg.getInt(0)) ); } 
 							else if (boolean(msg.getInt(0)))  // if pushdown only
 							{

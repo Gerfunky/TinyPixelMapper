@@ -850,6 +850,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(0 )));
 			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.bri)));
+			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.layer.clear_start_led)));
+			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.layer.clear_Nr_leds)));
 			conf_file.println("] ");
 
 		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
@@ -1186,14 +1188,30 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 			conf_file.println("] ");
 		}
-		conf_file.println("ly = Layers 1 to 10, ");
-			conf_file.print("[ly:" + String(deck[selectedDeckNo].cfg.layer_select[0]) )	;
-			for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
-			{
-					conf_file.print(":" + String(deck[selectedDeckNo].cfg.layer_select[layer]) )	;
-
-			}
+		//conf_file.println("ly = Layers 1 to 10, ");
+		conf_file.print("[ly:" + String(deck[selectedDeckNo].cfg.layer.select[0]) )	;
+		for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
+		{
+				conf_file.print(":" + String(deck[selectedDeckNo].cfg.layer.select[layer]) )	;
+		}
 		conf_file.println("] ");
+
+
+		for (uint8_t layer = 0 ; layer < NO_OF_SAVE_LAYERS ; layer++)
+		{
+			conf_file.print("[LC:" 	+ String(layer) )	;
+			
+			conf_file.print(":" 	+ String(deck[selectedDeckNo].cfg.layer.save_startLed[layer]) )	;
+			conf_file.print(":" 	+ String(deck[selectedDeckNo].cfg.layer.save_NrLeds[layer]) )	;
+			conf_file.print(":" 	+ String(deck[selectedDeckNo].cfg.layer.save_lvl[layer]) )	;
+			conf_file.print(":" 	+ String(deck[selectedDeckNo].cfg.layer.save_mix[layer]) )	;
+
+			conf_file.println("] ");
+		}
+		
+
+
+
 
 		//conf_file.println("T = FFT settings : FFT enable : FFT Auto ");
 		//conf_file.print(String("[T:" + String(get_bool(FFT_ENABLE))));
@@ -1259,6 +1277,8 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 		AF FX Bins
 
 		ly Layers
+		LM Layer save Mix
+		LL Layer Save Level
 
 	*/
 
@@ -1320,6 +1340,8 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 				in_int = get_int_conf_value(conf_file, &character);	 // SPARE !!!! write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
 				in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.Scale = uint16_t(constrain(in_int, 0, 500));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
+				if (character != ']') {in_int = get_int_conf_value(conf_file, &character);		targetConf->layer.clear_start_led					= uint16_t(constrain(in_int, 0, MAX_NUM_LEDS)); } 
+				if (character != ']') {in_int = get_int_conf_value(conf_file, &character);		targetConf->layer.clear_Nr_leds						= uint16_t(constrain(in_int, 0, MAX_NUM_LEDS)); } 
 				// debugMe(led_cfg.max_bri);
 			}
 	
@@ -1586,19 +1608,24 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 			{
 					for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 					{
-					targetConf->layer_select[layer] = get_int_conf_value(conf_file, &character)	;
+					targetConf->layer.select[layer] = get_int_conf_value(conf_file, &character)	;
 					//debugMe(layer_select[layer]);
 					}
-
-			
-
 			}
-			
-			//else if (type == 'T')			// FFT settings to load in play config
-			//{
-			//		write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));
-			//		write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));		
-			//}
+			else if  ((type == 'L') && (typeb == 'C'))	
+			{
+				uint8_t layerNo = get_int_conf_value(conf_file, &character);					
+				targetConf->layer.save_startLed[layerNo] = get_int_conf_value(conf_file, &character)	;
+				targetConf->layer.save_NrLeds[layerNo] = get_int_conf_value(conf_file, &character)	;
+				targetConf->layer.save_lvl[layerNo] = get_int_conf_value(conf_file, &character)	;
+				targetConf->layer.save_mix[layerNo] = get_int_conf_value(conf_file, &character)	;
+					//debugMe(layer_select[layer]);
+				
+				
+				
+				
+					
+			}
 
 
 

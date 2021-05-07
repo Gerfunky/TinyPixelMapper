@@ -135,7 +135,7 @@
 
 
 	#define MAX_LAYERS_SELECT 48  // up to how many layers can you add
-	#define MAX_LAYERS 32				// what is the max layer Number
+	#define MAX_LAYERS 33				// what is the max layer Number
 
 	enum layer_options
 	{
@@ -175,6 +175,8 @@
 		_M_LAYER_RUN_BETA = 30,
 		_M_LAYER_RUN_GAMMA = 31,
 		_M_LAYER_RUN_OMEGA = 32,
+
+		_M_LAYER_CLEAR = 33,
 
 
 	};
@@ -583,12 +585,23 @@
 		
 	};
 		
+#define NO_OF_SAVE_LAYERS 5
+	struct layer_struct
+	{
+		uint8_t save_mix[NO_OF_SAVE_LAYERS];
+		uint8_t save_lvl[NO_OF_SAVE_LAYERS];
+		uint16_t save_startLed[NO_OF_SAVE_LAYERS];
+		uint16_t save_NrLeds[NO_OF_SAVE_LAYERS];
 
+		uint8_t select[MAX_LAYERS_SELECT] ;
+		uint16_t clear_start_led;
+		uint16_t clear_Nr_leds;
+	};
 
 
 //******************** DEcks *******************
 
-#define NO_OF_SAVE_LAYERS 4
+
 
 struct deck_run_struct
 {
@@ -607,11 +620,10 @@ struct deck_run_struct
 struct deck_cfg_struct
 {
 	char confname[32];
-	uint8_t layer_select[MAX_LAYERS_SELECT] ;
+	
 	led_master_conf led_master_cfg;
 
-	uint8_t layer_save_mix[NO_OF_SAVE_LAYERS];
-	uint8_t layer_save_lvl[NO_OF_SAVE_LAYERS];
+	layer_struct layer;
 
 	fft_config_struct 	fft_config;
 
