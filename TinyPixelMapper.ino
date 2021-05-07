@@ -23,6 +23,7 @@
 void setup()
 {		
 	
+	
 		DEF_SERIAL_PORT.begin(DEF_SERIAL_SPEED);
 
 	if (DEF_BOOT_DEBUGING == true)
@@ -36,6 +37,8 @@ void setup()
 	
 		debugMe("Starting Setup - Light Fractal");
 	}
+
+	btStop(); // disable bluetooth
 	
 	setup_controlls();	// Pottis and Button
 	yield();
@@ -45,7 +48,7 @@ void setup()
 	LEDS_setup();
 	yield();
 	//delay(500);
-	wifi_setup();
+ 	wifi_setup();
 
 	MMQT_setup() ;
 

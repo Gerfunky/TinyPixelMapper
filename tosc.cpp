@@ -752,8 +752,8 @@ void osc_forms_send(byte y) {
 	*/
 		//debugMe(String("for 1 done"), true);
 		
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].start_led));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].nr_leds));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(deck[0].form_cfg[i + (y * 8)].start_led));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(deck[0].form_cfg[i + (y * 8)].nr_leds));
 
 
 		osc_queu_MSG_float(String("/form/FF/" + String(y) + "/" + String(i + 1)), osc_byte_tofloat(form_fx1[i + (y * 8)].fade, MAX_FADE_VALUE));
@@ -782,8 +782,8 @@ void osc_forms_config_send(byte y) {
 
 	for (int i = 0; i < 8; i++) {
 
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].start_led));
-		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(form_cfg[i + (y * 8)].nr_leds));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/SLL/" + String(i + 1)), float(deck[0].form_cfg[i + (y * 8)].start_led));
+		osc_queu_MSG_float(String("/form/f" + String(y) + "/NLL/" + String(i + 1)), float(deck[0].form_cfg[i + (y * 8)].nr_leds));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/IAL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_add_led));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/IFL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_add_frame));
 		osc_queu_MSG_float(String("/form/f" + String(y) + "/SIL/" + String(i + 1)), float(form_fx_pal[i + (y * 8)].index_start));
@@ -906,23 +906,23 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				case 0:
 					//form_part[select_bit_int + z * 8].start_led -=  osc_miltiply_get();
 
-					form_cfg[form_int + bit_int * 8].start_led = constrain(form_cfg[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].nr_leds);
+					deck[0].form_cfg[form_int + bit_int * 8].start_led = constrain(deck[0].form_cfg[form_int + bit_int * 8].start_led -  osc_miltiply_get(), 0, MAX_NUM_LEDS - deck[0].form_cfg[form_int + bit_int * 8].nr_leds);
 					break;
 				case 1:
 					if (form_int != 0)
-						form_cfg[form_int + bit_int * 8].start_led = form_cfg[form_int - 1 + bit_int * 8].start_led + form_cfg[form_int - 1 + bit_int * 8].nr_leds;
+						deck[0].form_cfg[form_int + bit_int * 8].start_led = deck[0].form_cfg[form_int - 1 + bit_int * 8].start_led + deck[0].form_cfg[form_int - 1 + bit_int * 8].nr_leds;
 					else  if (bit_int != 0)
-						form_cfg[form_int + bit_int * 8].start_led = form_cfg[7 + (bit_int - 1) * 8].start_led + form_cfg[7 + (bit_int - 1) * 8].nr_leds;
+						deck[0].form_cfg[form_int + bit_int * 8].start_led = deck[0].form_cfg[7 + (bit_int - 1) * 8].start_led + deck[0].form_cfg[7 + (bit_int - 1) * 8].nr_leds;
 					break;
 
 				case 2:
 					//form_part[select_bit_int + z * 8].start_led +=  osc_miltiply_get();
-					form_cfg[form_int + bit_int * 8].start_led = constrain(form_cfg[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].nr_leds);
+					deck[0].form_cfg[form_int + bit_int * 8].start_led = constrain(deck[0].form_cfg[form_int + bit_int * 8].start_led +  osc_miltiply_get(), 0, MAX_NUM_LEDS - deck[0].form_cfg[form_int + bit_int * 8].nr_leds);
 					break;
 				}
 			//outbuffer = String("/strips/s" + String(z) + "/AIL/" + String(select_bit_int+1));
 
-			outvalue = float(form_cfg[form_int + bit_int * 8].start_led);
+			outvalue = float(deck[0].form_cfg[form_int + bit_int * 8].start_led);
 			//osc_send_MSG(outbuffer , float(part[select_bit_int + z *8 ].index_add)) ;   
 
 		}
@@ -932,14 +932,14 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				switch (option_int)
 				{
 				case 0:
-					form_cfg[form_int + bit_int * 8].nr_leds = constrain(form_cfg[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].start_led);
+					deck[0].form_cfg[form_int + bit_int * 8].nr_leds = constrain(deck[0].form_cfg[form_int + bit_int * 8].nr_leds -  osc_miltiply_get(), 0, MAX_NUM_LEDS - deck[0].form_cfg[form_int + bit_int * 8].start_led);
 					break;
 				case 2:
-					form_cfg[form_int + bit_int * 8].nr_leds = constrain(form_cfg[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, MAX_NUM_LEDS - form_cfg[form_int + bit_int * 8].start_led);
+					deck[0].form_cfg[form_int + bit_int * 8].nr_leds = constrain(deck[0].form_cfg[form_int + bit_int * 8].nr_leds +  osc_miltiply_get(), 0, MAX_NUM_LEDS - deck[0].form_cfg[form_int + bit_int * 8].start_led);
 					break;
 				}
 
-			outvalue = float(form_cfg[form_int + bit_int * 8].nr_leds);
+			outvalue = float(deck[0].form_cfg[form_int + bit_int * 8].nr_leds);
 
 		}
 
@@ -995,7 +995,7 @@ void osc_forms_config_rec(OSCMessage &msg, int addrOffset) {
 				
 				for (uint8_t formX = bit_int * 8 ; formX < (bit_int+1) * 8  ; formX++ )
 				{
-				if (form_cfg[formX].nr_leds != 0) 
+				if (deck[0].form_cfg[formX].nr_leds != 0) 
 				{
 					//debugMe(formX , true );
 					boolean trun_value = !bitRead(form_menu[bit_int][option_int], formX- 8*bit_int);
@@ -2693,7 +2693,7 @@ void osc_DS_refresh()
 
 
 			osc_queu_MSG_float(String("/DS/WP"), float(get_bool(WIFI_POWER))); 
-			osc_queu_MSG_float(String("/DS/WAP"), float(get_bool(WIFI_MODE)));  //debugMe(get_bool(WIFI_MODE));
+			osc_queu_MSG_float(String("/DS/WAP"), float(get_bool(WIFI_MODE_TPM)));  //debugMe(get_bool(WIFI_MODE_TPM));
 			osc_send_MSG_String("/DS/SSID", String(wifi_cfg.ssid));
 			osc_send_MSG_String("/DS/WPW", String(wifi_cfg.pwd));
 			osc_send_MSG_String("/DS/WAPNL", String(wifi_cfg.APname));
@@ -3421,7 +3421,7 @@ void osc_device_settings_routing(OSCMessage &msg, int addrOffset)
 	if (msg.fullMatch("/debug", addrOffset))		{ osc_send_MSG_String("/DS/INFO", String("Debug : "+ String(bool(msg.getFloat(0)))));	 debugMe(String("Debug : "+ String(bool(msg.getFloat(0))))); write_bool(DEBUG_OUT, bool(msg.getFloat(0)));}
 	if (msg.fullMatch("/TNdebug", addrOffset))			{ write_bool(DEBUG_TELNET, bool(msg.getFloat(0))); }
 	if (msg.fullMatch("/ESIP", addrOffset))			{ osc_send_MSG_String("/DS/INFO", String("Static IP : " + String(bool(msg.getFloat(0)))));	write_bool(STATIC_IP_ENABLED, bool(msg.getFloat(0))); }
-	if (msg.fullMatch("/WAP", addrOffset))			{ write_bool(WIFI_MODE, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE)); }
+	if (msg.fullMatch("/WAP", addrOffset))			{ write_bool(WIFI_MODE_TPM, bool(msg.getFloat(0))); }//debugMe("BLAH!!!");debugMe(get_bool(WIFI_MODE_TPM)); }
 	if (msg.fullMatch("/WP", addrOffset))			{ write_bool(WIFI_POWER, bool(msg.getFloat(0)));}
 
 	if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(0); osc_send_MSG_String("/DS/INFO", String("IP saved")); }

@@ -11,7 +11,7 @@
 
 #include "IPAddress.h"
 
-#define WIFI_ACCESSPOINT true   // if the bool is true run accesspoint
+#define WIFI_ACCESSPOINT  true //true   // if the bool is true run accesspoint
 
 
 										// Wifi IP settings data stucture 
@@ -28,6 +28,7 @@
 		IPAddress	ipNTP;				// What NTP server to use in IP 
 		char		ntp_fqdn[24];		// what NTP server to use in FQDN#
 		uint8_t		wifiChannel; 		// what channel to run wifi on.
+		unsigned long 	connectTimeout;	// When to reconnect default 10 seconds
 
 	};
 

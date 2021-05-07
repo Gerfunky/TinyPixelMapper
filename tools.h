@@ -16,11 +16,11 @@
 enum GLOBAL_OPTIONS_ENUM
 {
 	DEBUG_OUT			= 0		// Debug to Serial ?
-	,WIFI_MODE			= 1 	// True = Client, False = AP
+	,WIFI_MODE_TPM		= 1 	// True = Client, False = AP
 	,OTA_SERVER			= 2		// Enable Arduino OTA
 	,STATIC_IP_ENABLED	= 3		// Static IP?
 	,HTTP_ENABLED		= 4		// enable the HTTP server
-//	,SPARE_5      		= 5		// Artnet mode?
+	,WIFI_EVENTS      	= 5		// Show all Wifi Events not only 7 Ipaddress .
 	,OSC_EDIT			= 6		// alow Edditing of NR LEds and Start Led ?
 	,FFT_MASTER			= 7		// Master FFT-Server ? if not = slave!
 	,FFT_ENABLE			= 8		// FFT enabled
@@ -43,6 +43,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,MQTT_ON 			= 25     // Enable Mqtt.
 	,ARTNET_SEND		= 26
 	,ARTNET_RECIVE		= 27
+	,WIFI_MODE_BOOT		= 28
 	
 
 };

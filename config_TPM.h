@@ -1,7 +1,13 @@
 #ifndef _CONFIG_TPM_h
 #define _CONFIG_TPM_h
 
+
+
+//#define HUZZAH32_BOARD
+//#define OMILEX32_POE_BOARD
+
 //#include "arduino.h"
+
 
 
 // This is the Config file for the TinyPixxelMapper
@@ -13,7 +19,7 @@
 //#define OSC_MC_SERVER_DISABLED
 #define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
 
-#define DEF_BOOT_DEBUGING  false  // Set to true to get Debuging info on serial port during boot. else set to false  
+#define DEF_BOOT_DEBUGING  true  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
 #define DEF_SERIAL_PORT Serial
 
@@ -32,6 +38,7 @@
 // Wifi
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
 	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
+	#define DEF_WIFI_EVENTS		false							// Show wifievents in Console
 
 	#define DEF_AP_NAME			"TinyPixelMapperW3"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
@@ -39,7 +46,7 @@
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
 	#define DEF_STATIC_IP_ENABLED true							// set static ip for startup  ?
-	#define DEF_IP_LOCAL		{172,16,222,26}					// Static IP
+	#define DEF_IP_LOCAL		{172,16,222,27}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
 
@@ -52,7 +59,7 @@
 	#define WIFI_CLIENT_CONNECT_TRYS		1					// how many times to try to connect to the wifi 
 
 	// Default Artnet
-	#define DEF_ARTNET_SEND_ENABLE 				true					// enable Artnet  ?
+	#define DEF_ARTNET_SEND_ENABLE 				false					// enable Artnet  ?
 	#define DEF_ARTNET_RECIVE_ENABLE 			false					// enable Artnet  ?
 	#define DEF_ARTNET_STAT_UNIVERSE 		5						// Default Artnet Start universe
 	#define DEF_ARTNET_NUMBER_OF_UNIVERSES 	4						// Default Arnet NR of universes MAX 4 !!!! TODO 
@@ -117,6 +124,7 @@
 		#define FIRE_SPARKING_MIN 50
 		#define FIRE_SPARKING_MAX 200
 
+#ifdef HUZZAH32_BOARD
 		#define LED_DATA_PIN    18 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
@@ -124,7 +132,17 @@
 		#define LED_DATA_4_PIN  17							// DATA 4 PIN = SK6822 
 
 		#define DEF_APA102_DATARATE 4
-			
+#endif
+#ifdef OMILEX32_POE_BOARD
+		#define LED_DATA_PIN    0 							// DATA 1 PIN	
+		#define LED_CLK_PIN     1 							// DATA 2 PIN / data1CLK pin
+
+		#define LED_DATA_3_PIN  3							// DATA 3 PIN = WS2812 
+		#define LED_DATA_4_PIN  4							// DATA 4 PIN = SK6822 
+
+		#define DEF_APA102_DATARATE 4
+#endif
+
 
 		#define DEF_MAX_BRI 255		// the default max bri
 		#define DEF_BRI 240			// the deault Bri
@@ -137,17 +155,27 @@
 
 
 
-		#define FASTLED_ALLOW_INTERRUPTS 0
-		#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
+		//#define FASTLED_ALLOW_INTERRUPTS 0
+		//#define FASTLED_INTERRUPT_RETRY_COUNT 0   // dont retry to send interupted transmissions  to leds
 
 		#define DEF_VIZ_UPDATE_TIME_FPS 3
 
 // END FastLed Defines
 
 // Variable resistors + Buttons
+#ifdef HUZZAH32_BOARD
 		#define POTI_BRI_PIN 39 	// For Brightness 
 		#define POTI_FPS_PIN 36 	// for speed
 		#define BTN_PIN 4 			// for a button 
+#endif
+#ifdef OMILEX32_POE_BOARD
+		#define POTI_BRI_PIN 35 	// For Brightness 
+		#define POTI_FPS_PIN 36 	// for speed
+		#define BTN_PIN 39 			// for a button on omilex
+#endif
+
+
+
 		#define BUTTON_DOWN		false 
 
 		#define DEF_DISABLE_HW_POTS  false 
@@ -164,11 +192,16 @@
 
 // FFT MSGEQ7 defines
 
-
+#ifdef HUZZAH32_BOARD
 		#define MSGEQ7_INPUT_PIN  34 // input from mic  
 		#define MSGEQ7_STROBE_PIN 21 // stobe pin
 		#define MSGEQ7_RESET_PIN  26 // reset pin
-
+#endif
+#ifdef OMILEX32_POE_BOARD
+		#define MSGEQ7_INPUT_PIN  33 // input from mic  
+		#define MSGEQ7_STROBE_PIN 32 // stobe pin
+		#define MSGEQ7_RESET_PIN  16 // reset pin
+#endif
 /*
 
 MSGEQ7
