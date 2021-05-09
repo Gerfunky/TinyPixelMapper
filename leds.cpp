@@ -65,6 +65,7 @@ extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 
 // ***************** the 2 decks
 deck_struct deck[1] ;
+//save_struct saves[4];
 
 // ***************** the 16 Saves in memory
 //deck_cfg_struct *mem_confs[8] ;
@@ -151,7 +152,7 @@ deck_struct deck[1] ;
 			//"values": { "None": 0, "00-15 FFT ": 1, "00-15 Pal": 2, "00-15 FX1": 3, "00-15 Fire ": 4, "00-15 Shimmer ": 5, "16-31 FFT ": 6, "16-31 Pal": 7, "16-31 FX1": 8, "16-31 Fire ": 9, "16-31 Shimmer ": 10 }
 						
 		
-
+/*
 	byte  copy_leds_mode[NR_COPY_LED_BYTES] = { 0,0 };
 	led_Copy_Struct copy_leds[NR_COPY_STRIPS] = 
 	{
@@ -171,7 +172,7 @@ deck_struct deck[1] ;
 		,{ 0,0,0 }
 		,{ 0,0,0 }
 		,{ 0,0,0 }
-	};
+	};  */
 
 
 
@@ -529,7 +530,7 @@ void LEDS_pal_reset_index()
 
 			deck[0].cfg.form_fx_pal[i+(z * 8)].index = constrain(deck[0].cfg.form_fx_pal[i+ (z * 8)].index_start,0,255);
 			deck[0].cfg.form_fx_pal[i + (z * 8)].indexLong = deck[0].cfg.form_fx_pal[i + (z * 8)].index_start;
-			deck[0].cfg.form_fx_modify[i + (z * 8)].RotateFramePos = 0;
+			deck[0].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFramePos = 0;
 			deck[0].cfg.form_fx_fft[i + (z * 8)].extend_tick = 0;
 			//debugMe(String(i + (z * 8) ) + " -- " + String(deck[0].form_fx_pal[i + (z * 8)].indexLong));
 			if (deck[0].cfg.form_fx_pal[i + (z * 8)].indexLong  >= 4096) deck[0].cfg.form_fx_pal[i + (z * 8)].indexLong  = deck[0].cfg.form_fx_pal[i + (z * 8)].indexLong -4096;
@@ -1178,7 +1179,7 @@ return led_cfg.Play_Nr;
 }
 void LEDS_set_playNr(uint8_t setNr)
 {
-	FS_play_conf_read(setNr,&deck[0].cfg);
+	FS_play_conf_read(setNr,&deck[0].cfg, &deck[0].fx1_cfg);
 }
 
 
@@ -1191,20 +1192,42 @@ void LEDS_init_config(uint8_t selected_Deck)
 	for(uint8_t Form_Part_No = 0 ;Form_Part_No < NR_FORM_PARTS; Form_Part_No++)
 		{
 			deck[selected_Deck].cfg.form_cfg[Form_Part_No] 		= {0,0};
-			deck[selected_Deck].cfg.form_fx_pal[Form_Part_No] 	= {0,255,MIX_ADD,0,16,8,0,0,255,255,255};
-			deck[selected_Deck].cfg.form_fx_shim[Form_Part_No] 	= {0,MIX_ADD,255,6,5,7,255,255};
-			deck[selected_Deck].cfg.form_fx_fire[Form_Part_No] 	= {0,MIX_ADD,255,55,120,255,255};
-			deck[selected_Deck].cfg.form_fx_fft[Form_Part_No] 	= {MIX_ADD,255,0,0,255,255};
-			deck[selected_Deck].cfg.form_fx1[Form_Part_No] 		= {MIX_ADD,255,0,255,255};
-			deck[selected_Deck].cfg.form_fx_glitter[Form_Part_No] 		= {0,255,15,255};
-			deck[selected_Deck].cfg.form_fx_dots[Form_Part_No] 			= {0,255,1,20,16,16};
-			deck[selected_Deck].cfg.form_fx_strobe[Form_Part_No] 		= {254,MIX_ADD,255,1,5,0,255,255};
-			deck[selected_Deck].cfg.form_fx_eyes[Form_Part_No] 			= {254,MIX_ADD,255,60,1,1,255,255,0};
-			deck[selected_Deck].cfg.form_fx_meteor[Form_Part_No] 		= {254,MIX_ADD,255,2,40,255,255,0};
-			deck[selected_Deck].cfg.form_fx_modify[Form_Part_No] 		= {0,0,255,0};
+			deck[selected_Deck].cfg.form_fx_pal[Form_Part_No] 	= {255,0,16,8,0,0};
+			deck[selected_Deck].fx1_cfg.form_fx_shim[Form_Part_No] 	= {6,5,7,0};
+			
+			deck[selected_Deck].cfg.form_fx_fft[Form_Part_No] 	= {255,0,0,0};
+		}
+	for(uint8_t Form_Part_No = 0 ;Form_Part_No < _M_NR_FORM_BYTES_; Form_Part_No++)
+	{
+		deck[selected_Deck].cfg.form_fx_pal_singles[Form_Part_No] 	= {21,MIX_ADD,255,255,255};
+		deck[selected_Deck].cfg.form_fx_fft_signles[Form_Part_No] 	= {MIX_ADD,255,255,0};
+	}
+
+	for(uint8_t Form_Part_No = 0 ;Form_Part_No < NR_FX_PARTS; Form_Part_No++)
+		{	
+			deck[selected_Deck].fx1_cfg.form_fx_glitter[Form_Part_No] 		= {15};
+			deck[selected_Deck].fx1_cfg.form_fx_dots[Form_Part_No] 			= {1,20,16,16};
+			deck[selected_Deck].fx1_cfg.form_fx_strobe[Form_Part_No] 		= {0};
+			deck[selected_Deck].fx1_cfg.form_fx_eyes[Form_Part_No] 			= {0,0};
+			deck[selected_Deck].fx1_cfg.form_fx_meteor[Form_Part_No] 		= {2,40,0};
+			deck[selected_Deck].fx1_cfg.form_fx_modify[Form_Part_No] 		= {0,0};
 			
 
 		}
+	
+	for(uint8_t Form_Part_No = 0 ;Form_Part_No < NR_FX_BYTES; Form_Part_No++)
+	{
+		deck[selected_Deck].fx1_cfg.form_fx1[Form_Part_No] 		= {MIX_ADD,255,0,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_shim_bytes[Form_Part_No] 	= {0,MIX_ADD,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_modify_bytes[Form_Part_No] 		= {200,0};
+		deck[selected_Deck].fx1_cfg.form_fx_eyes_bytes[Form_Part_No] 			= {254,MIX_ADD,255,60,1,1,255,255,0,10};
+		deck[selected_Deck].fx1_cfg.form_fx_glitter_bytes[Form_Part_No] 		= {0,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_dots[Form_Part_No] 			= {0,255};
+		deck[selected_Deck].fx1_cfg.form_fx_meteor_bytes[Form_Part_No] 		= {254,255,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_strobe_bytes[Form_Part_No] 		= {254,MIX_ADD,255,1,5,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_fire_bytes[Form_Part_No] 	= {0,MIX_ADD,255,55,120,255,255};
+	}
+
 	for(uint8_t layerNo = 0 ;layerNo < NO_OF_SAVE_LAYERS; layerNo++)
 		{
 			deck[selected_Deck].cfg.layer.save_lvl[layerNo] 		= 255;
@@ -1216,7 +1239,7 @@ void LEDS_init_config(uint8_t selected_Deck)
 		deck[selected_Deck].cfg.layer.clear_start_led = 0 ;
 		deck[selected_Deck].cfg.layer.clear_Nr_leds = MAX_NUM_LEDS ;
 
-		
+
 		deck[selected_Deck].cfg.form_cfg[0] = {0,200};
 
 
@@ -1418,7 +1441,7 @@ void LEDS_seqencer_advance()
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg);
+							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1433,7 +1456,7 @@ void LEDS_seqencer_advance()
 						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg);
+							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1455,7 +1478,7 @@ void LEDS_seqencer_advance()
 
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg);
+							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1470,7 +1493,7 @@ void LEDS_seqencer_advance()
 						
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg);
+							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1609,11 +1632,11 @@ CRGB LEDS_select_color(uint8_t selector, uint16_t pal_index, uint8_t deckNo)
 // ************************************ FFT ****************************************
 void LEDS_run_fft(uint8_t z, uint8_t i, uint8_t DeckNo,CRGB *OutPutLedArray )
 {
-	if ( deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_RUN], i) == true &&  ( deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].triggerBin   == 255  ||  LEDS_fft_get_fxbin_result(deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].triggerBin,0)  != 0 ) ) 
+	if ( deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_RUN], i) == true &&  ( deck[DeckNo].cfg.form_fx_fft_signles[z].triggerBin   == 255  ||  LEDS_fft_get_fxbin_result(deck[DeckNo].cfg.form_fx_fft_signles[z].triggerBin,0)  != 0 ) ) 
 	{
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].lvl_bin, deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].level ); 
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[DeckNo].cfg.form_fx_fft_signles[z].lvl_bin, deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].level ); 
 
-		tpm_fx.mixHistoryOntoLedArray(deck[DeckNo].run.leds_FFT_history, OutPutLedArray, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].mix_mode),  lvl_select , bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].offset, deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].extend ,deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].extend_tick ,deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].color );
+		tpm_fx.mixHistoryOntoLedArray(deck[DeckNo].run.leds_FFT_history, OutPutLedArray, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_REVERSED], i),  bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_MIRROR],i ) , MixModeType(deck[DeckNo].cfg.form_fx_fft_signles[z].mix_mode),  lvl_select , bitRead(deck[DeckNo].cfg.form_menu_fft[z][_M_FORM_FFT_ONECOLOR] , i), deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].offset, deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].extend ,deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].extend_tick ,deck[DeckNo].cfg.form_fx_fft_signles[z].color );
 
 		if (deck[DeckNo].cfg.form_fx_fft[i + (z * 8)].extend != 0)
 		{
@@ -1630,16 +1653,16 @@ void LEDS_run_fft(uint8_t z, uint8_t i, uint8_t DeckNo,CRGB *OutPutLedArray )
 // ************************************ Palette  ****************************************
 void LEDS_run_pal(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray  )
 {
-	if (deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 && bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_RUN], i) == true && ( deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].triggerBin  == 255  || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].triggerBin , 0)  != 0 ) ) 
+	if (deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 && bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_RUN], i) == true && ( deck[selectedDeck].cfg.form_fx_pal_singles[z].triggerBin  == 255  || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal_singles[z].triggerBin , 0)  != 0 ) ) 
 	{
 		
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].level );
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_pal_singles[z].lvl_bin, deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].level );
 		
-		tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].pal ), deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  , deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].indexLong , deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_led  ,  MIX_REPLACE, 255,  TBlendType(bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
-		tpm_fx.mixOntoLedArray(tmp_array, OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].mix_mode), lvl_select , bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
+		tpm_fx.PalFillLong(tmp_array, LEDS_pal_get(deck[selectedDeck].cfg.form_fx_pal_singles[z].pal ), deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  , deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].indexLong , deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_led  ,  MIX_REPLACE, 255,  TBlendType(bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_BLEND], i)) );
+		tpm_fx.mixOntoLedArray(tmp_array, OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_REVERSED], i), bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_MIRROR], i)   , MixModeType(deck[selectedDeck].cfg.form_fx_pal_singles[z].mix_mode), lvl_select , bitRead(deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_ONECOLOR], i) );
 			
 		uint16_t pal_speed; 
-		if (deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].palSpeedBin != 255) 	pal_speed = LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].palSpeedBin ,0 )  ;
+		if (deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin != 255) 	pal_speed = LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin ,0 )  ;
 		else  												pal_speed = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;  
 
 		deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index + pal_speed;
@@ -1648,7 +1671,7 @@ void LEDS_run_pal(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArr
 	}
 	else
 	{	// if thers noting to do just move the index so they stay synced in the position. if its not linked to an fft bin
-		if (deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].palSpeedBin == 255)
+		if (deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin == 255)
 		{	
 			deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index + deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;
 			deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].indexLong + deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;
@@ -1662,15 +1685,15 @@ void LEDS_run_pal(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArr
 // ************************************ FIRE ****************************************
 void LEDS_run_fire(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray  )
 {
-	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].cfg.form_menu_fire[z][_M_FORM_FIRE_RUN], i) == true)  && ( deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].triggerBin   == 255  || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].triggerBin,0)  != 0 ))
+	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].fx1_cfg.form_menu_fire[z][_M_FORM_FIRE_RUN], i) == true)  && ( deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].triggerBin   == 255  || LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].triggerBin,0)  != 0 ))
 	{
-		uint8_t spk_val = LEDS_data_or_fftbin( deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].sparking);
-		uint8_t cool_val = LEDS_data_or_fftbin( deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].cooling);
+		uint8_t spk_val = LEDS_data_or_fftbin( deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].sparking);
+		uint8_t cool_val = LEDS_data_or_fftbin( deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].cooling);
 
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].level );
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].level );
 
-		tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_get(deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].pal),  deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds, 255 , cool_val ,spk_val , MixModeType(MIX_REPLACE)  );
-		tpm_fx.mixOntoLedArray(tmp_array, OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].cfg.form_menu_fire[z][_M_FORM_FIRE_REVERSED], i), bitRead(deck[selectedDeck].cfg.form_menu_fire[z][_M_FORM_FIRE_MIRROR], i)   , MixModeType(deck[selectedDeck].cfg.form_fx_fire[i + (z * 8)].mix_mode), lvl_select, false );
+		tpm_fx.Fire2012WithPalette(tmp_array, heat, LEDS_pal_get(deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].pal),  deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds, 255 , cool_val ,spk_val , MixModeType(MIX_REPLACE)  );
+		tpm_fx.mixOntoLedArray(tmp_array, OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].fx1_cfg.form_menu_fire[z][_M_FORM_FIRE_REVERSED], i), bitRead(deck[selectedDeck].fx1_cfg.form_menu_fire[z][_M_FORM_FIRE_MIRROR], i)   , MixModeType(deck[selectedDeck].fx1_cfg.form_fx_fire_bytes[z].mix_mode), lvl_select, false );
 	}
 
 }
@@ -1678,13 +1701,13 @@ void LEDS_run_fire(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedAr
 // ************************************ SHIMMER ****************************************
 void LEDS_run_shimmer(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLedArray   )
 {
-	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[selectedDeck].cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_RUN], i) == true && ( deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].triggerBin == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].triggerBin,0)  != 0 ))
+	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[selectedDeck].fx1_cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_RUN], i) == true && ( deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].triggerBin == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].triggerBin,0)  != 0 ))
 	{
-		uint8_t beater_val = LEDS_data_or_fftbin( deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].beater);
+		uint8_t beater_val = LEDS_data_or_fftbin( deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].beater);
 
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].level );
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].level );
 
-		deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].dist =  tpm_fx.Shimmer(OutPutLedArray,  LEDS_pal_get(deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].pal) , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds, deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].dist, deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].xscale, deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].yscale, beater_val ,  MixModeType(deck[selectedDeck].cfg.form_fx_shim[i + (z * 8)].mix_mode), lvl_select ,  TBlendType(bitRead(deck[selectedDeck].cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
+		deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].dist =  tpm_fx.Shimmer(OutPutLedArray,  LEDS_pal_get(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].pal) , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].dist, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].xscale, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].yscale, beater_val ,  MixModeType(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].mix_mode), lvl_select ,  TBlendType(bitRead(deck[selectedDeck].fx1_cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
 	}
 
 }
@@ -1692,15 +1715,15 @@ void LEDS_run_shimmer(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLed
 // ************************************ STROBE ****************************************
 void LEDS_run_FX_strobe(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLedArray   )
 {
-	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[selectedDeck].cfg.form_menu_strobe[z][_M_FORM_STROBE_RUN], i) == true && ( deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].triggerBin   == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].triggerBin,0) != 0 ))
+	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[selectedDeck].fx1_cfg.form_menu_strobe[z][_M_FORM_STROBE_RUN], i) == true && ( deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].triggerBin   == 255  || LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].triggerBin,0) != 0 ))
 	{
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].level );
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z ].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].level );
 
-		tpm_fx.strobe(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].pal,0,0) , deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].on_frames, deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].off_frames, deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].frame_pos , MixModeType(deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].mix_mode) ,lvl_select );
+		tpm_fx.strobe(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].pal,0,0) , deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].on_frames, deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].off_frames, deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].frame_pos , MixModeType(deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].mix_mode) ,lvl_select );
 		
-		deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].frame_pos++;
-		if (deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].frame_pos >= deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].on_frames + deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].off_frames) 
-			deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].frame_pos = 0;
+		deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].frame_pos++;
+		if (deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].frame_pos >= deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].on_frames + deck[selectedDeck].fx1_cfg.form_fx_strobe_bytes[z].off_frames) 
+			deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].frame_pos = 0;
 	}
 
 }
@@ -1709,22 +1732,22 @@ void LEDS_run_FX_strobe(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutL
 void LEDS_run_FX_eyes(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLedArray   )
 {
 	
-	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 && bitRead(deck[selectedDeck].cfg.form_menu_eyes[z][_M_FORM_EYES_RUN], i) == true && ( deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].triggerBin   == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].triggerBin,0)  != 0 ))
+	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 && bitRead(deck[selectedDeck].fx1_cfg.form_menu_eyes[z][_M_FORM_EYES_RUN], i) == true && ( deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].triggerBin   == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].triggerBin,0)  != 0 ))
 	{
 		
 
-		uint8_t lvl_select  = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].level );
+		uint8_t lvl_select  = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].level );
 
 
-		if (deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].lvl_bin != 255)  	 lvl_select = LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].lvl_bin,0) ;
-		else 											lvl_select = deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].level ;
+		if (deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].lvl_bin != 255)  	 lvl_select = LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].lvl_bin,0) ;
+		else 											lvl_select = deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].level ;
 
-		tpm_fx.BlinkingEyes(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].color , 0 , 0 ) ,  deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].EyeWidth, deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].EyeSpace, deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].eye_pos, deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].on_frames,  deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].frame_pos, deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].fadeval,   MixModeType(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].mix_mode), lvl_select);
-		//tpm_fx.strobe(leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].pal, random16()) , deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].on_frames, deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].off_frames, deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].frame_pos , MixModeType(deck[selectedDeck].cfg.form_fx_strobe[i + (z * 8)].mix_mode) ,lvl_select );
+		tpm_fx.BlinkingEyes(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].color , 0 , 0 ) ,  deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].EyeWidth, deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].EyeSpace, deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].eye_pos, deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].on_frames,  deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].frame_pos, deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].fadeval,   MixModeType(deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].mix_mode), lvl_select);
+		//tpm_fx.strobe(leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ,  LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].pal, random16()) , deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].on_frames, deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].off_frames, deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].frame_pos , MixModeType(deck[selectedDeck].fx1_cfg.form_fx_strobe[i + (z * 8)].mix_mode) ,lvl_select );
 		
-		deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].frame_pos++;
-		if (deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].frame_pos >=  deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].pause_frames + deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].on_frames ) 
-			{ deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].frame_pos = 0;  deck[selectedDeck].cfg.form_fx_eyes[i + (z * 8)].eye_pos = random16(deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led + deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds);}
+		deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].frame_pos++;
+		if (deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].frame_pos >=  deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].pause_frames + deck[selectedDeck].fx1_cfg.form_fx_eyes_bytes[z].on_frames ) 
+			{ deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].frame_pos = 0;  deck[selectedDeck].fx1_cfg.form_fx_eyes[i + (z * 8)].eye_pos = random16(deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led + deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds);}
 
 	}
 
@@ -1733,21 +1756,21 @@ void LEDS_run_FX_eyes(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLed
 // ************************************ METEOR ****************************************
 void LEDS_run_FX_meteor(uint8_t z, uint8_t i, uint8_t selectedDeck  )
 {
-	if ( ( deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].triggerBin ,0  )        != 0 ))
+	if ( ( deck[selectedDeck].fx1_cfg.form_fx_meteor_bytes[z].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_meteor_bytes[z].triggerBin ,0  )        != 0 ))
 	{
 		
 
-		//uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].level );
+		//uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].level );
 
 		
-		tpm_fx.meteorRain( deck[selectedDeck].run.led_FX_out , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  , LEDS_select_color(deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].color , 254,0 )   ,deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].frame_pos,  deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].meteorSize, deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].meteorTrailDecay, bitRead(deck[selectedDeck].cfg.form_menu_meteor[z][_M_FORM_METEOR_RANDOMDECAY], i) ) ;
+		tpm_fx.meteorRain( deck[selectedDeck].run.led_FX_out , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  , LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_meteor_bytes[z].color , 254,0 )   ,deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos,  deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].meteorSize, deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].meteorTrailDecay, bitRead(deck[selectedDeck].fx1_cfg.form_menu_meteor[z][_M_FORM_METEOR_RANDOMDECAY], i) ) ;
 		 
-		//tpm_fx.mixOntoLedArray(tmp_array, leds, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].cfg.form_fx_meteor[z][_M_FORM_FIRE_REVERSED], i), bitRead(deck[selectedDeck].cfg.form_fx_meteor[z][_M_FORM_METEOR_MIRROR], i)   , MixModeType(deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].mix_mode), lvl_select, false );
+		//tpm_fx.mixOntoLedArray(tmp_array, leds, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led,  bitRead(deck[selectedDeck].fx1_cfg.form_fx_meteor[z][_M_FORM_FIRE_REVERSED], i), bitRead(deck[selectedDeck].fx1_cfg.form_fx_meteor[z][_M_FORM_METEOR_MIRROR], i)   , MixModeType(deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].mix_mode), lvl_select, false );
 
 
-		deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].frame_pos++;
-		if (deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].frame_pos >=  deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ) 
-			deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].frame_pos = 0;
+		deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos++;
+		if (deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos >=  deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ) 
+			deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos = 0;
 	}
 
 }
@@ -1756,19 +1779,19 @@ void LEDS_run_FX_meteor(uint8_t z, uint8_t i, uint8_t selectedDeck  )
 // ************************************ rotate  ****************************************
 void LEDS_run_FX_rotate(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray  )
 {
-	if (  deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE], i) == true) && ( deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateTriggerBin   == 255   ||   LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateTriggerBin ,0 )        != 0 ))
+	if (  deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].fx1_cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE], i) == true) && ( deck[selectedDeck].fx1_cfg.form_fx_modify_bytes[z].RotateTriggerBin   == 255   ||   LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_modify_bytes[z].RotateTriggerBin ,0 )        != 0 ))
 	{
 		
 
-		//uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].lvl_bin, deck[selectedDeck].cfg.form_fx_meteor[i + (z * 8)].level );
-		if (deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFixed != 0) 
-			tpm_fx.rotate(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFixed );
+		//uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].level );
+		if (deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFixed != 0) 
+			tpm_fx.rotate(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFixed );
 		
-		if (deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFullFrames != 0) 
+		if (deck[selectedDeck].fx1_cfg.form_fx_modify_bytes[z].RotateFullFrames != 0) 
 		{	
-			tpm_fx.rotate(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFullFrames  ,  deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFramePos, bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE_REVERSED],i  )  );
-			deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFramePos++;
-			if (deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFramePos >= deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFullFrames  )  	deck[selectedDeck].cfg.form_fx_modify[i + (z * 8)].RotateFramePos = 0;
+			tpm_fx.rotate(OutPutLedArray , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].fx1_cfg.form_fx_modify_bytes[z].RotateFullFrames  ,  deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFramePos, bitRead(deck[selectedDeck].fx1_cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE_REVERSED],i  )  );
+			deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFramePos++;
+			if (deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFramePos >= deck[selectedDeck].fx1_cfg.form_fx_modify_bytes[z].RotateFullFrames  )  	deck[selectedDeck].fx1_cfg.form_fx_modify[i + (z * 8)].RotateFramePos = 0;
 		}
 
 	
@@ -1786,20 +1809,20 @@ void LEDS_run_fx1_glitter(uint8_t z, uint8_t i , uint8_t DeckNo )
 	CRGB glitt_color;
 
 
-	if (deck[DeckNo].cfg.form_fx_glitter[i + (z * 8)].glit_bin != 255)  glitt_val = LEDS_fft_get_fxbin_result(deck[DeckNo].cfg.form_fx_glitter[i + (z * 8)].glit_bin,0);
-	else  										  	   glitt_val = deck[DeckNo].cfg.form_fx_glitter[i + (z * 8)].value;
+	if (deck[DeckNo].fx1_cfg.form_fx_glitter_bytes[z].glit_bin != 255)  glitt_val = LEDS_fft_get_fxbin_result(deck[DeckNo].fx1_cfg.form_fx_glitter_bytes[z].glit_bin,0);
+	else  										  	   glitt_val = deck[DeckNo].fx1_cfg.form_fx_glitter[i + (z * 8)].value;
 	 
 
-	glitt_color = LEDS_select_color(deck[DeckNo].cfg.form_fx_glitter[i + (z * 8)].pal, random16(), 0  );
+	glitt_color = LEDS_select_color(deck[DeckNo].fx1_cfg.form_fx_glitter_bytes[z].pal, random16(), 0  );
 
-	tpm_fx.AddGlitter(deck[DeckNo].run.led_FX_out ,	glitt_color , glitt_val , deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_fx_glitter[i + (z * 8)].level);
+	tpm_fx.AddGlitter(deck[DeckNo].run.led_FX_out ,	glitt_color , glitt_val , deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].fx1_cfg.form_fx_glitter_bytes[z].level);
 
 
 }
 
 void LEDS_run_fx1_fade(uint8_t z, uint8_t i, uint8_t DeckNo )
 {
-	 tpm_fx.fadeLedArray(deck[DeckNo].run.led_FX_out, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_fx1[i + (z * 8)].fade);  
+	 tpm_fx.fadeLedArray(deck[DeckNo].run.led_FX_out, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].fx1_cfg.form_fx1[z].fade);  
 
 }
 
@@ -1807,15 +1830,15 @@ void LEDS_run_fx1_dot(uint8_t z, uint8_t i, uint8_t DeckNo  )
 {
 	CRGB dotcolor = CRGB::Black; 
 	
-	dotcolor = LEDS_select_color(deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].pal, deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].indexLong, 0 )    ;
+	dotcolor = LEDS_select_color(deck[DeckNo].fx1_cfg.form_fx_dots_bytes[z].pal, deck[DeckNo].fx1_cfg.form_fx_dots[i + (z * 8)].indexLong, 0 )    ;
 	
-	if (bitRead(deck[DeckNo].cfg.form_menu_dot[z][_M_FORM_DOT_TYPE], i) == DOT_SINE	) tpm_fx.DotSine(deck[DeckNo].run.led_FX_out, dotcolor,deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].nr_dots, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].speed, deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].level); 
+	if (bitRead(deck[DeckNo].fx1_cfg.form_menu_dot[z][_M_FORM_DOT_TYPE], i) == DOT_SINE	) tpm_fx.DotSine(deck[DeckNo].run.led_FX_out, dotcolor,deck[DeckNo].fx1_cfg.form_fx_dots[i + (z * 8)].nr_dots, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].fx1_cfg.form_fx_dots[i + (z * 8)].speed, deck[DeckNo].fx1_cfg.form_fx_dots_bytes[z].level); 
 	
 	else   // its a saw DOT
-			tpm_fx.DotSaw(deck[DeckNo].run.led_FX_out,  dotcolor,deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].nr_dots, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].speed, deck[DeckNo].cfg.form_fx_dots[i + (z * 8)].level); 
+			tpm_fx.DotSaw(deck[DeckNo].run.led_FX_out,  dotcolor,deck[DeckNo].fx1_cfg.form_fx_dots[i + (z * 8)].nr_dots, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].fx1_cfg.form_fx_dots[i + (z * 8)].speed, deck[DeckNo].fx1_cfg.form_fx_dots_bytes[z].level); 
 
-	deck[DeckNo].cfg.form_fx_dots[i ].indexLong  = deck[DeckNo].cfg.form_fx_dots[i ].indexLong + deck[DeckNo].cfg.form_fx_dots[i ].index_add ;
-	if (MAX_INDEX_LONG <= deck[DeckNo].cfg.form_fx_dots[i ].indexLong) deck[DeckNo].cfg.form_fx_dots[i ].indexLong = deck[DeckNo].cfg.form_fx_dots[i ].indexLong - MAX_INDEX_LONG;
+	deck[DeckNo].fx1_cfg.form_fx_dots[i ].indexLong  = deck[DeckNo].fx1_cfg.form_fx_dots[i ].indexLong + deck[DeckNo].fx1_cfg.form_fx_dots[i ].index_add ;
+	if (MAX_INDEX_LONG <= deck[DeckNo].fx1_cfg.form_fx_dots[i ].indexLong) deck[DeckNo].fx1_cfg.form_fx_dots[i ].indexLong = deck[DeckNo].fx1_cfg.form_fx_dots[i ].indexLong - MAX_INDEX_LONG;
 
 
 }
@@ -1824,19 +1847,19 @@ void LEDS_run_fx1_dot(uint8_t z, uint8_t i, uint8_t DeckNo  )
 void LEDS_run_fx01(uint8_t z, uint8_t i, uint8_t DeckNo, CRGB *OutPutLedArray  )
 {
 	
-	if ((deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0) && (deck[DeckNo].cfg.form_fx1[i + (z * 8)].fade != 0 ) ) LEDS_run_fx1_fade(z,i,DeckNo);
+	if ((deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0) && (deck[DeckNo].fx1_cfg.form_fx1[z].fade != 0 ) ) LEDS_run_fx1_fade(z,i,DeckNo);
 
-	if ((deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0) && (bitRead(deck[DeckNo].cfg.form_menu_fx1[z][_M_FORM_FX1_RUN], i) == true)) 
+	if ((deck[DeckNo].cfg.form_cfg[i + (z  * 8)].nr_leds != 0) && (bitRead(deck[DeckNo].fx1_cfg.form_menu_fx1[z][_M_FORM_FX1_RUN], i) == true)) 
 	{
 	
-		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[DeckNo].cfg.form_fx1[i + (z * 8)].lvl_bin, deck[0].cfg.form_fx1[i + (z * 8)].level );
+		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[DeckNo].fx1_cfg.form_fx1[z].lvl_bin, deck[0].fx1_cfg.form_fx1[z].level );
 
-		if 	(bitRead(deck[DeckNo].cfg.form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)    	LEDS_run_fx1_glitter( z,  i, DeckNo );
-		if  (bitRead(deck[DeckNo].cfg.form_menu_dot[z][_M_FORM_DOT_RUN], i) == true)   			LEDS_run_fx1_dot(z,i, DeckNo); 	  
-		if  (bitRead(deck[DeckNo].cfg.form_menu_meteor[z][_M_FORM_METEOR_RUN], i) == true)  		LEDS_run_FX_meteor(z,i, DeckNo);
+		if 	(bitRead(deck[DeckNo].fx1_cfg.form_menu_glitter[z][_M_FORM_GLITTER_RUN], i) == true)    	LEDS_run_fx1_glitter( z,  i, DeckNo );
+		if  (bitRead(deck[DeckNo].fx1_cfg.form_menu_dot[z][_M_FORM_DOT_RUN], i) == true)   			LEDS_run_fx1_dot(z,i, DeckNo); 	  
+		if  (bitRead(deck[DeckNo].fx1_cfg.form_menu_meteor[z][_M_FORM_METEOR_RUN], i) == true)  		LEDS_run_FX_meteor(z,i, DeckNo);
 
-		if ( ( deck[DeckNo].cfg.form_fx1[i + (z * 8)].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(deck[DeckNo].cfg.form_fx1[i + (z * 8)].triggerBin ,0 )    != 0 ))
-			tpm_fx.mixOntoLedArray(deck[DeckNo].run.led_FX_out , OutPutLedArray, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, bitRead(deck[DeckNo].cfg.form_menu_fx1[z][_M_FORM_FX1_REVERSED], i), bitRead(deck[DeckNo].cfg.form_menu_fx1[z][_M_FORM_FX1_MIRROR], i),MixModeType(deck[DeckNo].cfg.form_fx1[i + (z * 8)].mix_mode),  lvl_select , false );
+		if ( ( deck[DeckNo].fx1_cfg.form_fx1[z].triggerBin   == 255  ) ||   (LEDS_fft_get_fxbin_result(deck[DeckNo].fx1_cfg.form_fx1[z].triggerBin ,0 )    != 0 ))
+			tpm_fx.mixOntoLedArray(deck[DeckNo].run.led_FX_out , OutPutLedArray, deck[DeckNo].cfg.form_cfg[i + (z * 8)].nr_leds, deck[DeckNo].cfg.form_cfg[i + (z * 8)].start_led, bitRead(deck[DeckNo].fx1_cfg.form_menu_fx1[z][_M_FORM_FX1_REVERSED], i), bitRead(deck[DeckNo].fx1_cfg.form_menu_fx1[z][_M_FORM_FX1_MIRROR], i),MixModeType(deck[DeckNo].fx1_cfg.form_fx1[z].mix_mode),  lvl_select , false );
 
 		led_cfg.hue++;
 
@@ -1860,6 +1883,21 @@ void LEDS_RUN_save_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
 }
 
 // ********************************************************** 
+
+void LEDS_clear_all_layers(uint8_t deckSelected)
+{
+	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
+		deck[deckSelected].cfg.layer.select[layer]  = 0;
+}
+
+void LEDS_default_layers(uint8_t deckSelected)
+{
+	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
+		if (layer < MAX_LAYERS_BASIC) 	deck[deckSelected].cfg.layer.select[layer]  = layer+1 ;
+		else 						    deck[deckSelected].cfg.layer.select[layer]  = 0 ;
+
+}
+
 
 void LEDS_run_layers(uint8_t deckSelected)
 {
@@ -2082,7 +2120,7 @@ void LEDS_setup()
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
 	LEDS_load_default_play_conf();	
-	FS_play_conf_read(0,&deck[0].cfg) ;	
+	//FS_play_conf_read(0,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
 
 	LEDS_pal_reset_index();
 
@@ -2101,6 +2139,8 @@ void LEDS_setup()
 
 
 	debugMe("end LEDS setup");
+
+
 }
 
 
@@ -2131,6 +2171,7 @@ void LEDS_loop()
 	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
 		{	
+			//debugMe(String(ESP.getFreeHeap()));
 			led_cfg.framecounter++;   // increment the framecounter by one to calculate the fps
 			
 			uint8_t DeckNo = 0;
@@ -2153,14 +2194,14 @@ void LEDS_loop()
 
 			LEDS_run_layers(0);
 			
-
+/*
 			for (byte i = 0; i < 8; i++)
 			{
 				if (bitRead(copy_leds_mode[0], i) == true) LEDS_Copy_strip(copy_leds[i].start_led, copy_leds[i].nr_leds, copy_leds[i].Ref_LED);
 				if (bitRead(copy_leds_mode[1], i) == true) LEDS_Copy_strip(copy_leds[i + 8].start_led, copy_leds[i + 8].nr_leds, copy_leds[i + 8].Ref_LED);
 
 			} 
-
+*/
 
 			/* 
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory

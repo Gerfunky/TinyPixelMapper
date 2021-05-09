@@ -47,8 +47,8 @@
 	//extern byte fft_data_menu[3];
 	//extern fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS];
 	//extern byte fft_data_bri;
-	extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
-	extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
+	//extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
+	//extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
 	//extern uint8_t fft_bin_autoTrigger;
 	//extern byte fft_data_fps;
 	//extern uint8_t layer_select[MAX_LAYERS_SELECT] ;
@@ -829,13 +829,6 @@ void FS_play_conf_write(uint8_t conf_nr)
 		
 		conf_file.println("] ");	
 					
-
-			
-
-
-
-
-		
 		//conf_file.println("Play Config.");
 		//conf_file.println("LS = LED DEVICE Settings : Fire Cooling : Fire Sparking : Red : Green : Blue : Pallete Bri: Pallete FPS: Blend Invert : SPARE : fft scale : Global Bri");
 
@@ -846,8 +839,8 @@ void FS_play_conf_write(uint8_t conf_nr)
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.b)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.pal_bri)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.pal_fps)));	
-			conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
-			conf_file.print(String(":" + String(0 )));
+			//conf_file.print(String(":" + String(get_bool(BLEND_INVERT))));
+			//conf_file.print(String(":" + String(0 )));
 			conf_file.print(String(":" + String(fft_led_cfg.Scale)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.bri)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.layer.clear_start_led)));
@@ -857,12 +850,10 @@ void FS_play_conf_write(uint8_t conf_nr)
 		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
+			
 			conf_file.print(String("[FC:" + String(form)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].start_led)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].nr_leds)));
-			
-			
-
 			conf_file.println("] ");
 
 		} 
@@ -870,272 +861,391 @@ void FS_play_conf_write(uint8_t conf_nr)
 		//conf_file.println("PF - Pallete FX Form ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			conf_file.print(String("[PF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].pal)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_start)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_led)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_frame)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].palSpeedBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].lvl_bin)));
-	
-
-			conf_file.println("] ");
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[PF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_start)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_led)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_frame)));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("PB Form Pallete boolean values ");
+		for (uint8_t form = 0; form < _M_NR_FORM_BYTES_; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[PS:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].pal)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].palSpeedBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].lvl_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
+
+				conf_file.println("] ");
+			}
+		}
+
+
+		/*//conf_file.println("PB Form Pallete boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[PB:" + String(form)));
 			for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_pal[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		} */
 
 
-		//conf_file.println("DF dots ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[DF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].pal)));
-			//conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].nr_dots)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].speed)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_dots[form].index_add)));
-
-			conf_file.println("] ");
-		}
-		//conf_file.println("DB Form Dots boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[DB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_dot[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
-
-		//conf_file.println("SF shimmer ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[SF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].pal)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].xscale)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].yscale)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].beater)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_shim[form].lvl_bin)));
-
-			conf_file.println("] ");
-		}
-
-		//conf_file.println("SB Form Shimmer boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			conf_file.print(String("[SB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_shimmer[get_strip_menu_bit(form)][setting], form))));
-
-			conf_file.println("] ");
-		}
+		
 
 		//conf_file.println("TF form fft  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			conf_file.print(String("[TF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].offset)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].extend)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].lvl_bin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].color)));
-			
-
-			conf_file.println("] ");
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[TF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].offset)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].extend)));
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < _M_NR_FORM_BYTES_; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[TC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].lvl_bin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].color)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("TB Form FFt boolean values ");
+
+		/*//conf_file.println("TB Form FFt boolean values ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			conf_file.print(String("[TB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_fft[get_strip_menu_bit(form)][setting], form))));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[TB:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_fft[get_strip_menu_bit(form)][setting], form))));
 
-			conf_file.println("] ");
+				conf_file.println("] ");
+			}
+		} */
+
+//conf_file.println("DF dots ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[DF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots[form].nr_dots)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots[form].speed)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots[form].index_add)));
+
+				conf_file.println("] ");
+			}
+		}
+		
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[DC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots_bytes[form].pal)));
+				//conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots_bytes[form].level)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_dot[form][setting])));
+				conf_file.println("] ");
+			}
+		}
+		/*//conf_file.println("DB Form Dots boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS ; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{	
+				conf_file.print(String("[DB:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_dot[get_strip_menu_bit(form)][setting], form))));
+
+				conf_file.println("] ");
+			}
+		}*/
+
+		//conf_file.println("SF shimmer ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[SF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim[form].xscale)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim[form].yscale)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim[form].beater)));
+
+
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[SC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].pal)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].lvl_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_shimmer[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
+		/*//conf_file.println("SB Form Shimmer boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[SB:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_shimmer[get_strip_menu_bit(form)][setting], form))));
+
+				conf_file.println("] ");
+			}
+		}*/
 		//conf_file.println("IF form Fire  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			conf_file.print(String("[IF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].pal)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].cooling)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].sparking)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fire[form].lvl_bin)));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[IF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].pal)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].cooling)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].sparking)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].lvl_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_fire[form][setting])));
 
-
-			conf_file.println("] ");
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("IB Form Fire boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		/*//conf_file.println("IB Form Fire boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			conf_file.print(String("[IB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_fire[get_strip_menu_bit(form)][setting], form))));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[IB:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_fire[get_strip_menu_bit(form)][setting], form))));
 
-			conf_file.println("] ");
-		}
+				conf_file.println("] ");
+			}
+		} */
 
 
 		//conf_file.println("EF form eyes  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			conf_file.print(String("[EF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].color)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].lvl_bin)));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[EF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].color)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].lvl_bin)));
 
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].on_frames)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].EyeWidth)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].EyeSpace)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].fadeval)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_eyes[form].pause_frames)));
-			conf_file.println("] ");
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].on_frames)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].EyeWidth)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].EyeSpace)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].fadeval)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].pause_frames)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_eyes[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("EB Form eyes boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		/*//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[EB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_eyes[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_eyes[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		}*/
 
 		//conf_file.println("TF form eyes  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			conf_file.print(String("[OF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].pal)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].lvl_bin)));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[OF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].pal)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].lvl_bin)));
 
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].on_frames)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_strobe[form].off_frames)));
-
-			conf_file.println("] ");
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].on_frames)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].off_frames)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_strobe[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("EB Form eyes boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		/*//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[OB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_strobe[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_strobe[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		} */
 
 		//conf_file.println("TF form eyes  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			conf_file.print(String("[MF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].color)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].lvl_bin)));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[MF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor[form].meteorSize)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor[form].meteorTrailDecay)));
 
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].meteorSize)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_meteor[form].meteorTrailDecay)));
-
-			conf_file.println("] ");
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[MC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor_bytes[form].color)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor_bytes[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor_bytes[form].lvl_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_meteor[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("EB Form eyes boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		/*//conf_file.println("EB Form eyes boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[MB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_meteor[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_meteor[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		}*/
 
 
 
 
 		//conf_file.println("GF Glitter ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			conf_file.print(String("[GF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_glitter[form].pal)));
-			//conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_glitter[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_glitter[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_glitter[form].value)));
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[GF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter[form].value)));
 
 
-			conf_file.println("] ");
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[GC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter_bytes[form].pal)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter_bytes[form].level)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter_bytes[form].glit_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_glitter[form][setting])));
+				
+
+
+				conf_file.println("] ");
+			}
 		}
 
 		//conf_file.println("GB Form Fire boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+	/*	for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[GB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_glitter[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_glitter[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		}*/
 
 		//conf_file.println("XF  FX1 form ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			conf_file.print(String("[XF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx1[form].level)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx1[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx1[form].fade)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx1[form].triggerBin)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx1[form].lvl_bin)));
-			conf_file.println("] ");
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+
+				
+				conf_file.print(String("[XC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx1[form].level )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx1[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx1[form].fade)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx1[form].triggerBin)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx1[form].lvl_bin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_fx1[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("XB Form fx1 boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		/*//conf_file.println("XB Form fx1 boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[XB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_fx1[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_fx1[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		}*/
 		//conf_file.println("Modify ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			conf_file.print(String("[YF:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_modify[form].RotateFixed)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_modify[form].RotateFullFrames)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_modify[form].RotateTriggerBin)));
-			conf_file.println("] ");
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[YF:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify[form].RotateFixed)));
+				//conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify[form].RotateFullFrames)));
+				//conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify[form].RotateTriggerBin)));
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[YC:" + String(form)));
+				//conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify[form].RotateFixed)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify_bytes[form].RotateFullFrames)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_modify_bytes[form].RotateTriggerBin)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_modify[form][setting])));
+				conf_file.println("] ");
+			}
 		}
 
-		//conf_file.println("XB Form modify1 boolean values ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+	/*	//conf_file.println("XB Form modify1 boolean values ");
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
 			conf_file.print(String("[YB:" + String(form)));
-			for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].cfg.form_menu_modify[get_strip_menu_bit(form)][setting], form))));
+			for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) conf_file.print(String(":" + String(get_bool_byte(deck[selectedDeckNo].fx1_cfg.form_menu_modify[get_strip_menu_bit(form)][setting], form))));
 
 			conf_file.println("] ");
-		}
+		} */
 
 		
-		for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
+		/*for (uint8_t copy_L = 0; copy_L < NR_COPY_STRIPS; copy_L++) {
 			conf_file.print(String("[cl:" + String(copy_L)));
 			conf_file.print(String(":" + String(copy_leds[copy_L].start_led)));
 			conf_file.print(String(":" + String(copy_leds[copy_L].nr_leds)));
@@ -1144,7 +1254,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 			conf_file.println("] ");
 
-		} 
+		} */
 
 		//conf_file.println("PA = pallete Config : Pal Nr : R : G :B : R : G : B ... ");
 		for (uint8_t pal = 0; pal < NR_PALETTS; pal++) {
@@ -1228,7 +1338,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 
 
-boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf) 
+boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx1_struct* targetFXConf ) 
 {
 	// Read the Play config NR
 
@@ -1238,6 +1348,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 
 		PF Palette FX
 		PB Palette FX Booleans
+		PS
 
 		DF FX Dots
 		DB FX Dots Bools
@@ -1246,6 +1357,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 		SB FX Shimm bools
 
 		TF FX FFT
+		TC
 		TB
 
 		IF FX Fire
@@ -1329,15 +1441,15 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 
 			else if ((type == 'L') && (typeb == 'S'))
 			{
-				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.fire_cooling		= uint8_t(constrain(in_int, 0, 255));
+				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.fire_cooling			= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.fire_sparking		= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.r					= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.g					= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.b					= uint8_t(constrain(in_int, 0, 255));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.pal_bri				= uint8_t(constrain(in_int, 0, 255));
-				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.pal_fps     		= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
-				write_bool(BLEND_INVERT, get_bool_conf_value(conf_file, &character));
-				in_int = get_int_conf_value(conf_file, &character);	 // SPARE !!!! write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
+				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.pal_fps     			= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));
+				//write_bool(BLEND_INVERT, get_bool_conf_value(conf_file, &character));
+				//in_int = get_int_conf_value(conf_file, &character);	 // SPARE !!!! write_bool(FFT_AUTO, get_bool_conf_value(conf_file, &character));
 				in_int = get_int_conf_value(conf_file, &character);		fft_led_cfg.Scale = uint16_t(constrain(in_int, 0, 500));
 				in_int = get_int_conf_value(conf_file, &character);		targetConf->led_master_cfg.bri					= uint8_t(constrain(in_int, 0, 255));
 				if (character != ']') {in_int = get_int_conf_value(conf_file, &character);		targetConf->layer.clear_start_led					= uint16_t(constrain(in_int, 0, MAX_NUM_LEDS)); } 
@@ -1355,18 +1467,24 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 			else if ((type == 'P') && (typeb == 'F'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].pal = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].mix_mode = in_int;
+				//in_int = get_int_conf_value(conf_file, &character);
+				//in_int = get_int_conf_value(conf_file, &character); 
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].level = in_int; 
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_start = in_int ;
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_add_led = in_int;
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_add_frame = in_int;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].palSpeedBin = in_int;} 	else  targetConf->form_fx_pal[strip_no].palSpeedBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].triggerBin  = in_int;}    	else  targetConf->form_fx_pal[strip_no].triggerBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].lvl_bin     = in_int;}		else  targetConf->form_fx_pal[strip_no].lvl_bin = 255;
+				//if (character != ']')		  // *3 old config
 				
-				
-
+			}	
+			else if ((type == 'P') && (typeb == 'S'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].pal 			= in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].mix_mode 		= in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].palSpeedBin 	= in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].triggerBin 	= in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].lvl_bin 		= in_int; 	
+				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++)  if (character != ']') targetConf->form_menu_pal[strip_no][setting] = get_int_conf_value(conf_file, &character); 
 			}
 			else if ((type == 'P') && (typeb == 'B'))
 			{
@@ -1378,190 +1496,235 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)
 			else if ((type == 'D') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_dots[strip_no].pal = in_int;
-				//in_int = get_int_conf_value(conf_file, &character); deck[0].cfg.form_fx_dots[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_dots[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_dots[strip_no].nr_dots = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_dots[strip_no].speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_dots[strip_no].index_add = constrain(in_int,1,MAX_JD_SPEED_VALUE);
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_dots[strip_no].pal = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); deck[0].fx1_cfg.form_fx_dots[strip_no].mix_mode = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_dots[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_dots[strip_no].nr_dots = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_dots[strip_no].speed = constrain(in_int,1,MAX_JD_SPEED_VALUE);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_dots[strip_no].index_add = constrain(in_int,1,MAX_JD_SPEED_VALUE);
 			}
-			else if ((type == 'D') && (typeb == 'B'))
+			else if ((type == 'D') && (typeb == 'C'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_dots_bytes[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_dots_bytes[strip_no].level = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_dot[strip_no][setting] = get_int_conf_value(conf_file, &character);
+			}
+			/*else if ((type == 'D') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_DOT_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_dot[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_dot[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
 			else if ((type == 'S') && (typeb == 'F'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].pal = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].mix_mode = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].level = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].xscale = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].yscale = in_int; 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].beater = in_int; 
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].triggerBin = in_int; } else  targetConf->form_fx_shim[strip_no].triggerBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_shim[strip_no].lvl_bin = in_int; } else  targetConf->form_fx_shim[strip_no].lvl_bin = 255;
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_shim[strip_no].pal = in_int; 
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_shim[strip_no].mix_mode = in_int; 
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_shim[strip_no].level = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim[strip_no].xscale = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim[strip_no].yscale = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim[strip_no].beater = in_int; 
+				//if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim[strip_no].triggerBin = in_int; } else  targetFXConf->form_fx_shim[strip_no].triggerBin = 255;
+				//if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim[strip_no].lvl_bin = in_int; } else  targetFXConf->form_fx_shim[strip_no].lvl_bin = 255;
 
-			}	
-			else if ((type == 'S') && (typeb == 'B'))
+			}
+			else if ((type == 'S') && (typeb == 'C'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].pal = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].mix_mode = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].level = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].triggerBin = in_int; 
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].lvl_bin = in_int; 
+				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_shimmer[strip_no][setting] = get_int_conf_value(conf_file, &character);
+			}
+
+			/*else if ((type == 'S') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_shimmer[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_shimmer[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}*/
 			else if ((type == 'T') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); 
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].level = in_int;
 				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].offset = in_int;
 				if (character != ']')  {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].extend = in_int;} 	else {targetConf->form_fx_fft[strip_no].extend = 0;}
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].triggerBin = in_int; }else  targetConf->form_fx_fft[strip_no].triggerBin  = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].lvl_bin = in_int; }   else  targetConf->form_fx_fft[strip_no].lvl_bin  = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft[strip_no].color = in_int; }   else  targetConf->form_fx_fft[strip_no].color  = 0;
-
+				//if (character != ']') { in_int = get_int_conf_value(conf_file, &character);  //3 old
 			}
-			else if ((type == 'T') && (typeb == 'B'))
+			else if ((type == 'T') && (typeb == 'C'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].mix_mode = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].triggerBin = in_int; }else  targetConf->form_fx_fft_signles[strip_no].triggerBin  = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].lvl_bin = in_int; }   else  targetConf->form_fx_fft_signles[strip_no].lvl_bin  = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].color = in_int; }   else  targetConf->form_fx_fft_signles[strip_no].color  = 0;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if (character != ']') targetConf->form_menu_fft[strip_no][setting] = get_int_conf_value(conf_file, &character); 
+			}
+			/*else if ((type == 'T') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) 
 					bitWrite(targetConf->form_menu_fft[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+			}*/
 
 			else if ((type == 'I') && (typeb == 'F'))	
 			{
-				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].pal = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].cooling = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].sparking = in_int;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].triggerBin = in_int;} else targetConf->form_fx_fire[strip_no].triggerBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fire[strip_no].lvl_bin = in_int;}    else targetConf->form_fx_fire[strip_no].lvl_bin = 255;
-
+				strip_no = constrain(get_int_conf_value(conf_file, &character),0,NR_FX_BYTES);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].cooling = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].sparking = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].triggerBin = in_int;} else targetFXConf->form_fx_fire_bytes[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_fire_bytes[strip_no].lvl_bin = in_int;}    else targetFXConf->form_fx_fire_bytes[strip_no].lvl_bin = 255;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_fire[strip_no][setting] = get_int_conf_value(conf_file, &character);
 
 			}
-			else if ((type == 'I') && (typeb == 'B'))
+			/*else if ((type == 'I') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_FIRE_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_fire[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_fire[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			}  */
 
 			else if ((type == 'G') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_glitter[strip_no].pal = in_int;
-				//in_int = get_int_conf_value(conf_file, &character); deck[0].cfg.form_fx_glitter[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_glitter[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_glitter[strip_no].value = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); // targetFXConf->form_fx_glitter[strip_no].pal = in_int;
+				//in_int = get_int_conf_value(conf_file, &character); //targetFXConf->form_fx_glitter[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_glitter[strip_no].value = in_int;
 
 			}
-			else if ((type == 'G') && (typeb == 'B'))
+			else if ((type == 'G') && (typeb == 'C'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_glitter_bytes[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_glitter_bytes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_glitter_bytes[strip_no].glit_bin = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_glitter[strip_no][setting] = get_int_conf_value(conf_file, &character);
+			}
+			/*else if ((type == 'G') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_GLITTER_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_glitter[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
-			else if ((type == 'X') && (typeb == 'F'))	
+					bitWrite(targetFXConf->form_menu_glitter[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
+			else if ((type == 'X') && (typeb == 'C'))	
 			{
-				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx1[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx1[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx1[strip_no].fade = in_int;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx1[strip_no].triggerBin = in_int; } else targetConf->form_fx1[strip_no].triggerBin = 255;
-				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx1[strip_no].lvl_bin = in_int; }    else targetConf->form_fx1[strip_no].lvl_bin = 255;
+				strip_no = constrain(get_int_conf_value(conf_file, &character),0,NR_FX_BYTES);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx1[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx1[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx1[strip_no].fade = in_int;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx1[strip_no].triggerBin = in_int; } else targetFXConf->form_fx1[strip_no].triggerBin = 255;
+				if (character != ']') { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx1[strip_no].lvl_bin = in_int; }    else targetFXConf->form_fx1[strip_no].lvl_bin = 255;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_fx1[strip_no][setting] = get_int_conf_value(conf_file, &character);
 			}
-			else if ((type == 'X') && (typeb == 'B'))
+			/*else if ((type == 'X') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_FX1_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_fx1[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_fx1[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
 
 			else if ((type == 'M') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].color = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].triggerBin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].lvl_bin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].meteorSize = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_meteor[strip_no].meteorTrailDecay = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor[strip_no].meteorSize = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor[strip_no].meteorTrailDecay = in_int;
 				
 			}
-			else if ((type == 'M') && (typeb == 'B'))
+			else if ((type == 'M') && (typeb == 'C'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor_bytes[strip_no].color = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor_bytes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor_bytes[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_meteor_bytes[strip_no].lvl_bin = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_meteor[strip_no][setting] = get_int_conf_value(conf_file, &character);
+			}
+			/*else if ((type == 'M') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_METEOR_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_meteor[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_meteor[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
 
 			else if ((type == 'O') && (typeb == 'F'))	
 			{
-				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].pal = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].triggerBin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].lvl_bin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].on_frames = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_strobe[strip_no].off_frames = in_int;
-				
+				strip_no = constrain(get_int_conf_value(conf_file, &character),0,NR_FX_BYTES);
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].pal = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].lvl_bin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].on_frames = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_strobe_bytes[strip_no].off_frames = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_strobe[strip_no][setting] = get_int_conf_value(conf_file, &character);
 			}
-			else if ((type == 'O') && (typeb == 'B'))
+			/*else if ((type == 'O') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_STROBE_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_strobe[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			} 
+					bitWrite(targetFXConf->form_menu_strobe[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
 		
 		   else if ((type == 'E') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].color = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].mix_mode = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].level = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].triggerBin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].lvl_bin = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].on_frames = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].EyeWidth = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].color = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].mix_mode = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].level = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].triggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].lvl_bin = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].on_frames = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].EyeWidth = in_int;
 
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].EyeSpace = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].fadeval = in_int;
-				in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_eyes[strip_no].pause_frames = in_int;
-				
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].EyeSpace = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].fadeval = in_int;
+				in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_eyes_bytes[strip_no].pause_frames = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_eyes[strip_no][setting] = get_int_conf_value(conf_file, &character);
 			}
-			else if ((type == 'E') && (typeb == 'B'))
+			/*else if ((type == 'E') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_EYES_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_eyes[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
+					bitWrite(targetFXConf->form_menu_eyes[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
 			else if ((type == 'Y') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED); 		targetConf->form_fx_modify[strip_no].RotateFixed = in_int;
-				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFULLFRAMES); 	targetConf->form_fx_modify[strip_no].RotateFullFrames = in_int;
-				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATETRIGGERBIN); 	targetConf->form_fx_modify[strip_no].RotateTriggerBin = in_int;
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED); 		targetFXConf->form_fx_modify[strip_no].RotateFixed = in_int;
+				//in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFULLFRAMES); 	targetFXConf->form_fx_modify[strip_no].RotateFullFrames = in_int;
+				//in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATETRIGGERBIN); 	targetFXConf->form_fx_modify[strip_no].RotateTriggerBin = in_int;
 				
 			}
-			else if ((type == 'Y') && (typeb == 'B'))
+			else if ((type == 'Y') && (typeb == 'C'))	
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				//in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED); 		targetFXConf->form_fx_modify[strip_no].RotateFixed = in_int;
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFULLFRAMES); 	targetFXConf->form_fx_modify_bytes[strip_no].RotateFullFrames = in_int;
+				in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATETRIGGERBIN); 	targetFXConf->form_fx_modify_bytes[strip_no].RotateTriggerBin = in_int;
+				for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++)  if (character != ']') targetFXConf->form_menu_modify[strip_no][setting] = get_int_conf_value(conf_file, &character);
+				
+			}
+			/*else if ((type == 'Y') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_MODIFY_OPTIONS_; setting++) 
-					bitWrite(targetConf->form_menu_modify[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			}
-			else if  ((type == 'c') && (typeb == 'l'))	
+					bitWrite(targetFXConf->form_menu_modify[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
+			} */
+		/*	else if  ((type == 'c') && (typeb == 'l'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].start_led	= constrain(in_int, 0 , MAX_NUM_LEDS);
 				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].nr_leds		= constrain(in_int, 0 , MAX_NUM_LEDS - copy_leds[strip_no].start_led);
 				in_int = get_int_conf_value(conf_file, &character); copy_leds[strip_no].Ref_LED		= constrain(in_int, 0 , MAX_NUM_LEDS);
 				bitWrite(copy_leds_mode[get_strip_menu_bit(strip_no)], striptobit(strip_no), get_bool_conf_value(conf_file, &character));
-			} 
+			} */
 			else if  ((type == 'P') && (typeb == 'A'))	
 			{
 				uint8_t pal_no = get_int_conf_value(conf_file, &character);
@@ -2210,11 +2373,11 @@ void FS_FS_play_conf_write_form_fire(String addr)
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[IF:" + String(form)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_fire[form].pal)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_fire[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_fire[form].level)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_fire[form].cooling)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_fire[form].sparking)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_fire[form].pal)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_fire[form].mix_mode)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_fire[form].level)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_fire[form].cooling)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_fire[form].sparking)));
 
 
 			conf_file.println("] ");
@@ -2257,12 +2420,12 @@ void FS_FS_play_conf_write_form_shimmer(String addr)
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[SF:" + String(form)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].pal)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].level)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].xscale)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].yscale)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_shim[form].beater)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].pal)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].mix_mode)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].level)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].xscale)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].yscale)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_shim[form].beater)));
 
 			conf_file.println("] ");
 		}
@@ -2351,10 +2514,10 @@ void FS_FS_play_conf_write_form_fx1_glitter(String addr)
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[GF:" + String(form)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_glitter[form].pal)));
-			//conf_file.print(String(":" + String(deck[0].cfg.form_fx_glitter[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_glitter[form].level)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_glitter[form].value)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_glitter[form].pal)));
+			//conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_glitter[form].mix_mode)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_glitter[form].level)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_glitter[form].value)));
 
 
 			conf_file.println("] ");
@@ -2400,12 +2563,12 @@ void FS_FS_play_conf_write_form_fx1_dots(String addr)
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			conf_file.print(String("[DF:" + String(form)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].pal)));
-			//conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].mix_mode)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].level)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].nr_dots)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].speed)));
-			conf_file.print(String(":" + String(deck[0].cfg.form_fx_dots[form].index_add)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].pal)));
+			//conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].mix_mode)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].level)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].nr_dots)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].speed)));
+			conf_file.print(String(":" + String(deck[0].fx1_cfg.form_fx_dots[form].index_add)));
 
 			conf_file.println("] ");
 		}
