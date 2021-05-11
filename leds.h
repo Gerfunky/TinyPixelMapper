@@ -37,7 +37,7 @@
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
-		#define NR_PALETTS 		16				// how many pallets do we have = 2
+		#define NR_PALETTS 		8				// how many pallets do we have = 2
 		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
 		#define MICROS_TO_MIN 60000000
@@ -88,8 +88,8 @@
 	};
 	struct led_master_conf
 	{
-		uint8_t			fire_sparking;		// For fire animation
-		uint8_t			fire_cooling;		// For fire animation
+		//uint8_t			fire_sparking;		// For fire animation
+		//uint8_t			fire_cooling;		// For fire animation
 		uint8_t 		r;					// max Red
 		uint8_t 		g;					// max green
 		uint8_t 		b;					// max blue
@@ -103,7 +103,7 @@
 	};
 
 
-	struct fft_led_cfg_struct
+/*	struct fft_led_cfg_struct
 	{
 		unsigned long	update_time;		// when to update again forFFT vis in Open stage controll
 		float			adjuster;			// an adjuster for the timing of the FFT_FPS
@@ -115,7 +115,7 @@
 
 
 
-	};
+	}; */
 
 
 
@@ -660,7 +660,7 @@
 	};
 	struct fft_config_struct  // Config Values
 	{
-		byte fft_menu[3] = { 3,7,200 };	// 3 fft data bins for RGB 
+		byte fft_menu[3] = { 1,16,128 };	// 3 fft data bins for RGB 
 		byte fft_menu_bri = 0;			// howmuch to add to bri based on fft data 	
 		byte fft_menu_fps = 0;   		// howmuch to add to the FPS based on FFT data selected.
 		//fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
@@ -671,6 +671,13 @@
 		//uint8_t fft_color_fps = 0;
 		//CRGB GlobalColor_result;
 		fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] ;
+
+		
+		uint8_t			fps;				// FFT
+		uint8_t			fftAutoMax;			// FFT Auto mode maximum trigger
+		uint8_t			fftAutoMin;			// FFT Auto mode minimum trigger
+		uint16_t		Scale;
+		uint8_t 		viz_fps;
 		
 	};
 	struct fft_run_struct  // run vals 
@@ -684,6 +691,9 @@
 		CRGB GlobalColor_result;
 
 		fft_fxbin_run_struct  fft_fxbin[FFT_FX_NR_OF_BINS] ;
+
+		unsigned long	update_time;		// when to update again forFFT vis in Open stage controll
+		float			adjuster;			// an adjuster for the timing of the FFT_FPS
 		
 	};
 		
@@ -703,6 +713,8 @@
 
 //******************** DEcks *******************
 
+#define NR_FX_BYTES  4
+#define NR_FX_PARTS  (NR_FX_BYTES * 8)
 
 
 struct deck_run_struct
@@ -717,10 +729,10 @@ struct deck_run_struct
 		fft_data_struct 	fft_data[7];
 		fft_run_struct  	fft;
 		CRGBArray<MAX_NUM_LEDS> SaveLayers[NO_OF_SAVE_LAYERS];
+		form_fx_strobe_struct form_fx_strobe[NR_FX_PARTS] ;
+		
 };
 
-#define NR_FX_BYTES  4
-#define NR_FX_PARTS  (NR_FX_BYTES * 8)
 
 
 struct deck_fx1_struct
@@ -739,7 +751,7 @@ struct deck_fx1_struct
 	form_fx_dots_struct form_fx_dots[NR_FX_PARTS];
 	form_fx_dots_bytes_struct form_fx_dots_bytes[NR_FX_BYTES];
 
-	form_fx_strobe_struct form_fx_strobe[NR_FX_PARTS] ;
+	
 	form_fx_strobe_bytes_struct form_fx_strobe_bytes[NR_FX_BYTES] ;
 
 	form_fx_eyes_struct form_fx_eyes[NR_FX_PARTS];
@@ -872,6 +884,8 @@ struct save_struct
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
 
+	uint8_t LEDS_get_fft_fps();
+	void LEDS_set_fft_fps(uint8_t inFPS);
 
 	uint8_t LEDS_get_playNr(); 
 	uint8_t LEDS_get_bri();

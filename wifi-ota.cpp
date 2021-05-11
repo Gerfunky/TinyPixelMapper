@@ -58,7 +58,7 @@ fft_ip_cfg_struct fft_ip_cfg;
 
 // from leds
 
-extern fft_led_cfg_struct fft_led_cfg;
+//extern fft_led_cfg_struct fft_led_cfg;
 
 
 
@@ -696,7 +696,7 @@ void WIFI_FFT_slave_handle()
 			//debugMe(packetSize);
 			if ((packetSize == 8) && (get_bool(FFT_ENABLE) == true) && (get_bool(FFT_MASTER) == false)) // Its a FFT packet B0 = fps , B1-7 = FFT Bins
 			{
-				fft_led_cfg.fps = FFT_slave.read(); // Get the speed update  first byte
+				LEDS_set_fft_fps( FFT_slave.read()); // Get the speed update  first byte
 				
 				for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
 				
@@ -724,7 +724,7 @@ void WIFI_FFT_master_send()
 
 		FFT_master.beginMulticastPacket();
 
-		FFT_master.write(fft_led_cfg.fps);
+		FFT_master.write( LEDS_get_fft_fps());
 		for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
 		FFT_master.endPacket();
 	}

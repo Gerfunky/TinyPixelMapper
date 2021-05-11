@@ -40,7 +40,7 @@
 	//extern led_Copy_Struct copy_leds[NR_COPY_STRIPS];
 	//extern byte  copy_leds_mode[NR_COPY_LED_BYTES];
 
-	extern fft_led_cfg_struct fft_led_cfg;
+	//extern fft_led_cfg_struct fft_led_cfg;
 	extern uint8_t fft_bin_results[7];
 
 
@@ -931,7 +931,7 @@ void osc_StC_menu_form_modify_adv_ref(uint8_t bit)
 			osc_queu_MSG_int("/ostc/form/fx/rota/rot/"  +	String(formNr), deck[0].fx1_cfg.form_fx_modify[formNr].RotateFixed );
 			
 			
-			osc_queu_MSG_int( "/ostc/form/fx/miro/run/" + String(formNr),	(bitRead(deck[0].fx1_cfg.form_menu_modify[bit][_M_FORM_MODIFY_MIRROR], 		bit_formNr)));  
+			//osc_queu_MSG_int( "/ostc/form/fx/miro/run/" + String(formNr),	(bitRead(deck[0].fx1_cfg.form_menu_modify[bit][_M_FORM_MODIFY_MIRROR], 		bit_formNr)));  
 
 		}	
 
@@ -1292,10 +1292,10 @@ void osc_StC_menu_audio_ref()
 			for (uint8_t z = 10; z < FFT_FX_NR_OF_BINS ; z ++) 	osc_queu_MSG_int(String("/ostc/audio/fxbin/" + String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
 		
 		}		
-			osc_queu_MSG_int("/ostc/audio/minauto" ,  	fft_led_cfg.fftAutoMin );
-			osc_queu_MSG_int("/ostc/audio/maxauto" ,  	fft_led_cfg.fftAutoMax );
+			osc_queu_MSG_int("/ostc/audio/minauto" ,  	deck[0].cfg.fft_config.fftAutoMin );
+			osc_queu_MSG_int("/ostc/audio/maxauto" ,  	deck[0].cfg.fft_config.fftAutoMax );
 			osc_queu_MSG_int("/ostc/audio/fftviz" ,  	int(get_bool(FFT_OSTC_VIZ)) );
-			osc_queu_MSG_int("/ostc/audio/vizfps" ,  	fft_led_cfg.viz_fps );
+			osc_queu_MSG_int("/ostc/audio/vizfps" ,  	deck[0].cfg.fft_config.viz_fps );
 
 			osc_StC_FFT_vizIt();
 
@@ -1413,7 +1413,7 @@ void osc_StC_menu_master_artnet_ref()
 }
 void osc_StC_menu_master_ledcfg_ref()
 {
-
+	osc_queu_MSG_int("/ostc/master/max/nl", 		led_cfg.NrLeds );
 	osc_queu_MSG_int("/ostc/master/data/sl/1", 		led_cfg.DataStart_leds[0] );
 	osc_queu_MSG_int("/ostc/master/data/nl/1", 		led_cfg.DataNR_leds[0]);
 	osc_queu_MSG_int("/ostc/master/data/sl/2", 		led_cfg.DataStart_leds[1] );
@@ -1681,11 +1681,11 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 	
 	
 	else if		(msg.fullMatch("/ref",addrOffset))			{osc_StC_menu_audio_ref();} 
-	else if		(msg.fullMatch("/minauto",addrOffset))		{ fft_led_cfg.fftAutoMin = uint8_t(msg.getInt(0));}
-	else if		(msg.fullMatch("/maxauto",addrOffset))		{ fft_led_cfg.fftAutoMax = uint8_t(msg.getInt(0));}
+	else if		(msg.fullMatch("/minauto",addrOffset))		{ deck[0].cfg.fft_config.fftAutoMin = uint8_t(msg.getInt(0));}
+	else if		(msg.fullMatch("/maxauto",addrOffset))		{ deck[0].cfg.fft_config.fftAutoMax = uint8_t(msg.getInt(0));}
 
 	else if		(msg.fullMatch("/fftviz",addrOffset))		{write_bool(FFT_OSTC_VIZ,	bool(msg.getInt(0))); }
-	else if		(msg.fullMatch("/vizfps",addrOffset))		{ fft_led_cfg.viz_fps  =  constrain(uint8_t(msg.getInt(0)) , 1 , VIZ_FPS_MAX)  ;}
+	else if		(msg.fullMatch("/vizfps",addrOffset))		{ deck[0].cfg.fft_config.viz_fps  =  constrain(uint8_t(msg.getInt(0)) , 1 , VIZ_FPS_MAX)  ;}
 	
 
 	
@@ -1882,6 +1882,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 			else if		(msg.match("/fx/meto/run",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_meteor[i_bit_int][_M_FORM_METEOR_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/meto/rdd",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_meteor[i_bit_int][_M_FORM_METEOR_RANDOMDECAY], 	i_form_nr, 	bool(msg.getInt(0)));  }
+			
 			else if		(msg.match("/fx/meto/lvl",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_meteor_bytes[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 			
 			else if  	(msg.match("/fx/meto/pal",addrOffset))  		deck[0].fx1_cfg.form_fx_meteor_bytes[orig_form_nr].color  = uint8_t(msg.getInt(0))	;
@@ -2166,8 +2167,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/r",addrOffset))				{ deck[0].cfg.led_master_cfg.r				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
 			else if (msg.fullMatch("/g",addrOffset))				{ deck[0].cfg.led_master_cfg.g				= constrain(uint8_t(msg.getInt(0)), 0, 255); }
 			else if (msg.fullMatch("/b",addrOffset))				{ deck[0].cfg.led_master_cfg.b				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
-			else if (msg.fullMatch("/fireCool",addrOffset))		   	{ deck[0].cfg.led_master_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
-			else if (msg.fullMatch("/fireSpark",addrOffset))		{ deck[0].cfg.led_master_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
+			//else if (msg.fullMatch("/fireCool",addrOffset))		   	{ deck[0].cfg.led_master_cfg.fire_cooling  = constrain(uint8_t(msg.getInt(0)), FIRE_COOLING_MIN,  FIRE_COOLING_MAX)   ;}
+			//else if (msg.fullMatch("/fireSpark",addrOffset))		{ deck[0].cfg.led_master_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
 
 			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.DataStart_leds[0]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[0]); }
 			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS - led_cfg.DataNR_leds[1]); }
@@ -2385,7 +2386,7 @@ void osc_StC_pal_routing(OSCMessage &msg, int addrOffset)
 {
 	
 	if 		(msg.fullMatch("/edit/edit",addrOffset))			{ led_cfg.edit_pal = uint8_t(msg.getInt(0));  osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
-	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_load_default_play_conf(); LEDS_pal_load( &deck[0].cfg.LEDS_pal_cur[led_cfg.edit_pal] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
+	else if (msg.fullMatch("/edit/load",addrOffset))			{ LEDS_pal_load( &deck[0].cfg.LEDS_pal_cur[led_cfg.edit_pal] , led_cfg.edit_pal	, uint8_t(msg.getInt(0)) ); osc_StC_menu_pal_ref(led_cfg.edit_pal) ;  }
 	else if (msg.fullMatch("/fs/load",addrOffset))				{FS_pal_load(uint8_t(msg.getInt(0)), led_cfg.edit_pal); osc_StC_menu_pal_ref(led_cfg.edit_pal);}
 	else if (msg.fullMatch("/fs/save",addrOffset)) 				{FS_pal_save(uint8_t(msg.getInt(0)),  led_cfg.edit_pal);}
 	else
