@@ -20,6 +20,7 @@
 	#include "wifi-ota.h"
 	#include "config_fs.h"
 	#include "tpm_artnet.h"
+	#include "osc.h"
 	//#include "msgeq7_fft.h"
 
 	//#define FASTLED_ALLOW_INTERRUPTS 0
@@ -257,7 +258,14 @@ void LED_master_rgb(uint16_t Start_led , uint16_t number_of_leds   )
 }
 
 
-
+void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr)
+{
+	write_bool(FADE_INOUT, true);
+	write_bool(FADE_INOUT_FADEBACK, false);
+	write_bool(FADE_INOUT_SAVE, Save);
+	led_cfg.fade_inout_val = 0;
+	led_cfg.next_config_loadsave = confNr;
+}
 
 
 
@@ -2158,6 +2166,11 @@ void LEDS_loop()
 		
 		{	
 			//debugMe(String(ESP.getFreeHeap()));
+
+			
+
+
+
 			led_cfg.framecounter++;   // increment the framecounter by one to calculate the fps
 			
 			uint8_t DeckNo = 0;
@@ -2167,7 +2180,8 @@ void LEDS_loop()
 			else
 				led_cfg.update_time = currentT + (1000000 / map( deck[DeckNo].run.fft.fft_color_fps,  0 ,255 , deck[DeckNo].cfg.led_master_cfg.pal_fps, MAX_PAL_FPS )) ;     // if we are adding FFT data to FPS speed 
 
-			deck[0].run.leds.fadeToBlackBy(255);				// fade the whole led array to black so that we can add from different sources amd mix it up!
+			//deck[0].run.leds[0,led_cfg.NrLeds].fadeToBlackBy(255);				// fade the whole led array to black so that we can add from different sources amd mix it up!
+			tpm_fx.fadeLedArray(deck[0].run.leds, 0, led_cfg.NrLeds, 255 );
 
 			if (LEDS_checkIfAudioSelected()) 
 			{
@@ -2180,14 +2194,6 @@ void LEDS_loop()
 
 			LEDS_run_layers(0);
 
-/*
-			for (byte i = 0; i < 8; i++)
-			{
-				if (bitRead(copy_leds_mode[0], i) == true) LEDS_Copy_strip(copy_leds[i].start_led, copy_leds[i].nr_leds, copy_leds[i].Ref_LED);
-				if (bitRead(copy_leds_mode[1], i) == true) LEDS_Copy_strip(copy_leds[i + 8].start_led, copy_leds[i + 8].nr_leds, copy_leds[i + 8].Ref_LED);
-
-			} 
-*/
 
 			/* 
 			while (FFT_fifo.count() >= 7)		// sanity check to keep the queue down if disabled free up memory
@@ -2200,17 +2206,50 @@ void LEDS_loop()
 
 		}
 
-	
-		//if (get_bool(UPDATE_LEDS) == true)
-		//{
-		//debugMe("pre show processing");
+
 			LEDS_G_pre_show_processing();
 			yield();
-			//debugMe("pre leds SHOW");
-			LEDS_show();
+
+			if (get_bool(FADE_INOUT))    // Fade leds if we are loading or saving so that we have a smooth tansition.
+			{
+					if (!get_bool(FADE_INOUT_FADEBACK))
+					{
+						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 5), 0 , 255);
+					}
+					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 5), 0 , 255);
+
+					tpm_fx.fadeLedArray(deck[0].run.leds,0,led_cfg.NrLeds,led_cfg.fade_inout_val );
+
+			}
+
+			LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
+
+			if (get_bool(FADE_INOUT))
+			{
+					if (led_cfg.fade_inout_val == 255)
+					{
+							if (get_bool(FADE_INOUT_SAVE)) FS_play_conf_write(led_cfg.next_config_loadsave) ;
+								
+							else 
+							{
+								FS_play_conf_read(led_cfg.next_config_loadsave ,&deck[0].cfg, &deck[0].fx1_cfg  );
+								LEDS_pal_reset_index(); 
+							}
+
+						write_bool(FADE_INOUT_FADEBACK, true);
+						
+						osc_StC_Load_confname_Refresh( led_cfg.next_config_loadsave);
+
+					}
+					else if (led_cfg.fade_inout_val == 0)  write_bool(FADE_INOUT, false);
+
+
+			}
+
+
+
 			yield();
-		//	write_bool(UPDATE_LEDS, false);
-		//}
+
 		bool Btn_state = digitalRead(BTN_PIN);
 		 if(Btn_state != get_bool(BTN_LASTSTATE))
 		 {

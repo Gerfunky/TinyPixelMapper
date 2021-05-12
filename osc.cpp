@@ -114,6 +114,27 @@ void OSC_setup()
 /////////////////////////////////////////// OSC  SEND / gerneral functions
 //
 //
+void osc_StC_Load_confname_Refresh(uint8_t sel_save_no)
+{
+
+											OSCBundle bundle_out;
+											IPAddress ip_out(osc_server.remoteIP());
+											bundle_out.add("/ostc/master/confname").add(deck[0].cfg.confname);
+											
+											char ConfOutAddress[25] ;
+											String CounfOutString = "/ostc/master/savename/" + String(sel_save_no);
+											
+											CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
+											bundle_out.add(ConfOutAddress ).add(deck[0].cfg.confname);
+											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+											bundle_out.send(osc_server);
+											osc_server.endPacket();
+											bundle_out.empty();
+
+}
+
+
+
 float osc_byte_tofloat(byte value, uint8_t max_value = 255)
  {	// convert int 0-255 to float 0-1 value
 
@@ -2211,6 +2232,8 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 
 
 
+
+
 void osc_StC_master_routing(OSCMessage &msg, int addrOffset) 
 {
 		//debugMe("in master routing");
@@ -2284,6 +2307,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/layreset",addrOffset))   	{ LEDS_clear_all_layers(0) ; for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 			else if (msg.fullMatch("/layall",addrOffset))   	{ LEDS_default_layers(0) ;   for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 
+			else if (msg.fullMatch("/confname",addrOffset))		{ int length=msg.getDataLength(0); memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		);    	msg.getString( 0,	deck[0].cfg.confname,  		length ) ;  debugMe(String(deck[0].cfg.confname));  }
+
 			else if (	(msg.match("/tmin",addrOffset))
 					|| (msg.match("/laye",addrOffset))
 					|| (msg.match("/auto",addrOffset))
@@ -2319,8 +2344,12 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 								//debugMe(conf_NR);
 								if 			(msg.match("/save",addrOffset))		
 								{
+									LEDS_G_LoadSAveFade(true ,sel_save_no) ;
+											/*
+											
 									    FS_play_conf_write(sel_save_no) ;
 									 	{  
+											
 									 		osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0); 
 									 		OSCBundle bundle_out;
 											IPAddress ip_out(osc_server.remoteIP());
@@ -2333,12 +2362,15 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
 											bundle_out.send(osc_server);
 											osc_server.endPacket();
-											bundle_out.empty();
-									 	}
+											bundle_out.empty(); 
+									 	}*/
 								}
 								else if 	(msg.match("/load",addrOffset))		
 									{ 
-										FS_play_conf_read(sel_save_no,&deck[0].cfg, &deck[0].fx1_cfg);   
+										LEDS_G_LoadSAveFade(false,sel_save_no) ;
+
+
+/*										FS_play_conf_read(sel_save_no,&deck[0].cfg, &deck[0].fx1_cfg);   
 										LEDS_pal_reset_index();  
 											OSCBundle bundle_out;
 											IPAddress ip_out(osc_server.remoteIP());
@@ -2352,14 +2384,14 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
 											bundle_out.send(osc_server);
 											osc_server.endPacket();
-											bundle_out.empty();
+											bundle_out.empty();*/
 									}
 								else if 	(msg.match("/cler",addrOffset))	{ FS_play_conf_clear(sel_save_no);  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 255,0,0); }
 							
 							}
 
 			}
-			else if   	(msg.fullMatch("/confname",addrOffset))		{ int length=msg.getDataLength(0); memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		);    	msg.getString( 0,	deck[0].cfg.confname,  		length ) ;  debugMe(String(deck[0].cfg.confname));  }
+			
 			
 
 		/*

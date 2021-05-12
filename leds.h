@@ -81,10 +81,14 @@
 		unsigned long 	confSwitch_time;	// when to swtich to the next config for sequencer
 		uint8_t 		edit_pal;
 		uint8_t 		bootCFG;
+		uint8_t 		fade_inout_val;				// fade value for load/save
+		uint8_t 		next_config_loadsave;			// whats the next config to load
+	
 	//	unsigned long 	update_FIN_time;			// when to update the leds again
 		uint8_t 		realfps;					// whats the real fps that we have at the moment.
 		uint8_t 		framecounter;				// for counting FPS
 		unsigned long	framecounterUpdateTime; 	// for calculationg fps
+		
 		
 
 	};
@@ -858,6 +862,7 @@ struct save_struct
 	void LEDS_loop();
 	void LEDS_setup();
 
+	void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr);
 	float LEDS_get_FPS(); // osc.cpp
 
 	void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp

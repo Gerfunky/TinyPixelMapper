@@ -37,6 +37,7 @@ struct osc_cfg_struct				// OSC configuration structure
 
 void OSC_setup();		// wifi-ota.h
 void OSC_loop();		// wifi-ota.h
+void osc_StC_Load_confname_Refresh(uint8_t sel_save_no);
 //void osc_StC_FFT_vizIt(); 
 
 

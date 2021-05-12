@@ -44,6 +44,9 @@ enum GLOBAL_OPTIONS_ENUM
 	,ARTNET_SEND		= 26
 	,ARTNET_RECIVE		= 27
 	,WIFI_MODE_BOOT		= 28
+	,FADE_INOUT			= 29
+	,FADE_INOUT_SAVE	= 30		// are we saving or loading for the fade.  flase = load
+	,FADE_INOUT_FADEBACK = 31
 	
 
 };
