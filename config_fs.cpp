@@ -15,6 +15,7 @@
 #include "config_fs.h"
 #include "tools.h"
 #include "tpm_artnet.h"
+#include "osc.h"
 
 
 
@@ -1349,6 +1350,84 @@ void FS_play_conf_write(uint8_t conf_nr)
 }
 
 
+void FS_play_conf_readSendSavenames( ) 
+{
+	// Read the Play config NR
+
+
+	for (uint8_t confNo = 0; confNo < MAX_NR_SAVES ; confNo++)
+	{
+
+	
+
+		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
+		debugMe("READ Conf " + addr);
+		File conf_file = SPIFFS.open(addr, "r");
+		String settingValue;
+
+		delay(100);
+		if (conf_file && !conf_file.isDirectory())
+		{
+
+			char Confname[32];
+
+			char character;
+			//String settingName;
+			//String settingValue;
+			//int in_int = 0 ;
+			char type;
+			char typeb;
+			// debugMe("File-opened");
+			while (conf_file.available()) 
+			{
+
+				character = conf_file.read();
+				while ((conf_file.available()) && (character != '[')) 
+				{  // Go to first setting
+					character = conf_file.read();
+				}
+
+				type = conf_file.read();
+				typeb = conf_file.read();
+				character = conf_file.read(); // go past the first ":"
+				
+				int  in_int = 0;
+
+				
+
+				if ((type == 'N') && (typeb == 'M'))
+				{
+					
+					
+					memset(Confname, 0, sizeof(Confname));
+					settingValue = get_string_conf_value(conf_file, &character);
+					settingValue.toCharArray(Confname, settingValue.length() + 1);
+					debugMe("checking Conf :", false);
+					debugMe(String(Confname));
+
+					osc_StC_Send_Confname(confNo, Confname) ;
+					break;
+				}
+				debugMe("stillIn");
+				
+			}
+			// close the file:
+			conf_file.close();
+
+
+			
+			
+		}
+		else
+		{
+			// if the file didn't open, print an error:
+			osc_StC_Send_Confname(confNo, " ") ;
+		}
+		debugMe("play-File-Closed");
+	}
+
+	
+}
 
 
 
@@ -1444,12 +1523,12 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 
 			if ((type == 'N') && (typeb == 'M'))
 			{
-				debugMe("Loading Conf :", false);
-				debugMe(String(targetConf->confname));
+				
 				memset(targetConf->confname, 0, sizeof(targetConf->confname));
 				settingValue = get_string_conf_value(conf_file, &character);
 				settingValue.toCharArray(targetConf->confname, settingValue.length() + 1);
-				
+				debugMe("Loading Conf :", false);
+				debugMe(String(targetConf->confname));
 			}
 			
 

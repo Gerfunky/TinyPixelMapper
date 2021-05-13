@@ -114,24 +114,6 @@ void OSC_setup()
 /////////////////////////////////////////// OSC  SEND / gerneral functions
 //
 //
-void osc_StC_Load_confname_Refresh(uint8_t sel_save_no)
-{
-
-											OSCBundle bundle_out;
-											IPAddress ip_out(osc_server.remoteIP());
-											bundle_out.add("/ostc/master/confname").add(deck[0].cfg.confname);
-											
-											char ConfOutAddress[25] ;
-											String CounfOutString = "/ostc/master/savename/" + String(sel_save_no);
-											
-											CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
-											bundle_out.add(ConfOutAddress ).add(deck[0].cfg.confname);
-											osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
-											bundle_out.send(osc_server);
-											osc_server.endPacket();
-											bundle_out.empty();
-
-}
 
 
 
@@ -634,6 +616,54 @@ bool  osc_send_out_API_FX_MSG_buffer()
 	else return true;
 }
 
+
+void osc_StC_Send_Confname(uint8_t SaveNo, char ConfName[])
+{
+		OSCBundle bundle_out;
+		IPAddress ip_out(osc_server.remoteIP());		
+		//osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0);
+		char ConfOutAddress[25] ;
+		String CounfOutString = "/ostc/master/savename/" + String(SaveNo);
+		
+		//char ConfOutName[32] ;
+		//ConfName.toCharArray(ConfOutName, CounfOutString.length() + 1);
+
+
+		CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
+		bundle_out.add(ConfOutAddress ).add(ConfName);
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+
+
+}
+
+void osc_StC_Load_confname_Refresh(uint8_t sel_save_no)
+{
+
+	OSCBundle bundle_out;
+	IPAddress ip_out(osc_server.remoteIP());
+	bundle_out.add("/ostc/master/confname").add(deck[0].cfg.confname);
+	
+	
+	//char ConfOutAddress[25] ;
+	//String CounfOutString = "/ostc/master/savename/" + String(sel_save_no);
+	
+	//CounfOutString.toCharArray(ConfOutAddress, CounfOutString.length() + 1);
+	//bundle_out.add(ConfOutAddress ).add(deck[0].cfg.confname);
+	osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+	bundle_out.send(osc_server);
+	osc_server.endPacket();
+	bundle_out.empty();
+
+	osc_StC_Send_Confname(sel_save_no, deck[0].cfg.confname);
+	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(sel_save_no)), 0,255,0);
+
+
+
+}
 
 
 // OSC Settings MSG:/s
@@ -2254,6 +2284,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			//else if (msg.fullMatch("/fireSpark",addrOffset))		{ deck[0].cfg.led_master_cfg.fire_sparking = constrain(uint8_t(msg.getInt(0)), FIRE_SPARKING_MIN, FIRE_SPARKING_MAX)   ;}
 			
 			else if (msg.fullMatch("/bootconf",addrOffset))			{ led_cfg.bootCFG = uint8_t(msg.getInt(0) )  ;}
+			else if (msg.fullMatch("/LoadNames",addrOffset) 		&& boolean(msg.getInt(0)) == true)			{ FS_play_conf_readSendSavenames( ) ;}
 			
 			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.DataStart_leds[0]  = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataNR_leds[0]); }
 			else if (msg.fullMatch("/data/sl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataNR_leds[1]); }
@@ -2317,7 +2348,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 					|| (msg.match("/cler",addrOffset))
 					|| (msg.match("/lymx",addrOffset))
 					|| (msg.match("/lylv",addrOffset))
-					|| (msg.match("/lynl",addrOffset))
+					|| (msg.match("/lynl",addrOffset)) 
 					|| (msg.match("/lysl",addrOffset))
 			) 
 			{

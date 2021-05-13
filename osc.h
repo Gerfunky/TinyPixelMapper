@@ -40,7 +40,7 @@ void OSC_loop();		// wifi-ota.h
 void osc_StC_Load_confname_Refresh(uint8_t sel_save_no);
 //void osc_StC_FFT_vizIt(); 
 
-
+void osc_StC_Send_Confname(uint8_t SaveNo, char ConfName[]);
 
 
 
