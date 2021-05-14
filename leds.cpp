@@ -117,7 +117,7 @@ save_struct saves[8];
 led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };  // global 
 
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,17};			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,15};			// The basic led config
 
 
 
@@ -1217,7 +1217,9 @@ void LEDS_seqencer_advance()
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+
+							LEDS_G_LoadSAveFade(false,play_nr) ;
+							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1232,7 +1234,8 @@ void LEDS_seqencer_advance()
 						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+							LEDS_G_LoadSAveFade(false,play_nr) ;
+							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1254,7 +1257,8 @@ void LEDS_seqencer_advance()
 
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+							LEDS_G_LoadSAveFade(false,play_nr) ;
+							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1269,7 +1273,8 @@ void LEDS_seqencer_advance()
 						
 						if( FS_check_Conf_Available(play_nr ) )
 						{
-							FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+							LEDS_G_LoadSAveFade(false,play_nr) ;
+							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
@@ -1680,8 +1685,8 @@ void LEDS_RUN_MIX_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
 void LEDS_RUN_save_saved_layer( uint8_t DeckNo, uint8_t SaveArrayNo  )
 {
 	deck[DeckNo].run.SaveLayers[SaveArrayNo](deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo]  -1).fadeToBlackBy(255); 
-	deck[DeckNo].run.SaveLayers[SaveArrayNo](deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 )  = deck[0].run.leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ) ;  
-	deck[0].run.leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ).fadeToBlackBy(255); 
+	deck[DeckNo].run.SaveLayers[SaveArrayNo](deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 )  = deck[DeckNo].run.leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ) ;  
+	deck[DeckNo].run.leds(deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo], deck[DeckNo].cfg.layer.save_startLed[SaveArrayNo] + deck[DeckNo].cfg.layer.save_NrLeds[SaveArrayNo] -1 ).fadeToBlackBy(255); 
 
 }
 
@@ -2133,9 +2138,8 @@ void LEDS_setup()
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
 	 LEDS_load_default_play_conf();	
-	//if (led_cfg.bootCFG != 17 && led_cfg.bootCFG != NULL) FS_play_conf_read(led_cfg.bootCFG,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
-	//debugMe(led_cfg.bootCFG);
-    FS_play_conf_read(0,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
+	if (led_cfg.bootCFG != 16) FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
+;	
 
 	LEDS_pal_reset_index();
 
