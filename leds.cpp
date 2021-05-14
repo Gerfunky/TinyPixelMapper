@@ -66,7 +66,7 @@ extern artnet_node_struct artnetNode[ARTNET_NR_NODES_TPM];
 
 // ***************** the 2 decks
 deck_struct deck[1] ;
-save_struct saves[8];
+//save_struct saves[8];
 
 // ***************** the 16 Saves in memory
 //deck_cfg_struct *mem_confs[8] ;
@@ -1252,18 +1252,26 @@ void LEDS_seqencer_advance()
 
 		if (orig_play_nr < MAX_NR_SAVES-1 )
 		{
-			for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
-			{
+			uint8_t load_play_nr = orig_play_nr+1;
 
-						if( FS_check_Conf_Available(play_nr ) )
+			while (load_play_nr <= MAX_NR_SAVES )
+			//for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+			{
+					
+
+
+
+						if( FS_check_Conf_Available(load_play_nr ) )
 						{
-							LEDS_G_LoadSAveFade(false,play_nr) ;
+							LEDS_G_LoadSAveFade(false,load_play_nr) ;
+							
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
-						if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
-						if (play_nr == orig_play_nr ) break;
+						load_play_nr++;
+						if (load_play_nr == MAX_NR_SAVES -1 )  load_play_nr = 0;
+						if (load_play_nr == orig_play_nr ) break;
 			}
 		}
 		else

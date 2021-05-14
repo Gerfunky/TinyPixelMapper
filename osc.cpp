@@ -2292,7 +2292,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/sl/4",addrOffset))		{ led_cfg.DataStart_leds[3]  = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataNR_leds[3]); }
 
 			
-			else if (msg.fullMatch("/data/nl/0",addrOffset))		{ led_cfg.NrLeds 	  	 = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds ); }
+			else if (msg.fullMatch("/data/nl/0",addrOffset))		{ led_cfg.NrLeds 	  	 = constrain(uint16_t(msg.getInt(0) ) , 0 , MAX_NUM_LEDS ); }
 			else if (msg.fullMatch("/data/nl/1",addrOffset))		{ led_cfg.DataNR_leds[0] = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataStart_leds[0] ); }
 			else if (msg.fullMatch("/data/nl/2",addrOffset))		{ led_cfg.DataNR_leds[1] = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataStart_leds[1]  ); }
 			else if (msg.fullMatch("/data/nl/3",addrOffset))		{ led_cfg.DataNR_leds[2] = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataStart_leds[2]  ); }
