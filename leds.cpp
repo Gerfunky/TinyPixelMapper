@@ -308,7 +308,7 @@ void LEDS_G_pre_show_processing()
 
 
 
-	if(!get_bool(POT_DISABLE))
+	if(!get_bool(POT_DISABLE) || get_bool(POTS_LVL_MASTER))
 	{
 		//uint8_t bri = led_cfg.max_bri * deck[0].led_master_cfg.bri / 255;
 		uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
@@ -323,7 +323,7 @@ void LEDS_G_pre_show_processing()
 		//debugMe(deck[0].led_master_cfg.bri);
 		
 		
-
+		
 		uint8_t fps = analogRead(POTI_FPS_PIN) / ANALOG_IN_DEVIDER;
 		
 		//deck[0].led_master_cfg.pal_fps = fps /4;

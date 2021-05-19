@@ -1490,7 +1490,8 @@ void osc_StC_menu_master_ledcfg_ref()
 	osc_queu_MSG_int("/ostc/master/data/select/2", 	get_bool(DATA2_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/3", 	get_bool(DATA3_ENABLE));
 	osc_queu_MSG_int("/ostc/master/data/select/4", 	get_bool(DATA4_ENABLE));
-	osc_queu_MSG_int("/ostc/master/pots",      		get_bool(POT_DISABLE));
+	osc_queu_MSG_int("/ostc/master/pots/enable",      		get_bool(POT_DISABLE));
+	osc_queu_MSG_int("/ostc/master/pots/lvlmaster",      	get_bool(POTS_LVL_MASTER));
 	osc_queu_MSG_int("/ostc/master/bootconf", 		led_cfg.bootCFG);
 
 
@@ -2302,7 +2303,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/data/select/2",addrOffset))	{ write_bool(DATA2_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/3",addrOffset))	{ write_bool(DATA3_ENABLE, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/data/select/4",addrOffset))	{ write_bool(DATA4_ENABLE, bool(msg.getInt(0) )) ; }
-			else if (msg.fullMatch("/pots",addrOffset))				{ write_bool(POT_DISABLE,  bool(msg.getInt(0) )) ; }
+			else if (msg.fullMatch("/pots/enable",addrOffset))				{ write_bool(POT_DISABLE,  bool(msg.getInt(0) )) ; }
+			else if (msg.fullMatch("/pots/lvlmaster",addrOffset))			{ write_bool(POTS_LVL_MASTER,  bool(msg.getInt(0) )) ; }
 
 			
 			else if (msg.fullMatch("/data/csl/2",addrOffset))		{ led_cfg.DataStart_leds[1]  =  led_cfg.DataNR_leds[0] ;  osc_queu_MSG_int("/ostc/master/data/sl/2", 	led_cfg.DataStart_leds[1] );}   
@@ -2624,7 +2626,8 @@ void osc_api_sys_led_ref()
 		osc_queu_MSG_int("/api/sys/DataOn/" + String(i), 		get_bool(DATA1_ENABLE+i) );  
 
 	}
-	osc_queu_MSG_int("/api/sys/pots",      		get_bool(POT_DISABLE));
+	osc_queu_MSG_int("/api/sys/pots/enable",      		get_bool(POT_DISABLE));
+	osc_queu_MSG_int("/api/sys/pots/lvlmaster",      	get_bool(POTS_LVL_MASTER));
 	osc_queu_MSG_int("/api/sys/MirrorMNrLeds", 		led_cfg.NrLeds);   		// Mirror mode NR of leds
 	osc_queu_MSG_int("/api/sys/LedMode", 		led_cfg.ledMode);
 	osc_queu_MSG_int("/api/sys/APADatarate", 	led_cfg.apa102data_rate);

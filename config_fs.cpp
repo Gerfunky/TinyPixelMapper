@@ -1540,9 +1540,9 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.g					= uint8_t(constrain(in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.b					= uint8_t(constrain(in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.pal_bri				= uint8_t(constrain(in_int, 0, 255));}
-				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.pal_fps     			= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));}
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER)) targetConf->led_master_cfg.pal_fps     			= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));}
 				
-				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.bri					= uint8_t(constrain( in_int, 0, 255));}
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER))   targetConf->led_master_cfg.bri					= uint8_t(constrain( in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_start_led				= uint16_t(constrain(in_int, 0, MAX_NUM_LEDS)); }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_Nr_leds					= uint16_t(constrain( in_int, 0, MAX_NUM_LEDS));  }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.Scale  					= uint16_t(constrain( in_int, 0, 500)); }
@@ -1966,6 +1966,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(DATA3_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(DATA4_ENABLE))));
 		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
+		conf_file.print(String(":" + String(get_bool(POTS_LVL_MASTER))));
 		
 		conf_file.println("] ");
 
@@ -2179,6 +2180,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA3_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
+					if(AnotherSetting(&character))  write_bool(POTS_LVL_MASTER, get_bool_conf_value(conf_file, &character));
 					
 					
 					
