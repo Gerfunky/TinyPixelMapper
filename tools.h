@@ -48,6 +48,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,FADE_INOUT_SAVE	= 30		// are we saving or loading for the fade.  flase = load
 	,FADE_INOUT_FADEBACK = 31
 	,POTS_LVL_MASTER	=32
+	,PAUSE_DISPLAY		= 33
 
 };
 

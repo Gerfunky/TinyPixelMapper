@@ -1514,6 +1514,7 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/fps", 		deck[0].cfg.led_master_cfg.pal_fps);
 	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
+	osc_queu_MSG_int("/ostc/master/pasue", 		(get_bool(PAUSE_DISPLAY))); 
 	osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
 	
 	osc_queu_MSG_int("/ostc/master/usedBytes",   FS_get_UsedBytes()  ); 
@@ -2334,7 +2335,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if  	(msg.fullMatch("/lycs",addrOffset))  	 	deck[0].cfg.layer.clear_start_led = constrain(uint16_t(msg.getInt(0)),0,led_cfg.NrLeds)	;
 			else if  	(msg.fullMatch("/lycn",addrOffset))  		deck[0].cfg.layer.clear_Nr_leds =  constrain(uint16_t(msg.getInt(0)),1,led_cfg.NrLeds)	;
 		
-			
+			else if (msg.fullMatch("/pause",addrOffset))    	{ write_bool(PAUSE_DISPLAY,		bool(msg.getInt(0) )) ;   }
 			else if (msg.fullMatch("/seq",addrOffset))    		{ write_bool(SEQUENCER_ON,		bool(msg.getInt(0) )) ;  led_cfg.confSwitch_time = ( micros() +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN )  ;  }
 			else if (msg.fullMatch("/playnr",addrOffset))   	{ FS_play_conf_read(uint8_t(msg.getInt(0) ) ,&deck[0].cfg ,&deck[0].fx1_cfg    )   ; }
 			else if (msg.fullMatch("/layreset",addrOffset))   	{ LEDS_clear_all_layers(0) ; for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }

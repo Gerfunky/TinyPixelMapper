@@ -2257,7 +2257,7 @@ void LEDS_loop()
 
 			}
 
-			LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
+			if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
 
 			if (get_bool(FADE_INOUT))
 			{
