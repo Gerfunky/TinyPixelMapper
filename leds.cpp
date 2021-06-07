@@ -1599,6 +1599,25 @@ void LEDS_run_FX_rotate(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPut
 
 }
 
+// ***************************************** clock  **********************
+
+void LEDS_run_FX_clock(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray) //
+{
+	uint8_t Clock_Type	 	=  deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].type ;
+ 	boolean  hour_bool  	= bitRead(deck[selectedDeck].fx1_cfg.form_menu_clock[z][_M_FORM_CLOCK_HOUR], i) ;
+  	boolean min_bool 		= bitRead(deck[selectedDeck].fx1_cfg.form_menu_clock[z][_M_FORM_CLOCK_MINUET], i) ; 
+	boolean sec_bool 		= bitRead(deck[selectedDeck].fx1_cfg.form_menu_clock[z][_M_FORM_CLOCK_SECONDS], i) ; 
+
+	uint8_t lvl_select = scale8(deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].level , deck[selectedDeck].fx1_cfg.form_fx_clock_bytes[z].master_lvl ); 
+
+	if (hour_bool)  		tpm_fx.CLOCK( OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  ,    LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].color , 254,0 ),  MixModeType(deck[selectedDeck].fx1_cfg.form_fx_clock_bytes[z].mix_mode)   , deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].level  , true,  clock_type_selector(Clock_Type) , NTP_get_time_h() , deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].length) ; 
+	if (min_bool) 			tpm_fx.CLOCK( OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  ,    LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].color , 254,0 ),  MixModeType(deck[selectedDeck].fx1_cfg.form_fx_clock_bytes[z].mix_mode)   , deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].level  , false,  clock_type_selector(Clock_Type) , NTP_get_time_m(), deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].length ) ; 
+	if (sec_bool)			tpm_fx.CLOCK( OutPutLedArray, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds  ,    LEDS_select_color(deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].color , 254,0 ),  MixModeType(deck[selectedDeck].fx1_cfg.form_fx_clock_bytes[z].mix_mode)   , deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].level  , false,  clock_type_selector(Clock_Type) , NTP_get_time_s(), deck[selectedDeck].fx1_cfg.form_fx_clock[i + (z * 8)].length ) ; 
+
+}
+
+
+
 // ***************************************** FX 01  **********************
 
 void LEDS_run_fx1_glitter(uint8_t z, uint8_t i , uint8_t DeckNo )
@@ -1734,6 +1753,8 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_EYES ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_ROTATE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
 
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_CLOCK ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_clock(z,i,deckSelected, deck[0].run.leds);
+
 
 			// LAYERS 16 to 31   *** Z =2 ; Z<4
 			
@@ -1746,6 +1767,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_CLOCK ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_clock(z,i,deckSelected, deck[0].run.leds);
 
 			// LAYERS 32 to 48   *** Z =4 ; Z<6
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
@@ -1757,6 +1779,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_PAL ) 		for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_ROTATE ) 	for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
 
+			
 
 			// Save Layers
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_ALPHA )     {  LEDS_RUN_save_saved_layer(deckSelected,0); }       
@@ -1815,8 +1838,13 @@ void LEDS_init_config(uint8_t selected_Deck)
 			
 			deck[selected_Deck].fx1_cfg.form_fx_shim[Form_Part_No] 			= {6,5,7,0};
 
+			
+
 			deck[selected_Deck].run.form_fx_dots[Form_Part_No] 				= {0};
 			deck[selected_Deck].run.form_fx_eyes[Form_Part_No] 				= {0,0};
+
+			deck[selected_Deck].fx1_cfg.form_fx_clock[Form_Part_No] 	= {26,255,0};
+			
 
 		}
 	
@@ -1834,6 +1862,7 @@ void LEDS_init_config(uint8_t selected_Deck)
 		deck[selected_Deck].run.form_fx_strobe[Form_Part_No] 			= {0};
 
 		deck[selected_Deck].fx1_cfg.form_fx_fire_bytes[Form_Part_No] 	= {26,MIX_ADD,255,55,120,255,255};
+		deck[selected_Deck].fx1_cfg.form_fx_clock_bytes[Form_Part_No] 	= {MIX_ADD,255};
 	}
 	
 

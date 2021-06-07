@@ -1929,6 +1929,10 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			
 			else if		(msg.match("/fx/eyes/run",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_eyes[i_bit_int][_M_FORM_EYES_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
 
+			
+
+
+
 			else if		(msg.match("/fx/meto/run",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_meteor[i_bit_int][_M_FORM_METEOR_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/meto/rdd",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_meteor[i_bit_int][_M_FORM_METEOR_RANDOMDECAY], 	i_form_nr, 	bool(msg.getInt(0)));  }
 
@@ -1939,6 +1943,21 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			
 			else if		(msg.match("/fx/shim/run",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_shimmer[i_bit_int][_M_FORM_SHIMMER_RUN], i_form_nr,	bool(msg.getInt(0)));  }
 			
+
+			else if		(msg.match("/fx/clck/run",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_RUN], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/hor",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_HOUR], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/min",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_MINUET], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/sec",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_SECONDS], 			i_form_nr, 	bool(msg.getInt(0)));  }
+
+			else if  	(msg.match("/fx/clck/clr",addrOffset))  		deck[0].fx1_cfg.form_fx_clock[orig_form_nr].color = uint8_t(msg.getInt(0))	;
+			else if  	(msg.match("/fx/clck/typ",addrOffset))  		deck[0].fx1_cfg.form_fx_clock[orig_form_nr].type = uint8_t(msg.getInt(0))	;
+			else if		(msg.match("/fx/clck/lvl",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/clck/len",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].length  =  uint8_t(msg.getInt(0))  ;
+
+			
+
+
+
 			else 
 			{
 				orig_form_nr = constrain(orig_form_nr, 0, NR_FX_BYTES);
@@ -2000,6 +2019,14 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 				else if  	(msg.match("/fx/shim/lvb",addrOffset))  		deck[0].fx1_cfg.form_fx_shim_bytes[orig_form_nr].lvl_bin = uint8_t(msg.getInt(0))	;
 				else if		(msg.match("/fx/shim/lvl",addrOffset))			deck[0].fx1_cfg.form_fx_shim_bytes[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 				else if		(msg.match("/fx/shim/mlv",addrOffset))		{	deck[0].fx1_cfg.form_fx_shim_bytes[orig_form_nr].master_lvl  =  uint8_t(msg.getInt(0))  ; deck[0].fx1_cfg.form_fx_shim_bytes[orig_form_nr+1].master_lvl = deck[0].fx1_cfg.form_fx_shim_bytes[orig_form_nr].master_lvl; }
+
+				else if  	(msg.match("/fx/clck/mix",addrOffset))  		deck[0].fx1_cfg.form_fx_clock_bytes[orig_form_nr].mix_mode = uint8_t(msg.getInt(0))	;
+				else if  	(msg.match("/fx/clck/mlv",addrOffset))  	{	deck[0].fx1_cfg.form_fx_clock_bytes[orig_form_nr].master_lvl = uint8_t(msg.getInt(0))	; deck[0].fx1_cfg.form_fx_clock_bytes[orig_form_nr+1].master_lvl = deck[0].fx1_cfg.form_fx_clock_bytes[orig_form_nr].master_lvl; }
+
+				
+				
+				
+
 
 
 			}

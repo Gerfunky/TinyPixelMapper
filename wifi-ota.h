@@ -72,7 +72,9 @@
  void WiFi_telnet_print(int input, boolean line);
  void WiFi_telnet_print(IPAddress input, boolean line);
 
-
+ int NTP_get_time_h();
+ int NTP_get_time_m();
+ int NTP_get_time_s();
 
 #endif
 

@@ -103,6 +103,40 @@ String WiFi_Get_Name()
 }
 
 
+int NTP_get_time_h()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_hour;
+
+}
+int NTP_get_time_m()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_min;
+
+}
+int NTP_get_time_s()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_sec;
+
+}
+
 
 void WiFi_NTP_printTime() {
 	

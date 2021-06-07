@@ -172,6 +172,12 @@
 		_M_LAYER_48_PAL = 21,
 		_M_LAYER_48_ROTATE = 22,
 
+		_M_LAYER_00_CLOCK = 24,
+		_M_LAYER_16_CLOCK = 25,
+		
+		
+
+
 
 		_M_LAYER_SAVE_ALPHA = 40,
 		_M_LAYER_SAVE_BETA = 41,
@@ -444,6 +450,51 @@
 			uint8_t master_lvl;	
 
 		};
+
+// *************** Clock ************************
+		#define _M_NR_FORM_CLOCK_OPTIONS_ 8
+		enum form_clock_options
+		{
+			_M_FORM_CLOCK_RUN,
+			
+			_M_FORM_CLOCK_REVERSED,
+			_M_FORM_CLOCK_MIRROR,
+			_M_FORM_CLOCK_BLEND,
+			_M_FORM_CLOCK_ONECOLOR,
+
+			_M_FORM_CLOCK_HOUR,
+			_M_FORM_CLOCK_MINUET,
+			_M_FORM_CLOCK_SECONDS,
+			
+		};	
+
+		struct form_fx_clock_run_struct
+		{
+			uint16_t index;
+
+		};
+
+		struct form_fx_clock_struct
+		{
+			uint8_t color; 
+			uint8_t level;
+			uint8_t type;
+			uint8_t length;
+			uint16_t pal_speed;
+			uint16_t pal_compression;
+
+
+		};
+
+
+		struct form_fx_clock_bytes_struct
+		{
+			uint8_t mix_mode;
+			uint8_t master_lvl;	
+	
+
+		};
+
 
 
 
@@ -761,7 +812,9 @@ struct deck_fx1_struct
 	form_fx_meteor_struct form_fx_meteor[NR_FX_PARTS];
 	form_fx_meteor_bytes_struct form_fx_meteor_bytes[NR_FX_BYTES];
 
-	
+	form_fx_clock_struct  form_fx_clock[NR_FX_PARTS];
+	form_fx_clock_bytes_struct  form_fx_clock_bytes[NR_FX_BYTES];
+
 
 	byte form_menu_fx1[NR_FX_BYTES][_M_NR_FORM_FX1_OPTIONS_];
 	byte form_menu_dot[NR_FX_BYTES][_M_NR_FORM_DOT_OPTIONS_];
@@ -773,6 +826,10 @@ struct deck_fx1_struct
 	byte form_menu_strobe[NR_FX_BYTES][_M_NR_FORM_STROBE_OPTIONS_];
 	byte form_menu_eyes[NR_FX_BYTES][_M_NR_FORM_EYES_OPTIONS_];
 	byte form_menu_meteor[NR_FX_BYTES][_M_NR_FORM_METEOR_OPTIONS_];
+
+	byte form_menu_clock[NR_FX_BYTES][_M_NR_FORM_CLOCK_OPTIONS_];
+
+	
 	
 };
 
@@ -795,6 +852,7 @@ struct deck_cfg_struct
 	form_fx_fft_struct form_fx_fft[NR_FORM_PARTS];
 	form_fx_fft_singles_struct form_fx_fft_signles[_M_NR_FORM_BYTES_];
 
+	
 
 	//form_fx1_struct form_fx1[NR_FORM_PARTS];
 
