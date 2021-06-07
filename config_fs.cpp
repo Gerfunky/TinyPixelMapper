@@ -1,14 +1,31 @@
 
 // TODO  
 
-#ifdef _MSC_VER 
-	#include <FS\src\FS.h>
-	#include <SPIFFS\src\SPIFFS.h>
+//#ifdef _MSC_VER 
+//	#include <FS\src\FS.h>
+//	#include <SPIFFS\src\SPIFFS.h>
 
-#else
+//#else
+
+//#endif
+
     #include <FS.h>
+
+
+#ifdef OMILEX32_POE_BOARD
+	#include "SD_MMC.h"
+	fs::SDMMCFS  &selectedFS = SD_MMC;	
+#else
+
 	#include<SPIFFS.h>
+	fs::SPIFFSFS  &selectedFS = SPIFFS;
 #endif
+
+
+
+
+
+
 
 
 #include "config_TPM.h"
@@ -16,6 +33,7 @@
 #include "tools.h"
 #include "tpm_artnet.h"
 #include "osc.h"
+
 
 
 
@@ -70,21 +88,21 @@ uint8_t saveloopConfNr = 255;
 unsigned int FS_get_UsedBytes()
 {
 
-	return SPIFFS.usedBytes();
+	return selectedFS.usedBytes();
 
 }
 
 unsigned int FS_get_TotalBytes()
 {
 
-	return SPIFFS.totalBytes();
+	return selectedFS.totalBytes();
 
 }
 
 unsigned int FS_get_leftBytes()
 {
 
-	return (SPIFFS.totalBytes()-SPIFFS.usedBytes() );
+	return (selectedFS.totalBytes()-selectedFS.usedBytes() );
 
 }
 
@@ -92,9 +110,9 @@ boolean FS_get_PalyConfSatatus(uint8_t play_NR)
 {
 
 	String addr = String("/conf/" + String(play_NR) + ".playConf.txt");
-	File conf_file = SPIFFS.open(addr,"r"); 
+	File conf_file = selectedFS.open(addr,"r"); 
 
-	//if (SPIFFS.exists(addr)) debugMe("its there");
+	//if (selectedFS.exists(addr)) debugMe("its there");
 	//else debugMe("Ohh no where is it");
 	if(conf_file && conf_file.isDirectory() == false) 
 	{ //exists and its a file 
@@ -309,7 +327,7 @@ boolean FS_FFT_read(uint8_t conf_nr)
 	// int conf_nr = what file NR to read
 
 	String addr = String("/conf/" + String(conf_nr) + ".fft.txt");
-	File conf_file = SPIFFS.open(addr, "r");
+	File conf_file = selectedFS.open(addr, "r");
 	delay(100);
 	if (conf_file && !conf_file.isDirectory()) {
 
@@ -371,7 +389,7 @@ void FS_FFT_write(uint8_t conf_nr)
 
 	String addr = String("/conf/" + String(conf_nr) + ".fft.txt");
 
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory()) 
 	{
@@ -405,7 +423,7 @@ void FS_wifi_write()
 	// write out the wifi config
 	String addr = String("/conf/wifi.txt");
 	//String title = "Main Config for ESP.";
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory())
 	{
@@ -472,7 +490,7 @@ boolean FS_wifi_read()
 	// read the wifi config
 	
 	String addr = String("/conf/wifi.txt");
-	File conf_file = SPIFFS.open(addr, "r");
+	File conf_file = selectedFS.open(addr, "r");
 	
 	if (!conf_file) {
     debugMe("There was an error opening the file for writing");
@@ -589,7 +607,7 @@ void	FS_artnet_write()
 
 	String addr = String("/conf/artnet.txt");
 	//String title = "Main Config for ESP.";
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file  && !conf_file.isDirectory())
 	{
@@ -632,7 +650,7 @@ boolean FS_artnet_read()
 	// read the artnet config from disk
 
 	String addr = String("/conf/artnet.txt");
-	File conf_file = SPIFFS.open(addr, "r");
+	File conf_file = selectedFS.open(addr, "r");
 	delay(100);
 	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("artnet file read failed");
@@ -701,11 +719,11 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	debugMe("deleted save " + addr);
 
 	
-	//File conf_file = SPIFFS.open(addr, "w");
+	//File conf_file = selectedFS.open(addr, "w");
 	//if (conf_file && !conf_file.isDirectory())	
 
-	//{	if( SPIFFS.remove(String("conf/"+ String(conf_nr) + ".conf.txt")) )  debugMe("deleted save realy"); else debugMe("haha delete did not work"); }
-	{	if( SPIFFS.remove(addr.c_str()))  debugMe("deleted save ok"); else debugMe("haha delete did not work"); }
+	//{	if( selectedFS.remove(String("conf/"+ String(conf_nr) + ".conf.txt")) )  debugMe("deleted save realy"); else debugMe("haha delete did not work"); }
+	{	if( selectedFS.remove(addr.c_str()))  debugMe("deleted save ok"); else debugMe("haha delete did not work"); }
 
 
 	//boolean return_bool = 0;
@@ -728,7 +746,7 @@ void FS_pal_save(uint8_t save_no, uint8_t pal_no)
 {
 	String addr = String("/conf/" + String(save_no) + ".pal.txt");
 
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("pallete file creation failed");
@@ -757,7 +775,7 @@ void FS_pal_load(uint8_t load_nr,uint8_t pal_no)
 {
 String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 	 debugMe("READ Conf " + addr);
-	File conf_file = SPIFFS.open(addr, "r");
+	File conf_file = selectedFS.open(addr, "r");
 	delay(100);
 	if (conf_file && !conf_file.isDirectory())
 	{
@@ -828,7 +846,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".playConf.txt");
 	uint8_t selectedDeckNo = 0;
 
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("play file creation failed");
@@ -1362,7 +1380,7 @@ void FS_play_conf_readSendSavenames( )
 
 		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
 		debugMe("READ Conf " + addr);
-		File conf_file = SPIFFS.open(addr, "r");
+		File conf_file = selectedFS.open(addr, "r");
 		String settingValue;
 
 		delay(100);
@@ -1489,7 +1507,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 
 	String addr = String("/conf/" + String(conf_nr) + ".playConf.txt");
 	 debugMe("READ Conf " + addr);
-	File conf_file = SPIFFS.open(addr, "r");
+	File conf_file = selectedFS.open(addr, "r");
 	String settingValue;
 
 	delay(100);
@@ -1926,7 +1944,7 @@ void FS_Bools_write(uint8_t conf_nr)
 
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
 	//String title = "Main Config for ESP.";
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory())
 	{
@@ -1999,10 +2017,10 @@ boolean FS_mqtt_read()
 	
 	String addr = String("/conf/mqtt.txt");
 
-	if (SPIFFS.exists(addr))
+	if (selectedFS.exists(addr))
 	{ 
 		debugMe("Reading mqtt file");
-		File conf_file = SPIFFS.open(addr, "r");
+		File conf_file = selectedFS.open(addr, "r");
 		
 
 		if (conf_file&& !conf_file.isDirectory())
@@ -2079,7 +2097,7 @@ void FS_mqtt_write()
 	// write out the wifi config
 	String addr = String("/conf/mqtt.txt");
 	//String title = "Main Config for ESP.";
-	File conf_file = SPIFFS.open(addr, "w");
+	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory())
 	{
@@ -2116,10 +2134,10 @@ boolean FS_Bools_read(uint8_t conf_nr)
 	String addr = String("/conf/" + String(conf_nr) + ".device.txt");
 	
 	
-	if (SPIFFS.exists(addr))
+	if (selectedFS.exists(addr))
 	{ 
 		debugMe("Reading bools file");
-		File conf_file = SPIFFS.open(addr, "r");
+		File conf_file = selectedFS.open(addr, "r");
 		
 
 		if (conf_file&& !conf_file.isDirectory())
@@ -2231,15 +2249,15 @@ void FS_osc_delete_all_saves()
 {
 		String address;
 
-		if (SPIFFS.exists("/conf/0.wifi.txt"))		SPIFFS.remove("/conf/0.wifi.txt");
-		if (SPIFFS.exists("/conf/0.Bool.txt"))		SPIFFS.remove("/conf/0.Bool.txt");
-		if (SPIFFS.exists("/conf/0.artnet.txt"))	SPIFFS.remove("/conf/0.artnet.txt");
+		if (selectedFS.exists("/conf/0.wifi.txt"))		selectedFS.remove("/conf/0.wifi.txt");
+		if (selectedFS.exists("/conf/0.Bool.txt"))		selectedFS.remove("/conf/0.Bool.txt");
+		if (selectedFS.exists("/conf/0.artnet.txt"))	selectedFS.remove("/conf/0.artnet.txt");
 
 		for (uint8_t play_mode_int = 0; play_mode_int < 16; play_mode_int++) 
 		{
 			//memset(address, 0, sizeof(address));
 			address = String("/conf/" + String(play_mode_int) + ".playConf.txt");
-			if (SPIFFS.exists(address)) SPIFFS.remove(address);
+			if (selectedFS.exists(address)) selectedFS.remove(address);
 			
 		}
 
@@ -2247,7 +2265,7 @@ void FS_osc_delete_all_saves()
 		{
 			//memset(address, 0, sizeof(address));
 			address = String("/conf/" + String(fft_mode_int) + ".fft.txt");
-			if (SPIFFS.exists(address))  SPIFFS.remove(address);
+			if (selectedFS.exists(address))  selectedFS.remove(address);
 		}
 
 }
@@ -2289,16 +2307,16 @@ void FS_listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 
 
 //Setup
-void FS_setup_SPIFFS()
+void FS_setup()
 {
-	debugMe("Start SPIFFS");
-	if (SPIFFS.begin(true))   // true = format on fail
+	debugMe("Start selectedFS");
+	if (selectedFS.begin())   // true = format on fail
 	{
-		debugMe("Started SPIFFS");
-		FS_listDir(SPIFFS, "/", 0);
+		debugMe("Started selectedFS");
+		FS_listDir(selectedFS, "/", 0);
 	} else{
 
-		debugMe("FAILED SPIFFS");
+		debugMe("FAILED SD_MMC");
 
 	}
 	delay(100);
@@ -2309,5 +2327,3 @@ void FS_setup_SPIFFS()
 
 
 }
-
-

@@ -3210,6 +3210,19 @@
                     }
                   ],
                   "tabs": []
+                },
+                {
+                  "type": "clone",
+                  "widgetId": "DAtareboot",
+                  "width": 180,
+                  "height": 80,
+                  "css": "",
+                  "left": 600,
+                  "top": 540,
+                  "id": "clone_14",
+                  "props": {},
+                  "label": "",
+                  "variables": "@{parent.variables}"
                 }
               ],
               "tabs": [],

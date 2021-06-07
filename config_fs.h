@@ -1,5 +1,7 @@
 // config_fs.h
 
+
+
 #ifndef _CONFIG_FS_h
 #define _CONFIG_FS_h
 
@@ -18,7 +20,7 @@
 
 
 // Public function
-void FS_setup_SPIFFS();
+void FS_setup();
 
 
 
@@ -63,4 +65,5 @@ void FS_setup_SPIFFS();
 	void FS_play_conf_readSendSavenames( ) ;
 
 #endif
+
 
