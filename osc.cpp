@@ -1295,7 +1295,53 @@ void osc_StC_menu_form_pal_adv_ref(uint8_t bit)
 
 } 
 
+void osc_StC_menu_FX_clock_adv_ref(uint8_t bit)
+{
+		//debugMe("inFormRef ostc");
+
+		for (uint8_t bit_formNr = 0; bit_formNr < 8 ; bit_formNr++)
+		{
+			
+			uint8_t formNr = bit *8 + bit_formNr ;		
+
+
+			osc_queu_MSG_int( "/ostc/form/fx/clck/run/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_RUN], 		bit_formNr)));	
+
+			osc_queu_MSG_int( "/ostc/form/fx/clck/hor/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_HOUR], 		bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/fx/clck/min/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_MINUET], 		bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/fx/clck/sec/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_SECONDS], 		bit_formNr)));	
+			
+			osc_queu_MSG_int( "/ostc/form/fx/clck/rev/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_PAL_REVERSED], 		bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/fx/clck/bln/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_PAL_BLEND], 		bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/fx/clck/mir/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_PAL_MIRROR], 		bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/fx/clck/ocl/" + String(formNr), 	(bitRead(deck[0].fx1_cfg.form_menu_clock[bit][_M_FORM_CLOCK_PAL_ONECOLOR], 		bit_formNr)));	
+			
+
+			osc_queu_MSG_int("/ostc/form/fx/clck/lvl/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].level );
+			osc_queu_MSG_int("/ostc/form/fx/clck/clr/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].color );
+			osc_queu_MSG_int("/ostc/form/fx/clck/typ/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].type );
+			osc_queu_MSG_int("/ostc/form/fx/clck/len/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].length );
+			osc_queu_MSG_int("/ostc/form/fx/clck/ald/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].pal_compression );
+			osc_queu_MSG_int("/ostc/form/fx/clck/afm/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].pal_speed );
+			osc_queu_MSG_int("/ostc/form/fx/clck/ofs/" + String(formNr), deck[0].fx1_cfg.form_fx_clock[formNr].offset );
+
+
+
+		}	
+
+
+			osc_queu_MSG_int("/ostc/form/fx/clck/mlv/" + String(bit), deck[0].fx1_cfg.form_fx_clock_bytes[bit].master_lvl );
+			osc_queu_MSG_int("/ostc/form/fx/clck/mix/" + String(bit), deck[0].fx1_cfg.form_fx_clock_bytes[bit].mix_mode );
+
+
+} 
+
 /*
+
+
+
+
+
 void osc_StC_menu_form_level_ref()
 {
 	//debugMe("inFormRef ostc");
@@ -1524,6 +1570,10 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/usedBytes",   FS_get_UsedBytes()  ); 
 	osc_queu_MSG_int("/ostc/master/totalBytes",  FS_get_TotalBytes()  );
 	osc_queu_MSG_int("/ostc/master/leftBytes",  FS_get_leftBytes()  );
+
+	osc_queu_MSG_int("/ostc/master/H", NTP_get_time_h()  );
+	osc_queu_MSG_int("/ostc/master/M", NTP_get_time_m()  );
+	osc_queu_MSG_int("/ostc/master/S", NTP_get_time_s()  );
 	
 	OSCBundle bundle_out;
 	IPAddress ip_out(osc_server.remoteIP());
@@ -1864,7 +1914,9 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 
 		else if  	(msg.fullMatch("/fx/eyes/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(0);osc_StC_menu_form_fx_eyes_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/eyes/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fx_eyes_adv_ref(2);osc_StC_menu_form_fx_eyes_adv_ref(3);}
-		
+
+		else if  	(msg.fullMatch("/fx/clck/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_FX_clock_adv_ref(0);osc_StC_menu_FX_clock_adv_ref(1);}
+		else if  	(msg.fullMatch("/fx/clck/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_FX_clock_adv_ref(2);osc_StC_menu_FX_clock_adv_ref(3);}
 
 
 		else if 	(msg.match("/fx",addrOffset))	
@@ -1953,10 +2005,18 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.match("/fx/clck/min",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_MINUET], 			i_form_nr, 	bool(msg.getInt(0)));  }
 			else if		(msg.match("/fx/clck/sec",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_SECONDS], 			i_form_nr, 	bool(msg.getInt(0)));  }
 
+			else if		(msg.match("/fx/clck/rev",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_PAL_REVERSED], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/bln",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_PAL_BLEND], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/mir",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_PAL_MIRROR], 			i_form_nr, 	bool(msg.getInt(0)));  }
+			else if		(msg.match("/fx/clck/ocl",addrOffset))			{ bitWrite(deck[0].fx1_cfg.form_menu_clock[i_bit_int][_M_FORM_CLOCK_PAL_ONECOLOR], 			i_form_nr, 	bool(msg.getInt(0)));  }
+
 			else if  	(msg.match("/fx/clck/clr",addrOffset))  		deck[0].fx1_cfg.form_fx_clock[orig_form_nr].color = uint8_t(msg.getInt(0))	;
 			else if  	(msg.match("/fx/clck/typ",addrOffset))  		deck[0].fx1_cfg.form_fx_clock[orig_form_nr].type = uint8_t(msg.getInt(0))	;
 			else if		(msg.match("/fx/clck/lvl",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].level  =  uint8_t(msg.getInt(0))  ;
 			else if		(msg.match("/fx/clck/len",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].length  =  uint8_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/clck/ald",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].pal_compression  =  uint16_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/clck/afm",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].pal_speed  =  uint16_t(msg.getInt(0))  ;
+			else if		(msg.match("/fx/clck/ofs",addrOffset))	  	   	deck[0].fx1_cfg.form_fx_clock[orig_form_nr].offset  =   uint16_t(msg.getInt(0))  ; //constrain(uint16_t(msg.getInt(0)),0,led_cfg.NrLeds)   ;
 
 			
 

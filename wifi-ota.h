@@ -11,7 +11,7 @@
 
 #include "IPAddress.h"
 
-#define WIFI_ACCESSPOINT  false //true   // if the bool is true run accesspoint
+#define WIFI_ACCESSPOINT  true //true   // if the bool is true run accesspoint
 
 
 										// Wifi IP settings data stucture 

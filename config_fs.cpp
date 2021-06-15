@@ -1060,6 +1060,38 @@ void FS_play_conf_write(uint8_t conf_nr)
 			}
 		}
 
+		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[CK:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].color )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].level )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].type )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].length )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].pal_speed )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].pal_compression )));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].offset )));
+
+
+				conf_file.println("] ");
+			}
+		}
+		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[CB:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].mix_mode)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].master_lvl)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_CLOCK_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_clock[form][setting])));
+				
+				conf_file.println("] ");
+			}
+		}
+
+
+
 		/*//conf_file.println("SB Form Shimmer boolean values ");
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
@@ -1292,6 +1324,15 @@ void FS_play_conf_write(uint8_t conf_nr)
 			}
 		}
 
+
+
+
+
+
+
+
+
+
 	/*	//conf_file.println("XB Form modify1 boolean values ");
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
@@ -1486,6 +1527,9 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 		GF Glitter
 		GB
 
+		CK	Clock
+		CB
+
 		XF FX01
 		XB
 
@@ -1677,6 +1721,25 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].lvl_bin = in_int; }
 				for (uint8_t setting = 0; setting < _M_NR_FORM_SHIMMER_OPTIONS_; setting++)  if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character);  targetFXConf->form_menu_shimmer[strip_no][setting] =in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_shim_bytes[strip_no].master_lvl = in_int; }
+			}
+
+			else if ((type == 'C') && (typeb == 'K'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].color = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].level = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].type = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].length = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].pal_speed = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].pal_compression = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].offset = in_int; }
+			}
+			else if ((type == 'C') && (typeb == 'B'))
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock_bytes[strip_no].mix_mode = in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock_bytes[strip_no].master_lvl = in_int; }
+				for (uint8_t setting = 0; setting < _M_NR_FORM_CLOCK_OPTIONS_; setting++)  if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character);  targetFXConf->form_menu_clock[strip_no][setting] =in_int; }
 			}
 
 			/*else if ((type == 'S') && (typeb == 'B'))

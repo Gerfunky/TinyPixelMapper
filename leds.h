@@ -457,20 +457,29 @@
 		{
 			_M_FORM_CLOCK_RUN,
 			
-			_M_FORM_CLOCK_REVERSED,
-			_M_FORM_CLOCK_MIRROR,
-			_M_FORM_CLOCK_BLEND,
-			_M_FORM_CLOCK_ONECOLOR,
+			_M_FORM_CLOCK_PAL_REVERSED,
+			_M_FORM_CLOCK_PAL_MIRROR,
+			_M_FORM_CLOCK_PAL_BLEND,
+			_M_FORM_CLOCK_PAL_ONECOLOR,
 
 			_M_FORM_CLOCK_HOUR,
 			_M_FORM_CLOCK_MINUET,
 			_M_FORM_CLOCK_SECONDS,
 			
 		};	
+		/*enum form_clock_types
+		{
+			CLOCK_DOT = 0			
+			,CLOCK_BAR = 1
+			,CLOCK_PAL = 2
+
+			
+		};
+*/
 
 		struct form_fx_clock_run_struct
 		{
-			uint16_t index;
+			uint16_t pal_index;
 
 		};
 
@@ -482,6 +491,7 @@
 			uint8_t length;
 			uint16_t pal_speed;
 			uint16_t pal_compression;
+			uint16_t offset;
 
 
 		};
@@ -782,6 +792,7 @@ struct deck_run_struct
 		form_fx_dots_run_struct form_fx_dots[NR_FX_PARTS];
 		form_fx_eyes_run_struct form_fx_eyes[NR_FX_PARTS];
 		form_fx_strobe_run_struct form_fx_strobe[NR_FX_PARTS] ;
+		form_fx_clock_run_struct form_fx_clock[NR_FX_PARTS];
 		
 };
 
