@@ -452,7 +452,7 @@
 		};
 
 // *************** Clock ************************
-		#define _M_NR_FORM_CLOCK_OPTIONS_ 8
+		#define _M_NR_FORM_CLOCK_OPTIONS_ 9
 		enum form_clock_options
 		{
 			_M_FORM_CLOCK_RUN,
@@ -465,6 +465,8 @@
 			_M_FORM_CLOCK_HOUR,
 			_M_FORM_CLOCK_MINUET,
 			_M_FORM_CLOCK_SECONDS,
+
+			_M_FORM_CLOCK_24h,
 			
 		};	
 		/*enum form_clock_types
@@ -487,8 +489,7 @@
 		{
 			uint8_t color; 
 			uint8_t level;
-			uint8_t type;
-			uint8_t length;
+
 			uint16_t pal_speed;
 			uint16_t pal_compression;
 			uint16_t offset;
@@ -501,6 +502,7 @@
 		{
 			uint8_t mix_mode;
 			uint8_t master_lvl;	
+			uint8_t type;
 	
 
 		};

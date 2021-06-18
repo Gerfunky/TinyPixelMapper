@@ -1067,8 +1067,6 @@ void FS_play_conf_write(uint8_t conf_nr)
 				conf_file.print(String("[CK:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].color )));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].level )));
-				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].type )));
-				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].length )));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].pal_speed )));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].pal_compression )));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].offset )));
@@ -1085,6 +1083,7 @@ void FS_play_conf_write(uint8_t conf_nr)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].mix_mode)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].master_lvl)));
 				for (uint8_t setting = 0; setting < _M_NR_FORM_CLOCK_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_menu_clock[form][setting])));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].type )));
 				
 				conf_file.println("] ");
 			}
@@ -1728,8 +1727,6 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				strip_no = get_int_conf_value(conf_file, &character);
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].color = in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].level = in_int; }
-				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].type = in_int; }
-				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].length = in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].pal_speed = in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].pal_compression = in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock[strip_no].offset = in_int; }
@@ -1740,6 +1737,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock_bytes[strip_no].mix_mode = in_int; }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock_bytes[strip_no].master_lvl = in_int; }
 				for (uint8_t setting = 0; setting < _M_NR_FORM_CLOCK_OPTIONS_; setting++)  if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character);  targetFXConf->form_menu_clock[strip_no][setting] =in_int; }
+				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetFXConf->form_fx_clock_bytes[strip_no].type = in_int; }
 			}
 
 			/*else if ((type == 'S') && (typeb == 'B'))
