@@ -1,9 +1,9 @@
 /*
 		Here we Have the Web Server (httpd) and the update client over http 
-
+		to update goto HTTP://IP/update  select the file and send it in.
 		the html files are located in the data subfolder and need to be sent in with 
 		ESP8266/ESP32 Sketch Data Upload.  
-		update server over HTTP test
+		
 
 
 */
@@ -15,13 +15,10 @@
 		#include <ESPmDNS.h>
 	
 
-		//#ifndef PLATFORMIO
+
 			#include <WebServer.h>
 			WebServer  httpd(80);					// The Web Server 
-		//#else 
-		//	#include <FS.h>	
-		//	#include <ESP32WebServer.h>		
-		//	ESP32WebServer httpd(80);
+
 
 		//#endif
 		#include <Update.h>
@@ -99,19 +96,6 @@ String httpd_getContentType(String filename) {
 }
 
 
-/*
-bool exists(String path){
-  bool yes = false;
-  File file = httpFS.open(path, "r");
-  if(!file.isDirectory()){
-    yes = true;
-  }
-  file.close();
-  return yes;
-} */
-
-
-
 
 bool httpd_handleFileRead(String path) {
 
@@ -151,7 +135,6 @@ void httpd_handleFileUpload() {
     fsUploadFile = httpFS.open(filename, "w");
     filename = String();
   } else if (upload.status == UPLOAD_FILE_WRITE) {
-    //DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
     if (fsUploadFile) {
       fsUploadFile.write(upload.buf, upload.currentSize);
     }
@@ -206,10 +189,6 @@ void httpd_handleFileCreate() {
 void httpd_handlecConfFileList() {
 	String path = "/conf";
 
-	//if (httpd.hasArg("dir")) 
-	//	path = httpd.arg("dir");
-	
- 
 	 debugMe("handleCONFFileList xxxx: " + path);
 
 	File dir = httpFS.open(path);
@@ -226,9 +205,7 @@ void httpd_handlecConfFileList() {
 	while (fileX) {
 		if( String(fileX.name()).startsWith("/"))
 		{
-			//File entry = dir.open("r");
 			if (output != "[") output += ',';
-			//bool isDir = fileX.isDirectory();
 			bool isDir = false;
 			output += "{\"type\":\"";
 			output += (isDir) ? "dir" : "file";
@@ -240,7 +217,6 @@ void httpd_handlecConfFileList() {
 			fileX.close();
 			fileX = dir.openNextFile();
 		
-		//dir.close();
 	}
 
 	dir.close();
@@ -248,7 +224,7 @@ void httpd_handlecConfFileList() {
 
 	output += "]";
 	httpd.send(200, "text/json", output);
-	//debugMe(output);
+
 }
 
 
@@ -268,32 +244,22 @@ void httpd_handleFileList() {
 	 debugMe("handleFileList: " + path);
 
 	File dir = httpFS.open(path);
-
-	//File file = dir.openNextFile();
-
 	path = String();
-
 	String output = "[";
-
 	File fileX = dir.openNextFile();
-
 	debugMe(String(fileX.name()));
 
 	while (fileX) {
-		//File entry = dir.open("r");
 		if (output != "[") output += ',';
-		//bool isDir = fileX.isDirectory();
 		bool isDir = false;
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
 		output += String(fileX.name()).substring(1);
 		output += "\"}";
-		//debugMe(String(fileX.name()));
 		fileX.close();
 		fileX = dir.openNextFile();
 		debugMe(String(fileX.name()));
-		//dir.close();
 	}
 
 	dir.close();
@@ -301,7 +267,6 @@ void httpd_handleFileList() {
 
 	output += "]";
 	httpd.send(200, "text/json", output);
-	//debugMe(output);
 }
 
 void httpd_handle_default_args()
@@ -375,7 +340,6 @@ void httpd_handle_default_args()
 
 void httpd_handleRequestSettings() 
 {
-	//String  output_bufferZ = "-" ;
 
 	// Setup Handlers
 	
@@ -417,12 +381,6 @@ void httpd_handleRequestSettings()
 	});  //*/
 
 
-
-
-	//get heap status, analog input value and all GPIO statuses in one json call
-
-	
-
 	httpd.on("/index.html", []() {
 #ifdef ARTNET_ENABLED
 		if (get_bool(ARTNET_ENABLE) == true)
@@ -453,22 +411,12 @@ void httpd_handleRequestSettings()
 	httpd.on("/APname", HTTP_GET, []() { httpd.send(200, "text/plain", wifi_cfg.APname);   });
 	httpd.on("/reset", HTTP_GET, []() { httpd.send(200, "text/plain", "Rebooting"); ESP.restart();   });
 	
-
-
 	//httpd.on("/js/ace.js", HTTP_GET, []() { httpd.send(200, "text/javascript", data_ace_js);  });
 
 
 
 
 }
-
-
-
-
-
-
-
-
 
 
 void httpd_toggle_webserver()
@@ -488,8 +436,6 @@ void httpd_toggle_webserver()
 
 		httpUpdater.setup(&httpd);
 #endif		
-		//ESPhttpUpdate.setup(&httpd);
-		// debugMe("HTTP server started");
 		MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
 	}
@@ -512,7 +458,6 @@ void httpd_setup()
 		httpUpdater.setup(&httpd);
 		 debugMe("HTTP server started");
 #endif
-		 //ESPhttpUpdate.setup(&httpd);
 		 MDNS.begin(wifi_cfg.APname);
 		MDNS.addService("http", "tcp", 80);
 		debugMe("Starting HTTP");
