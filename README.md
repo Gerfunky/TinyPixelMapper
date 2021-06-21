@@ -31,13 +31,19 @@ There are different modes of operation: Artnet and Normal.
 
 # Artnet Mode:
 In the Artnet mode it becomes a ARTNET sender or receiver node on the network. 
+
+## Artnet Reciver
 As an Artnet receiver there is a special sub mode called “ARTNET REMAPPING” In this mode the Artnet data replaces the FFT data from the MIC / Audio IN. Instead of addressing the LEDs directly. This allows us to use almost all the features of the SW like mirroring, rotation or other effects. So you only need to send 1 Universe (170 pixel) an Audio Color Scroll  from any Mapping Software and let the Tinypixelmapper mix it against pallets, Since we don’t have any real FFT data the FFT DATA BIN triggers don’t work in this mode.
+
+## Artnet Sender 
 As an Artnet sender, the unit does not output anything to the locally connected LED outputs. Instead it sends ARTNET packets to other units controlling them. Since its not outputting anything locally we have more time to do calculations so its possible to use one unit to control many units in sync and only the sender need a MIC or Audio in to do the FFT data calculations.
 
-#Normal mode:
+# Normal mode:
 The unit plays Palettes or takes an input from a MIC / audio In  that is connected to a MSGEQ7 chip to get FFT data to fill the LEDs.
 
 There are effects that can be added to each strip
+
+A very important and strong feature is the Mixing, You can shoose how and in what order the different layers should be mixed.
 
 It should work with any ESP32 it was designed for a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
 But we have decided to switch to an OLIMEX board since Ethernet and and SD card are alot more user friendly. For professional lighting solutions Wifi is not possible since the Party crowd with there mobile phones would interrupt the led output. 
