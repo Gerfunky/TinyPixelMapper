@@ -11,6 +11,7 @@ We are preparing for the crowdfunding this year (2021) for the Hardware with som
 New info, pictures ect will be added in the next weeks. If you find any bugs please post them!
 
 
+
 # TinyPixelMapper : What is it?
 It is a PixelMapping software for a ESP32 Chip.
 
