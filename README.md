@@ -3,6 +3,14 @@ a Pixelmapping software for the ESP32 and ESP8266 for addressible LED Strips, wi
 
 have a look what it can do: https://www.youtube.com/watch?v=r7bt4Rk3eVM  
 
+# Note to everyone that has been using this before 06.21
+The Software has gone over some major changes in the config files please be aware that when loding old config it wont work. Sorry about that but it was nessesery becouse We are running out of memory in the ESP32 with this Software. So I had to do some changes like selecting paletts and mixing will always be 1 setting for 8 Strips. Which I quite like since it was a hassle to change the palette on every strip manually to just see what another one would look like.
+
+# 06.2021 This Readme and the Wiki Are now in major rework to get all the new info in. 
+We are preparing for the crowdfunding this year (2021) for the Hardware with some Nice Lights to go with it. 
+New info, pictures ect will be added in the next weeks. If you find any bugs please post them!
+
+
 # TinyPixelMapper : What is it?
 It is a PixelMapping software for a ESP32 Chip.
 
