@@ -10,8 +10,6 @@
 
 */
 
-//#include "Header.h"				// add the main Header file
-//#include "msgeq7_fft.h"
 #include "config_TPM.h"			// add the Config.h where the main Settings a DEFINED
 #include "tools.h"
 	
@@ -52,7 +50,6 @@ void setup()
 	
 	LEDS_setup();
 	yield();
-	//delay(500);
  	wifi_setup();
 
 	MMQT_setup() ;

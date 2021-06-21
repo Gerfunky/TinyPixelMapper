@@ -47,6 +47,8 @@
 #define FASTLED_SHOW_CORE 1
 
 void LEDS_G_artnet_master_out();
+void LEDS_run_layers(uint8_t deckSelected);
+void LEDS_G_run_LOAD_SAVE_SHOW_Loop();
 uint8_t LEDS_fft_calc_fxbin_result(uint8_t fxbin);
 
 extern  void osc_StC_FFT_vizIt();			// of open stage controll to send the fft data
@@ -756,9 +758,19 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 			//debugMe(led);
 			if (led < MAX_NUM_LEDS) 
 			{
+				if (!get_bool(ARTNET_REMAPPING))
+				{
 				deck[0].run.leds[led].r = data[i * 3];
 				deck[0].run.leds[led].g = data[i * 3 + 1];
 				deck[0].run.leds[led].b = data[i * 3 + 2];
+				}
+				else
+				{
+					tpm_fx.fadeLedArray(deck[0].run.leds, 0, led_cfg.NrLeds, 255 );
+					deck[0].run.leds_FFT_history[led].r = data[i * 3];
+					deck[0].run.leds_FFT_history[led].g = data[i * 3 + 1];
+					deck[0].run.leds_FFT_history[led].b = data[i * 3 + 2];
+				}
 				//debugMe(leds[led].r);
 			}
 		}
@@ -767,8 +779,12 @@ void LEDS_artnet_in(uint16_t universe, uint16_t length, uint8_t sequence, uint8_
 		
 	}
 	yield();
-	FastLEDshowESP32();
-	//FastLED.show();
+
+	if(get_bool(ARTNET_REMAPPING)) {if (universe == artnet_cfg.startU + artnet_cfg.numU-1 ) { LEDS_run_layers(0);LEDS_G_pre_show_processing(); LEDS_G_run_LOAD_SAVE_SHOW_Loop();} }
+	// Only run show and process on the last universe.
+	else FastLEDshowESP32(); // if not remapping show as it comes in.
+		//FastLED.show();
+
 	yield();
 }
 
@@ -2261,7 +2277,45 @@ void LEDS_setup()
 
 }
 
+void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
+{
+	if (get_bool(FADE_INOUT))    // Fade leds if we are loading or saving so that we have a smooth tansition.
+			{
+					if (!get_bool(FADE_INOUT_FADEBACK))
+					{
+						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 5), 0 , 255);
+					}
+					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 5), 0 , 255);
 
+					tpm_fx.fadeLedArray(deck[0].run.leds,0,led_cfg.NrLeds,led_cfg.fade_inout_val );
+
+			}
+
+			if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
+
+			if (get_bool(FADE_INOUT))
+			{
+					if (led_cfg.fade_inout_val == 255)
+					{
+							if (get_bool(FADE_INOUT_SAVE)) FS_play_conf_write(led_cfg.next_config_loadsave) ;
+								
+							else 
+							{
+								LEDS_init_config(0);	
+								FS_play_conf_read(led_cfg.next_config_loadsave ,&deck[0].cfg, &deck[0].fx1_cfg  );
+								LEDS_pal_reset_index(); 
+							}
+
+						write_bool(FADE_INOUT_FADEBACK, true);
+						
+						osc_StC_Load_confname_Refresh( led_cfg.next_config_loadsave);
+
+					}
+					else if (led_cfg.fade_inout_val == 0)  write_bool(FADE_INOUT, false);
+
+
+			}
+}
 
 void LEDS_loop()
 {	// the main led loop
@@ -2335,42 +2389,9 @@ void LEDS_loop()
 			LEDS_G_pre_show_processing();
 			yield();
 
-			if (get_bool(FADE_INOUT))    // Fade leds if we are loading or saving so that we have a smooth tansition.
-			{
-					if (!get_bool(FADE_INOUT_FADEBACK))
-					{
-						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 5), 0 , 255);
-					}
-					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 5), 0 , 255);
+			LEDS_G_run_LOAD_SAVE_SHOW_Loop();
 
-					tpm_fx.fadeLedArray(deck[0].run.leds,0,led_cfg.NrLeds,led_cfg.fade_inout_val );
-
-			}
-
-			if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
-
-			if (get_bool(FADE_INOUT))
-			{
-					if (led_cfg.fade_inout_val == 255)
-					{
-							if (get_bool(FADE_INOUT_SAVE)) FS_play_conf_write(led_cfg.next_config_loadsave) ;
-								
-							else 
-							{
-								LEDS_init_config(0);	
-								FS_play_conf_read(led_cfg.next_config_loadsave ,&deck[0].cfg, &deck[0].fx1_cfg  );
-								LEDS_pal_reset_index(); 
-							}
-
-						write_bool(FADE_INOUT_FADEBACK, true);
-						
-						osc_StC_Load_confname_Refresh( led_cfg.next_config_loadsave);
-
-					}
-					else if (led_cfg.fade_inout_val == 0)  write_bool(FADE_INOUT, false);
-
-
-			}
+			
 
 
 

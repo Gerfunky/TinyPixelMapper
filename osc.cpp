@@ -1328,6 +1328,7 @@ void osc_StC_menu_master_artnet_ref()
 	osc_queu_MSG_int("/ostc/master/artnet/rc", 		get_bool(ARTNET_RECIVE)); 
 	osc_queu_MSG_int("/ostc/master/artnet/su", 		artnet_cfg.startU);
 	osc_queu_MSG_int("/ostc/master/artnet/nu", 		artnet_cfg.numU);
+	osc_queu_MSG_int("/ostc/master/artnet/remap", 	get_bool(ARTNET_REMAPPING));
 	
 		uint8_t  universeCounter = 0;
 	for (uint8_t node = 0; node < ARTNET_NR_NODES_TPM ; node++)
@@ -2046,7 +2047,38 @@ void osc_StC_master_wifi_routing(OSCMessage &msg, int addrOffset)
 }
 
 
+void osc_STC_check_Confname()			// Switch illegal Chars from the confname so we can save it to file.
+{
+	for (uint8_t x = 0; x < sizeof(deck[0].cfg.confname) ; x++ )
+	{
+		switch (deck[0].cfg.confname[x])
+		{
+			case '[':
+				deck[0].cfg.confname[x] = '(';
+			break;
 
+			case ']':
+				deck[0].cfg.confname[x] = ')';
+			break;
+
+			case ':':
+				deck[0].cfg.confname[x] = '.';
+			break;
+
+		}
+		
+	}
+	debugMe(" Confname : " + String(deck[0].cfg.confname));
+	OSCBundle bundle_out;
+	IPAddress ip_out(osc_server.remoteIP());
+	bundle_out.add("/ostc/master/confname").add(deck[0].cfg.confname);
+	osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+	bundle_out.send(osc_server);
+	osc_server.endPacket();
+	bundle_out.empty();
+
+
+}
 
 
 void osc_StC_master_routing(OSCMessage &msg, int addrOffset) 
@@ -2108,7 +2140,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/artnet/on",addrOffset))		{ write_bool(ARTNET_SEND, bool(msg.getInt(0) )) ; }
 			else if (msg.fullMatch("/artnet/su",addrOffset))		{ artnet_cfg.startU = constrain(uint8_t(msg.getInt(0)) , 0 , 255) ; }
 			else if (msg.fullMatch("/artnet/nu",addrOffset))		{ artnet_cfg.numU  = constrain(uint8_t(msg.getInt(0)) , 0 , 4) ; }
-			
+			else if (msg.fullMatch("/artnet/remap",addrOffset))		{ write_bool(ARTNET_REMAPPING, bool(msg.getInt(0) )) ; }
 			
 			else if (msg.fullMatch("/mqtt/enable",addrOffset))		{ write_bool(MQTT_ON, bool(msg.getInt(0) )) ; }
 			
@@ -2121,7 +2153,11 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/layreset",addrOffset))   	{ LEDS_clear_all_layers(0) ; for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 			else if (msg.fullMatch("/layall",addrOffset))   	{ LEDS_default_layers(0) ;   for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 
-			else if (msg.fullMatch("/confname",addrOffset))		{ int length=msg.getDataLength(0); memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		);    	msg.getString( 0,	deck[0].cfg.confname,  		length ) ;  debugMe(String(deck[0].cfg.confname));  }
+			else if (msg.fullMatch("/confname",addrOffset))		{ 
+				int length=msg.getDataLength(0);    
+				memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		); 
+				if (length >= 32 )	msg.getString( 0,	deck[0].cfg.confname,  		sizeof(deck[0].cfg.confname), 0 , sizeof(deck[0].cfg.confname)-1 ) ;
+				else 	msg.getString( 0,	deck[0].cfg.confname,  		sizeof(deck[0].cfg.confname)  )   ;  osc_STC_check_Confname();  }
 
 			else if (	(msg.match("/tmin",addrOffset))
 					|| (msg.match("/laye",addrOffset))

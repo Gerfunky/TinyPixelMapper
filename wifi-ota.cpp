@@ -68,8 +68,7 @@ AsyncUDP ntp_udp;
 WiFiUDP  FFT_master;
 WiFiUDP  FFT_slave;
 
-//AsyncUDP FFT_master;
-//AsyncUDP FFT_slave ;
+
 
 
 

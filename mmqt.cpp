@@ -29,18 +29,6 @@ int value = 0;
         MQTT_DEF_PUBLISH_TIMEOUT
         };
 
-/*
-char MMQTopicBrightness[30];
-char MMQTopicBrightnessControll[30];
-
-char MMQTopicStatusSet[30];
-char MMQTopicStatus[30];
-
-char MMQTopicPlaySet[30];
-char MMQTopicPlayStatus[30];
-*/
-//float temperature = 0;
-//float humidity = 0;
 
 
 // from leds.cpp
@@ -62,13 +50,12 @@ extern boolean FS_mqtt_read();
 extern void FS_mqtt_write();
 
 PubSubClient client(espClient);
-//PubSubClient client(server, 1883, callback, ethClient);
+
 
 
 void MMQT_publish()
 {
-    //char  OutTopic[30];
-    //memset(OutTopic, 0, sizeof(OutTopic));  
+
 
     String deviceName = WiFi_Get_Name() ;
 
@@ -78,14 +65,6 @@ void MMQT_publish()
            OutTopicString = deviceName + MMQT_TOPIC_FUNCTION_PLAY + MMQT_TOPIC_SEND ;   client.publish(OutTopicString.c_str(), String(LEDS_get_playNr()).c_str() );  
 
            OutTopicString = deviceName + MMQT_TOPIC_FUNCTION_DEVICE + MMQT_TOPIC_SEND ; if (LEDS_get_bri() != 0) client.publish(OutTopicString.c_str(), "on") ; else client.publish(OutTopicString.c_str(), "off");  
-
-
-
-    //client.publish(MMQTopicBrightness, String(LEDS_get_bri()).c_str());  
- //if (LEDS_get_bri() != 0)  client.publish(MMQTopicStatus, "on"); 
- //else  client.publish(MMQTopicStatus, "off");
-
- //client.publish(MMQTopicPlayStatus, String(LEDS_get_playNr()).c_str());  
 
 
 }
@@ -103,8 +82,6 @@ void callback(char* topic, byte* message, unsigned int length) {
   }
    debugMe("Message: ", false); debugMe(messageTemp);
    
-
-  // Feel free to add more if statements to control more GPIOs with MQTT
 
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
   // Changes the output state according to the message
@@ -182,12 +159,7 @@ void MMQT_subscribe()
            INTopicString = deviceName + MMQT_TOPIC_FUNCTION_PLAY + MMQT_TOPIC_RECIVE ;   client.subscribe(INTopicString.c_str());
            INTopicString = deviceName + MMQT_TOPIC_FUNCTION_DEVICE + MMQT_TOPIC_RECIVE ; client.subscribe(INTopicString.c_str());
 
-    
-    /*client.loop();
-    client.subscribe(MMQTopicBrightnessControll);
-    client.loop();
-    client.subscribe(MMQTopicPlaySet);
-    client.loop(); */
+
     
 }
 
