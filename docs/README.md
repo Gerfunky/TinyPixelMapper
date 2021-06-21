@@ -1,43 +1,50 @@
 # TinyPixelMapper
-a Pixelmapping software for the ESP32 and ESP8266 for addressible LED Strips, with a OSC controll interface and FFT data from a Mic hocked up to a MSGEQ7.
+a Pixelmapping software for the ESP32 for addressable LED Strips, with a OSC control interface and FFT data from a Mic or audio source hooked up to a MSGEQ7 Equalizer.
 
 # TinyPixelMapper : What is it?
 It is a PixelMapping software for a ESP32 Chip.
 
 The main LED driving library is [FastLed](https://github.com/FastLED/FastLED).
 
-Configuration is done over OSC, [TouchOSC](https://hexler.net/touchosc) interfaces are included.
+# Crowdfunding Campaign
+We are planning on starting a crowdfunding campaign in the summer 2021. In the crowdfunding you will have to possibility to get the Hardware and purpose-built Lamps that show what the Tinypixelmapper can do. After crowdfunding the PCB’s will be opensource.
+We are negotiation with an artist for permission to use his music. Once this is done we will start posting videos of the different lamps that will be available. 
 
-Ther are 2 main modes: Artnet and Normal.
+# Configuration Interface:
+Configuration is done over OSC, with the opensource Software [Open Stage Control](https://openstagecontrol.ammd.net/)
+We are still on the Open Stage Control version 0.47.1  although the SW is already on version 1.9 or above the performance of the SW is much better on the old version and we have not found a way to get the CHARTS to work on the new Version.
 
-In the Artnet mode it becomes a ARTNET node on the network. (hardcoded to 4 universes max, no mapping at the moment)
+Open Stage Control creates a HTTP Server, so you can connect from any device on your network over a web browser. To configure the Tinypixelmapper.
+There is also a confuration file with just simple options like loading a save file, available for [TouchOSC](https://hexler.net/touchosc) a App available in the Google/ Apple App stores. Any OSC Software can be used to configure the System. So it is also possible to use Midi Controllers with faders to Play with the unit.
 
-In Normal mode it playes Palletes or takes an input from a MIC that is connected to a MSGEQ7 chip to get FFT data to fill the leds.
+# Modes
+There are different modes of operation: Artnet and Normal.
 
-You can configre Strips or Forms(a collection of strips).
+# Artnet Mode:
+In the Artnet mode it becomes a ARTNET sender or receiver node on the network. 
+As an Artnet receiver there is a special sub mode called “ARTNET REMAPPING” In this mode the Artnet data replaces the FFT data from the MIC / Audio IN. Instead of addressing the LEDs directly. This allows us to use almost all the features of the SW like mirroring, rotation or other effects. So you only need to send 1 Universe (170 pixel) an Audio Color Scroll  from any Mapping Software and let the Tinypixelmapper mix it against pallets, Since we don’t have any real FFT data the FFT DATA BIN triggers don’t work in this mode.
+As an Artnet sender, the unit does not output anything to the locally connected LED outputs. Instead it sends ARTNET packets to other units controlling them. Since its not outputting anything locally we have more time to do calculations so its possible to use one unit to control many units in sync and only the sender need a MIC or Audio in to do the FFT data calculations.
 
-There are effects that can be added to each strip/form.
+#Normal mode:
+The unit plays Palettes or takes an input from a MIC / audio In  that is connected to a MSGEQ7 chip to get FFT data to fill the LEDs.
 
-It should work with any ESP32 it was designed on a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
+There are effects that can be added to each strip
 
-FFT data can be sent to other units (ESP8266) over udp multicast. (not tested on esp32)
+It should work with any ESP32 it was designed for a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
+But we have decided to switch to an OLIMEX board since Ethernet and and SD card are alot more user friendly. For professional lighting solutions Wifi is not possible since the Party crowd with there mobile phones would interrupt the led output. 
 
 # Work In progress 
 The SW is working this Documentation + wiki is still missing some Stuff.
 
-I have started to move to the ESP32. Therfore i have branched out the last working version for the ESP8266. I am calling that version 1.0. (Branch = ESP8266-release-1) The ESP8266 version is running rock solid, on my test Led Crystalgrid it was running for 4 months without any interuptions.
+I have finished to move to the ESP32. Therfore i have branched out the last working version for the ESP8266. I am calling that version 1.0. (Branch = ESP8266-release-1) The ESP8266 version is running rock solid, on my test Led Crystalgrid it was running for 4 months without any interruptions. This old version does not have many of the new cool features such as Mixing layers.
 
 The ESP32 Version is working, and is in active development.
 
-A basic PCB design is ready and will be posted after the Betatesters are done with testing.
+A basic PCB design is ready but we have decided to do a new Version for the Crowdfunding campaign that includes Ethernet, SD card and an audio jack.
 
 The PCB has 2 variable resistors, one for Brightness and the other for FPS. One button, if the button is pressed during boot the unit will go into AP mode with a hardcoded AP password (love4all) even if wifi is disabled in the configuration.
 
-All configurations are saved to the SPIFFS. And can be edited over HTTP once the editor is working again on the ESP32.
-
-Some of the newest settings are still missing from the OSC configuration, like WIFI_POWER so you can let it run without wifi.
-
-APA102 leds are not working 100% on the ESP32 still trying to figure it out.
+All configurations are saved to the SPIFFS or SD card. And can be edited over HTTP. "http://IP/edit"
 
 
 
@@ -74,8 +81,8 @@ The configuration is done in the config_TPM.h
 
 
 ## Where we need help
-the editor under http://ip.address/edit takes to long to load.
-a nice fast loading editor is in the works. (old editor not working on ESP32) 
+More FX ideas.
+A custom fast purpose built interface instead of using Open stage control. We have started implementing it in Unreal Engine but would need help from un Unreal engine expert.
 
 
 ## Credit where credit is due
