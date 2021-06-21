@@ -10,50 +10,51 @@ The Software has gone over some major changes in the config files please be awar
 We are preparing for the crowdfunding this year (2021) for the Hardware with some Nice Lights to go with it. 
 New info, pictures ect will be added in the next weeks. If you find any bugs please post them!
 
-
-
 # TinyPixelMapper : What is it?
 It is a PixelMapping software for a ESP32 Chip.
 
 The main LED driving library is [FastLed](https://github.com/FastLED/FastLED).
 
-Configuration is done over [Open Stage control](https://github.com/jean-emmanuel/open-stage-control/releases)
+# Crowdfunding Campaign
+We are planning on starting a crowdfunding campaign in the summer 2021. In the crowdfunding you will have to possibility to get the Hardware and purpose-built Lamps that show what the Tinypixelmapper can do. After crowdfunding the PCB’s will be opensource.
+We are negotiation with an artist for permission to use his music. Once this is done we will start posting videos of the different lamps that will be available. 
 
-Ther are 3 main modes: Artnet Recive, Arntet Send (16 universes) and Normal Led output.
+# Configuration Interface:
+Configuration is done over OSC, with the opensource Software [Open Stage Control](https://openstagecontrol.ammd.net/)
+We are still on the Open Stage Control version 0.47.1  although the SW is already on version 1.9 or above the performance of the SW is much better on the old version and we have not found a way to get the CHARTS to work on the new Version.
 
-In the Artnet Recive mode it becomes a ARTNET node on the network. (hardcoded to 4 universes max, no mapping at the moment)
+Open Stage Control creates a HTTP Server, so you can connect from any device on your network over a web browser. To configure the Tinypixelmapper.
+There is also a confuration file with just simple options like loading a save file, available for [TouchOSC](https://hexler.net/touchosc) a App available in the Google/ Apple App stores. Any OSC Software can be used to configure the System. So it is also possible to use Midi Controllers with faders to Play with the unit.
 
-In the Artnet Send mode it becomes a ARTNET Master node on the network. And sends it output to Arntent nodes and does not output locally. 
+# Modes
+There are different modes of operation: Artnet and Normal.
 
-In Normal mode it playes Palletes or takes an input from a MIC that is connected to a MSGEQ7 chip to get FFT data to fill the leds. You have the option to Mask the pallete over the FFT data or add/subtract it. Same for FX data. The new board will have an Audio Jack and not just a mic.
+# Artnet Mode:
+In the Artnet mode it becomes a ARTNET sender or receiver node on the network. 
+As an Artnet receiver there is a special sub mode called “ARTNET REMAPPING” In this mode the Artnet data replaces the FFT data from the MIC / Audio IN. Instead of addressing the LEDs directly. This allows us to use almost all the features of the SW like mirroring, rotation or other effects. So you only need to send 1 Universe (170 pixel) an Audio Color Scroll  from any Mapping Software and let the Tinypixelmapper mix it against pallets, Since we don’t have any real FFT data the FFT DATA BIN triggers don’t work in this mode.
+As an Artnet sender, the unit does not output anything to the locally connected LED outputs. Instead it sends ARTNET packets to other units controlling them. Since its not outputting anything locally we have more time to do calculations so its possible to use one unit to control many units in sync and only the sender need a MIC or Audio in to do the FFT data calculations.
 
-You can configre Forms Start Led Nr Leds and then selecht what to do with those Forms and mix Layers onto each other.
+#Normal mode:
+The unit plays Palettes or takes an input from a MIC / audio In  that is connected to a MSGEQ7 chip to get FFT data to fill the LEDs.
 
-There are effects that can be added to each Form such as FFT data or Palletes.
+There are effects that can be added to each strip
 
-It should work with any ESP32 it was designed on a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
-
-FFT data can be sent to other units (ESP8266) over udp multicast. (not tested on esp32) Will work with ARnet Send on the ESP32.
+It should work with any ESP32 it was designed for a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
+But we have decided to switch to an OLIMEX board since Ethernet and and SD card are alot more user friendly. For professional lighting solutions Wifi is not possible since the Party crowd with there mobile phones would interrupt the led output. 
 
 # Work In progress 
 The SW is working this Documentation + wiki is still missing some Stuff.
 
-I have moved to the ESP32. Therfore i have branched out the last working version for the ESP8266. I am calling that version 1.0. (Branch = ESP8266-release-1) The ESP8266 version is running rock solid, on my test Led Crystalgrid it was running for 4 months without any interuptions.
+I have finished to move to the ESP32. Therfore i have branched out the last working version for the ESP8266. I am calling that version 1.0. (Branch = ESP8266-release-1) The ESP8266 version is running rock solid, on my test Led Crystalgrid it was running for 4 months without any interruptions. This old version does not have many of the new cool features such as Mixing layers.
 
 The ESP32 Version is working, and is in active development.
 
-# Hardware
-A basic PCB design is ready and will be posted after the Betatesters are done with testing. 
+A basic PCB design is ready but we have decided to do a new Version for the Crowdfunding campaign that includes Ethernet, SD card and an audio jack.
 
 The PCB has 2 variable resistors, one for Brightness and the other for FPS. One button, if the button is pressed during boot the unit will go into AP mode with a hardcoded AP password (love4all) even if wifi is disabled in the configuration.
 
-We are planning to Crowdfund the Hardware with nice Lamps that are designed to take advantage of the hardware. The Main developer is part of a Crew that builds Stages for big PSY festivals like Momento Demento in Kroatia. And we will have some nice Audio reactive Psy Lamps for you. 
+All configurations are saved to the SPIFFS or SD card. And can be edited over HTTP. "http://IP/edit"
 
-# Saving Setups
-All configurations are saved to the SPIFFS. And can be edited over HTTP once the editor is working again on the ESP32 (problem in the esp core/fix is tested and working).
-
-Read the Wiki to understand whats going on. howto configure it. 
-Videos are on the way. 
 
 
 ## Required Library's
@@ -82,16 +83,20 @@ Videos are on the way.
 
 
 ## Installation 
-Goto the Wiki
+TODO in wiki ?
 
 ## Configuration
-The configuration is done in the config_TPM.h settings loaded from the SPIFFS will have a huger priority than what is hardcoded in this file. Only use it for initial setup.
+The configuration is done in the config_TPM.h
 
 
 ## Where we need help
-We need a real APP. Im am getting to the limits of what we can do with TouchOSC. OSC will always be available so that its possible to use a midi-keyboard to play with the TinyPixelMapper
+More FX ideas.
+A custom fast purpose built interface instead of using Open stage control. We have started implementing it in Unreal Engine but would need help from un Unreal engine expert.
 
 
+## Credit where credit is due
+We used code sniblets from:
+TODO
 
 ## Donation Box
 TODO
