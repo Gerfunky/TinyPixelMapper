@@ -2,11 +2,29 @@
 #include "config_TPM.h"
 
 
-	#include <WiFiMulti.h>	
-	#include <WiFiUdp.h>
+#ifdef OMILEX32_POE_BOARD
+	#define ETH_CLK_MODE ETH_CLOCK_GPIO17_OUT
+	#define ETH_PHY_POWER 12
+
+	#include <ETH.h>
+
+
+	static bool eth_connected = false;
+
+
+
+#else 
+		#include <WiFiMulti.h>	
+		#include <WiFiUdp.h>
+
+#endif
+
+
+
 
 	#include "AsyncUDP.h"
 	//#include <WiFiAP.h>
+
 	#include <ArduinoOTA.h>
 	#include <DNSServer.h>
 
@@ -21,7 +39,10 @@
 #include "tools.h"			// include the Tools for reading and writing bools and DebugMe
 #include "wifi-ota.h"		// needs Wifi and co for data stuctures!!!
 #include "leds.h"			// include for led data structures
-#include "config_fs.h"
+
+#include "config_fs.h"	
+
+
 #include "httpd.h"
 #include "osc.h"
 
@@ -47,8 +68,7 @@ AsyncUDP ntp_udp;
 WiFiUDP  FFT_master;
 WiFiUDP  FFT_slave;
 
-//AsyncUDP FFT_master;
-//AsyncUDP FFT_slave ;
+
 
 
 
@@ -58,7 +78,7 @@ fft_ip_cfg_struct fft_ip_cfg;
 
 // from leds
 
-extern fft_led_cfg_struct fft_led_cfg;
+//extern fft_led_cfg_struct fft_led_cfg;
 
 
 
@@ -102,6 +122,40 @@ String WiFi_Get_Name()
 
 }
 
+
+int NTP_get_time_h()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_hour;
+
+}
+int NTP_get_time_m()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_min;
+
+}
+int NTP_get_time_s()
+{
+	struct tm timeinfo;
+	if (!getLocalTime(&timeinfo)) {
+		debugMe("Failed to obtain time");
+		return 0;
+	}
+	//debugMe("***********************");
+	return timeinfo.tm_sec;
+
+}
 
 
 void WiFi_NTP_printTime() {
@@ -323,7 +377,7 @@ if(!WiFi.config(IPAddress(169, 254, 1, 3), IPAddress(10, 0, 0, 1), IPAddress(255
 
 void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 {
-	if (get_bool(WIFI_EVENTS) == true || event == 7 )   // DHCP response (7) or all
+	//if (get_bool(WIFI_EVENTS) == true || event == 7 )   // DHCP response (7) or all
 	{
 		debugMe("[WiFi-event] event:"+ String(event));
 		//ip4_addr_t  infoIP4;
@@ -438,25 +492,45 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			debugMe("station or ap or ethernet interface v6IP addr is preferred");
 			break;
 
-		case	SYSTEM_EVENT_ETH_START:                /**<19 ESP32 ethernet start */
-			debugMe("ethernet start");
+#ifdef OMILEX32_POE_BOARD
+
+		case SYSTEM_EVENT_ETH_START:
+			debugMe("ETH Started");
+			//set eth hostname here
+			ETH.setHostname(wifi_cfg.APname);
 			break;
 
 		case	SYSTEM_EVENT_ETH_STOP:                 /**<20 ESP32 ethernet stop */
-			debugMe("ethernet stop");
-			break;
+			debugMe("ETH Stopped");
+      		eth_connected = false;
+      break;
 
 		case	SYSTEM_EVENT_ETH_CONNECTED:            /**<21 ESP32 ethernet phy link up */
-			debugMe("ethernet phy link up");
-			break;
+			debugMe("ETH Connected");
+			Wifi_Stop_Network();
+     		break;
 
 		case	SYSTEM_EVENT_ETH_DISCONNECTED:         /**<22 ESP32 ethernet phy link down */
-			debugMe("ethernet phy link down ");
+			debugMe("ETH Disconnected");
+			eth_connected = false;
+			WiFi_Start_Network();
 			break;
 
 		case	SYSTEM_EVENT_ETH_GOT_IP:               /**<23 ESP32 ethernet got IP from connected AP */
-			debugMe("ethernet got IP from connected AP");
+			Wifi_Stop_Network();
+			debugMe("ETH MAC: ",false);
+			debugMe(ETH.macAddress(),false);
+			debugMe(", IPv4: ",false);
+			debugMe(ETH.localIP(),false);
+			if (ETH.fullDuplex()) {
+				debugMe(", FULL_DUPLEX",false);
+			}
+			debugMe(", ",false);
+			debugMe(ETH.linkSpeed(),false);
+			debugMe("Mbps");
+			eth_connected = true;
 			break;
+#endif // OLIMEX Ethernet 
 
 		case 	SYSTEM_EVENT_WIFI_READY:
 			debugMe("WIFI-Ready");
@@ -538,7 +612,11 @@ void WiFi_print_settings()
 }
 
 
-
+void Wifi_Stop_Network()
+{
+	 WiFi.mode(WIFI_OFF);
+	debugMe("Switching Wifi OFF");
+}
 
 
 
@@ -696,7 +774,7 @@ void WIFI_FFT_slave_handle()
 			//debugMe(packetSize);
 			if ((packetSize == 8) && (get_bool(FFT_ENABLE) == true) && (get_bool(FFT_MASTER) == false)) // Its a FFT packet B0 = fps , B1-7 = FFT Bins
 			{
-				fft_led_cfg.fps = FFT_slave.read(); // Get the speed update  first byte
+				LEDS_set_fft_fps( FFT_slave.read()); // Get the speed update  first byte
 				
 				for (uint8_t i = 0; i < 7; i++) LEDS_FFT_enqueue(FFT_slave.read());
 				
@@ -724,7 +802,7 @@ void WIFI_FFT_master_send()
 
 		FFT_master.beginMulticastPacket();
 
-		FFT_master.write(fft_led_cfg.fps);
+		FFT_master.write( LEDS_get_fft_fps());
 		for (uint8_t i = 0; i < 7; i++) FFT_master.write(LEDS_FFT_get_value(i));
 		FFT_master.endPacket();
 	}
@@ -776,7 +854,76 @@ void WiFi_FFT_handle_loop()
 }
 
 
+#endif   // FFT ENABLED
+
+/*
+
+void ETHEvent(WiFiEvent_t event)
+{
+  switch (event) {
+    case SYSTEM_EVENT_ETH_START:
+      debugMe("ETH Started");
+      //set eth hostname here
+      ETH.setHostname(wifi_cfg.APname);
+      break;
+    case SYSTEM_EVENT_ETH_CONNECTED:
+      debugMe("ETH Connected");
+      break;
+    case SYSTEM_EVENT_ETH_GOT_IP:
+      debugMe("ETH MAC: ",false);
+      debugMe(ETH.macAddress(),false);
+      debugMe(", IPv4: ",false);
+      debugMe(ETH.localIP(),false);
+      if (ETH.fullDuplex()) {
+        debugMe(", FULL_DUPLEX",false);
+      }
+      debugMe(", ",false);
+      debugMe(ETH.linkSpeed(),false);
+      debugMe("Mbps");
+      eth_connected = true;
+      break;
+    case SYSTEM_EVENT_ETH_DISCONNECTED:
+      debugMe("ETH Disconnected");
+      eth_connected = false;
+      break;
+    case SYSTEM_EVENT_ETH_STOP:
+      debugMe("ETH Stopped");
+      eth_connected = false;
+      break;
+    default:
+      break;
+  }
+}
+*/
+
+#ifdef OMILEX32_POE_BOARD
+void eth_load_settings()
+{
+		//WiFi.onEvent(ETHEvent); // Start event handler!
+
+
+		ETH.begin();
+		ETH.config(wifi_cfg.ipStaticLocal ,  wifi_cfg.ipDGW,wifi_cfg.ipSubnet,wifi_cfg.ipDNS,wifi_cfg.ipDNS);
+		debugMe("ETH Connecting:",false);
+		uint8_t timer = 0;
+		while(timer < 10)
+		{
+			if (eth_connected)  break;
+			timer++;
+			debugMe(".",false);
+			delay(1000);
+
+		}
+
+		debugMe(String(" IP : "),false);
+		debugMe(ETH.localIP());
+
+
+}
+
 #endif
+
+
 
 
 
@@ -791,7 +938,21 @@ void wifi_setup()
 	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
 	//delay(5000);
-	WiFi_Start_Network();
+	#ifdef OMILEX32_POE_BOARD
+	debugMe(String("OLIMEX!!!  "),true);
+		eth_load_settings();
+		if (!eth_connected)
+		{
+			debugMe(String("eth not connected dropping to Wifi  "),true);
+			//WiFi.onEvent(WiFi_Event); // Start event handler!
+			WiFi_Start_Network();
+
+		}
+	#else
+		
+		WiFi_Start_Network();
+	#endif
+
 	
 	
 	if (get_bool(WIFI_POWER_ON_BOOT))
@@ -828,6 +989,30 @@ void wifi_setup()
 }
 
 
+void ip_services_loop()
+{
+		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
+		//yield();
+		//NTP_parse_response();	// get new packets and flush if not correct.
+		yield();
+		OSC_loop();
+		yield();
+		http_loop();
+		yield();
+		//WiFi_FFT_handle_loop();
+		yield();
+		TelnetDebug.handle();
+		//dnsServer.processNextRequest();
+
+
+}
+
+
+
+
+
+
+
 // the main WiFi Loop 
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
@@ -850,21 +1035,7 @@ void wifi_loop()
 		}
 		if  ((get_bool(WIFI_POWER_ON_BOOT))) 
 		{
-
-		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
-		//yield();
-		//NTP_parse_response();	// get new packets and flush if not correct.
-		yield();
-		OSC_loop();
-		yield();
-		http_loop();
-		yield();
-		//WiFi_FFT_handle_loop();
-		yield();
-		TelnetDebug.handle();
-		//dnsServer.processNextRequest();
-
-
+			ip_services_loop();
 
 		}
 		

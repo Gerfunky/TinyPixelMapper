@@ -5,7 +5,11 @@
 #include "config_TPM.h"
 #include "tools.h"
 #include "leds.h"
-#include "config_fs.h"
+
+#include "config_fs.h"	
+
+
+
 #include <time.h>
 #include "wifi-ota.h"		// needs Wifi and co for data stuctures!!!
 
@@ -92,15 +96,16 @@ void load_bool()
 		led_cfg.max_bri 		= constrain(DEF_MAX_BRI, 1, 255);
 		led_cfg.startup_bri 	= constrain(DEF_MAX_BRI, 1, 255);
 		led_cfg.NrLeds			= constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
-		led_cfg.DataNR_leds[0] 	= constrain(DEF_DATA1_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA1_START_NR);
-		led_cfg.DataStart_leds[0] 	= constrain(DEF_DATA1_START_NR, 0, MAX_NUM_LEDS) ;
-		led_cfg.DataNR_leds[1] 	= constrain(DEF_DATA2_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA2_START_NR);
-		led_cfg.DataStart_leds[1]  	= constrain(DEF_DATA2_START_NR, 0, MAX_NUM_LEDS) ;
-		led_cfg.DataNR_leds[1] 	= constrain(DEF_DATA3_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA3_START_NR);
-		led_cfg.DataStart_leds[2]  	= constrain(DEF_DATA3_START_NR, 0, MAX_NUM_LEDS) ;
-		led_cfg.DataNR_leds[3] 	= constrain(DEF_DATA4_NR_LEDS, 0,MAX_NUM_LEDS - DEF_DATA4_START_NR);
-		led_cfg.DataStart_leds[3]  	= constrain(DEF_DATA4_START_NR, 0, MAX_NUM_LEDS) ;
+		led_cfg.DataNR_leds[0] 	= constrain(DEF_DATA1_NR_LEDS, 0,led_cfg.NrLeds - DEF_DATA1_START_NR);
+		led_cfg.DataStart_leds[0] 	= constrain(DEF_DATA1_START_NR, 0, led_cfg.NrLeds) ;
+		led_cfg.DataNR_leds[1] 	= constrain(DEF_DATA2_NR_LEDS, 0,led_cfg.NrLeds - DEF_DATA2_START_NR);
+		led_cfg.DataStart_leds[1]  	= constrain(DEF_DATA2_START_NR, 0, led_cfg.NrLeds) ;
+		led_cfg.DataNR_leds[1] 	= constrain(DEF_DATA3_NR_LEDS, 0,led_cfg.NrLeds - DEF_DATA3_START_NR);
+		led_cfg.DataStart_leds[2]  	= constrain(DEF_DATA3_START_NR, 0, led_cfg.NrLeds) ;
+		led_cfg.DataNR_leds[3] 	= constrain(DEF_DATA4_NR_LEDS, 0,led_cfg.NrLeds - DEF_DATA4_START_NR);
+		led_cfg.DataStart_leds[3]  	= constrain(DEF_DATA4_START_NR, 0, led_cfg.NrLeds) ;
 		led_cfg.apa102data_rate = constrain(DEF_APA102_DATARATE, 0, 24) ;
+		led_cfg.bootCFG = 17;
 
 		write_bool(DATA1_ENABLE,DEF_DATA1_ENABLE);
 		write_bool(DATA2_ENABLE,DEF_DATA2_ENABLE);
@@ -112,7 +117,6 @@ void load_bool()
 		write_bool(DEBUG_TELNET, DEF_DEBUG_TELNET);
 		write_bool(FFT_ENABLE, DEF_FFT_ENABLE);
 		write_bool(FFT_MASTER, DEF_FFT_MASTER);
-		//write_bool(FFT_AUTO, DEF_AUTO_FFT);	
 		write_bool(FFT_MASTER_SEND, DEF_FFT_MASTER_SEND);
 
 		write_bool(POT_DISABLE,DEF_DISABLE_HW_POTS);

@@ -32,12 +32,12 @@
 
 		// Strip/Form settings do not change!!! 
 		
-		#define _M_NR_FORM_BYTES_ 6				// 2 bytes = 16 forms   // 4 bytes = 32 forms
+		#define _M_NR_FORM_BYTES_ 8				// 2 bytes = 16 forms   // 4 bytes = 32 forms
 		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 6*8 = 64
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
-		#define NR_PALETTS 		16				// how many pallets do we have = 2
+		#define NR_PALETTS 		8				// how many pallets do we have = 2
 		#define NR_PALETTS_SELECT 32 			// how many to choose from with the ones from progmem
 
 		#define MICROS_TO_MIN 60000000
@@ -80,16 +80,22 @@
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
 		unsigned long 	confSwitch_time;	// when to swtich to the next config for sequencer
 		uint8_t 		edit_pal;
+		uint8_t 		bootCFG;
+		uint8_t 		fade_inout_val;				// fade value for load/save
+		uint8_t 		next_config_loadsave;			// whats the next config to load
+	
 	//	unsigned long 	update_FIN_time;			// when to update the leds again
 		uint8_t 		realfps;					// whats the real fps that we have at the moment.
 		uint8_t 		framecounter;				// for counting FPS
 		unsigned long	framecounterUpdateTime; 	// for calculationg fps
+		
+		
 
 	};
 	struct led_master_conf
 	{
-		uint8_t			fire_sparking;		// For fire animation
-		uint8_t			fire_cooling;		// For fire animation
+		//uint8_t			fire_sparking;		// For fire animation
+		//uint8_t			fire_cooling;		// For fire animation
 		uint8_t 		r;					// max Red
 		uint8_t 		g;					// max green
 		uint8_t 		b;					// max blue
@@ -103,7 +109,7 @@
 	};
 
 
-	struct fft_led_cfg_struct
+/*	struct fft_led_cfg_struct
 	{
 		unsigned long	update_time;		// when to update again forFFT vis in Open stage controll
 		float			adjuster;			// an adjuster for the timing of the FFT_FPS
@@ -115,7 +121,7 @@
 
 
 
-	};
+	}; */
 
 
 
@@ -135,7 +141,8 @@
 
 
 	#define MAX_LAYERS_SELECT 48  // up to how many layers can you add
-	#define MAX_LAYERS 33				// what is the max layer Number
+	#define MAX_LAYERS 48 					// what is the max layer Number
+	#define MAX_LAYERS_BASIC 22				// what is the max layer Number
 
 	enum layer_options
 	{
@@ -159,24 +166,30 @@
 
 		_M_LAYER_32_FFT = 17,
 		_M_LAYER_32_PAL = 18,
-		_M_LAYER_32_FX01 = 19,
-		_M_LAYER_32_FIRE = 20,
-		_M_LAYER_32_SHIMMER = 21,
-		_M_LAYER_32_STROBE = 22,
-		_M_LAYER_32_EYES = 23,
-		_M_LAYER_32_ROTATE = 24,
+		_M_LAYER_32_ROTATE = 19,
 
-		_M_LAYER_SAVE_ALPHA = 25,
-		_M_LAYER_SAVE_BETA = 26,
-		_M_LAYER_SAVE_GAMMA = 27,
-		_M_LAYER_SAVE_OMEGA = 28,
+		_M_LAYER_48_FFT = 20,
+		_M_LAYER_48_PAL = 21,
+		_M_LAYER_48_ROTATE = 22,
 
-		_M_LAYER_RUN_ALPHA = 29,
-		_M_LAYER_RUN_BETA = 30,
-		_M_LAYER_RUN_GAMMA = 31,
-		_M_LAYER_RUN_OMEGA = 32,
+		_M_LAYER_00_CLOCK = 24,
+		_M_LAYER_16_CLOCK = 25,
+		
+		
 
-		_M_LAYER_CLEAR = 33,
+
+
+		_M_LAYER_SAVE_ALPHA = 40,
+		_M_LAYER_SAVE_BETA = 41,
+		_M_LAYER_SAVE_GAMMA = 42,
+		_M_LAYER_SAVE_OMEGA = 43,
+
+		_M_LAYER_RUN_ALPHA = 44,
+		_M_LAYER_RUN_BETA = 45,
+		_M_LAYER_RUN_GAMMA = 46,
+		_M_LAYER_RUN_OMEGA = 47,
+
+		_M_LAYER_CLEAR = 48,
 
 
 	};
@@ -194,22 +207,30 @@
 			_M_FORM_PAL_SPEED_FROM_FFT
 		};
 
+		struct form_fx_pal_run_struct
+		{
+					uint16_t 	indexLong;
+					uint8_t		index;				// the pallete index
+		};
+
 		struct form_fx_pal_struct
 		{
-					uint8_t 	pal;			// what pallete for pallete run
 					uint8_t 	level;
-					uint8_t 	mix_mode;
 					uint16_t	index_start;		// Where to start at reset
 					uint16_t	index_add_led;		// how much to add onto the index on 
 					uint16_t	index_add_frame;	// ???
-					uint16_t 	indexLong;
-					uint8_t		index;				// the pallete index
-					uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
-					uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
-					uint8_t 	lvl_bin;			// whats the lvl bin to add to the lvl   , 255 = none
 
 		};
 
+		struct form_fx_pal_singles_struct
+		{
+			uint8_t 	pal;
+			uint8_t 	mix_mode;
+			uint8_t 	triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
+			uint8_t 	lvl_bin;			// whats the lvl bin to add to the lvl   , 255 = none
+			uint8_t 	master_lvl; 		// the master level for the layer
+		};
 
 
 // ***************FX 01 ************************
@@ -230,8 +251,10 @@
 			uint8_t fade;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
 			uint8_t lvl_bin;
+			uint8_t master_lvl;
 
 		};
+
 
 // *************** FX01 Glitter ************************
 
@@ -244,12 +267,14 @@
 
 		struct form_fx_glitter_struct
 		{
-			uint8_t pal;
-			//uint8_t mix_mode;
-			uint8_t level;
 			uint8_t	value;
+
+		};
+		struct form_fx_glitter_bytes_struct
+		{
+			uint8_t pal;
+			uint8_t level;
 			uint8_t glit_bin;
-			//uint8_t color_source;  // 0 = palette, 1 = fft
 			
 		};
 
@@ -272,21 +297,23 @@
 			
 		};
 
+		struct form_fx_dots_run_struct
+		{
+			uint16_t 	indexLong;
+		};
 
 		struct form_fx_dots_struct
 		{
-			uint8_t pal; 					// "FFT color result": 250,"Rotating Hue": 251   others = pal
-			//uint8_t mix_mode;
-			uint8_t level;
-			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
-		    uint8_t	speed;		// Dot speed in BPM
-			uint16_t 	indexLong;
-			uint16_t  index_add;
-			
-			//uint8_t fft_dot_type;
-			//uint8_t normal_dot_type;
-			//uint8_t normal_dot_color;
 
+			uint8_t	nr_dots;		// Nr Juggle Dots or Saw dots
+		    uint8_t	speed;		// Dot speed in BPM			
+			uint16_t  index_add;
+
+		};
+		struct form_fx_dots_bytes_struct
+		{
+			uint8_t pal; 					// "FFT color result": 250,"Rotating Hue": 251   others = pal
+			uint8_t level;
 
 		};
 // *************** FX01 Meteor ************************
@@ -304,14 +331,27 @@
 
 		struct form_fx_meteor_struct
 		{
-			uint8_t color; 
-			uint8_t mix_mode;
-			uint8_t level;
+			//uint8_t color; 
+			//uint8_t mix_mode;
+			//uint8_t level;
 			uint16_t meteorSize;
 			uint8_t meteorTrailDecay;
+			//uint8_t lvl_bin;
+			//uint8_t triggerBin;
+			uint16_t frame_pos; 		
+
+		};
+		struct form_fx_meteor_bytes_struct
+		{
+			uint8_t color; 
+			//uint8_t mix_mode;
+			uint8_t level;
+			//uint16_t meteorSize;
+			//uint8_t meteorTrailDecay;
 			uint8_t lvl_bin;
 			uint8_t triggerBin;
-			uint16_t frame_pos; 		
+			//uint16_t frame_pos; 
+			uint8_t master_lvl;		
 
 		};
 	
@@ -337,6 +377,7 @@
 			uint8_t sparking;
 			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
 			uint8_t lvl_bin;
+			uint8_t master_lvl;
 
 		};
 
@@ -350,16 +391,30 @@
 		};	
 
 
-		struct form_fx_strobe_struct
+		struct form_fx_strobe_run_struct
+		{
+			//uint8_t pal; 
+			//uint8_t mix_mode;
+			//uint8_t level;
+			//uint8_t on_frames;
+			//uint8_t off_frames;
+			uint16_t frame_pos; 		// what fft fx bin to trigger from 255 = none.
+			//uint8_t lvl_bin;
+			//uint8_t triggerBin;
+
+		};
+		struct form_fx_strobe_bytes_struct
 		{
 			uint8_t pal; 
 			uint8_t mix_mode;
 			uint8_t level;
 			uint8_t on_frames;
 			uint8_t off_frames;
-			uint16_t frame_pos; 		// what fft fx bin to trigger from 255 = none.
+			//uint16_t frame_pos; 		
 			uint8_t lvl_bin;
 			uint8_t triggerBin;
+			int8_t master_lvl;
+			
 
 		};
 
@@ -374,7 +429,13 @@
 		};	
 
 
-		struct form_fx_eyes_struct
+		struct form_fx_eyes_run_struct
+		{
+			uint16_t frame_pos; 
+			uint16_t eye_pos;
+
+		};
+		struct form_fx_eyes_bytes_struct
 		{
 			uint8_t color; 
 			uint8_t mix_mode;
@@ -384,12 +445,68 @@
 			uint16_t EyeSpace;
 			uint8_t lvl_bin;
 			uint8_t triggerBin;
-			uint16_t frame_pos; 
-			uint16_t eye_pos;
 			uint8_t  fadeval;	
 			uint16_t pause_frames;	
+			uint8_t master_lvl;	
 
 		};
+
+// *************** Clock ************************
+		#define _M_NR_FORM_CLOCK_OPTIONS_ 9
+		enum form_clock_options
+		{
+			_M_FORM_CLOCK_RUN,
+			
+			_M_FORM_CLOCK_PAL_REVERSED,
+			_M_FORM_CLOCK_PAL_MIRROR,
+			_M_FORM_CLOCK_PAL_BLEND,
+			_M_FORM_CLOCK_PAL_ONECOLOR,
+
+			_M_FORM_CLOCK_HOUR,
+			_M_FORM_CLOCK_MINUET,
+			_M_FORM_CLOCK_SECONDS,
+
+			_M_FORM_CLOCK_24h,
+			
+		};	
+		/*enum form_clock_types
+		{
+			CLOCK_DOT = 0			
+			,CLOCK_BAR = 1
+			,CLOCK_PAL = 2
+
+			
+		};
+*/
+
+		struct form_fx_clock_run_struct
+		{
+			uint16_t pal_index;
+
+		};
+
+		struct form_fx_clock_struct
+		{
+			uint8_t color; 
+			uint8_t level;
+
+			uint16_t pal_speed;
+			uint16_t pal_compression;
+			uint16_t offset;
+
+
+		};
+
+
+		struct form_fx_clock_bytes_struct
+		{
+			uint8_t mix_mode;
+			uint8_t master_lvl;	
+			uint8_t type;
+	
+
+		};
+
 
 
 
@@ -422,19 +539,38 @@
 			uint8_t result;
 	};
 
-		struct form_fx_fft_struct
+		struct form_fx_ffr_run_struct
 		{
-			uint8_t mix_mode;
-			uint8_t level;
-			uint8_t offset;
-			uint8_t extend;
-			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
-			uint8_t lvl_bin;
-			uint8_t color;
 			uint8_t extend_tick;
 
 		};
 
+
+		struct form_fx_fft_struct
+		{
+			//uint8_t mix_mode;
+			uint8_t level;
+			uint8_t offset;
+			uint8_t extend;
+			//uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			//uint8_t lvl_bin;
+			//uint8_t color;
+			
+
+		};
+			struct form_fx_fft_singles_struct
+		{
+			uint8_t mix_mode;
+			//uint8_t level;
+			//uint8_t offset;
+			//uint8_t extend;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
+			uint8_t color;
+			//uint8_t extend_tick;
+			uint8_t master_lvl;
+
+		};
 
 
 // *************** Shimmer ************************
@@ -449,16 +585,33 @@
 
 		struct form_fx_shim_struct
 		{
-			uint8_t pal; 
-			uint8_t mix_mode;
-			uint8_t level;
+		//	uint8_t pal; 
+		//	uint8_t mix_mode;
+		//	uint8_t level;
 			uint8_t xscale;
 		  	uint8_t yscale;
 		  	uint8_t beater;
-			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
-			uint8_t lvl_bin;
+		//	uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+		//	uint8_t lvl_bin;
 
 			uint16_t dist;
+			
+
+
+		};
+		struct form_fx_shim_bytes_struct
+		{
+			uint8_t pal; 
+			uint8_t mix_mode;
+			uint8_t level;
+		//	uint8_t xscale;
+		//  	uint8_t yscale;
+		//  	uint8_t beater;
+			uint8_t triggerBin; 		// what fft fx bin to trigger from 255 = none.
+			uint8_t lvl_bin;
+			uint8_t master_lvl;	
+
+		//	uint16_t dist;
 			
 
 
@@ -503,19 +656,25 @@
 		_M_FORM_MODIFY_MIRROR,
 	};
 
+	struct  form_fx_modify_run_struct
+	{
+		uint16_t RotateFramePos;
+	};
+
 	struct  form_fx_modify_struct
 	{
-		uint16_t RotateFullFrames;
 		uint16_t RotateFixed;
+	};
+
+	struct  form_fx_modify_bytes_struct
+	{
+		uint16_t RotateFullFrames;
 		uint8_t RotateTriggerBin;
-		//uint8_t RotateMixMode;
-
-
-		uint16_t RotateFramePos;
 
 	};
 
-
+ 
+/*
 
 // ***************Copy Leds ************************
 		struct led_Copy_Struct				// copy strips data structure
@@ -528,11 +687,11 @@
 		#define NR_COPY_LED_BYTES 2
 
 
+*/
 
 
 
-
-
+/*
 
 #define _M_NR_GLOBAL_OPTIONS_ 2			// This was a test to make reversing and mirroring global even in ARTNET
 										// Was having werad flickering!!
@@ -543,7 +702,7 @@
 
 	  };
 
-
+*/
 	struct fft_data_struct   // run values
 	{
 		//uint8_t bin_on_red;		// bits select what bin to trigger on
@@ -558,7 +717,7 @@
 	};
 	struct fft_config_struct  // Config Values
 	{
-		byte fft_menu[3] = { 3,7,200 };	// 3 fft data bins for RGB 
+		byte fft_menu[3] = { 1,16,128 };	// 3 fft data bins for RGB 
 		byte fft_menu_bri = 0;			// howmuch to add to bri based on fft data 	
 		byte fft_menu_fps = 0;   		// howmuch to add to the FPS based on FFT data selected.
 		//fft_led_cfg_struct fft_led_cfg = { 0,1,25,240,11,1};
@@ -569,6 +728,13 @@
 		//uint8_t fft_color_fps = 0;
 		//CRGB GlobalColor_result;
 		fft_fxbin_struct fft_fxbin[FFT_FX_NR_OF_BINS] ;
+
+		
+		uint8_t			fps;				// FFT
+		uint8_t			fftAutoMax;			// FFT Auto mode maximum trigger
+		uint8_t			fftAutoMin;			// FFT Auto mode minimum trigger
+		uint16_t		Scale;
+		uint8_t 		viz_fps;
 		
 	};
 	struct fft_run_struct  // run vals 
@@ -582,10 +748,13 @@
 		CRGB GlobalColor_result;
 
 		fft_fxbin_run_struct  fft_fxbin[FFT_FX_NR_OF_BINS] ;
+
+		unsigned long	update_time;		// when to update again forFFT vis in Open stage controll
+		float			adjuster;			// an adjuster for the timing of the FFT_FPS
 		
 	};
 		
-#define NO_OF_SAVE_LAYERS 5
+#define NO_OF_SAVE_LAYERS 4
 	struct layer_struct
 	{
 		uint8_t save_mix[NO_OF_SAVE_LAYERS];
@@ -601,8 +770,12 @@
 
 //******************** DEcks *******************
 
+#define NR_FX_BYTES  4
+#define NR_FX_PARTS  (NR_FX_BYTES * 8)
 
 
+
+// The RUN struct these values change with calucations not relevant for saving.
 struct deck_run_struct
 {
 		CRGBArray<MAX_NUM_LEDS> leds_FFT_history;
@@ -615,7 +788,64 @@ struct deck_run_struct
 		fft_data_struct 	fft_data[7];
 		fft_run_struct  	fft;
 		CRGBArray<MAX_NUM_LEDS> SaveLayers[NO_OF_SAVE_LAYERS];
+		form_fx_ffr_run_struct form_fx_fft[NR_FORM_PARTS];
+		form_fx_pal_run_struct  form_fx_pal[NR_FORM_PARTS]; 
+		form_fx_modify_run_struct form_fx_modify[NR_FORM_PARTS];
+		form_fx_dots_run_struct form_fx_dots[NR_FX_PARTS];
+		form_fx_eyes_run_struct form_fx_eyes[NR_FX_PARTS];
+		form_fx_strobe_run_struct form_fx_strobe[NR_FX_PARTS] ;
+		form_fx_clock_run_struct form_fx_clock[NR_FX_PARTS];
+		
 };
+
+
+
+struct deck_fx1_struct
+{
+	form_fx1_struct form_fx1[NR_FX_BYTES];
+	
+	form_fx_shim_struct form_fx_shim[NR_FX_PARTS];
+	form_fx_shim_bytes_struct form_fx_shim_bytes[NR_FX_BYTES];
+
+	form_fx_fire_struct form_fx_fire_bytes[NR_FX_PARTS]; 
+	//form_fx_fire_bytes_struct form_fx_fire_bytes[NR_FX_BYTES]; 
+
+	form_fx_glitter_struct form_fx_glitter[NR_FX_PARTS];
+	form_fx_glitter_bytes_struct form_fx_glitter_bytes[NR_FX_BYTES];
+
+	form_fx_dots_struct form_fx_dots[NR_FX_PARTS];
+	form_fx_dots_bytes_struct form_fx_dots_bytes[NR_FX_BYTES];
+
+	
+	form_fx_strobe_bytes_struct form_fx_strobe_bytes[NR_FX_BYTES] ;
+
+
+	form_fx_eyes_bytes_struct  form_fx_eyes_bytes[NR_FX_BYTES];
+
+	form_fx_meteor_struct form_fx_meteor[NR_FX_PARTS];
+	form_fx_meteor_bytes_struct form_fx_meteor_bytes[NR_FX_BYTES];
+
+	form_fx_clock_struct  form_fx_clock[NR_FX_PARTS];
+	form_fx_clock_bytes_struct  form_fx_clock_bytes[NR_FX_BYTES];
+
+
+	byte form_menu_fx1[NR_FX_BYTES][_M_NR_FORM_FX1_OPTIONS_];
+	byte form_menu_dot[NR_FX_BYTES][_M_NR_FORM_DOT_OPTIONS_];
+	byte form_menu_fire[NR_FX_BYTES][_M_NR_FORM_FIRE_OPTIONS_];
+	byte form_menu_shimmer[NR_FX_BYTES][_M_NR_FORM_SHIMMER_OPTIONS_];
+
+
+	byte form_menu_glitter[NR_FX_BYTES][_M_NR_FORM_GLITTER_OPTIONS_];
+	byte form_menu_strobe[NR_FX_BYTES][_M_NR_FORM_STROBE_OPTIONS_];
+	byte form_menu_eyes[NR_FX_BYTES][_M_NR_FORM_EYES_OPTIONS_];
+	byte form_menu_meteor[NR_FX_BYTES][_M_NR_FORM_METEOR_OPTIONS_];
+
+	byte form_menu_clock[NR_FX_BYTES][_M_NR_FORM_CLOCK_OPTIONS_];
+
+	
+	
+};
+
 
 struct deck_cfg_struct
 {
@@ -628,33 +858,30 @@ struct deck_cfg_struct
 	fft_config_struct 	fft_config;
 
 	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
+
 	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];
-	form_fx_shim_struct form_fx_shim[NR_FORM_PARTS];
-	form_fx_fire_struct form_fx_fire[NR_FORM_PARTS]; 
+	form_fx_pal_singles_struct form_fx_pal_singles[_M_NR_FORM_BYTES_];
+
 	form_fx_fft_struct form_fx_fft[NR_FORM_PARTS];
-	form_fx1_struct form_fx1[NR_FORM_PARTS];
-	form_fx_glitter_struct form_fx_glitter[NR_FORM_PARTS];
-	form_fx_dots_struct form_fx_dots[NR_FORM_PARTS];
-	form_fx_strobe_struct form_fx_strobe[NR_FORM_PARTS] ;
-	form_fx_eyes_struct form_fx_eyes[NR_FORM_PARTS];
-	form_fx_meteor_struct form_fx_meteor[NR_FORM_PARTS];
-	form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
+	form_fx_fft_singles_struct form_fx_fft_signles[_M_NR_FORM_BYTES_];
+
+	
+
+	//form_fx1_struct form_fx1[NR_FORM_PARTS];
+
+
+
 
 	CRGBPalette16 LEDS_pal_cur[NR_PALETTS];
 
 
 	byte form_menu_pal[_M_NR_FORM_BYTES_][_M_NR_FORM_PAL_OPTIONS_];
 	byte form_menu_fft[_M_NR_FORM_BYTES_][_M_NR_FORM_FFT_OPTIONS_];
-	byte form_menu_fire[_M_NR_FORM_BYTES_][_M_NR_FORM_FIRE_OPTIONS_];
-	byte form_menu_shimmer[_M_NR_FORM_BYTES_][_M_NR_FORM_SHIMMER_OPTIONS_];
-	byte form_menu_fx1[_M_NR_FORM_BYTES_][_M_NR_FORM_FX1_OPTIONS_];
-	byte form_menu_dot[_M_NR_FORM_BYTES_][_M_NR_FORM_DOT_OPTIONS_];
-	byte form_menu_glitter[_M_NR_FORM_BYTES_][_M_NR_FORM_GLITTER_OPTIONS_];
-	byte form_menu_strobe[_M_NR_FORM_BYTES_][_M_NR_FORM_STROBE_OPTIONS_];
-	byte form_menu_eyes[_M_NR_FORM_BYTES_][_M_NR_FORM_EYES_OPTIONS_];
-	byte form_menu_meteor[_M_NR_FORM_BYTES_][_M_NR_FORM_METEOR_OPTIONS_];
-	byte form_menu_modify[_M_NR_FORM_BYTES_][_M_NR_FORM_MODIFY_OPTIONS_];
 
+	form_fx_modify_struct form_fx_modify[NR_FORM_PARTS];
+	form_fx_modify_bytes_struct form_fx_modify_bytes[_M_NR_FORM_BYTES_];
+
+	byte form_menu_modify[_M_NR_FORM_BYTES_][_M_NR_FORM_MODIFY_OPTIONS_];
 
 
 
@@ -663,7 +890,14 @@ struct deck_cfg_struct
 struct deck_struct
 {
 	deck_cfg_struct cfg;
+	deck_fx1_struct fx1_cfg;
 	deck_run_struct run;
+};
+
+struct save_struct
+{
+	deck_cfg_struct cfg;
+	deck_fx1_struct fx1_cfg;
 };
 
 
@@ -686,6 +920,7 @@ struct deck_struct
 	void LEDS_loop();
 	void LEDS_setup();
 
+	void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr);
 	float LEDS_get_FPS(); // osc.cpp
 
 	void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
@@ -698,6 +933,8 @@ struct deck_struct
 	void LEDS_pal_load(deck_struct* deckref, uint8_t pal_no, uint8_t pal_menu)	;
 	void LEDS_pal_load(CRGBPalette16* palref, uint8_t pal_no, uint8_t pal_menu) ;
 	
+	void LEDS_clear_all_layers(uint8_t deckSelected);
+	void LEDS_default_layers(uint8_t deckSelected);
 								//osc.cpp
 
 	void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3]);									 // wifi-ota
@@ -720,6 +957,8 @@ struct deck_struct
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
 
+	uint8_t LEDS_get_fft_fps();
+	void LEDS_set_fft_fps(uint8_t inFPS);
 
 	uint8_t LEDS_get_playNr(); 
 	uint8_t LEDS_get_bri();

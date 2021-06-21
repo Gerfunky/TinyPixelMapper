@@ -1,3 +1,0 @@
-add reset all strips to 0
-reset all forms to 0 
-

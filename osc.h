@@ -12,16 +12,13 @@
 #include "IPAddress.h"
 
 
-#define OSC_BUNDLE_SEND_COUNT 20				// how many OSC messages to send in one bundle.
+#define OSC_BUNDLE_SEND_COUNT 18				// how many OSC messages to send in one bundle.
 #define OSC_FX_BUNDLE_SEND_COUNT 6				// how many OSC messages to send in one bundle.
 #define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
 #define VIZ_FPS_MAX 15
 #define OSC_QEUE_ADD_LEN 30
 //#define OSC_MC_SERVER_DISABLED
 
-
-//#define OSC_MULTIPLY_OPTIONS 11					// how many multiply options to add to input from touchosc
-//#define NO_OF_PALLETS 2
 
 struct osc_cfg_struct				// OSC configuration structure
 {
@@ -37,9 +34,10 @@ struct osc_cfg_struct				// OSC configuration structure
 
 void OSC_setup();		// wifi-ota.h
 void OSC_loop();		// wifi-ota.h
+void osc_StC_Load_confname_Refresh(uint8_t sel_save_no);
 //void osc_StC_FFT_vizIt(); 
 
-
+void osc_StC_Send_Confname(uint8_t SaveNo, char ConfName[]);
 
 
 

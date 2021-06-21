@@ -2,7 +2,11 @@
 // artnet
 	#include "config_TPM.h"
     #include "tpm_artnet.h"
-    #include "config_fs.h"
+
+
+		#include "config_fs.h"	
+
+
     #include "tools.h"
     #include "leds.h"
     #include <ArtnetWifi.h>
@@ -123,30 +127,13 @@
 		// enable artnet, This is a exclusice mode other settings dont apply
 		WiFi_artnet_Load_Vars();
 
-
-
-		// byte loc_ip = WiFi.localIP();
-		// debugMe("enable artnet");
-		//byte artnet_mac[] = DEF_ARTNET_MAC ;
 		artnet.begin(	);
 
 		if(get_bool(ARTNET_RECIVE)) 
-		//artnet.begin(artnet_mac, 0);   // mac and ip setting useless since were setting ip for the esp8266 
 		artnet.setArtDmxCallback(LEDS_artnet_in);  // function in leds with show
         
 
 	}
 
 
-	/*void WiFi_artnet_setup()
-	{
 
-		//the Artnet setup 
-		if (get_bool(ARTNET_ENABLE)== true)	WiFi_artnet_enable();
-
-
-	}  */
-
-
-
-// basic WiFi

@@ -1,5 +1,7 @@
 // config_fs.h
 
+
+
 #ifndef _CONFIG_FS_h
 #define _CONFIG_FS_h
 
@@ -18,7 +20,7 @@
 
 
 // Public function
-void FS_setup_SPIFFS();
+void FS_setup();
 
 
 
@@ -33,7 +35,7 @@ void FS_setup_SPIFFS();
 	void FS_Bools_write(uint8_t conf_nr);			// osc.cpp
 	void FS_osc_delete_all_saves();					//osc.cpp
 	
-	boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf)  ;		//osc.cpp  , leds.cpp
+	boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf, deck_fx1_struct* targetFXConf)  ;		//osc.cpp  , leds.cpp
 	boolean FS_check_Conf_Available(uint8_t play_NR); // leds.cpp	
 	void FS_play_conf_write(uint8_t conf_nr);		//osc.cpp
 	void FS_play_conf_clear(uint8_t conf_nr) ;		// delete a conf file
@@ -60,7 +62,8 @@ void FS_setup_SPIFFS();
 	boolean FS_Bools_read(uint8_t conf_nr);			// Tools
 	boolean FS_get_PalyConfSatatus(uint8_t bit_nr);
 
-	
+	void FS_play_conf_readSendSavenames( ) ;
 
 #endif
+
 

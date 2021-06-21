@@ -169,9 +169,9 @@
 		#define BTN_PIN 4 			// for a button 
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define POTI_BRI_PIN 35 	// For Brightness 
+		#define POTI_BRI_PIN 13 	// For Brightness 
 		#define POTI_FPS_PIN 36 	// for speed
-		#define BTN_PIN 39 			// for a button on omilex
+		#define BTN_PIN 34 			// for a button on omilex
 #endif
 
 
@@ -200,7 +200,7 @@
 #ifdef OMILEX32_POE_BOARD
 		#define MSGEQ7_INPUT_PIN  33 // input from mic  
 		#define MSGEQ7_STROBE_PIN 32 // stobe pin
-		#define MSGEQ7_RESET_PIN  16 // reset pin
+		#define MSGEQ7_RESET_PIN  35 // reset pin
 #endif
 /*
 
