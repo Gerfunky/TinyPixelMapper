@@ -2153,6 +2153,11 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/layreset",addrOffset))   	{ LEDS_clear_all_layers(0) ; for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 			else if (msg.fullMatch("/layall",addrOffset))   	{ LEDS_default_layers(0) ;   for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 
+			else if (msg.fullMatch("/H",addrOffset))   	{  tpm_settime(NTP_get_time_s(), NTP_get_time_m(), msg.getInt(0));   }
+			else if (msg.fullMatch("/M",addrOffset))   	{  tpm_settime(NTP_get_time_s(), msg.getInt(0), NTP_get_time_h());   }
+			else if (msg.fullMatch("/S",addrOffset))   	{  tpm_settime(msg.getInt(0)   , NTP_get_time_m(), NTP_get_time_h());   }
+
+
 			else if (msg.fullMatch("/confname",addrOffset))		{ 
 				int length=msg.getDataLength(0);    
 				memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		); 

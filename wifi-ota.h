@@ -75,10 +75,12 @@
  int NTP_get_time_h();
  int NTP_get_time_m();
  int NTP_get_time_s();
-
+ void tpm_settime(int sc, int mn, int hr);
 
  void Wifi_Stop_Network();
  void WiFi_Start_Network();
+
+
 
 #endif
 

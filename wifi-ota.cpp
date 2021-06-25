@@ -122,6 +122,43 @@ String WiFi_Get_Name()
 
 }
 
+// taken from https://github.com/fbiego/ESP32Time/blob/main/ESP32Time.cpp
+
+/*!
+    @brief  set the internal RTC time
+    @param  epoch
+            epoch time in seconds
+    @param  ms
+            microseconds (optional)
+*/
+void tpm_settime(long epoch, int ms) {
+  struct timeval tv;
+  tv.tv_sec = epoch;  // epoch time (seconds)
+  tv.tv_usec = ms;    // microseconds
+  settimeofday(&tv, NULL);
+}
+
+
+void tpm_settime(int sc, int mn, int hr)
+{
+  // seconds, minute, hour, day, month, year $ microseconds(optional)
+  // ie setTime(20, 34, 8, 1, 4, 2021) = 8:34:20 1/4/2021
+  struct tm t = {0};        // Initalize to all 0's
+  t.tm_year = 2020 - 1900;    // This is year-1900, so 121 = 2021
+  t.tm_mon = 12 - 1;
+  t.tm_mday = 1;
+  t.tm_hour = hr;
+  t.tm_min = mn;
+  t.tm_sec = sc;
+  time_t timeSinceEpoch = mktime(&t);
+  tpm_settime(timeSinceEpoch, 0);
+
+
+
+}
+
+
+
 
 int NTP_get_time_h()
 {
