@@ -1920,7 +1920,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[3] 		= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS - led_cfg.DataStart_leds[3] ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[3]  	= uint16_t(constrain(in_int, 0,MAX_NUM_LEDS));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate 	= uint8_t(constrain(in_int, 1,24));
-					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.bootCFG 			= uint8_t(constrain(in_int, 0,MAX_NR_SAVES+1));} else led_cfg.bootCFG  = 16;
+					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.bootCFG 			= uint8_t(constrain(in_int, 0,MAX_NR_SAVES));} else led_cfg.bootCFG  = MAX_NR_SAVES;
 						
 
 				}

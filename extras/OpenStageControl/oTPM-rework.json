@@ -1619,12 +1619,12 @@
             },
             {
               "type": "panel",
-              "top": 10,
-              "left": 1210,
+              "top": "2%",
+              "left": "70%",
               "id": "panel_28",
               "linkId": "",
-              "width": 170,
-              "height": 70,
+              "width": "15%",
+              "height": "7%",
               "label": "Time",
               "color": "auto",
               "css": "",
@@ -4872,7 +4872,7 @@
                           "wrap": false,
                           "align": "",
                           "default": "",
-                          "value": "Pallets go from 0 to 4096.\nThere aae 16 colors.\nThe colos have 256 shades\n between them",
+                          "value": "Pallets go from 0 to 4096.\nThere are 16 colors.\nThe colors have 256 shades\n between them.",
                           "preArgs": [],
                           "address": "/text_5"
                         }

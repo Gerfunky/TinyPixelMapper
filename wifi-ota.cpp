@@ -144,9 +144,9 @@ void tpm_settime(int sc, int mn, int hr)
   // seconds, minute, hour, day, month, year $ microseconds(optional)
   // ie setTime(20, 34, 8, 1, 4, 2021) = 8:34:20 1/4/2021
   struct tm t = {0};        // Initalize to all 0's
-  t.tm_year = 2020 - 1900;    // This is year-1900, so 121 = 2021
-  t.tm_mon = 12 - 1;
-  t.tm_mday = 1;
+  t.tm_year = 2021 - 1900;    // This is year-1900, so 121 = 2021
+  t.tm_mon = 7 - 1;
+  t.tm_mday = 4;
   t.tm_hour = hr;
   t.tm_min = mn;
   t.tm_sec = sc;
@@ -164,7 +164,7 @@ int NTP_get_time_h()
 {
 	struct tm timeinfo;
 	if (!getLocalTime(&timeinfo)) {
-		debugMe("Failed to obtain time");
+		debugMe("Failed to obtain time_H");
 		return 0;
 	}
 	//debugMe("***********************");
@@ -175,7 +175,7 @@ int NTP_get_time_m()
 {
 	struct tm timeinfo;
 	if (!getLocalTime(&timeinfo)) {
-		debugMe("Failed to obtain time");
+		debugMe("Failed to obtain time_m");
 		return 0;
 	}
 	//debugMe("***********************");
@@ -186,7 +186,7 @@ int NTP_get_time_s()
 {
 	struct tm timeinfo;
 	if (!getLocalTime(&timeinfo)) {
-		debugMe("Failed to obtain time");
+		debugMe("Failed to obtain time_s");
 		return 0;
 	}
 	//debugMe("***********************");
@@ -200,9 +200,13 @@ void WiFi_NTP_printTime() {
 	struct tm timeinfo;
 	
 	if (!getLocalTime(&timeinfo)) {
-		debugMe("Failed to obtain time");
+		debugMe("Failed to obtain time_print");
+		tpm_settime(0,0,0)	;
 		return;
 	}
+	
+
+	
 	//debugMe("***********************");
 		debugMe(timeinfo);
 

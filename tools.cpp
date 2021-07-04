@@ -105,7 +105,7 @@ void load_bool()
 		led_cfg.DataNR_leds[3] 	= constrain(DEF_DATA4_NR_LEDS, 0,led_cfg.NrLeds - DEF_DATA4_START_NR);
 		led_cfg.DataStart_leds[3]  	= constrain(DEF_DATA4_START_NR, 0, led_cfg.NrLeds) ;
 		led_cfg.apa102data_rate = constrain(DEF_APA102_DATARATE, 0, 24) ;
-		led_cfg.bootCFG = 17;
+		led_cfg.bootCFG = 16;
 
 		write_bool(DATA1_ENABLE,DEF_DATA1_ENABLE);
 		write_bool(DATA2_ENABLE,DEF_DATA2_ENABLE);
