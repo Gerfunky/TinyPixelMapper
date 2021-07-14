@@ -2252,7 +2252,7 @@ void LEDS_setup()
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
 	 LEDS_load_default_play_conf();	
-	if (led_cfg.bootCFG != 16) FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
+	if (led_cfg.bootCFG != MAX_NR_SAVES) FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
 ;	
 
 	LEDS_pal_reset_index();

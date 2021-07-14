@@ -17,7 +17,8 @@
 
 //#define ARTNET_DISABLED 				// disables artnet, wont be compiled 
 //#define OSC_MC_SERVER_DISABLED
-#define OVERWRITE_INIT_CONF_ON	false		//Overwrite, wifi, device and led settings to defaut
+#define OVERWRITE_INIT_CONF_ON	false 
+//Overwrite, wifi, device and led settings to defaut
 
 #define DEF_BOOT_DEBUGING  true  // Set to true to get Debuging info on serial port during boot. else set to false  
 #define DEF_SERIAL_SPEED 115200   
@@ -37,10 +38,10 @@
 
 // Wifi
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
-	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
+	#define DEF_WIFI_MODE 		false							// false = client  , true = AP
 	#define DEF_WIFI_EVENTS		false							// Show wifievents in Console
 
-	#define DEF_AP_NAME			"TinyPixelMapperW3"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperOli"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
@@ -164,14 +165,18 @@
 
 // Variable resistors + Buttons
 #ifdef HUZZAH32_BOARD
-		#define POTI_BRI_PIN 39 	// For Brightness 
-		#define POTI_FPS_PIN 36 	// for speed
-		#define BTN_PIN 4 			// for a button 
+		#define POTI_BRI_PIN 	39 	// For Brightness 
+		#define POTI_FPS_PIN 	36 	// for speed
+		#define BTN_PIN 		4 			// for a button 
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define POTI_BRI_PIN 13 	// For Brightness 
-		#define POTI_FPS_PIN 36 	// for speed
-		#define BTN_PIN 34 			// for a button on omilex
+		#define POTI_BRI_PIN 	5 	// For Brightness   orig 13
+		#define POTI_FPS_PIN 	36 	// for speed
+		#define BTN_PIN 		34 			// for a button on omilex
+
+		#define AUDIO_DPOT_CS 	39    // SPI CS 
+		#define SCK_PIN 		16
+		#define SI_PIN			13
 #endif
 
 
