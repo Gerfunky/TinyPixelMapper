@@ -140,6 +140,7 @@ automation.yaml
 #define MMQT_TOPIC_FUNCTION_BRI     "/bri"
 #define MMQT_TOPIC_FUNCTION_DEVICE  "/device"
 #define MMQT_TOPIC_FUNCTION_FPS     "/fps"
+#define MMQT_TOPIC_FUNCTION_TEMP    "/temp"
 
 //#define MMQT_DEF_NAME           "TPM-WZ"
 #define MMQT_DEF_USER          "lights"

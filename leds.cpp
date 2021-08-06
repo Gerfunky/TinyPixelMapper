@@ -43,8 +43,21 @@
 	#define ANALOG_IN_DEVIDER 16 // devide analog in by this value to get into a 0-255 range 
 
 
+	/*#include <SPI.h>
+	byte address = 0x00;
+	SPIClass * hspi = NULL;
+
+	void Test()
+	{
+		hspi = new SPIClass(HSPI);
+		hspi->begin(SPI_SCK_PIN,-1,SPI_MOSI_PIN,AUDIO_DPOT_CS);
+  		Serial.println("END Setup"); 
+	}
+
+	*/
+
 // -- The core to run FastLED.show()
-#define FASTLED_SHOW_CORE 1
+#define FASTLED_SHOW_CORE 0
 
 void LEDS_G_artnet_master_out();
 void LEDS_run_layers(uint8_t deckSelected);
@@ -82,7 +95,7 @@ deck_struct deck[1] ;
 // ************** FFT Variables
 // FFT Average Buffers for Auto FFT 
 	uint8_t FFT_stage1_sample_count = 0;		    	// used to count the samples in FFT Stage 1  for pulling into Stage 2
-	#define FFT_AVERAGE_SAMPLES 60 //30 //60					// How many samples to take for the FFT average = Stage 1
+	#define FFT_AVERAGE_SAMPLES 30 //30 //60					// How many samples to take for the FFT average = Stage 1
 	RunningAverage fft_bin0(FFT_AVERAGE_SAMPLES);	   // Buffers for the FFT values
 	RunningAverage fft_bin1(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin2(FFT_AVERAGE_SAMPLES);
@@ -91,7 +104,7 @@ deck_struct deck[1] ;
 	RunningAverage fft_bin5(FFT_AVERAGE_SAMPLES);
 	RunningAverage fft_bin6(FFT_AVERAGE_SAMPLES);
 
-	#define FFT_AVERAGE_SAMPLES_STAGE2 10						// How many  samples to take in Stage 2 auto FFT average
+	#define FFT_AVERAGE_SAMPLES_STAGE2 6						// How many  samples to take in Stage 2 auto FFT average
 	RunningAverage fft_bin0stage2(FFT_AVERAGE_SAMPLES_STAGE2);	// Buffers for auto FFT Stage 2
 	RunningAverage fft_bin1stage2(FFT_AVERAGE_SAMPLES_STAGE2);	// one stage to is keppt every second. so with 10 samples we have an average+max of the last 10 seconds.
 	RunningAverage fft_bin2stage2(FFT_AVERAGE_SAMPLES_STAGE2);
@@ -1020,11 +1033,11 @@ uint8_t LEDS_fft_calc_fxbin_result(uint8_t fxbin)
 {
    uint8_t deckNo = 0;
 
-	if(fxbin <  10)       return deck[deckNo].run.fft.fft_fxbin[fxbin].sum;
-	else if(fxbin <  20)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return     deck[deckNo].run.fft.fft_fxbin[fxbin].sum; 												else return 0; }
-	else if(fxbin <  30)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return 255-deck[deckNo].run.fft.fft_fxbin[fxbin].sum;  											else return 255; }
-	else if(fxbin <  40)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val + deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
-	else if(fxbin <  50)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val - deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
+	if(fxbin <  2)       return deck[deckNo].run.fft.fft_fxbin[fxbin].sum;
+	else if(fxbin <  4)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return     deck[deckNo].run.fft.fft_fxbin[fxbin].sum; 												else return 0; }
+	else if(fxbin <  6)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return 255-deck[deckNo].run.fft.fft_fxbin[fxbin].sum;  											else return 255; }
+	else if(fxbin <  8)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val + deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
+	else if(fxbin <  10)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val - deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
 
 
 	return 0;
@@ -1321,7 +1334,7 @@ void LEDS_seqencer_advance()
 
 	}
 
-
+ 
 }
 
 
@@ -1363,7 +1376,7 @@ uint8_t LEDS_fft_fxbin_get_level(uint8_t bin, uint8_t lvl_value)
 	return LEDS_fft_get_fxbin_result(bin,0) ;
 
 }
-
+/*
 uint8_t LEDS_data_or_fftbin(uint8_t inval)
 {		
 	uint8_t deckNo = 0;
@@ -1373,25 +1386,28 @@ uint8_t LEDS_data_or_fftbin(uint8_t inval)
 
 	if(inval < 2)
 	{
+
+
+
 		if(deck[deckNo].run.fft.fft_fxbin[inval].sum > deck[deckNo].cfg.fft_config.fft_fxbin[inval].trrig_val)
 				returnVal = constrain( deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val + deck[deckNo].run.fft.fft_fxbin[inval].sum, 0,255);
 			else returnVal = 0;
 	}
-	else if (inval < 10)
+	else if (inval < 4)
 	{
 			if(deck[deckNo].run.fft.fft_fxbin[inval].sum >  deck[deckNo].cfg.fft_config.fft_fxbin[inval].trrig_val)
 				returnVal = constrain( deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val + deck[deckNo].run.fft.fft_fxbin[inval].sum, 0,255);
 			else returnVal =  deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val;
 
 	}
-	else if (inval < 18)
+	else if (inval < 6)
 	{
 			if(deck[deckNo].run.fft.fft_fxbin[inval].sum >  deck[deckNo].cfg.fft_config.fft_fxbin[inval].trrig_val)
 				returnVal = constrain( deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val - deck[deckNo].run.fft.fft_fxbin[inval].sum, 0,255);
 			else returnVal =  deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val;
 
 	}
-	else if (inval < 20)
+	else if (inval < 8)
 	{
 			if(deck[deckNo].run.fft.fft_fxbin[inval].sum >  deck[deckNo].cfg.fft_config.fft_fxbin[inval].trrig_val)
 				returnVal = constrain( deck[deckNo].cfg.fft_config.fft_fxbin[inval].set_val - deck[deckNo].run.fft.fft_fxbin[inval].sum, 0,255);
@@ -1399,7 +1415,7 @@ uint8_t LEDS_data_or_fftbin(uint8_t inval)
 	}
 	return returnVal;
 }
-
+*/
 
 // Gives back the color based on the dropdown menu 
 CRGB LEDS_select_color(uint8_t selector, uint16_t pal_index, uint8_t deckNo)
@@ -1531,8 +1547,8 @@ void LEDS_run_shimmer(uint8_t z, uint8_t i, uint8_t selectedDeck,CRGB *OutPutLed
 {
 	if ( deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  bitRead(deck[selectedDeck].fx1_cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_RUN], i) == true && ( deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].triggerBin == 255 || LEDS_fft_get_fxbin_result(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].triggerBin,0)  != 0 ))
 	{
-		uint8_t beater_val = LEDS_data_or_fftbin( deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].beater);
-
+		//uint8_t beater_val = LEDS_data_or_fftbin( deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].beater);
+		uint8_t beater_val = deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].beater;
 		uint8_t lvl_select = LEDS_fft_fxbin_get_level(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].lvl_bin, deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].level );
 		lvl_select = scale8(lvl_select, deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].master_lvl );
 		deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].dist =  tpm_fx.Shimmer(OutPutLedArray,  LEDS_pal_get(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].pal) , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].dist, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].xscale, deck[selectedDeck].fx1_cfg.form_fx_shim[i + (z * 8)].yscale, beater_val ,  MixModeType(deck[selectedDeck].fx1_cfg.form_fx_shim_bytes[z].mix_mode), lvl_select ,  TBlendType(bitRead(deck[selectedDeck].fx1_cfg.form_menu_shimmer[z][_M_FORM_SHIMMER_BLEND], i) ) );
@@ -1942,6 +1958,15 @@ void LEDS_init_config(uint8_t selected_Deck)
 
 	}
 	
+	for(uint8_t FFTBIN = 0 ;FFTBIN < FFT_FX_NR_OF_BINS; FFTBIN++)
+	{
+			deck[selected_Deck].cfg.fft_config.fft_fxbin[FFTBIN].menu_select 	= 0;
+			deck[selected_Deck].cfg.fft_config.fft_fxbin[FFTBIN].bin_mode 		= 0;
+			deck[selected_Deck].cfg.fft_config.fft_fxbin[FFTBIN].set_val 		= 0;
+			deck[selected_Deck].cfg.fft_config.fft_fxbin[FFTBIN].trrig_val 		= 0;
+	}
+
+
 
 	for(uint8_t layerNo = 0 ;layerNo < NO_OF_SAVE_LAYERS; layerNo++)
 		{
@@ -2283,20 +2308,21 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 			{
 					if (!get_bool(FADE_INOUT_FADEBACK))
 					{
-						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 5), 0 , 255);
+						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 32), 0 , 255);
 					}
-					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 5), 0 , 255);
+					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 32), 0 , 255);
 
 					tpm_fx.fadeLedArray(deck[0].run.leds,0,led_cfg.NrLeds,led_cfg.fade_inout_val );
 
 			}
 
 			if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
-
+			yield();
 			if (get_bool(FADE_INOUT))
 			{
 					if (led_cfg.fade_inout_val == 255)
 					{
+
 							if (get_bool(FADE_INOUT_SAVE)) FS_play_conf_write(led_cfg.next_config_loadsave) ;
 								
 							else 

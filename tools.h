@@ -33,23 +33,23 @@ enum GLOBAL_OPTIONS_ENUM
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
 	,WIFI_POWER 		= 16    // enable WIFI power.
 	,BTN_LASTSTATE		= 17 	// what was the last bttn state
-	,DATA1_ENABLE		= 18
-	,DATA2_ENABLE		= 19
-	,DATA3_ENABLE		= 20
-	,DATA4_ENABLE		= 21
+	,DATA1_ENABLE		= 18 	// enable Data line 1
+	,DATA2_ENABLE		= 19	// enable Data line 2
+	,DATA3_ENABLE		= 20	// enable Data line 3
+	,DATA4_ENABLE		= 21	// enable Data line 4
 	,WIFI_POWER_ON_BOOT = 22 	// was wifi on on boot?
 	,POT_DISABLE 		= 23  	// Disable HW Pots BRI & FPS!
-	,SEQUENCER_ON 		= 24
+	,SEQUENCER_ON 		= 24	// Is the sequencer switched on?
 	,MQTT_ON 			= 25     // Enable Mqtt.
-	,ARTNET_SEND		= 26
-	,ARTNET_RECIVE		= 27
-	,WIFI_MODE_BOOT		= 28
-	,FADE_INOUT			= 29
-	,FADE_INOUT_SAVE	= 30		// are we saving or loading for the fade.  flase = load
-	,FADE_INOUT_FADEBACK = 31
-	,POTS_LVL_MASTER	= 32
-	,PAUSE_DISPLAY		= 33
-	,ARTNET_REMAPPING   = 34
+	,ARTNET_SEND		= 26	// Are we a artnet sender (no direct output only calculation unit)
+	,ARTNET_RECIVE		= 27    // Is it a artnet recive node (exclusive)
+	,WIFI_MODE_BOOT		= 28	// What was the wifimode at boot time.
+	,FADE_INOUT			= 29	// Trigger for save/load loop
+	,FADE_INOUT_SAVE	= 30	// are we saving or loading for the fade.  flase = load
+	,FADE_INOUT_FADEBACK = 31   // used for SAve load loop Fadebackin
+	,POTS_LVL_MASTER	= 32	// override the LVL from the save to the value set on the pot
+	,PAUSE_DISPLAY		= 33 	// frezze the display but continue to calculate in the background
+	,ARTNET_REMAPPING   = 34	// remap artnet universe to FFT data and use almost all other features.
 
 };
 

@@ -135,11 +135,11 @@
 		#define DEF_APA102_DATARATE 4
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define LED_DATA_PIN    0 							// DATA 1 PIN	
-		#define LED_CLK_PIN     1 							// DATA 2 PIN / data1CLK pin
+		#define LED_DATA_PIN    1 							// DATA 1 PIN	
+		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
-		#define LED_DATA_3_PIN  3							// DATA 3 PIN = WS2812 
-		#define LED_DATA_4_PIN  4							// DATA 4 PIN = SK6822 
+		#define LED_DATA_3_PIN  4							// DATA 3 PIN = WS2812 
+		#define LED_DATA_4_PIN  3							// DATA 4 PIN = SK6822 
 
 		#define DEF_APA102_DATARATE 4
 #endif
@@ -170,13 +170,13 @@
 		#define BTN_PIN 		4 			// for a button 
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define POTI_BRI_PIN 	5 	// For Brightness   orig 13
+		#define POTI_BRI_PIN 	39 	// For Brightness   orig 13
 		#define POTI_FPS_PIN 	36 	// for speed
 		#define BTN_PIN 		34 			// for a button on omilex
 
-		#define AUDIO_DPOT_CS 	39    // SPI CS 
-		#define SCK_PIN 		16
-		#define SI_PIN			13
+		#define AUDIO_DPOT_CS 	1    // SPI CS 
+		#define SPI_SCK_PIN 	16
+		#define SPI_MOSI_PIN	13
 #endif
 
 

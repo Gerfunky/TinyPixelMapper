@@ -15,7 +15,7 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   (170*9)  		// what is the max it can be set to in the config    
+		#define MAX_NUM_LEDS   (170*6)  		// what is the max it can be set to in the config    
 		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
 		#define POT_SENSE_DEF 4   				// only take Variable resistor value if it changes more than this.
 
@@ -193,6 +193,8 @@
 
 
 	};
+
+
 
 // ***************Palette  ************************
 
@@ -524,19 +526,33 @@
 		
 
 
-#define FFT_FX_NR_OF_BINS 50
+#define FFT_FX_NR_OF_BINS 10
 	struct fft_fxbin_struct 
 	{
 				
 			uint8_t set_val ;
 			uint8_t trrig_val;
 			uint8_t menu_select;
+			uint8_t bin_mode;
 
 	};
 	struct fft_fxbin_run_struct 
 	{
 			uint8_t sum ;					
 			uint8_t result;
+	};
+	
+	enum FFTBIN_MODES
+	// The different modes for FFTBINS for FX
+	// When using trigger only the value above the trigger is put into the Bin
+	{						
+		BIN_MODE_BIN_SUM 		= 0,		// 						RETURN  (SUM)
+		BIN_MODE_TRIGGER_0 		= 1,		// If (SUM > Trigger) 	RETURN  (SUM)  				else  (0)
+		BIN_MODE_TRIGGER_255 	= 2,		// IF (SUM > Trigger)  	RETURN  (255-SUM)  			else (255)
+		BIN_MIDE_SV_TRIGGER		= 3, 		// IF (SUM > Trigger)   RETURN  (SV + SUM) 			else (Start Val)
+		BIN_MODE_SV_DOWN_TRIGGER = 4, 		// IF (SUM > Trigger)   RETURN  (Start Val - SUM )	else (Start Val)
+
+
 	};
 
 		struct form_fx_ffr_run_struct

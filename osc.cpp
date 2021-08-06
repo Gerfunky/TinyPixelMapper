@@ -817,8 +817,8 @@ void osc_StC_FFT_vizIt()
 	{
 		osc_queu_MSG_int("/ostc/audio/fxb/sum/" + String(fxbin) , 		deck[0].run.fft.fft_fxbin[fxbin].sum);
 		osc_queu_MSG_int("/ostc/audio/fxb/res/" + String(fxbin) , 		LEDS_fft_get_fxbin_result(fxbin,0));
-		osc_queu_MSG_int("/ostc/audio/fxbin/tg/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].trrig_val);
-		osc_queu_MSG_int("/ostc/audio/fxbin/vl/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].set_val);
+		osc_queu_MSG_int("/ostc/audio/fxbin/t/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].trrig_val);
+		osc_queu_MSG_int("/ostc/audio/fxbin/v/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].set_val);
 		
 	}
 
@@ -1225,8 +1225,8 @@ void osc_StC_menu_audio_ref()
 
 			osc_queu_MSG_int("/ostc/audio/auto/" +String(bin) ,  	int(bitRead(deck[0].cfg.fft_config.fft_bin_autoTrigger, 6-bin)) );
 			
-			for (uint8_t z = 0; z < 10 ; z ++) 					osc_queu_MSG_int(String("/ostc/audio/fxbin/0"+ String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
-			//for (uint8_t z = 10; z < FFT_FX_NR_OF_BINS ; z ++) 	osc_queu_MSG_int(String("/ostc/audio/fxbin/" + String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
+			//for (uint8_t z = 0; z < 10 ; z ++) 					  osc_queu_MSG_int(String("/ostc/audio/fxbin/0"+ String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
+			for (uint8_t z = 0; z < FFT_FX_NR_OF_BINS ; z ++) 	osc_queu_MSG_int(String("/ostc/audio/fxbin/" + String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
 		   debugMe("out refx");
 		}	
 		debugMe("in ref 2");	
@@ -1402,6 +1402,9 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/H", NTP_get_time_h()  );
 	osc_queu_MSG_int("/ostc/master/M", NTP_get_time_m()  );
 	osc_queu_MSG_int("/ostc/master/S", NTP_get_time_s()  );
+	float temp = temperatureRead();
+	osc_queu_MSG_float("/ostc/master/ctemp", temp  );
+	debugMe("CoreTemp : " + String(temp) );
 	
 	OSCBundle bundle_out;
 	IPAddress ip_out(osc_server.remoteIP());
@@ -1531,7 +1534,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 	{
 			String form_no_string;
 			memset(address, 0, sizeof(address));
-			msg.getAddress(address, addrOffset +10 );
+			msg.getAddress(address, addrOffset +9 );
 			 
 
 			for (byte i = 0; i < sizeof(address); i++)  { form_no_string = form_no_string + address[i]; }
@@ -1539,8 +1542,8 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 				
 			//debugMe(i_orig_bin_nr);	
 
-			if		 	(msg.match("/fxbin/vl",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].set_val 	=   uint8_t(msg.getInt(0));
-			else if 	(msg.match("/fxbin/tg",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].trrig_val	=   uint8_t(msg.getInt(0));
+			if		 	(msg.match("/fxbin/v",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].set_val 	=   uint8_t(msg.getInt(0));
+			else if 	(msg.match("/fxbin/t",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].trrig_val	=   uint8_t(msg.getInt(0));
 			else if		(msg.match("/fxbin",addrOffset))  // with fxbin number
 			{
 
@@ -1548,12 +1551,14 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 				memset(address, 0, sizeof(address));
 				msg.getAddress(address, addrOffset +7 );
 
-				for (byte i = 0; i < 2 ; i++)  { binAddr_string = binAddr_string + address[i]; }
+				  { binAddr_string = binAddr_string + address[0]; }
 					uint8_t binAddr =  constrain(binAddr_string.toInt(), 0 , FFT_FX_NR_OF_BINS-1) ;
 				debugMe("bin :",false);debugMe(binAddr);
+				debugMe("  o-bin :",false);debugMe(i_orig_bin_nr);
 
 				bitWrite(deck[0].cfg.fft_config.fft_fxbin[binAddr].menu_select, 	6-i_orig_bin_nr, bool(msg.getInt(0)));
-			
+				
+				debugMe("  menuVal:  :",false); debugMe(deck[0].cfg.fft_config.fft_fxbin[binAddr].menu_select);
 
 			}
 			
@@ -2199,7 +2204,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 							{
 								
 
-								if 			(msg.match("/save",addrOffset))		LEDS_G_LoadSAveFade(true ,sel_save_no) ;
+								if 			(msg.match("/save",addrOffset))		 LEDS_G_LoadSAveFade(true ,sel_save_no) ;
 
 								else if 	(msg.match("/load",addrOffset))		 LEDS_G_LoadSAveFade(false,sel_save_no) ;
 
@@ -2314,9 +2319,9 @@ void osc_StC_routing(OSCMessage &msg, int addrOffset)
 	msg.route("/form", 		osc_StC_form_routing , 	addrOffset);   // Routing for FORM TAB    -  Open Stage Controll
 	msg.route("/audio", 	osc_StC_audio_routing , 	addrOffset);
 	if (msg.fullMatch("/index_reset",addrOffset))	{ LEDS_pal_reset_index(); }
-		debugMe("XXX");
+	
 	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
-	debugMe("YYY");
+	
 
 }
 

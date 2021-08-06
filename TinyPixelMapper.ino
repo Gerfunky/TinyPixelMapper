@@ -22,10 +22,12 @@
 #include "leds.h"
 #include "mmqt.h"
 
+//float temperatureRead();
 
 void setup()
 {		
 	
+
 	
 		DEF_SERIAL_PORT.begin(DEF_SERIAL_SPEED);
 
@@ -55,6 +57,7 @@ void setup()
 	MMQT_setup() ;
 
 	debugMe("DONE Setup");
+	
 
 
 } // end setup

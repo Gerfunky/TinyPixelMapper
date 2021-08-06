@@ -673,7 +673,7 @@ void WiFi_Start_Network()
 		//debugMe("c0");
 		LEDS_setall_color(1); FastLEDshowESP32(); delay(500);
 		//WiFi.mode(WIFI_MODE_AP);
-		debugMe("c1x");
+		
 		//delay(500);
 		
 
@@ -681,7 +681,7 @@ void WiFi_Start_Network()
 		{
 			if(get_bool(STATIC_IP_ENABLED))  WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); 
 			delay(1000);
-			 WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, wifi_cfg.wifiChannel); 
+			 WiFi.softAP(wifi_cfg.APname, DEF_AP_PASSWD, (random8(12)+1) ); //wifi_cfg.wifiChannel); 
 			//write_bool(STATIC_IP_ENABLED,true);
 			write_bool(WIFI_POWER,true);
 			write_bool(WIFI_POWER_ON_BOOT, true);
@@ -1058,8 +1058,11 @@ void ip_services_loop()
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
 {
-
-		if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
+		#ifdef OMILEX32_POE_BOARD
+			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) && !eth_connected ) 
+		#else  
+			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
+		#endif 
 		{	
 			unsigned long currentT = millis();
 			if (currentT > wifi_cfg.connectTimeout )

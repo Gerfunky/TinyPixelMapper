@@ -17,6 +17,8 @@
 
 
 
+void	FS_play_conf_write1(uint8_t val);
+void   FS_play_conf_write_append1(uint8_t val);
 
 
 // Public function

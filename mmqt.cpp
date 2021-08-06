@@ -65,6 +65,7 @@ void MMQT_publish()
            OutTopicString = deviceName + MMQT_TOPIC_FUNCTION_PLAY + MMQT_TOPIC_SEND ;   client.publish(OutTopicString.c_str(), String(LEDS_get_playNr()).c_str() );  
 
            OutTopicString = deviceName + MMQT_TOPIC_FUNCTION_DEVICE + MMQT_TOPIC_SEND ; if (LEDS_get_bri() != 0) client.publish(OutTopicString.c_str(), "on") ; else client.publish(OutTopicString.c_str(), "off");  
+           OutTopicString = deviceName + MMQT_TOPIC_FUNCTION_TEMP + MMQT_TOPIC_SEND ;   client.publish(OutTopicString.c_str(), String(temperatureRead()).c_str() );  
 
 
 }
