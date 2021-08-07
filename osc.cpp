@@ -1213,10 +1213,10 @@ void osc_StC_menu_FX_clock_adv_ref(uint8_t bit)
 
 void osc_StC_menu_audio_ref()
 {
-	debugMe("in ref");
+	
 
 		for(uint8_t bin = 0; bin< 7 ; bin++)
-		{  debugMe("in refx");
+		{  
 			osc_queu_MSG_int("/ostc/audio/fbri/" +String(bin) ,  int(bitRead(deck[0].cfg.fft_config.fft_menu_bri, 6-bin)  ));
 			osc_queu_MSG_int("/ostc/audio/ffps/" +String(bin) ,  int(bitRead(deck[0].cfg.fft_config.fft_menu_fps, 6-bin)  ));
 
@@ -1228,16 +1228,16 @@ void osc_StC_menu_audio_ref()
 			
 			//for (uint8_t z = 0; z < 10 ; z ++) 					  osc_queu_MSG_int(String("/ostc/audio/fxbin/0"+ String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
 			for (uint8_t z = 0; z < FFT_FX_NR_OF_BINS ; z ++) 	osc_queu_MSG_int(String("/ostc/audio/fxbin/" + String(z) + "/" + String(bin)) , int(bitRead(deck[0].cfg.fft_config.fft_fxbin[z].menu_select, 6-bin)) );
-		   debugMe("out refx");
+		   
 		}	
-		debugMe("in ref 2");	
+		
 			osc_queu_MSG_int("/ostc/audio/minauto" ,  	deck[0].cfg.fft_config.fftAutoMin );
 			osc_queu_MSG_int("/ostc/audio/maxauto" ,  	deck[0].cfg.fft_config.fftAutoMax );
 			osc_queu_MSG_int("/ostc/audio/fftviz" ,  	int(get_bool(FFT_OSTC_VIZ)) );
 			osc_queu_MSG_int("/ostc/audio/vizfps" ,  	deck[0].cfg.fft_config.viz_fps );
 
 			osc_StC_FFT_vizIt();
-		debugMe("end ref");	
+		
 }	
 
 
