@@ -57,7 +57,7 @@
 	*/
 
 // -- The core to run FastLED.show()
-#define FASTLED_SHOW_CORE 0
+#define FASTLED_SHOW_CORE 1
 
 void LEDS_G_artnet_master_out();
 void LEDS_run_layers(uint8_t deckSelected);
@@ -1033,12 +1033,34 @@ uint8_t LEDS_fft_calc_fxbin_result(uint8_t fxbin)
 {
    uint8_t deckNo = 0;
 
-	if(fxbin <  2)       return deck[deckNo].run.fft.fft_fxbin[fxbin].sum;
+	switch(deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].bin_mode)
+	{
+		case 0:
+				return deck[deckNo].run.fft.fft_fxbin[fxbin].sum;
+		break;
+		case 1:
+				 {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return     deck[deckNo].run.fft.fft_fxbin[fxbin].sum; 		else return 0; }
+		break;
+		case 2:
+				{if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return 255-deck[deckNo].run.fft.fft_fxbin[fxbin].sum;  		else return 255; }
+		break;
+		case 3:
+				{if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val + deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
+		break;
+		case 4:
+				 {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val - deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
+		break;
+
+
+	}
+
+
+	/*if(fxbin <  2)       return deck[deckNo].run.fft.fft_fxbin[fxbin].sum;
 	else if(fxbin <  4)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return     deck[deckNo].run.fft.fft_fxbin[fxbin].sum; 												else return 0; }
 	else if(fxbin <  6)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return 255-deck[deckNo].run.fft.fft_fxbin[fxbin].sum;  											else return 255; }
 	else if(fxbin <  8)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val + deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
 	else if(fxbin <  10)  {if(deck[deckNo].run.fft.fft_fxbin[fxbin].sum >= deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val) return constrain( deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val - deck[deckNo].run.fft.fft_fxbin[fxbin].sum, 0,255); 	else return deck[deckNo].cfg.fft_config.fft_fxbin[fxbin].set_val; }
-
+	*/
 
 	return 0;
 }
@@ -1865,7 +1887,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_CLEAR)     		{  deck[0].run.leds(deck[deckSelected].cfg.layer.clear_start_led, deck[deckSelected].cfg.layer.clear_start_led+ deck[deckSelected].cfg.layer.clear_Nr_leds -1 ).fadeToBlackBy(255); }       
 
 				// (deck[deckSelected].cfg.layer.save_startLed[1], deck[deckSelected].cfg.layer.save_NrLeds[1] ) 
-
+			yield();
 
 			//debugMe(layer);
 			

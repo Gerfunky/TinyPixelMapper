@@ -33,7 +33,7 @@ echo **************************************************
 echo Uploading Config %2 to %1
 echo **************************************************
 echo Uploading %2.playConf.txt
-curl -F "file=@%2.playConf.txt;filename=conf/%%c.playConf.txt"  "http://%1/edit"
+curl -F "file=@%2.playConf.txt;filename=conf/%2.playConf.txt"  "http://%1/edit"
 
 
 

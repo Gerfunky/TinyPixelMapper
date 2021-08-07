@@ -819,6 +819,7 @@ void osc_StC_FFT_vizIt()
 		osc_queu_MSG_int("/ostc/audio/fxb/res/" + String(fxbin) , 		LEDS_fft_get_fxbin_result(fxbin,0));
 		osc_queu_MSG_int("/ostc/audio/fxbin/t/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].trrig_val);
 		osc_queu_MSG_int("/ostc/audio/fxbin/v/" + String(fxbin) , 		deck[0].cfg.fft_config.fft_fxbin[fxbin].set_val);
+		osc_queu_MSG_int("/ostc/audio/fxbin/m/" + String(fxbin) , 	deck[0].cfg.fft_config.fft_fxbin[fxbin].bin_mode);
 		
 	}
 
@@ -1544,6 +1545,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 
 			if		 	(msg.match("/fxbin/v",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].set_val 	=   uint8_t(msg.getInt(0));
 			else if 	(msg.match("/fxbin/t",addrOffset))		deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].trrig_val	=   uint8_t(msg.getInt(0));
+			else if 	(msg.match("/fxbin/m",addrOffset))	deck[0].cfg.fft_config.fft_fxbin[i_orig_bin_nr].bin_mode	=   uint8_t(msg.getInt(0));
 			else if		(msg.match("/fxbin",addrOffset))  // with fxbin number
 			{
 
@@ -3054,25 +3056,25 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 						{
 							case 0:
 							
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  100, 0, MAX_NUM_LEDS  );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  100, 0, led_cfg.NrLeds  );
 								break;
 							case 1:
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  10, 0, MAX_NUM_LEDS  );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  10, 0, led_cfg.NrLeds  );
 								break;
 							case 2:
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  1, 0, MAX_NUM_LEDS  );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds -  1, 0, led_cfg.NrLeds  );
 								break;
 							case 3:
 								led_cfg.NrLeds  = 0;
 							break;
 							case 4:
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  1, 0, MAX_NUM_LEDS );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  1, 0, led_cfg.NrLeds );
 							break;
 							case 5:
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  10, 0, MAX_NUM_LEDS  );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  10, 0, led_cfg.NrLeds  );
 							break;
 							case 6:
-								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  100, 0, MAX_NUM_LEDS  );
+								led_cfg.NrLeds  = constrain(led_cfg.NrLeds  +  100, 0, led_cfg.NrLeds  );
 							break;
 						}
 						outval = led_cfg.NrLeds ;
