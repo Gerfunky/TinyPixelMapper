@@ -219,7 +219,7 @@
                           "target": "@{target}",
                           "bypass": false,
                           "linkId": "",
-                          "widgetType": "input",
+                          "widgetType": "text",
                           "matrix": [
                             1,
                             16
@@ -566,6 +566,29 @@
                       "wrap": false,
                       "align": "",
                       "default": "press Refresh\nto update"
+                    },
+                    {
+                      "type": "input",
+                      "top": "6.05%",
+                      "left": "37.04%",
+                      "id": "savenameit1",
+                      "linkId": "",
+                      "width": "25.34%",
+                      "height": "10.59%",
+                      "label": "Boot Config No.",
+                      "color": "auto",
+                      "css": "",
+                      "vertical": false,
+                      "align": "",
+                      "unit": "",
+                      "editable": true,
+                      "default": "",
+                      "value": "",
+                      "precision": 0,
+                      "address": "/ostc/master/bootconf",
+                      "preArgs": "",
+                      "target": "@{target}",
+                      "bypass": false
                     }
                   ],
                   "tabs": [],
@@ -2663,29 +2686,6 @@
                   "precision": 0,
                   "address": "/ostc/master/pots/enable",
                   "preArgs": [],
-                  "target": "@{target}",
-                  "bypass": false
-                },
-                {
-                  "type": "input",
-                  "top": "61.67%",
-                  "left": "21.65%",
-                  "id": "savenameit1",
-                  "linkId": "",
-                  "width": "7.42%",
-                  "height": "6.64%",
-                  "label": "Boot Config No.",
-                  "color": "auto",
-                  "css": "",
-                  "vertical": false,
-                  "align": "",
-                  "unit": "",
-                  "editable": true,
-                  "default": "",
-                  "value": "",
-                  "precision": 0,
-                  "address": "/ostc/master/bootconf",
-                  "preArgs": "",
                   "target": "@{target}",
                   "bypass": false
                 },
@@ -13483,7 +13483,7 @@
                           "wrap": false,
                           "align": "",
                           "default": "",
-                          "value": "Pallets go from 0 to 4096.\nThere aae 16 colors.\nThe colos have 256 shades\n between them",
+                          "value": "Pallets go from 0 to 4096.\nThere aae 16 colors.\nThe colos have 256 shades\n between them\nNR-Leds - Compression \n01-?\n08-512\n12-341\n16-256\n24-171\n32-128\n40-102\n48-85\n60-68\n83-46\n88-49",
                           "preArgs": [],
                           "address": "/text_16"
                         }
@@ -28337,6 +28337,45 @@
               "scroll": true
             }
           ]
+        },
+        {
+          "type": "fader",
+          "top": "57.65%",
+          "left": "4.99%",
+          "id": "pal_master_lvl_4",
+          "linkId": "",
+          "width": "40.00%",
+          "height": "10%",
+          "label": "Multiply RGB By",
+          "color": "@{parent.variables.set_color_pal}",
+          "css": "",
+          "horizontal": true,
+          "alignRight": false,
+          "pips": true,
+          "input": true,
+          "meter": false,
+          "compact": true,
+          "dashed": false,
+          "snap": false,
+          "spring": false,
+          "doubleTap": false,
+          "range": {
+            "min": 1,
+            "max": 10
+          },
+          "steps": "",
+          "logScale": false,
+          "unit": "",
+          "origin": "auto",
+          "default": "",
+          "value": "",
+          "precision": 0,
+          "address": "/ostc/audio/scale",
+          "preArgs": "",
+          "target": "@{target}",
+          "bypass": false,
+          "touchAddress": "",
+          "meterAddress": ""
         }
       ],
       "tabs": [],

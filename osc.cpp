@@ -811,7 +811,7 @@ void osc_StC_FFT_vizIt()
 	osc_queu_MSG_int("/ostc/audio/sum/red", 	LEDS_FFT_get_color_result(0,0));
 	osc_queu_MSG_int("/ostc/audio/sum/green", 	LEDS_FFT_get_color_result(0,1));
 	osc_queu_MSG_int("/ostc/audio/sum/blue",	LEDS_FFT_get_color_result(0,2));
-
+	
 
 	for(uint8_t fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++)
 	{
@@ -1235,7 +1235,7 @@ void osc_StC_menu_audio_ref()
 			osc_queu_MSG_int("/ostc/audio/maxauto" ,  	deck[0].cfg.fft_config.fftAutoMax );
 			osc_queu_MSG_int("/ostc/audio/fftviz" ,  	int(get_bool(FFT_OSTC_VIZ)) );
 			osc_queu_MSG_int("/ostc/audio/vizfps" ,  	deck[0].cfg.fft_config.viz_fps );
-
+			osc_queu_MSG_int("/ostc/audio/scale",       deck[0].cfg.fft_config.Scale);
 			osc_StC_FFT_vizIt();
 		
 }	
@@ -1588,6 +1588,7 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 			else if		(msg.match("/ffps",addrOffset))		{ bitWrite(deck[0].cfg.fft_config.fft_menu_fps, 		6-i_orig_bin_nr, bool(msg.getInt(0))); }
 			else if		(msg.match("/auto",addrOffset))		{ bitWrite(deck[0].cfg.fft_config.fft_bin_autoTrigger, 6-i_orig_bin_nr, bool(msg.getInt(0))); }
 			else if 	(msg.match("/trig",addrOffset)) 	deck[0].cfg.fft_config.trigger[6-i_orig_bin_nr]  = msg.getInt(0);
+			
 	}
 	
 	
@@ -1596,7 +1597,8 @@ void osc_StC_audio_routing(OSCMessage &msg, int addrOffset)
 	else if		(msg.fullMatch("/maxauto",addrOffset))		{ deck[0].cfg.fft_config.fftAutoMax = uint8_t(msg.getInt(0));}
 
 	else if		(msg.fullMatch("/fftviz",addrOffset))		{write_bool(FFT_OSTC_VIZ,	bool(msg.getInt(0))); }
-	else if		(msg.fullMatch("/vizfps",addrOffset))		{ deck[0].cfg.fft_config.viz_fps  =  constrain(uint8_t(msg.getInt(0)) , 1 , VIZ_FPS_MAX)  ;}
+	else if		(msg.fullMatch("/vizfps",addrOffset))		{ deck[0].cfg.fft_config.viz_fps  = constrain(uint8_t(msg.getInt(0)) , 1 , VIZ_FPS_MAX)  ;}
+	else if 	(msg.fullMatch("/scale",addrOffset)) 	    { deck[0].cfg.fft_config.Scale    = constrain(uint8_t(msg.getInt(0)) , 1 , 100)  ;}
 	
 
 }

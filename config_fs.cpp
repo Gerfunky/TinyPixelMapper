@@ -1430,7 +1430,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER))   targetConf->led_master_cfg.bri					= uint8_t(constrain( in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_start_led				= uint16_t(constrain(in_int, 0, led_cfg.NrLeds)); }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_Nr_leds					= uint16_t(constrain( in_int, 0, led_cfg.NrLeds ));  }
-				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.Scale  					= uint16_t(constrain( in_int, 0, 500)); }
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.Scale  					= uint8_t(constrain( in_int, 1, 100)); }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.fftAutoMin 				= uint8_t(constrain(in_int, 0,255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.fftAutoMax 				= uint8_t(constrain(in_int, 0,255));}
 
@@ -1950,13 +1950,13 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 			= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 		= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 				= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[0] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds - led_cfg.DataStart_leds[0] ));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[0] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds  ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[0]  	= uint16_t(constrain(in_int, 0,led_cfg.NrLeds));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[1] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds - led_cfg.DataStart_leds[1] ));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[1] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds  ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[1]  	= uint16_t(constrain(in_int, 0,led_cfg.NrLeds));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[2] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds - led_cfg.DataStart_leds[2] ));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[2] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds  ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[2]  	= uint16_t(constrain(in_int, 0,led_cfg.NrLeds));
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[3] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds - led_cfg.DataStart_leds[3] ));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataNR_leds[3] 		= uint16_t(constrain(in_int, 0,led_cfg.NrLeds ));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[3]  	= uint16_t(constrain(in_int, 0,led_cfg.NrLeds));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate 	= uint8_t(constrain(in_int, 1,24));
 					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.bootCFG 			= uint8_t(constrain(in_int, 0,MAX_NR_SAVES));} else led_cfg.bootCFG  = MAX_NR_SAVES;

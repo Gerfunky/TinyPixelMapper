@@ -990,14 +990,20 @@ void LEDS_FFT_process()
 		if (deck[0].led_master_cfg.g != 255) color_result.g = color_result.g * deck[0].led_master_cfg.g / 255 ;
 		if (deck[0].led_master_cfg.b != 255) color_result.b = color_result.b * deck[0].led_master_cfg.b / 255 ;
 		*/
-		/*
-		if (0 != fft_led_cfg.Scale)
+		
+		if (1 < deck[0].cfg.fft_config.Scale)
 		{
-			color_result.r = constrain((color_result.r + (fft_led_cfg.Scale * color_result.r / 100)),0,255);
-			color_result.g = constrain((color_result.g + (fft_led_cfg.Scale * color_result.g / 100)),0,255);
-			color_result.b = constrain((color_result.b + (fft_led_cfg.Scale * color_result.b / 100)),0,255);
+			//color_result.r = constrain((color_result.r + (deck[0].cfg.fft_config.Scale * color_result.r )),0,255);
+			//color_result.g = constrain((color_result.g + (deck[0].cfg.fft_config.Scale * color_result.g )),0,255);
+			//color_result.b = constrain((color_result.b + (deck[0].cfg.fft_config.Scale * color_result.b )),0,255);
+
+			color_result.r = constrain(((deck[0].cfg.fft_config.Scale * color_result.r )),0,255);
+			color_result.g = constrain(((deck[0].cfg.fft_config.Scale * color_result.g )),0,255);
+			color_result.b = constrain(((deck[0].cfg.fft_config.Scale * color_result.b )),0,255);
+
+
 		}
-		*/
+		
 		// debugMe("FFT pre return color result from bins");
 		//color_result = constrain((color_result + (fft_led_cfg.Scale * color_result / 100)),0,255);
 		
@@ -2019,7 +2025,7 @@ void LEDS_load_default_play_conf()
 	deck[0].cfg.led_master_cfg.pal_bri				= 255;
 	deck[0].cfg.led_master_cfg.pal_fps     		   	= 25;
 	
-	deck[0].cfg.fft_config.Scale = 0;
+	deck[0].cfg.fft_config.Scale = 1;
 	deck[0].cfg.fft_config.viz_fps = 1;
 	deck[0].cfg.fft_config.fftAutoMin = 11;
 	deck[0].cfg.fft_config.fftAutoMax = 240;
@@ -2330,17 +2336,17 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 			{
 					if (!get_bool(FADE_INOUT_FADEBACK))
 					{
-						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val + 32), 0 , 255);
+						led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val +16), 0 , 255);
 					}
-					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 32), 0 , 255);
+					else  led_cfg.fade_inout_val = constrain( (led_cfg.fade_inout_val - 16), 0 , 255);
 
 					tpm_fx.fadeLedArray(deck[0].run.leds,0,led_cfg.NrLeds,led_cfg.fade_inout_val );
 
 			}
 
-			if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
-			yield();
-			if (get_bool(FADE_INOUT))
+	if (!get_bool(PAUSE_DISPLAY)) LEDS_show();			// THE MAIN SHOW TASK Eport LED data to Strips
+	yield();
+	if (get_bool(FADE_INOUT))
 			{
 					if (led_cfg.fade_inout_val == 255)
 					{

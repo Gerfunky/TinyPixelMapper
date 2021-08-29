@@ -199,16 +199,21 @@ void WiFi_NTP_printTime() {
 	
 	struct tm timeinfo;
 	
-	if (!getLocalTime(&timeinfo)) {
-		debugMe("Failed to obtain time_print");
-		tpm_settime(0,0,0)	;
-		return;
-	}
-	
+	debugMe("Time-Setup:");
+	if (get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT)
+		{
+			if (!getLocalTime(&timeinfo)) {
+			debugMe("Failed to obtain time_print");
+			tpm_settime(0,0,0)	;
+			return;
+			}
+		}
+	else tpm_settime(0,0,0)	;
+
 
 	
 	//debugMe("***********************");
-		debugMe(timeinfo);
+	debugMe(timeinfo);
 
 }
 

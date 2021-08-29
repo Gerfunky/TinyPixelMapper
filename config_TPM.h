@@ -38,15 +38,15 @@
 
 // Wifi
 	#define DEF_WIFI_POWER 		true							// Enable wifi 	 holing button on boot overides this and unit goes into AP mode with DEF_AP_PASSWD as the AP password
-	#define DEF_WIFI_MODE 		false							// false = client  , true = AP
+	#define DEF_WIFI_MODE 		true							// false = client  , true = AP
 	#define DEF_WIFI_EVENTS		false							// Show wifievents in Console
 
-	#define DEF_AP_NAME			"TinyPixelMapperOli"				// AP and Hostname
+	#define DEF_AP_NAME			"TinyPixelMapperPRL7"				// AP and Hostname
 	#define DEF_SSID			"home"							// SSID to connect to 
 	#define DEF_WIFI_PWD		"love4all"						// PW for wifi Client
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
-	#define DEF_STATIC_IP_ENABLED true							// set static ip for startup  ?
+	#define DEF_STATIC_IP_ENABLED false							// set static ip for startup  ?
 	#define DEF_IP_LOCAL		{172,16,222,27}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
 	#define DEF_IP_DGW			{172,16,222,1}					// DGW
@@ -132,19 +132,32 @@
 		#define LED_DATA_3_PIN  19							// DATA 3 PIN = WS2812 
 		#define LED_DATA_4_PIN  17							// DATA 4 PIN = SK6822 
 
-		#define DEF_APA102_DATARATE 4
+// Variable resistors + Buttons
+
+		#define POTI_BRI_PIN 	39 	// For Brightness 
+		#define POTI_FPS_PIN 	36 	// for speed
+		#define BTN_PIN 		4 			// for a button 
+		
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define LED_DATA_PIN    1 							// DATA 1 PIN	
+		#define LED_DATA_PIN    13 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
 		#define LED_DATA_3_PIN  4							// DATA 3 PIN = WS2812 
 		#define LED_DATA_4_PIN  3							// DATA 4 PIN = SK6822 
 
-		#define DEF_APA102_DATARATE 4
+		
+		#define POTI_BRI_PIN 	39 	// For Brightness   orig 13
+		#define POTI_FPS_PIN 	36 	// for speed
+		#define BTN_PIN 		34 			// for a button on omilex
+
+		//#define AUDIO_DPOT_CS 	1    // SPI CS 
+		//#define SPI_SCK_PIN 	16
+		//#define SPI_MOSI_PIN	13
+
 #endif
 
-
+		#define DEF_APA102_DATARATE 4
 		#define DEF_MAX_BRI 255		// the default max bri
 		#define DEF_BRI 240			// the deault Bri
 
@@ -163,21 +176,7 @@
 
 // END FastLed Defines
 
-// Variable resistors + Buttons
-#ifdef HUZZAH32_BOARD
-		#define POTI_BRI_PIN 	39 	// For Brightness 
-		#define POTI_FPS_PIN 	36 	// for speed
-		#define BTN_PIN 		4 			// for a button 
-#endif
-#ifdef OMILEX32_POE_BOARD
-		#define POTI_BRI_PIN 	39 	// For Brightness   orig 13
-		#define POTI_FPS_PIN 	36 	// for speed
-		#define BTN_PIN 		34 			// for a button on omilex
 
-		#define AUDIO_DPOT_CS 	1    // SPI CS 
-		#define SPI_SCK_PIN 	16
-		#define SPI_MOSI_PIN	13
-#endif
 
 
 
