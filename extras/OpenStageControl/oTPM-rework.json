@@ -11673,10 +11673,10 @@
                           "address": "/ostc/form/fx/clck/clr",
                           "widgetType": "dropdown",
                           "matrix": [
-                            2,
+                            16,
                             1
                           ],
-                          "start": "@{parent.variables.start_byte}",
+                          "start": "@{parent.variables.start_form}",
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
@@ -20280,10 +20280,10 @@
                           "address": "/ostc/form/fx/clck/clr",
                           "widgetType": "dropdown",
                           "matrix": [
-                            2,
+                            16,
                             1
                           ],
-                          "start": "@{parent.variables.start_byte}",
+                          "start": "@{parent.variables.start_form}",
                           "spacing": 0,
                           "traversing": true,
                           "border": true,
