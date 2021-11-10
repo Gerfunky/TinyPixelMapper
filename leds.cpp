@@ -2397,7 +2397,7 @@ void LEDS_loop()
 	// snaity check if fps is set higher that possible so not to run into blackness wehn it cant hit the update time 
 	// becouse millis is overflowin back to 0
 
-	if ((led_cfg.realfps < deck[0].cfg.led_master_cfg.pal_fps  )  &&  (currentT < 500000 )  && ( led_cfg.update_time > 4294957295   ))
+	if ((led_cfg.realfps < deck[0].cfg.led_master_cfg.pal_fps  )  &&  (currentT < 500000 )  && ( led_cfg.update_time > 4294950000   ))
 		{
 			led_cfg.update_time = currentT-1;
 			debugMe("timer-overflow-fix");
