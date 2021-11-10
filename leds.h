@@ -51,7 +51,7 @@
 	{
 		uint8_t PotBriLast;
 		uint8_t PotFPSLast;
-		uint8_t PotSens;		// the sensitivity
+		
 	};
 
 
@@ -78,9 +78,15 @@
 		uint16_t 		DataNR_leds[5]; 
 		uint16_t 		DataStart_leds[4]; 
 		uint8_t 		apa102data_rate;	// data rate for apa102 max 24
+
 		unsigned long 	confSwitch_time;	// when to swtich to the next config for sequencer
 		uint8_t 		edit_pal;
 		uint8_t 		bootCFG;
+		uint8_t 		PotSens;		// the sensitivity
+
+
+
+
 		uint8_t 		fade_inout_val;				// fade value for load/save
 		uint8_t 		next_config_loadsave;			// whats the next config to load
 	

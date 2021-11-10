@@ -132,10 +132,11 @@ deck_struct deck[1] ;
 	
 
 
-led_controls_struct led_cnt = { 150,30,POT_SENSE_DEF };  // global 
+led_controls_struct led_cnt = { 150,30 };  // global 
 
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,15};			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,15, POT_SENSE_DEF 
+};			// The basic led config
 
 
 
@@ -330,7 +331,7 @@ void LEDS_G_pre_show_processing()
 	{
 		//uint8_t bri = led_cfg.max_bri * deck[0].led_master_cfg.bri / 255;
 		uint8_t bri = analogRead(POTI_BRI_PIN) / ANALOG_IN_DEVIDER;
-		if (bri > led_cnt.PotBriLast + led_cnt.PotSens || bri < led_cnt.PotBriLast - led_cnt.PotSens)
+		if (bri > led_cnt.PotBriLast + led_cfg.PotSens || bri < led_cnt.PotBriLast - led_cfg.PotSens)
 		{
 			deck[0].cfg.led_master_cfg.bri = map(bri, 0, 255, 0, led_cfg.max_bri);
 			led_cnt.PotBriLast = bri;
@@ -346,7 +347,7 @@ void LEDS_G_pre_show_processing()
 		
 		//deck[0].led_master_cfg.pal_fps = fps /4;
 		///*
-		if (fps > led_cnt.PotFPSLast + led_cnt.PotSens || fps < led_cnt.PotFPSLast - led_cnt.PotSens)
+		if (fps > led_cnt.PotFPSLast + led_cfg.PotSens || fps < led_cnt.PotFPSLast - led_cfg.PotSens)
 		{
 			deck[0].cfg.led_master_cfg.pal_fps = map(fps, 0, 255, 1, MAX_PAL_FPS);   //*/
 			led_cnt.PotFPSLast = fps;
@@ -2393,7 +2394,16 @@ void LEDS_loop()
 		led_cfg.framecounter = 0	;							// reset framecounter to 0
 	}
 
+	// snaity check if fps is set higher that possible so not to run into blackness wehn it cant hit the update time 
+	// becouse millis is overflowin back to 0
 
+	if ((led_cfg.realfps < deck[0].cfg.led_master_cfg.pal_fps  )  &&  (currentT < 500000 )  && ( led_cfg.update_time > 4294957295   ))
+		{
+			led_cfg.update_time = currentT-1;
+			debugMe("timer-overflow-fix");
+		}
+
+	
 	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
 		

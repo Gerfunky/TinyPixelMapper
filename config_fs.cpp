@@ -1756,6 +1756,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.DataStart_leds[3] )));
 		conf_file.print(String(":"		+ String(led_cfg.apa102data_rate)));
 		conf_file.print(String(":"		+ String(led_cfg.bootCFG)));
+		conf_file.print(String(":"		+ String(led_cfg.PotSens)));
 		conf_file.println("] ");
 
 		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
@@ -1960,6 +1961,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.DataStart_leds[3]  	= uint16_t(constrain(in_int, 0,led_cfg.NrLeds));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate 	= uint8_t(constrain(in_int, 1,24));
 					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.bootCFG 			= uint8_t(constrain(in_int, 0,MAX_NR_SAVES));} else led_cfg.bootCFG  = MAX_NR_SAVES;
+					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.PotSens 			= uint8_t(constrain(in_int, 0,255));} 		   else led_cfg.PotSens  = POT_SENSE_DEF;
 						
 
 				}

@@ -202,9 +202,9 @@
 		#define MSGEQ7_RESET_PIN  26 // reset pin
 #endif
 #ifdef OMILEX32_POE_BOARD
-		#define MSGEQ7_INPUT_PIN  33 // input from mic  
+		#define MSGEQ7_INPUT_PIN  35 // input from mic  
 		#define MSGEQ7_STROBE_PIN 32 // stobe pin
-		#define MSGEQ7_RESET_PIN  35 // reset pin
+		#define MSGEQ7_RESET_PIN  33 // reset pin
 #endif
 /*
 

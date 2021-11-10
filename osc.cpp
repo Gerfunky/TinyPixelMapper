@@ -90,6 +90,19 @@ void OSC_setup()
 
 
 
+void OSC_debug_call()
+{
+	
+	//int64_t time = esp_timer_get_time() ;
+
+
+	debugMe( String( micros())  , false);  		debugMe( " : NOW" , true); 
+
+	debugMe( String( led_cfg.update_time)  , false); debugMe( " : next frame" , true); 
+
+}
+
+
 /////////////////////////////////////////// OSC  SEND / gerneral functions
 //
 //
@@ -1372,6 +1385,7 @@ void osc_StC_menu_master_ledcfg_ref()
 	osc_queu_MSG_int("/ostc/master/pots/enable",      		get_bool(POT_DISABLE));
 	osc_queu_MSG_int("/ostc/master/pots/lvlmaster",      	get_bool(POTS_LVL_MASTER));
 	osc_queu_MSG_int("/ostc/master/bootconf", 		led_cfg.bootCFG);
+	osc_queu_MSG_int("/ostc/master/potsense", 		led_cfg.PotSens);
 
 
 
@@ -2108,7 +2122,10 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/g",addrOffset))				{ deck[0].cfg.led_master_cfg.g				= constrain(uint8_t(msg.getInt(0)), 0, 255); }
 			else if (msg.fullMatch("/b",addrOffset))				{ deck[0].cfg.led_master_cfg.b				= constrain(uint8_t(msg.getInt(0)), 0 , 255); }
 			
+			else if (msg.fullMatch("/rsttime",addrOffset))	    	{ led_cfg.update_time = 0;}
+
 			else if (msg.fullMatch("/bootconf",addrOffset))			{ led_cfg.bootCFG = constrain(uint8_t(msg.getInt(0) ),0,MAX_NR_SAVES)  ;}
+			else if (msg.fullMatch("/potsense",addrOffset))			{ led_cfg.PotSens = constrain(uint8_t(msg.getInt(0) ),0,MAX_NR_SAVES)  ;}
 			else if (msg.fullMatch("/LoadNames",addrOffset) 		&& boolean(msg.getInt(0)) == true)			{ FS_play_conf_readSendSavenames( ) ;}
 			
 			else if (msg.fullMatch("/data/sl/1",addrOffset))		{ led_cfg.DataStart_leds[0]  = constrain(uint16_t(msg.getInt(0) ) , 0 , led_cfg.NrLeds - led_cfg.DataNR_leds[0]); }
@@ -3222,6 +3239,7 @@ void OSC_loop()
 		if (!oscMSG.hasError())
 		{
 
+			OSC_debug_call();
 			char address[30];
 			memset(address, 0, sizeof(address));
 
