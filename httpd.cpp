@@ -100,7 +100,7 @@ String httpd_getContentType(String filename) {
 bool httpd_handleFileRead(String path) {
 
 	 
-      
+    debugMe("pre name");  
 	if (path.endsWith("/")) path += "index.html";
 	debugMe("handleFileRead: " + path);
 
@@ -120,6 +120,8 @@ bool httpd_handleFileRead(String path) {
 	}
 	return false;
 }
+
+
 File fsUploadFile;
 void httpd_handleFileUpload() {
   if (httpd.uri() != "/edit") {
@@ -340,7 +342,7 @@ void httpd_handle_default_args()
 
 void httpd_handleRequestSettings() 
 {
-
+	debugMe("pre http-on1"); 
 	// Setup Handlers
 	
 	/*handling uploading firmware file */
@@ -393,7 +395,7 @@ void httpd_handleRequestSettings()
 	
 
 
-
+	debugMe("pre http-on2");  
 
 	httpd.on("/settings.html", []() {   httpd_handleFileRead("/settings.html");	      httpd_handle_default_args();   });
 	httpd.on("/list", HTTP_GET, httpd_handlecConfFileList); 

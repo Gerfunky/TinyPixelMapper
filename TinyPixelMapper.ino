@@ -50,11 +50,16 @@ void setup()
 	FS_setup();  // includes loadbool()
 	yield();
 	
-	LEDS_setup();
+	wifi_setup();
 	yield();
- 	wifi_setup();
+	LEDS_setup();
+	
+ 	
 
 	MMQT_setup() ;
+
+	wifi_start_IP_services();
+
 
 	debugMe("DONE Setup");
 	
@@ -65,9 +70,10 @@ void setup()
 void loop() 
 {
 
-	if (get_bool(WIFI_POWER_ON_BOOT)) 
+	if (Network_connected_check()) 
 	{
 		wifi_loop();
+		yield();
 		MMQT_loop();
 	}
 	LEDS_loop();

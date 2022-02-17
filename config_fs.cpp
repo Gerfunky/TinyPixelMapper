@@ -387,7 +387,9 @@ void FS_FFT_write(uint8_t conf_nr)
 
 // wifi
 void FS_wifi_write()
-{
+{	//also save the bools
+	FS_Bools_write(0);
+
 	// write out the wifi config
 	String addr = String("/conf/wifi.txt");
 	//String title = "Main Config for ESP.";
@@ -1925,7 +1927,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 		if (conf_file&& !conf_file.isDirectory())
 		{
-			debugMe("in file");
+			//debugMe("in file");
 			char character;
 			String settingValue;
 			char type;
@@ -1967,7 +1969,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				}
 				else if (type == 'b')
 				{
-					debugMe("in B");
+					//debugMe("in B");
 					write_bool(DEBUG_OUT, get_bool_conf_value(conf_file, &character));
 					write_bool(DEBUG_TELNET, get_bool_conf_value(conf_file, &character));
 					write_bool(FFT_ENABLE, get_bool_conf_value(conf_file, &character));

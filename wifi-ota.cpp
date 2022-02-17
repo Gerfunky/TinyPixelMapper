@@ -439,16 +439,16 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			break;
 
 		case SYSTEM_EVENT_STA_START:					/**<2 ESP32 station start */
-			Serial.println("STA Started");
+			debugMe("STA Started");
 			WiFi.setHostname(wifi_cfg.APname);
 			break;
 
 		case SYSTEM_EVENT_STA_STOP:						/**<3 ESP32 station stop */
-			Serial.println("STA Stopped");
+			debugMe("STA Stopped");
 			break;
 
 		case SYSTEM_EVENT_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
-			Serial.println("WIFI:STA Connected");
+			debugMe("WIFI:STA Connected");
 			debugMe("SSID = " + String(reinterpret_cast<const char*>(info.connected.ssid)));
 			//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.connected.bssid)));
 			debugMe("BSSID/MAC = " + String(info.connected.bssid[0], HEX) + ":" + String(info.connected.bssid[1], HEX) + ":" + String(info.connected.bssid[2], HEX) + ":" + String(info.connected.bssid[3], HEX) + ":" + String(info.connected.bssid[4], HEX) + ":" + String(info.connected.bssid[5], HEX));
@@ -471,18 +471,18 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			break;
 			
 		case	SYSTEM_EVENT_STA_GOT_IP:               /**<7 ESP32 station got IP from connected AP */
-			debugMe("station got IP from connected AP");
-			debugMe("ON SSID :" + String(WiFi.SSID()));
+			debugMe("station got IP from connected AP",true,true);
+			debugMe("ON SSID :" + String(WiFi.SSID()),true,true);
 			infoIP = info.got_ip.ip_info.ip.addr;
-			debugMe("Got IPv4: ",false);
-			debugMe(infoIP);
+			debugMe("Got IPv4: ",false,true);
+			debugMe(infoIP,true,true);
 			infoIP = info.got_ip.ip_info.netmask.addr;
-			debugMe("Got NetMask: ", false);
-			debugMe(infoIP);
+			debugMe("Got NetMask: ", false,true);
+			debugMe(infoIP,true,true);
 			infoIP = info.got_ip.ip_info.gw.addr;
-			debugMe("Got DGW: ", false);
-			debugMe(infoIP);
-			debugMe("Changed = " + String(info.got_ip.ip_changed));
+			debugMe("Got DGW: ", false,true);
+			debugMe(infoIP,true,true);
+			debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
 			
 			break;
 
@@ -512,7 +512,7 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			break;
 
 		case	SYSTEM_EVENT_AP_STOP:                  /**<14 ESP32 soft-AP stop */
-			Serial.println("WiFi: soft-AP Stopped");
+			debugMe("WiFi: soft-AP Stopped");
 			break;
 
 		case	SYSTEM_EVENT_AP_STACONNECTED:          /**<15 a station connected to ESP32 soft-AP */
@@ -541,39 +541,39 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 #ifdef OMILEX32_POE_BOARD
 
 		case SYSTEM_EVENT_ETH_START:
-			debugMe("ETH Started");
+			debugMe("ETH Started",true,true);
 			//set eth hostname here
 			ETH.setHostname(wifi_cfg.APname);
 			break;
 
-		case	SYSTEM_EVENT_ETH_STOP:                 /**<20 ESP32 ethernet stop */
-			debugMe("ETH Stopped");
+		case	SYSTEM_EVENT_ETH_STOP:                 /**<22 ESP32 ethernet stop */
+			debugMe("ETH Stopped",true,true);
       		eth_connected = false;
       break;
 
-		case	SYSTEM_EVENT_ETH_CONNECTED:            /**<21 ESP32 ethernet phy link up */
-			debugMe("ETH Connected");
+		case	SYSTEM_EVENT_ETH_CONNECTED:            /**<23 ESP32 ethernet phy link up */
+			debugMe("ETH Connected",true,true);
 			Wifi_Stop_Network();
      		break;
 
-		case	SYSTEM_EVENT_ETH_DISCONNECTED:         /**<22 ESP32 ethernet phy link down */
-			debugMe("ETH Disconnected");
+		case	SYSTEM_EVENT_ETH_DISCONNECTED:         /**<24 ESP32 ethernet phy link down */
+			debugMe("ETH Disconnected",true,true);
 			eth_connected = false;
 			WiFi_Start_Network();
 			break;
 
-		case	SYSTEM_EVENT_ETH_GOT_IP:               /**<23 ESP32 ethernet got IP from connected AP */
+		case	SYSTEM_EVENT_ETH_GOT_IP:               /**<25 ESP32 ethernet got IP from connected AP */
 			Wifi_Stop_Network();
-			debugMe("ETH MAC: ",false);
-			debugMe(ETH.macAddress(),false);
-			debugMe(", IPv4: ",false);
-			debugMe(ETH.localIP(),false);
+			debugMe("ETH MAC: ",false,true);
+			debugMe(ETH.macAddress(),false,true);
+			debugMe(", IPv4: ",false,true);
+			debugMe(ETH.localIP(),false,true);
 			if (ETH.fullDuplex()) {
-				debugMe(", FULL_DUPLEX",false);
+				debugMe(", FULL_DUPLEX",false,true);
 			}
-			debugMe(", ",false);
-			debugMe(ETH.linkSpeed(),false);
-			debugMe("Mbps");
+			debugMe(", ",false,true);
+			debugMe(ETH.linkSpeed(),false,true);
+			debugMe("Mbps",true,true);
 			eth_connected = true;
 			break;
 #endif // OLIMEX Ethernet 
@@ -626,10 +626,10 @@ void WiFi_Start_Network_CLIENT()
 		if (get_bool(STATIC_IP_ENABLED))
 			WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS);
 		WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-		debugMe("SSID : ",false);
-		debugMe(wifi_cfg.ssid);
-		debugMe("PWD : ",false);
-		debugMe(wifi_cfg.pwd);
+		debugMe("SSID : ",false,true);
+		debugMe(String(wifi_cfg.ssid),false,true);
+		debugMe(" - PWD : ",false,true);
+		debugMe(wifi_cfg.pwd,true,true);
 		//while (WiFi.status() != WL_CONNECTED) {
 		//	delay(500);
 		//	debugMe(".",false);
@@ -691,7 +691,7 @@ void WiFi_Start_Network()
 			write_bool(WIFI_POWER,true);
 			write_bool(WIFI_POWER_ON_BOOT, true);
 			write_bool(HTTP_ENABLED, true);
-			debugMe(String("Start AP mode button : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD)));
+			debugMe("Start AP mode button : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD),false,true);
 		}
 		else if(get_bool(WIFI_POWER))
 			{
@@ -709,20 +709,20 @@ void WiFi_Start_Network()
 		//debugMe("c4");
 		//delay(500);
 		LEDS_setall_color(2); FastLEDshowESP32(); delay(500);
-		debugMe("IP:",false);
-		if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal);
-		else debugMe("192.168.4.1");
+		debugMe("IP:",false,true);
+		if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal,false,true);
+		else debugMe("192.168.4.1",false,true);
 
-		debugMe(String("IP : "),false);
-		debugMe(WiFi.localIP());
-		debugMe("wifi status:",false);
-		debugMe(WiFi.status());
+		debugMe("IP : ",false,true);
+		debugMe(WiFi.localIP(),true,true);
+		debugMe("wifi status:",false,true);
+		debugMe(WiFi.status(),true,true);
 
 	}
 	else  if (  get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT &&  get_bool(WIFI_POWER_ON_BOOT)   )	
 	{	
 
-		debugMe("Starting Wifi Client Setup");
+		debugMe("Starting Wifi Client Setup", false,true);
 		
 		LEDS_setall_color(3); FastLEDshowESP32(); delay(500);
 
@@ -945,74 +945,43 @@ void ETHEvent(WiFiEvent_t event)
 #ifdef OMILEX32_POE_BOARD
 void eth_load_settings()
 {
-		//WiFi.onEvent(ETHEvent); // Start event handler!
-
-
 		ETH.begin();
-		ETH.config(wifi_cfg.ipStaticLocal ,  wifi_cfg.ipDGW,wifi_cfg.ipSubnet,wifi_cfg.ipDNS,wifi_cfg.ipDNS);
-		debugMe("ETH Connecting:",false);
-		uint8_t timer = 0;
-		while(timer < 10)
-		{
-			if (eth_connected)  break;
-			timer++;
-			debugMe(".",false);
-			delay(1000);
-
-		}
-
-		debugMe(String(" IP : "),false);
-		debugMe(ETH.localIP());
-
+		if (get_bool(STATIC_IP_ENABLED) ) ETH.config(wifi_cfg.ipStaticLocal ,  wifi_cfg.ipDGW,wifi_cfg.ipSubnet,wifi_cfg.ipDNS,wifi_cfg.ipDNS);
+		else debugMe("DHCP ON", true,true);
+		debugMe("ETH Connecting:",true,true);
+		yield();
 
 }
 
+#endif  //Olimex
+
+boolean Network_connected_check()
+{
+#ifdef OMILEX32_POE_BOARD
+		if (eth_connected) return true;
 #endif
 
+		return	get_bool(WIFI_POWER_ON_BOOT);
 
+}
 
-
-
-
-// The main Wifi Setup
-void wifi_setup()
-{
-	
-
-	WiFi_load_settings();
-	
-	WiFi.onEvent(WiFi_Event); // Start event handler!
-	
-	//delay(5000);
-	#ifdef OMILEX32_POE_BOARD
-	debugMe(String("OLIMEX!!!  "),true);
-		eth_load_settings();
-		if (!eth_connected)
-		{
-			debugMe(String("eth not connected dropping to Wifi  "),true);
-			//WiFi.onEvent(WiFi_Event); // Start event handler!
-			WiFi_Start_Network();
-
-		}
-	#else
-		
-		WiFi_Start_Network();
-	#endif
-
-	
-	
+void wifi_start_IP_services()
+{	
+	debugMe("start services");
+#ifdef OMILEX32_POE_BOARD
+	yield();
+	if (!eth_connected)  WiFi_Start_Network();
+	if (eth_connected||get_bool(WIFI_POWER_ON_BOOT) ) ;
+#else
 	if (get_bool(WIFI_POWER_ON_BOOT))
+#endif	
 	{
-		
-		
-	
-
 		WiFi_OTA_setup();
 		WiFi_NTP_setup();   //ESP32 NOK
 		
 		TelnetDebug.begin(wifi_cfg.APname);
 
-		debugMe("Hello World");
+		//debugMe("Hello World");
 
 
 
@@ -1031,12 +1000,49 @@ void wifi_setup()
 		//WiFi_FFT_Setup();
 
 		//WiFi_print_settings();
+		debugMe("end services");
 	}
+}
+
+
+// The main Wifi Setup
+void wifi_setup()
+{
+	
+
+	WiFi_load_settings();
+	
+	WiFi.onEvent(WiFi_Event); // Start event handler!
+	
+	//delay(5000);
+	#ifdef OMILEX32_POE_BOARD
+	debugMe(String("OLIMEX!!!  "),true);
+		eth_load_settings();
+		yield();
+		wifi_cfg.connectTimeout = millis() + 20000;
+		yield();
+//		if (!eth_connected)
+//		{
+//			debugMe(String("eth not connected dropping to Wifi  "),true,true);
+//			//WiFi.onEvent(WiFi_Event); // Start event handler!
+//			WiFi_Start_Network();
+
+//		}
+	#else
+		
+		WiFi_Start_Network();
+	#endif
+
+	
+	
+	//if (get_bool(WIFI_POWER_ON_BOOT))
+	
 }
 
 
 void ip_services_loop()
 {
+		
 		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
 		//yield();
 		//NTP_parse_response();	// get new packets and flush if not correct.
@@ -1072,7 +1078,7 @@ void wifi_loop()
 			unsigned long currentT = millis();
 			if (currentT > wifi_cfg.connectTimeout )
 			{
-				wifi_cfg.connectTimeout = currentT + 10000;
+				wifi_cfg.connectTimeout = currentT + 30000;
 			//WiFi.disconnect(); 
 			//WIFI_start_wificlient(); 
 			//WiFi_Start_Network();
@@ -1082,7 +1088,12 @@ void wifi_loop()
 			}
 			
 		}
-		if  ((get_bool(WIFI_POWER_ON_BOOT))) 
+
+#ifdef OMILEX32_POE_BOARD
+		if  ((get_bool(WIFI_POWER_ON_BOOT)) || eth_connected)
+#else  
+		if  ((get_bool(WIFI_POWER_ON_BOOT)))
+#endif 
 		{
 			ip_services_loop();
 

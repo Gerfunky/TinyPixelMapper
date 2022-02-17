@@ -12,9 +12,9 @@ enter the command below  ( check the correct ip)
 
 
 
-Update FW over HTTP: ** not wokring on ESP32***
+Update FW over HTTP: 
 on OSC make shure the HTTP server is enabled (device settings).
-in the browser  surf to HTTP://**IP**//update 
+in the browser  surf to HTTP://**IP**/update 
 select the file and upload
 
 

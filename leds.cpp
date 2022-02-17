@@ -1671,6 +1671,18 @@ void LEDS_run_FX_rotate(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPut
 
 }
 
+// ************************************ FX Mirror  ****************************************
+void LEDS_run_FX_mirror(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray  )
+{
+	if (  deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_MIRROR], i) == true) && ( deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin   == 255   ||   LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin ,0 )        != 0 ))
+	{
+		
+		tpm_fx.mirror(OutPutLedArray,deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds , deck[selectedDeck].cfg.form_cfg[i + (z * 8)].start_led, bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_MIRROR_REVERSED],i  ) );
+
+	}
+
+}
+
 // ***************************************** clock  **********************
 
 void LEDS_run_FX_clock(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray) //
@@ -1853,7 +1865,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_STROBE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_EYES ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_ROTATE ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
-
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_MIRROR ) 	for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_00_CLOCK ) 		for (byte z = 0; z < 2; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_clock(z,i,deckSelected, deck[0].run.leds);
 
 
@@ -1868,17 +1880,20 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_STROBE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_strobe(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_EYES ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_eyes(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_ROTATE ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_MIRROR ) 	for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_16_CLOCK ) 		for (byte z = 2; z < 4; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_clock(z,i,deckSelected, deck[0].run.leds);
 
 			// LAYERS 32 to 48   *** Z =4 ; Z<6
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_FFT ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_PAL ) 		for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_ROTATE ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_32_MIRROR ) 	for (byte z = 4; z < 6; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
 
 			// LAYERS 32 to 48   *** Z =4 ; Z<6
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_FFT ) 		for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_PAL ) 		for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_ROTATE ) 	for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_MIRROR ) 	for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
 
 			
 
@@ -2397,7 +2412,9 @@ void LEDS_loop()
 	// snaity check if fps is set higher that possible so not to run into blackness wehn it cant hit the update time 
 	// becouse millis is overflowin back to 0
 
-	if ((led_cfg.realfps < deck[0].cfg.led_master_cfg.pal_fps  )  &&  (currentT < 500000 )  && ( led_cfg.update_time > 4294950000   ))
+	if ( (currentT < 500000 )  && ( led_cfg.update_time > 4294950000   ))
+	
+		//if (led_cfg.realfps < deck[0].cfg.led_master_cfg.pal_fps  ) 
 		{
 			led_cfg.update_time = currentT-1;
 			debugMe("timer-overflow-fix");
@@ -2462,6 +2479,8 @@ void LEDS_loop()
 			yield();
 
 		bool Btn_state = digitalRead(BTN_PIN);
+		
+		
 		 if(Btn_state != get_bool(BTN_LASTSTATE))
 		 {
 			 	debugMe("Change BTN ");

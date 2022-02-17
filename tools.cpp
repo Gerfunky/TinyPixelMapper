@@ -187,13 +187,15 @@ float byte_tofloat(uint8_t value, uint8_t max_value)
 // can take String, float, uint8_t, int and IPAddress 
 // and print it to telnet or Serial
 
-void debugMe(String input, boolean line)
+
+
+void debugMe(String input, boolean line, boolean allways)
 {
 
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
 
 
-	if (get_bool(DEBUG_OUT))
+	if (get_bool(DEBUG_OUT) || allways)
 	{
 		if (line == true)
 			DEF_SERIAL_PORT.println(input);
@@ -205,10 +207,10 @@ void debugMe(String input, boolean line)
 }
 
 
-void debugMe(tm input, boolean line)
+void debugMe(tm input, boolean line, boolean allways)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	if (get_bool(DEBUG_OUT))
+	if (get_bool(DEBUG_OUT)|| allways)
 	{
 		if (line == true)
 			DEF_SERIAL_PORT.println(&input, "%H:%M:%S %d.%m.%y");
@@ -217,10 +219,10 @@ void debugMe(tm input, boolean line)
 	}
 }
 
-void debugMe(float input, boolean line)
+void debugMe(float input, boolean line, boolean allways)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	if (get_bool(DEBUG_OUT))
+	if (get_bool(DEBUG_OUT)|| allways)
 	{
 		if (line == true)
 			DEF_SERIAL_PORT.println(String(input));
@@ -229,23 +231,10 @@ void debugMe(float input, boolean line)
 	}
 }
 
-void debugMe(uint8_t input, boolean line)
+void debugMe(uint8_t input, boolean line, boolean allways)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	if (get_bool(DEBUG_OUT))
-	{
-		if (line == true)
-			DEF_SERIAL_PORT.println(String(input));
-		else
-			DEF_SERIAL_PORT.print(String(input));
-	}
-
-}
-
-void debugMe(int input, boolean line)
-{
-	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	if (get_bool(DEBUG_OUT))
+	if (get_bool(DEBUG_OUT)|| allways)
 	{
 		if (line == true)
 			DEF_SERIAL_PORT.println(String(input));
@@ -255,10 +244,23 @@ void debugMe(int input, boolean line)
 
 }
 
-void debugMe(IPAddress input, boolean line)
+void debugMe(int input, boolean line, boolean allways)
 {
 	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
-	if (get_bool(DEBUG_OUT))
+	if (get_bool(DEBUG_OUT)|| allways)
+	{
+		if (line == true)
+			DEF_SERIAL_PORT.println(String(input));
+		else
+			DEF_SERIAL_PORT.print(String(input));
+	}
+
+}
+
+void debugMe(IPAddress input, boolean line , boolean allways)
+{
+	if (get_bool(DEBUG_TELNET)) WiFi_telnet_print(input, line);
+	if (get_bool(DEBUG_OUT) || allways)
 	{
 		if (line == true)
 			DEF_SERIAL_PORT.println(input);

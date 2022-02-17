@@ -161,6 +161,7 @@
 		_M_LAYER_00_EYES = 13,
 		_M_LAYER_00_ROTATE = 15,
 
+
 		_M_LAYER_16_FFT = 6,
 		_M_LAYER_16_PAL = 7,
 		_M_LAYER_16_FX01 = 8,
@@ -177,11 +178,14 @@
 		_M_LAYER_48_FFT = 20,
 		_M_LAYER_48_PAL = 21,
 		_M_LAYER_48_ROTATE = 22,
+		_M_LAYER_48_MIRROR = 23,
 
 		_M_LAYER_00_CLOCK = 24,
 		_M_LAYER_16_CLOCK = 25,
 		
-		
+		_M_LAYER_00_MIRROR = 26,
+		_M_LAYER_16_MIRROR = 27,
+		_M_LAYER_32_MIRROR = 28,
 
 
 
@@ -670,12 +674,13 @@
 
 
 // ********* Modify**********************
-#	define _M_NR_FORM_MODIFY_OPTIONS_ 2
+#	define _M_NR_FORM_MODIFY_OPTIONS_ 4
 	enum form_modify_options
 	{
 		_M_FORM_MODIFY_ROTATE,
 		_M_FORM_MODIFY_ROTATE_REVERSED,
 		_M_FORM_MODIFY_MIRROR,
+		_M_FORM_MODIFY_MIRROR_REVERSED,
 	};
 
 	struct  form_fx_modify_run_struct

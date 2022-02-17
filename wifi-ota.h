@@ -79,8 +79,9 @@
 
  void Wifi_Stop_Network();
  void WiFi_Start_Network();
-
-
+ 
+ boolean Network_connected_check();
+ void wifi_start_IP_services();
 
 #endif
 
