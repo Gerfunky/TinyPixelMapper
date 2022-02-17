@@ -381,45 +381,13 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 		if (WRITE_CONF_AT_INIT || OVERWRITE_INIT_CONF_ON) FS_wifi_write();
 	}
 
-	write_bool(WIFI_POWER, true);
-
 	write_bool(WIFI_POWER_ON_BOOT, get_bool(WIFI_POWER));
 
-		// Set the Static IP if static ip is selected.
-		if (get_bool(STATIC_IP_ENABLED) == true && get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT && get_bool(WIFI_POWER))   // if were static and a wifi client, configure the wifi connection
-		{
-			if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet, wifi_cfg.ipDNS))
-				debugMe("WiFi: Client config Static IP FAILED ");
-		}
-		
-	
-		
-	
 	
 }
 
 
 
-
-/*
-
-if(!WiFi.config(IPAddress(169, 254, 1, 3), IPAddress(10, 0, 0, 1), IPAddress(255, 255, 0, 0), IPAddress(10, 0, 0, 1))){
-        Serial.println("STA Failed to configure");
-    }
-    if(WiFi.begin(STA_SSID, STA_PASS) == WL_CONNECT_FAILED){
-        Serial.println("STA Failed to start");
-    }
-
-// AP Static IP
-    if(!WiFi.softAPConfig(IPAddress(192, 168, 5, 1), IPAddress(192, 168, 5, 1), IPAddress(255, 255, 255, 0))){
-        Serial.println("AP Config Failed");
-    }
-    if(!WiFi.softAP(AP_SSID)){
-        Serial.println("AP Start Failed");
-    }
-
-
-*/
 
 void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 {
@@ -439,12 +407,12 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			break;
 
 		case SYSTEM_EVENT_STA_START:					/**<2 ESP32 station start */
-			debugMe("STA Started");
+			debugMe("STA Started",true,true);
 			WiFi.setHostname(wifi_cfg.APname);
 			break;
 
 		case SYSTEM_EVENT_STA_STOP:						/**<3 ESP32 station stop */
-			debugMe("STA Stopped");
+			debugMe("STA Stopped",true,true);
 			break;
 
 		case SYSTEM_EVENT_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
@@ -482,7 +450,7 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			infoIP = info.got_ip.ip_info.gw.addr;
 			debugMe("Got DGW: ", false,true);
 			debugMe(infoIP,true,true);
-			debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
+			//debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
 			
 			break;
 
@@ -508,11 +476,15 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 
 		case	SYSTEM_EVENT_AP_START:                 /**<13 ESP32 soft-AP start */
 			//WiFi.softAPsetHostname(wifi_cfg.APname);
-			debugMe("WiFi: soft-AP Started HOSTNAME = " + String(WiFi.softAPgetHostname()));
+			debugMe("WiFi: soft-AP Started HOSTNAME = " + String(wifi_cfg.APname)+ " PWD: " + String(wifi_cfg.APpassword),true,true);
+			debugMe("IP:",false,true);
+			if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal,true,true);
+				else debugMe("192.168.4.1",true,true);
+				
 			break;
 
 		case	SYSTEM_EVENT_AP_STOP:                  /**<14 ESP32 soft-AP stop */
-			debugMe("WiFi: soft-AP Stopped");
+			debugMe("WiFi: soft-AP Stopped",true,true);
 			break;
 
 		case	SYSTEM_EVENT_AP_STACONNECTED:          /**<15 a station connected to ESP32 soft-AP */
@@ -559,11 +531,13 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 		case	SYSTEM_EVENT_ETH_DISCONNECTED:         /**<24 ESP32 ethernet phy link down */
 			debugMe("ETH Disconnected",true,true);
 			eth_connected = false;
-			WiFi_Start_Network();
+			write_bool(WIFI_POWER_ON_BOOT, get_bool(WIFI_POWER));
+			if (get_bool(WIFI_POWER) ) WiFi_Start_Network();
 			break;
 
 		case	SYSTEM_EVENT_ETH_GOT_IP:               /**<25 ESP32 ethernet got IP from connected AP */
 			Wifi_Stop_Network();
+			
 			debugMe("ETH MAC: ",false,true);
 			debugMe(ETH.macAddress(),false,true);
 			debugMe(", IPv4: ",false,true);
@@ -592,28 +566,7 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 
 
 
-void WiFi_Start_Network_X()
-{
-	
-	WiFi.disconnect();
-	
-	WiFi.mode(WIFI_STA);
-	WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-	int x = 0;
-	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		debugMe("*"+ String(WiFi.status())+ "*" ,false);
-		x++;
-		if (x > 30) break;
-	}
 
-	debugMe("trys: " + String(x));
-	debugMe("WiFi connected.");
-	debugMe("IP address: ", false);
-	debugMe(WiFi.localIP());
-	debugMe("COOOOOOOOOOOOL");
-
-}
 
 
 void WiFi_Start_Network_CLIENT()
@@ -661,7 +614,7 @@ void WiFi_print_settings()
 void Wifi_Stop_Network()
 {
 	 WiFi.mode(WIFI_OFF);
-	debugMe("Switching Wifi OFF");
+	debugMe("Wifi is OFF",true,true);
 }
 
 
@@ -691,7 +644,7 @@ void WiFi_Start_Network()
 			write_bool(WIFI_POWER,true);
 			write_bool(WIFI_POWER_ON_BOOT, true);
 			write_bool(HTTP_ENABLED, true);
-			debugMe("Start AP mode button : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD),false,true);
+			debugMe("Start AP mode button : " + String(wifi_cfg.APname) + " : " + String(DEF_AP_PASSWD),true,true);
 		}
 		else if(get_bool(WIFI_POWER))
 			{
@@ -704,25 +657,20 @@ void WiFi_Start_Network()
 
 				//delay(500);
 				
-				debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
+				//debugMe(String("Start AP mode : " + String(wifi_cfg.APname) + " : " + String(wifi_cfg.APpassword)));
 			}
 		//debugMe("c4");
 		//delay(500);
 		LEDS_setall_color(2); FastLEDshowESP32(); delay(500);
-		debugMe("IP:",false,true);
-		if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal,false,true);
-		else debugMe("192.168.4.1",false,true);
 
-		debugMe("IP : ",false,true);
-		debugMe(WiFi.localIP(),true,true);
-		debugMe("wifi status:",false,true);
-		debugMe(WiFi.status(),true,true);
+
+		
 
 	}
 	else  if (  get_bool(WIFI_MODE_TPM) != WIFI_ACCESSPOINT &&  get_bool(WIFI_POWER_ON_BOOT)   )	
 	{	
 
-		debugMe("Starting Wifi Client Setup", false,true);
+		debugMe("Starting Wifi Client Setup", true,true);
 		
 		LEDS_setall_color(3); FastLEDshowESP32(); delay(500);
 
@@ -732,6 +680,7 @@ void WiFi_Start_Network()
 
 	
 	}
+	wifi_cfg.connectTimeout = millis() + 20000;
 	
 }
 

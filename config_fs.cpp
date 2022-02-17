@@ -1947,7 +1947,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 
 				if (type == 'D')
 				{
-					debugMe("D");
+					
 					int in_int = 0;
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 			= uint8_t(constrain(in_int, 0, 5));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 			= uint8_t(constrain(in_int, 0, 255));
