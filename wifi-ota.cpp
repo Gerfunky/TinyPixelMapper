@@ -583,11 +583,7 @@ void WiFi_Start_Network_CLIENT()
 		debugMe(String(wifi_cfg.ssid),false,true);
 		debugMe(" - PWD : ",false,true);
 		debugMe(wifi_cfg.pwd,true,true);
-		//while (WiFi.status() != WL_CONNECTED) {
-		//	delay(500);
-		//	debugMe(".",false);
-		//}
-		
+	
 	
 }
 
@@ -851,45 +847,6 @@ void WiFi_FFT_handle_loop()
 
 #endif   // FFT ENABLED
 
-/*
-
-void ETHEvent(WiFiEvent_t event)
-{
-  switch (event) {
-    case SYSTEM_EVENT_ETH_START:
-      debugMe("ETH Started");
-      //set eth hostname here
-      ETH.setHostname(wifi_cfg.APname);
-      break;
-    case SYSTEM_EVENT_ETH_CONNECTED:
-      debugMe("ETH Connected");
-      break;
-    case SYSTEM_EVENT_ETH_GOT_IP:
-      debugMe("ETH MAC: ",false);
-      debugMe(ETH.macAddress(),false);
-      debugMe(", IPv4: ",false);
-      debugMe(ETH.localIP(),false);
-      if (ETH.fullDuplex()) {
-        debugMe(", FULL_DUPLEX",false);
-      }
-      debugMe(", ",false);
-      debugMe(ETH.linkSpeed(),false);
-      debugMe("Mbps");
-      eth_connected = true;
-      break;
-    case SYSTEM_EVENT_ETH_DISCONNECTED:
-      debugMe("ETH Disconnected");
-      eth_connected = false;
-      break;
-    case SYSTEM_EVENT_ETH_STOP:
-      debugMe("ETH Stopped");
-      eth_connected = false;
-      break;
-    default:
-      break;
-  }
-}
-*/
 
 #ifdef OMILEX32_POE_BOARD
 void eth_load_settings()
@@ -1003,7 +960,7 @@ void ip_services_loop()
 		//WiFi_FFT_handle_loop();
 		yield();
 		TelnetDebug.handle();
-		//dnsServer.processNextRequest();
+
 
 
 }

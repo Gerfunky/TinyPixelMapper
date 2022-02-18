@@ -50,10 +50,10 @@ void setup()
 	FS_setup();  // includes loadbool()
 	yield();
 	
+	
+	LEDS_setup();
 	wifi_setup();
 	yield();
-	LEDS_setup();
-	
  	
 
 	MMQT_setup() ;
