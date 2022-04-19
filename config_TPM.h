@@ -20,9 +20,7 @@
 #define OVERWRITE_INIT_CONF_ON	false 
 //Overwrite, wifi, device and led settings to defaut
 
-#define DEF_BOOT_DEBUGING  true  // Set to true to get Debuging info on serial port during boot. else set to false  
-#define DEF_SERIAL_SPEED 115200   
-#define DEF_SERIAL_PORT Serial
+
 
 
 
@@ -137,9 +135,17 @@
 		#define POTI_BRI_PIN 	39 	// For Brightness 
 		#define POTI_FPS_PIN 	36 	// for speed
 		#define BTN_PIN 		4 			// for a button 
+// MSGEQ7 Pins
+		#define MSGEQ7_INPUT_PIN  34 // input from mic  
+		#define MSGEQ7_STROBE_PIN 21 // stobe pin
+		#define MSGEQ7_RESET_PIN  26 // reset pin
 		
 #endif
 #ifdef OMILEX32_POE_BOARD
+
+		#define USE_SD
+		#define USE_ETHERNET
+
 		#define LED_DATA_PIN    13 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
@@ -150,10 +156,32 @@
 		#define POTI_BRI_PIN 	39 	// For Brightness   orig 13
 		#define POTI_FPS_PIN 	36 	// for speed
 		#define BTN_PIN 		34 			// for a button on omilex
+// MSGEQ7 Pins
+		#define MSGEQ7_INPUT_PIN  35 // input from mic  
+		#define MSGEQ7_STROBE_PIN 32 // stobe pin
+		#define MSGEQ7_RESET_PIN  33 // reset pin
 
-		//#define AUDIO_DPOT_CS 	1    // SPI CS 
-		//#define SPI_SCK_PIN 	16
-		//#define SPI_MOSI_PIN	13
+#endif
+#ifdef OMILEX32_GW_BOARD
+
+		#define USE_SD
+		#define USE_ETHERNET
+		#define ARDUINO_ESP32_GATEWAY G   // define pin layout G
+
+		#define LED_DATA_PIN    32 							// DATA 1 PIN	
+		#define LED_CLK_PIN     13 	 //NOK						// DATA 2 PIN / data1CLK pin
+
+		#define LED_DATA_3_PIN  12							// DATA 3 PIN = WS2812 
+		#define LED_DATA_4_PIN  16	 //NOK						// DATA 4 PIN = SK6822 
+
+		
+		#define POTI_BRI_PIN 	35 	 //				// For Brightness   orig 13
+		#define POTI_FPS_PIN 	4 	 //				// for speed  4 NOK
+		#define BTN_PIN 		34 	 // 				// for a button on omilex
+// MSGEQ7 Pins
+		#define MSGEQ7_INPUT_PIN  33 // input from mic  
+		#define MSGEQ7_STROBE_PIN 39 // stobe pin
+		#define MSGEQ7_RESET_PIN  36 // reset pin
 
 #endif
 
@@ -194,18 +222,8 @@
 // END OSC
 
 
-// FFT MSGEQ7 defines
 
-#ifdef HUZZAH32_BOARD
-		#define MSGEQ7_INPUT_PIN  34 // input from mic  
-		#define MSGEQ7_STROBE_PIN 21 // stobe pin
-		#define MSGEQ7_RESET_PIN  26 // reset pin
-#endif
-#ifdef OMILEX32_POE_BOARD
-		#define MSGEQ7_INPUT_PIN  35 // input from mic  
-		#define MSGEQ7_STROBE_PIN 32 // stobe pin
-		#define MSGEQ7_RESET_PIN  33 // reset pin
-#endif
+
 /*
 
 MSGEQ7

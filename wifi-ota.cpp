@@ -2,7 +2,7 @@
 #include "config_TPM.h"
 
 
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 	#define ETH_CLK_MODE ETH_CLOCK_GPIO17_OUT
 	#define ETH_PHY_POWER 12
 
@@ -97,7 +97,7 @@ void WiFi_OTA_setup()
 	// authentication by default Password = 
 	//ArduinoOTA.setPassword((const char *) "love" );
 
-	if (get_bool(DEBUG_OUT) == true) 
+	//if (get_bool(DEBUG_OUT) == true) 
 	{
 			ArduinoOTA.onStart([]()												{ debugMe("Start OTA"); });
 			ArduinoOTA.onEnd([]()												{ debugMe("End OTA");   });
@@ -510,7 +510,7 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			debugMe("station or ap or ethernet interface v6IP addr is preferred");
 			break;
 
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 
 		case SYSTEM_EVENT_ETH_START:
 			debugMe("ETH Started",true,true);
@@ -848,7 +848,7 @@ void WiFi_FFT_handle_loop()
 #endif   // FFT ENABLED
 
 
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 void eth_load_settings()
 {
 		ETH.begin();
@@ -863,7 +863,7 @@ void eth_load_settings()
 
 boolean Network_connected_check()
 {
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 		if (eth_connected) return true;
 #endif
 
@@ -874,7 +874,7 @@ boolean Network_connected_check()
 void wifi_start_IP_services()
 {	
 	debugMe("start services");
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 	yield();
 	if (!eth_connected)  WiFi_Start_Network();
 	if (eth_connected||get_bool(WIFI_POWER_ON_BOOT) ) ;
@@ -921,7 +921,7 @@ void wifi_setup()
 	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
 	//delay(5000);
-	#ifdef OMILEX32_POE_BOARD
+	#ifdef USE_ETHERNET
 	debugMe(String("OLIMEX!!!  "),true);
 		eth_load_settings();
 		yield();
@@ -975,7 +975,7 @@ void ip_services_loop()
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
 {
-		#ifdef OMILEX32_POE_BOARD
+		#ifdef USE_ETHERNET
 			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) && !eth_connected ) 
 		#else  
 			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
@@ -995,7 +995,7 @@ void wifi_loop()
 			
 		}
 
-#ifdef OMILEX32_POE_BOARD
+#ifdef USE_ETHERNET
 		if  ((get_bool(WIFI_POWER_ON_BOOT)) || eth_connected)
 #else  
 		if  ((get_bool(WIFI_POWER_ON_BOOT)))

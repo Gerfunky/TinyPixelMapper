@@ -26,8 +26,9 @@ struct osc_cfg_struct				// OSC configuration structure
 	unsigned int	portMulti;		// the multicast port to send to 
 	unsigned int	outPort;		// the OSC port we sent to on responsed
 	unsigned int	inPort;			// The input osc port
-	uint8_t return_ip_LB;			// the last byte of the return address no routing! 
+	//uint8_t return_ip_LB;			// the last byte of the return address no routing! 
 	uint8_t conf_multiply;			// when using osc so that we can increment by 1,10 and 100
+	
 };
 
 
@@ -35,10 +36,17 @@ struct osc_cfg_struct				// OSC configuration structure
 void OSC_setup();		// wifi-ota.h
 void OSC_loop();		// wifi-ota.h
 void osc_StC_Load_confname_Refresh(uint8_t sel_save_no);
+void osc_ostc_Start_refreshAll();
+bool osc_Isconnected();
 //void osc_StC_FFT_vizIt(); 
-
-void osc_StC_Send_Confname(uint8_t SaveNo, char ConfName[]);
-
+void osc_StC_menu_master_ref();
+//void osc_StC_Send_Confname(uint8_t SaveNo, char ConfName[]);
+bool  osc_send_out_float_MSG_buffer() ;
+void osc_StC_Send_CharArray(String Address, char ConfName[]);
+void osc_queu_MSG_rgb(String addr_string, uint8_t red,uint8_t green,uint8_t blue) ;
+void osc_queu_MSG_float(String addr_string, float value) ;
+void osc_queu_MSG_int(String addr_string, int value) ;
+void osc_queu_MSG_VAL_STRING(String addr_string, String StringValue);
 
 
 

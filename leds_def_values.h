@@ -29,6 +29,7 @@
 #define LEDS_DEF_PAL_START_INDEX 0
 #define LEDS_DEF_PAL_SPEED   16
 #define LEDS_DEF_PAL_COMPRESSION 8   
+#define LEDS_DEF_PALAUTOCOMPRESSION    1
 
 
 // Modify Layer

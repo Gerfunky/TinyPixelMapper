@@ -28,7 +28,7 @@
 	#endif
 
 
-	#ifdef OMILEX32_POE_BOARD
+	#ifdef USE_SD
 
 		//#include "FS.h"
 		#include "SD_MMC.h"

@@ -24,6 +24,9 @@
 
 //float temperatureRead();
 
+
+
+
 void setup()
 {		
 	
@@ -40,7 +43,15 @@ void setup()
 		debugMe(debug_ResetReason(0));
 		debugMe(debug_ResetReason(1));
 	
-		debugMe("Starting Setup - Light Fractal");
+		debugMe("Starting Setup - TinypixelMapper");
+		
+		#ifdef OMILEX32_GW_BOARD 
+			debugMe("***** Olimex-Gateway *****");
+		#elif OMILEX32_POE_BOARD
+			debugMe("***** Olimex-POE *****");
+		#elif HUZZAH32_BOARD
+			debugMe("***** Adafruit Huzzah32 *****");
+		#endif
 	}
 
 	btStop(); // disable bluetooth

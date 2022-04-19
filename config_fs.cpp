@@ -9,16 +9,6 @@
     #include <FS.h>
 
 
-#ifdef OMILEX32_POE_BOARD
-	#include "SD_MMC.h"
-	fs::SDMMCFS  &selectedFS = SD_MMC;	
-#else
-
-	#include<SPIFFS.h>
-	fs::SPIFFSFS  &selectedFS = SPIFFS;
-#endif
-
-
 #include "config_TPM.h"
 #include "config_fs.h"
 #include "tools.h"
@@ -26,6 +16,14 @@
 #include "osc.h"
 
 
+#ifdef USE_SD
+	#include "SD_MMC.h"
+	fs::SDMMCFS  &selectedFS = SD_MMC;	
+#else
+
+	#include<SPIFFS.h>
+	fs::SPIFFSFS  &selectedFS = SPIFFS;
+#endif
 
 
 // ***************** External Structures
@@ -53,30 +51,44 @@
 
 //**************** Functions 
 
-uint8_t confStatus[2] = {0,0};		// to hold the save ststus so we dont need to read from flash every time
-uint8_t savelooppos = 255;         // Wher are we in the Fade animation when loading ans saving
-uint8_t saveloopConfNr = 255;		// What conf Nr are we loading or saving
+
+
+SaveStruct  SaveConf = { {0,0,0,0,0,0,0,0} ,
+						  {64,65,66,67,68,69,70,71,71,73,74,75,76,78,79},
+						  {0,0}
+						  };
+
+//uint8_t savelooppos = 255;         // Wher are we in the Fade animation when loading ans saving
+//uint8_t saveloopConfNr = 255;		// What conf Nr are we loading or saving
 
 
 
-unsigned int FS_get_UsedBytes()
+
+unsigned int FS_get_UsedKBytes()
 {
 
-	return selectedFS.usedBytes();
+	
+
+	return (selectedFS.usedBytes() /1024);
 
 }
 
-unsigned int FS_get_TotalBytes()
+unsigned int FS_get_TotalKBytes()
 {
 
-	return selectedFS.totalBytes();
+	return (selectedFS.totalBytes() /1024 );
 
 }
 
-unsigned int FS_get_leftBytes()
+unsigned int FS_get_leftKBytes()
 {
+	//debugMe("TotalB :" + String ((selectedFS.totalBytes())));
+	//debugMe("usedB :" + String ((selectedFS.usedBytes())));
+	//debugMe("LeftB :" + String ((selectedFS.totalBytes()-selectedFS.usedBytes()  )));
+	//debugMe("LeftKB :" + String ((selectedFS.totalBytes()-selectedFS.usedBytes()  )/1024));
 
-	return (selectedFS.totalBytes()-selectedFS.usedBytes() );
+
+	return ((selectedFS.totalBytes()-selectedFS.usedBytes()  ) /1024);
 
 }
 
@@ -105,12 +117,12 @@ void FS_load_PlayConf_status()
 {
 
 
-	for(uint8_t bit_nr = 0; bit_nr < sizeof(confStatus); bit_nr++)
+	for(uint8_t bit_nr = 0; bit_nr < sizeof(SaveConf.confStatus); bit_nr++)
 	{
 			for(uint8_t conf_nr = 0; conf_nr < 8; conf_nr++)
 			{
 				
-				bitWrite(confStatus[bit_nr], conf_nr, FS_get_PalyConfSatatus( (8*bit_nr) + conf_nr   ) );
+				bitWrite(SaveConf.confStatus[bit_nr], conf_nr, FS_get_PalyConfSatatus( (8*bit_nr) + conf_nr   ) );
 
 			}
 
@@ -131,7 +143,7 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 		byte_nr++;
 		bit_nr = bit_nr - 8;
 	}
-	return_bool = bitRead(confStatus[byte_nr], bit_nr);
+	return_bool = bitRead(SaveConf.confStatus[byte_nr], bit_nr);
 
 	return return_bool;
 
@@ -140,7 +152,7 @@ boolean FS_check_Conf_Available(uint8_t play_NR)
 
 void  FS_write_Conf_status(uint8_t play_NR, boolean value)
 {
-
+	if (play_NR >= MAX_NR_SAVES) return;
 	
 	uint8_t byte_nr = 0;
 	uint8_t bit_nr = play_NR;
@@ -149,7 +161,24 @@ void  FS_write_Conf_status(uint8_t play_NR, boolean value)
 		byte_nr++;
 		bit_nr = bit_nr - 8;
 	}
-	bitWrite(confStatus[byte_nr], bit_nr, value);
+	bitWrite(SaveConf.confStatus[byte_nr], bit_nr, value);
+
+	
+
+}
+
+void  FS_write_Custom_Conf_status(uint8_t play_NR, boolean value)
+{
+	if (play_NR >= Nr_CustomConfs) return;
+	
+	uint8_t byte_nr = 0;
+	uint8_t bit_nr = play_NR;
+	while (bit_nr > 7)
+	{
+		byte_nr++;
+		bit_nr = bit_nr - 8;
+	}
+	bitWrite(SaveConf.confCustomStatus[byte_nr], bit_nr, value);
 
 	
 
@@ -491,7 +520,7 @@ boolean FS_wifi_read()
 			
 
 			character = conf_file.read();
-			debugMe(String("."+ String(character)),false);
+			
 			delay(100);
 			while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 				character = conf_file.read();
@@ -503,15 +532,13 @@ boolean FS_wifi_read()
 			if (type == 'b')   // wifi booleans
 
 			{
-				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));  
-				debugMe( character , false);		
+				write_bool(WIFI_POWER, get_bool_conf_value(conf_file, &character));  		
 				write_bool(WIFI_MODE_TPM, get_bool_conf_value(conf_file, &character));				
 				write_bool(STATIC_IP_ENABLED, get_bool_conf_value(conf_file, &character));		
 				write_bool(OTA_SERVER, get_bool_conf_value(conf_file, &character));			
 				write_bool(HTTP_ENABLED, get_bool_conf_value(conf_file, &character));	
 
-				debugMe(":wifi file read mode : ", false );
-				debugMe(get_bool(WIFI_MODE_TPM));
+
 
 
 				
@@ -687,7 +714,10 @@ void FS_play_conf_clear(uint8_t conf_nr)
 		bit_nr = bit_nr - 8;
 	}
 
-	bitWrite(confStatus[byte_nr], bit_nr, false);
+	bitWrite(SaveConf.confStatus[byte_nr], bit_nr, false);
+
+	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 255,0,0);
+	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr) , "-" ) ;
 
 }	
 
@@ -779,7 +809,7 @@ void	FS_play_conf_write1(uint8_t val)
 	uint8_t selectedDeckNo = 0;
 	String addr = String("/conf/" + String(val) + ".playConf.txt");
 	//String title = "Main Config for ESP.";
-	debugMe(addr);
+	
 	yield();
 	File conf_file = selectedFS.open(addr, "w");
 
@@ -850,6 +880,7 @@ void	FS_play_conf_write1(uint8_t val)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_start)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_led)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].index_add_frame)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].autoPalMode)));
 				conf_file.println("] ");
 			}
 		}
@@ -1126,7 +1157,7 @@ void	FS_play_conf_write1(uint8_t val)
 		}
 
 
-#ifdef OMILEX32_POE_BOARD  // when writing to SD we need to split the file into appends since it writes to mem and then to disk 
+#ifdef USE_SD  // when writing to SD we need to split the file into appends since it writes to mem and then to disk 
 							// When writing to SPIFFS its faster to do it all in one go and not append it since here we write traigt to the SPIFFS
 		
 				conf_file.close();
@@ -1142,7 +1173,7 @@ void  FS_play_conf_write_append1(uint8_t val)
 	uint8_t selectedDeckNo = 0;
 	String addr = String("/conf/" + String(val) + ".playConf.txt");
 	//String title = "Main Config for ESP.";
-	debugMe(addr);
+	
 	yield();
 	File conf_file = selectedFS.open(addr, "a");
 
@@ -1153,7 +1184,7 @@ void  FS_play_conf_write_append1(uint8_t val)
 		debugMe("Write Conf File");
 
 
-#endif   // olimex 
+#endif   // SD
 
 
 		//conf_file.println("Modify ");
@@ -1219,7 +1250,7 @@ void  FS_play_conf_write_append1(uint8_t val)
 		}
 		//*/
 		conf_file.close();
-		FS_write_Conf_status(val, true);
+		
 	}
 
 
@@ -1235,28 +1266,36 @@ void FS_play_conf_write(uint8_t conf_nr)
 
 	FS_play_conf_write1(conf_nr);
 
-	#ifdef OMILEX32_POE_BOARD   // when writing to SD we need to split the file into appends since it writes to mem and then to disk 
+	#ifdef USE_SD   // when writing to SD we need to split the file into appends since it writes to mem and then to disk 
 		FS_play_conf_write_append1(conf_nr);
 	#endif
 	FS_write_Conf_status(conf_nr, true);
-
+	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 0,255,0);
+	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr)  , deck[0].cfg.confname);
 }
+
+
+
 
 
 void FS_play_conf_readSendSavenames( ) 
 {
 	// Read the Play config NR
-
+	
+	String addrList = String("/conf/Savelist.txt");
+	File List_conf_file = selectedFS.open(addrList, "w");
+	List_conf_file.println( "Nr:Name");
+	uint8_t Bundle_Counter = 0;
 
 	for (uint8_t confNo = 0; confNo < MAX_NR_SAVES ; confNo++)
 	{
-
-	
 
 		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
 		debugMe("READ Conf " + addr);
 		File conf_file = selectedFS.open(addr, "r");
 		String settingValue;
+		String OSCAddress = "/ostc/master/savename/" + String(confNo);
+		
 
 		delay(100);
 		if (conf_file && !conf_file.isDirectory())
@@ -1267,6 +1306,7 @@ void FS_play_conf_readSendSavenames( )
 			char type;
 			char typeb;
 			// debugMe("File-opened");
+			FS_write_Conf_status(confNo,true);
 			while (conf_file.available()) 
 			{
 
@@ -1294,28 +1334,144 @@ void FS_play_conf_readSendSavenames( )
 					debugMe("checking Conf :", false);
 					debugMe(String(Confname));
 
-					osc_StC_Send_Confname(confNo, Confname) ;
+					
+					osc_queu_MSG_VAL_STRING(OSCAddress, Confname);
+					//osc_StC_Send_CharArray(OSCAddress, Confname) ;
+					osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
+					
 					break;
 				}
-				debugMe("stillIn");
+				
 				
 			}
 			// close the file:
 			conf_file.close();
+			debugMe("play-File-Closed");
 
+			//String addrList = String("/conf/Savelist.txt");
+			//File List_conf_file = selectedFS.open(addrList, "a");
+			List_conf_file.println(String(confNo) +  ":" + settingValue);
+			
+			Bundle_Counter = Bundle_Counter +1;
+			if (Bundle_Counter > 8 )
+			{
+				Bundle_Counter = 0;
+				osc_send_out_float_MSG_buffer() ;
+				debugMe("one Set");
+			}
 
 			
 			
 		}
 		else
 		{
-			// if the file didn't open, print an error:
-			osc_StC_Send_Confname(confNo, " ") ;
+			FS_write_Conf_status(confNo,false);
+			osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
+			osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
+
+			//List_conf_file.println(String(confNo) +  ": - " );
 		}
-		debugMe("play-File-Closed");
+		
 	}
 
+	List_conf_file.close();
+
 	
+}
+
+
+void FS_play_conf_custom_readSendSavenames( ) 
+{
+	// Read the Play config NR
+	String addrList = String("/conf/CSavelist.txt");
+	File List_conf_file = selectedFS.open(addrList, "w");
+	List_conf_file.println( "Nr:Name");
+
+	for (uint8_t confNo = 0; confNo < Nr_CustomConfs ; confNo++)
+	{
+		//SaveConf.confCustomLoadNrs[confNo]
+		String OSCAddress = "/ostc/master/custsave/" + String(confNo);
+
+		String addr = String("/conf/" + String(SaveConf.confCustomLoadNrs[confNo]) + ".playConf.txt");
+		debugMe("READ Conf " + addr);
+		File conf_file = selectedFS.open(addr, "r");
+		String settingValue;
+
+		osc_queu_MSG_int(String("/ostc/master/cnum/"+String(confNo)),SaveConf.confCustomLoadNrs[confNo]);
+
+
+		delay(100);
+		if (conf_file && !conf_file.isDirectory())
+		{
+
+			char Confname[32];
+			char character;
+			char type;
+			char typeb;
+			// debugMe("File-opened");
+
+
+			FS_write_Custom_Conf_status(confNo,true);
+			//bitWrite(SaveConf.confCustomStatus[byte_nr], bit_nr, true);
+
+
+
+
+
+			while (conf_file.available()) 
+			{
+
+				character = conf_file.read();
+				while ((conf_file.available()) && (character != '[')) 
+				{  // Go to first setting
+					character = conf_file.read();
+				}
+
+				type = conf_file.read();
+				typeb = conf_file.read();
+				character = conf_file.read(); // go past the first ":"
+				
+				int  in_int = 0;
+
+				
+
+				if ((type == 'N') && (typeb == 'M'))
+				{
+					
+					
+					memset(Confname, 0, sizeof(Confname));
+					settingValue = get_string_conf_value(conf_file, &character);
+					settingValue.toCharArray(Confname, settingValue.length() + 1);
+					debugMe("checking Conf :", false);
+					debugMe(String(Confname));
+					
+
+					osc_queu_MSG_VAL_STRING(OSCAddress, Confname) ;
+					osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
+					
+					break;
+				}
+				
+				
+			}
+			// close the file:
+			conf_file.close();
+			debugMe("custom play-File-Closed");
+			List_conf_file.println(String(SaveConf.confCustomLoadNrs[confNo]) +  ":" + settingValue);
+			
+			
+		}
+		else
+		{
+			// if the file didn't open, print an error:
+			osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
+			FS_write_Custom_Conf_status(confNo,false);
+			osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 255,0,0);
+		}
+		
+	}
+
+	List_conf_file.close();
 }
 
 
@@ -1451,6 +1607,10 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_start = in_int ;}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_add_led = in_int;}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].index_add_frame = in_int; }
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal[strip_no].autoPalMode = in_int;   LEDS_G_AutoCalcPal(0,strip_no);    }
+
+
+
 				
 			}	
 			else if ((type == 'P') && (typeb == 'S'))
@@ -1789,6 +1949,18 @@ void FS_Bools_write(uint8_t conf_nr)
 
 		conf_file.println(F("] "));
 		
+		conf_file.println(F("C = Custom Save Nrs "));
+		conf_file.print(String("[C:" + String(get_bool(SEQUENCER_ON))));
+		
+		for(uint8_t confNr = 0; confNr < Nr_CustomConfs; confNr++)
+		{
+			conf_file.print(String(":" + String(SaveConf.confCustomLoadNrs[confNr])));
+		}
+
+		conf_file.println(F("] "));
+
+
+
 		
 		 
 		conf_file.close();
@@ -1998,6 +2170,17 @@ boolean FS_Bools_read(uint8_t conf_nr)
 						in_int = get_int_conf_value(conf_file, &character);	 	play_conf_time_min[confNr] = in_int;		
 					}
 				}
+				else if (type == 'C')
+				{
+					
+					for(uint8_t confNr = 0; confNr < Nr_CustomConfs; confNr++)
+					{
+						int in_int = 0;
+						in_int = get_int_conf_value(conf_file, &character); 
+						SaveConf.confCustomLoadNrs[confNr] = in_int;
+	
+					}
+				}
 				else
 					debugMe("NO_TYPE");
 
@@ -2097,7 +2280,7 @@ void FS_setup()
 		FS_listDir(selectedFS, "/", 0);
 	} else{
 
-		debugMe("FAILED SD_MMC");
+		debugMe("FAILED toStart FS");
 
 	}
 	delay(100);

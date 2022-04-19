@@ -9,6 +9,9 @@
 	#include "WProgram.h"
 #endif
 
+#define DEF_SERIAL_SPEED 115200   
+#define DEF_SERIAL_PORT Serial
+#define DEF_BOOT_DEBUGING  true 
 
 
 #define NR_GLOBAL_OPTIONS_BYTES 5     // to hold the bools in bits not bytes! Enum below must fit in here!!!
@@ -50,6 +53,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,POTS_LVL_MASTER	= 32	// override the LVL from the save to the value set on the pot
 	,PAUSE_DISPLAY		= 33 	// frezze the display but continue to calculate in the background
 	,ARTNET_REMAPPING   = 34	// remap artnet universe to FFT data and use almost all other features.
+	,MANUAL_REFRESH  = 35   // is it a custom load.
 
 };
 
@@ -86,6 +90,7 @@ uint8_t striptobit(int strip_no);
 
 //generic functions
 
+uint16_t calc_rounded_devision(uint16_t value, uint16_t divider);
 boolean isODDnumber(uint8_t number);
 float byte_tofloat(uint8_t value, uint8_t max_value = 255);
 

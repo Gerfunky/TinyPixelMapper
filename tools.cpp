@@ -33,6 +33,10 @@ return true;
 
 
 
+
+
+
+
 // Bools functions
 boolean get_bool(uint8_t bit_nr)
 {
@@ -133,6 +137,17 @@ void load_bool()
 
 // end bools functions
 
+
+
+uint16_t calc_rounded_devision(uint16_t value, uint16_t divider)
+{
+	uint16_t result = 0;
+
+
+	result = (value + (divider/2)) / divider;
+
+	return result;
+}
 
 
 uint8_t get_strip_menu_bit(int strip) 

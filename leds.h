@@ -146,8 +146,8 @@
 // *************** Layers  ************************
 
 
-	#define MAX_LAYERS_SELECT 48  // up to how many layers can you add
-	#define MAX_LAYERS 48 					// what is the max layer Number
+	#define MAX_LAYERS_SELECT 49  // up to how many layers can you add
+	#define MAX_LAYERS 49 					// what is the max layer Number
 	#define MAX_LAYERS_BASIC 22				// what is the max layer Number
 
 	enum layer_options
@@ -200,9 +200,37 @@
 		_M_LAYER_RUN_OMEGA = 47,
 
 		_M_LAYER_CLEAR = 48,
+		
 
 
 	};
+
+	enum AutoPalMode
+	{
+		 Ap_MANUAL 		= 1
+		,Ap_M1 		= 0
+		,Ap_M2 		= 2
+		,Ap_M3 		= 3
+		,Ap_M4 		= 4
+		,Ap_M5 		= 5
+		,Ap_M6 		= 6
+		,Ap_M7 		= 7
+		,Ap_M8 		= 8
+		,Ap_M9 		= 9
+		,Ap_M10 	= 10
+		,Ap_D2 		= 52
+		,Ap_D3 		= 53
+		,Ap_D4 		= 54
+		,Ap_D5 		= 55
+		,Ap_D6 		= 56
+		,Ap_D7 		= 57
+		,Ap_D8 		= 58
+		,Ap_D9 		= 59
+		,Ap_D10 	= 60
+		
+
+	};
+
 
 
 
@@ -231,6 +259,7 @@
 					uint16_t	index_start;		// Where to start at reset
 					uint16_t	index_add_led;		// how much to add onto the index on 
 					uint16_t	index_add_frame;	// ???
+					uint8_t 	autoPalMode;
 
 		};
 
@@ -242,6 +271,7 @@
 			uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
 			uint8_t 	lvl_bin;			// whats the lvl bin to add to the lvl   , 255 = none
 			uint8_t 	master_lvl; 		// the master level for the layer
+			
 		};
 
 
@@ -947,7 +977,7 @@ struct save_struct
 	void LEDS_loop();
 	void LEDS_setup();
 
-	void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr);
+	void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr) ;
 	float LEDS_get_FPS(); // osc.cpp
 
 	void LEDS_pal_write(uint8_t pal, uint8_t no, uint8_t color, uint8_t value);   // used in config_fs , osc.cpp
@@ -979,7 +1009,7 @@ struct save_struct
 	uint8_t getrand8() ;  // returns a random number from 0-255 
 	uint8_t LEDS_get_real_bri();   // gets the real BRi including fft shift
 	uint8_t LEDS_FFT_get_color_result(uint8_t deckNo, uint8_t color );   // Get the FFT color result 0= red 1= green 2 = blue
-
+	void LEDS_G_AutoCalcPal(uint8_t deckNo, uint8_t formNrGroup);
 	boolean LEDS_get_sequencer(uint8_t play_nr); 
 
 	void LEDS_write_sequencer(uint8_t play_nr, boolean value);
