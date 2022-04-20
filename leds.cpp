@@ -135,8 +135,7 @@ deck_struct deck[1] ;
 led_controls_struct led_cnt = { 150,30 };  // global 
 
 
-led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,15, POT_SENSE_DEF 
-};			// The basic led config
+led_cfg_struct led_cfg = { DEF_MAX_BRI ,DEF_MAX_BRI,0, 0, 1,1,1 ,DEF_LED_MODE, NUM_LEDS ,DEF_PLAY_MODE, {DEF_DATA1_START_NR,DEF_DATA2_START_NR, DEF_DATA3_START_NR,  DEF_DATA4_START_NR}, {DEF_DATA1_NR_LEDS, DEF_DATA2_NR_LEDS, DEF_DATA3_NR_LEDS,DEF_DATA4_NR_LEDS }, DEF_APA102_DATARATE, 5 , 0,15, POT_SENSE_DEF ,0 };			// The basic led config
 
 
 
@@ -2006,7 +2005,7 @@ void LEDS_init_config(uint8_t selected_Deck)
 {
 	for(uint8_t Form_Part_No = 0 ;Form_Part_No < NR_FORM_PARTS; Form_Part_No++)
 		{
-			deck[selected_Deck].cfg.form_cfg[Form_Part_No] 		= {LEDS_DEF_START_LED,LEDS_DEF_NR_LEDs};
+			//deck[selected_Deck].cfg.form_cfg[Form_Part_No] 		= {LEDS_DEF_START_LED,LEDS_DEF_NR_LEDs};
 			deck[selected_Deck].cfg.form_fx_pal[Form_Part_No] 	= {LEDS_DEF_MAX_BRI,LEDS_DEF_PAL_START_INDEX,LEDS_DEF_PAL_COMPRESSION,LEDS_DEF_PAL_SPEED,LEDS_DEF_PALAUTOCOMPRESSION };
 			
 			deck[selected_Deck].cfg.form_fx_modify[Form_Part_No] 		= {LEDS_DEF_MODIFY_ROTATEFIXED};
@@ -2103,7 +2102,7 @@ void LEDS_init_config(uint8_t selected_Deck)
 		deck[selected_Deck].cfg.layer.clear_Nr_leds = led_cfg.NrLeds ;
 
 
-		deck[selected_Deck].cfg.form_cfg[0] = {0,200};
+		//deck[selected_Deck].cfg.form_cfg[0] = {0,200};
 
 
 }
@@ -2401,7 +2400,7 @@ void LEDS_setup()
 
 	 LEDS_load_default_play_conf();	
 	if (led_cfg.bootCFG != MAX_NR_SAVES) FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
-;	
+	FS_read_Strip_Config(led_cfg.Led_Setup_ConfNr,&deck[0].cfg, &led_cfg);
 
 	LEDS_pal_reset_index();
 

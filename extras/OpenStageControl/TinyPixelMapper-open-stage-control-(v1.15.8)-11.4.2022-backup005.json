@@ -12879,7 +12879,7 @@
                       {
                         "type": "clone",
                         "widgetId": "@{parent.variables.ledsClone}",
-                        "width": "85%",
+                        "width": "94.32%",
                         "height": "12%",
                         "css": "",
                         "left": "5%",
@@ -14976,7 +14976,7 @@
                       {
                         "type": "clone",
                         "widgetId": "@{parent.variables.ledsClone}",
-                        "width": "85%",
+                        "width": "94.5%",
                         "height": "12%",
                         "css": "",
                         "left": "5%",
@@ -15118,7 +15118,7 @@
                             "top": "0%",
                             "left": "5%",
                             "id": "clone_13",
-                            "width": "85%",
+                            "width": "94.5%",
                             "height": "12%",
                             "css": "",
                             "widgetId": "@{parent.variables.ledsClone}",
@@ -15955,7 +15955,7 @@
                             "top": "0%",
                             "left": "5%",
                             "id": "clone_76",
-                            "width": "85%",
+                            "width": "94.5%",
                             "height": "12%",
                             "css": "",
                             "widgetId": "@{parent.variables.ledsClone}",
@@ -16670,7 +16670,7 @@
                             "top": "0%",
                             "left": "5%",
                             "id": "clone_77",
-                            "width": "85%",
+                            "width": "94.5%",
                             "height": "12%",
                             "css": "",
                             "lock": false,
@@ -17234,7 +17234,7 @@
                           {
                             "type": "clone",
                             "widgetId": "@{parent.variables.ledsClone}",
-                            "width": "85%",
+                            "width": "94.5%",
                             "height": "12%",
                             "css": "",
                             "left": "5%",
@@ -17927,7 +17927,7 @@
                         "top": "0%",
                         "left": "5%",
                         "id": "clone_41",
-                        "width": "85%",
+                        "width": "94.5%",
                         "height": "12%",
                         "css": "",
                         "widgetId": "@{parent.variables.ledsClone}",
@@ -18811,7 +18811,7 @@
                       {
                         "type": "clone",
                         "widgetId": "@{parent.variables.ledsClone}",
-                        "width": "85%",
+                        "width": "94.5%",
                         "height": "12%",
                         "css": "",
                         "top": "0%",
@@ -19847,7 +19847,7 @@
                       {
                         "type": "clone",
                         "widgetId": "@{parent.variables.ledsClone}",
-                        "width": "85%",
+                        "width": "94.5%",
                         "height": "12%",
                         "css": "",
                         "top": "0%",
@@ -20552,7 +20552,7 @@
                       {
                         "type": "clone",
                         "widgetId": "@{parent.variables.ledsClone}",
-                        "width": "85%",
+                        "width": "94.5%",
                         "height": "12%",
                         "css": "",
                         "left": "5%",
@@ -52567,9 +52567,10 @@
             "numeric": false,
             "validation": "",
             "value": {
-              "0 : TPM Junction": 0,
-              "1 : TPM Projector V1": 1,
-              "2 : TPM Projector V2": 2
+              "TPMx Junction": 0,
+              "TPM Projector": 1,
+              "Custom 1": 10,
+              "Custom 2": 11
             },
             "default": "",
             "linkId": "",

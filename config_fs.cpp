@@ -796,7 +796,38 @@ String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 }
 
 
+void FS_write_Strip_Config(uint8_t val)
+{
+	uint8_t selectedDeckNo = 0;
+	String addr = String("/conf/" + String(val) + ".LampConf.txt");
+	//String title = "Main Config for ESP.";
+	
+	yield();
+	File conf_file = selectedFS.open(addr, "w");
 
+	if (!conf_file && !conf_file.isDirectory()) {
+		 debugMe("play file creation failed");
+	}
+	else 
+	{   // yeah its open
+		debugMe("Write Conf File");
+
+		conf_file.print(String("[NM:"+ String(led_cfg.Led_Setup_confname))); 		
+		conf_file.println("] ");
+
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			
+			conf_file.print(String("[LD:" + String(form)));
+			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].start_led)));
+			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].nr_leds)));
+			conf_file.println("] ");
+
+		} 
+	conf_file.close();
+
+	}
+}
 
 
 
@@ -840,7 +871,7 @@ void	FS_play_conf_write1(uint8_t val)
 			conf_file.println("] ");
 
 		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
-		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+/*		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			
 			conf_file.print(String("[FC:" + String(form)));
@@ -849,7 +880,7 @@ void	FS_play_conf_write1(uint8_t val)
 			conf_file.println("] ");
 
 		} 
-		//conf_file.println("ly = Layers 0 to 47, ");
+*/		//conf_file.println("ly = Layers 0 to 47, ");
 		conf_file.print("[ly:" + String(deck[selectedDeckNo].cfg.layer.select[0]) )	;
 		for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
 		{
@@ -1474,6 +1505,189 @@ void FS_play_conf_custom_readSendSavenames( )
 	List_conf_file.close();
 }
 
+void FS_get_Strip_Config_list( )
+{
+
+	// Read the Play config NR
+	String addrList = String("/conf/lamps.txt");
+	File List_conf_file = selectedFS.open(addrList, "w");
+	List_conf_file.print( "{ ");
+	
+	String ExportString ; 
+
+	for (uint8_t confNo = 0; confNo < MAX_LAMP_CONFIGS ; confNo++)
+	{
+		//SaveConf.confCustomLoadNrs[confNo]
+		//String OSCAddress = "/ostc/master/custsave/" + String(confNo);
+
+		String addr = String("/conf/" + String(confNo)  + ".LampConf.txt" );
+		debugMe("READ Conf " + addr);
+		File conf_file = selectedFS.open(addr, "r");
+
+		String settingValue;
+
+		//osc_queu_MSG_int(String("/ostc/master/cnum/"+String(confNo)),SaveConf.confCustomLoadNrs[confNo]);
+
+
+		delay(100);
+		if (conf_file && !conf_file.isDirectory())
+		{
+
+			char Confname[24];
+			char character;
+			char type;
+			char typeb;
+			// debugMe("File-opened");
+
+
+			//FS_write_Custom_Conf_status(confNo,true);
+			//bitWrite(SaveConf.confCustomStatus[byte_nr], bit_nr, true);
+
+
+
+
+
+			while (conf_file.available()) 
+			{
+
+				character = conf_file.read();
+				while ((conf_file.available()) && (character != '[')) 
+				{  // Go to first setting
+					character = conf_file.read();
+				}
+
+				type = conf_file.read();
+				typeb = conf_file.read();
+				character = conf_file.read(); // go past the first ":"
+				
+			//	int  in_int = 0;
+
+				
+
+				if ((type == 'N') && (typeb == 'M'))
+				{
+					
+					
+					memset(Confname, 0, sizeof(Confname));
+					settingValue = get_string_conf_value(conf_file, &character);
+					settingValue.toCharArray(Confname, settingValue.length() + 1);
+					debugMe("checking Conf :", false);
+					debugMe(String(Confname));
+					
+					if (confNo > 0) {List_conf_file.print(", "); ExportString = ExportString + ", " ; }
+					List_conf_file.println(String("\""+ String(confNo) + " : " + settingValue + "\" : " + String(confNo) ) )   ;
+					ExportString = ExportString + String("\"" + String(confNo) + " : "  + settingValue + "\" : " + String(confNo) ) ; 
+					//osc_queu_MSG_VAL_STRING(OSCAddress, Confname) ;
+					//osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
+					
+					
+				}
+				break;
+				
+			}
+			// close the file:
+			conf_file.close();
+			//debugMe("custom play-File-Closed");
+			
+			
+			
+		}
+		else
+		{
+			// if the file didn't open, print an error:
+			//osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
+			//FS_write_Custom_Conf_status(confNo,false);
+			//osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 255,0,0);
+		}
+		
+	}
+	List_conf_file.println( " }");
+	List_conf_file.close();
+
+	ExportString = "{ "  + ExportString + " }";
+	debugMe(ExportString);
+	//osc_queu_MSG_VAL_STRING("/ostc/master/Lamp/Versions", ExportString);
+	osc_Send_String("/ostc/master/Lamp/Versions" , ExportString);
+}
+
+
+
+
+
+boolean FS_read_Strip_Config(uint8_t conf_nr, deck_cfg_struct* DeckConf , led_cfg_struct* LedConf )
+{
+
+	String addr = String("/conf/" + String(conf_nr) + ".LampConf.txt");
+	 debugMe("READ Conf " + addr);
+	File conf_file = selectedFS.open(addr, "r");
+	String settingValue;
+
+	delay(100);
+	if (conf_file && !conf_file.isDirectory())
+	{
+
+		char character;
+		char type;
+		char typeb;
+		int strip_no = 0;
+		debugMe("File-opened");
+		while (conf_file.available()) 
+		{
+
+			character = conf_file.read();
+			while ((conf_file.available()) && (character != '[')) 
+			{  // Go to first setting
+				character = conf_file.read();
+			}
+
+			type = conf_file.read();
+			typeb = conf_file.read();
+			character = conf_file.read(); // go past the first ":"
+			
+			int  in_int = 0;
+
+			if ((type == 'N') && (typeb == 'M'))
+			{
+				
+				memset(LedConf->Led_Setup_confname, 0, sizeof(LedConf->Led_Setup_confname));
+				settingValue = get_string_conf_value(conf_file, &character);
+				settingValue.toCharArray(LedConf->Led_Setup_confname, settingValue.length() + 1);
+				debugMe("Loading Conf :", false);
+				debugMe(String(LedConf->Led_Setup_confname));
+			}
+				else if ((type == 'L') && (typeb == 'D'))  
+			{
+				strip_no = get_int_conf_value(conf_file, &character);
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); DeckConf->form_cfg[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);}
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); DeckConf->form_cfg[strip_no].nr_leds = constrain(in_int, 0, led_cfg.NrLeds - DeckConf->form_cfg[strip_no].start_led);}
+			}
+
+
+			while ((conf_file.available()) && (character != ']')) 
+			{ 
+				character = conf_file.read();
+			}
+
+
+			
+		}
+		// close the file:
+		conf_file.close();
+
+		
+		
+		return true;
+	}
+	else
+	{
+		// if the file didn't open, print an error:
+		Serial.println("error opening " + addr);
+	}
+	 debugMe("play-File-Closed");
+
+
+	return false;
+}
 
 
 boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx1_struct* targetFXConf ) 
@@ -1593,13 +1807,14 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.fftAutoMax 				= uint8_t(constrain(in_int, 0,255));}
 
 			}
-	
+#ifdef LOAD_LEDS_FROM_PLAYCONFIG	
 			else if ((type == 'F') && (typeb == 'C'))  
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_cfg[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_cfg[strip_no].nr_leds = constrain(in_int, 0, led_cfg.NrLeds - targetConf->form_cfg[strip_no].start_led);}
 			}
+#endif			
 			else if ((type == 'P') && (typeb == 'F'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -1919,6 +2134,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.apa102data_rate)));
 		conf_file.print(String(":"		+ String(led_cfg.bootCFG)));
 		conf_file.print(String(":"		+ String(led_cfg.PotSens)));
+		conf_file.print(String(":"		+ String(led_cfg.Led_Setup_ConfNr)));
 		conf_file.println("] ");
 
 		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
@@ -2136,6 +2352,8 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.apa102data_rate 	= uint8_t(constrain(in_int, 1,24));
 					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.bootCFG 			= uint8_t(constrain(in_int, 0,MAX_NR_SAVES));} else led_cfg.bootCFG  = MAX_NR_SAVES;
 					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.PotSens 			= uint8_t(constrain(in_int, 0,255));} 		   else led_cfg.PotSens  = POT_SENSE_DEF;
+					if(AnotherSetting(&character))  {in_int = get_int_conf_value(conf_file, &character);		led_cfg.Led_Setup_ConfNr 	= uint8_t(constrain(in_int, 0,MAX_LAMP_CONFIGS));}  else led_cfg.Led_Setup_ConfNr  = 0;
+					
 						
 
 				}

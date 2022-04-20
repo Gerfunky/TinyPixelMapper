@@ -103,6 +103,10 @@ void FS_setup();
 	void FS_play_conf_custom_readSendSavenames( ) ;
 
 	
+	boolean FS_read_Strip_Config(uint8_t conf_nr, deck_cfg_struct* DeckConf , led_cfg_struct* LedConf );
+	void FS_write_Strip_Config(uint8_t val);
+
+	void FS_get_Strip_Config_list( );
 
 #endif
 

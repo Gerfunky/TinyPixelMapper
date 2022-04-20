@@ -686,6 +686,27 @@ void osc_StC_Send_CharArray(String Address, char ConfName[])
 
 }
 
+void osc_Send_String(String Address, String StringName)
+{
+	if (osc_Isconnected())
+	{
+		OSCBundle bundle_out;
+		IPAddress ip_out(osc_server.remoteIP());		
+		char ConfOutAddress[32] ;
+
+		Address.toCharArray(ConfOutAddress, Address.length() + 1);
+		bundle_out.add(ConfOutAddress ).add(StringName.c_str());
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+	}
+
+}
+
+
+
 
 void osc_StC_Load_confname_Refresh(uint8_t sel_save_no)
 {
@@ -1271,7 +1292,7 @@ void osc_StC_menu_form_pal_adv_ref(uint8_t bit)
 			osc_queu_MSG_int( "/ostc/form/pal/mir/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	bit_formNr)));  		
 			osc_queu_MSG_int( "/ostc/form/pal/bld/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_BLEND], 	bit_formNr)));  	 
 			osc_queu_MSG_int( "/ostc/form/pal/ifm/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_SPEED_FROM_FFT], 	bit_formNr)));	
-			osc_queu_MSG_int("/ostc/form/pal/ato/"  + String(formNr), deck[0].cfg.form_fx_pal[bit].autoPalMode );	
+			osc_queu_MSG_int("/ostc/form/pal/ato/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].autoPalMode );	
 			osc_queu_MSG_int("/ostc/form/pal/lvl/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].level );
 
 			osc_queu_MSG_int("/ostc/form/pal/ald/" + String(formNr), deck[0].cfg.form_fx_pal[formNr].index_add_led );
@@ -1507,8 +1528,21 @@ void osc_StC_menu_master_ledcfg_ref()
 
 }
 
+
+void osc_StC_ref_lampConfig()
+{
+	osc_queu_MSG_VAL_STRING("/ostc/master/LampName",led_cfg.Led_Setup_confname );
+	osc_queu_MSG_int("/ostc/master/LampConfigNr",led_cfg.Led_Setup_ConfNr );
+	osc_queu_MSG_int("/ostc/master/LoadLamp",led_cfg.Led_Setup_ConfNr );
+	
+
+	osc_StC_menu_form_led_adv_ref();
+}
+
+
 void osc_StC_menu_master_ref()
 {
+	osc_StC_ref_lampConfig();
 	osc_queu_MSG_int("/ostc/master/bri", 		deck[0].cfg.led_master_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
 	osc_queu_MSG_int("/ostc/master/r", 			deck[0].cfg.led_master_cfg.r);
 	osc_queu_MSG_int("/ostc/master/g", 			deck[0].cfg.led_master_cfg.g);
@@ -1535,6 +1569,8 @@ void osc_StC_menu_master_ref()
 	
 
 	osc_queu_MSG_VAL_STRING("/ostc/master/confname",deck[0].cfg.confname );
+
+
 
 
 	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
@@ -1802,6 +1838,8 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.fullMatch("/fx/clck/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_FX_clock_adv_ref(0);osc_StC_menu_FX_clock_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/clck/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_FX_clock_adv_ref(2);osc_StC_menu_FX_clock_adv_ref(3);}
 
+		
+
 
 		else if 	(msg.match("/fx",addrOffset))	
 		{
@@ -2006,12 +2044,12 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/sys/nld",addrOffset))  						{deck[0].cfg.form_cfg[orig_form_nr].nr_leds 	= constrain(uint16_t(msg.getInt(0)), 0,  (led_cfg.NrLeds - deck[0].cfg.form_cfg[orig_form_nr].start_led )  );   osc_queu_MSG_int("/ostc/form/sys/nld/" + String(orig_form_nr), deck[0].cfg.form_cfg[orig_form_nr].nr_leds ); }
 						else if  	(msg.match("/sys/csd",addrOffset) && orig_form_nr > 0 )  	{deck[0].cfg.form_cfg[orig_form_nr].start_led 	= deck[0].cfg.form_cfg[orig_form_nr-1 ].start_led + deck[0].cfg.form_cfg[orig_form_nr-1 ].nr_leds;   osc_queu_MSG_int("/ostc/form/sys/sld/" + String(orig_form_nr), deck[0].cfg.form_cfg[orig_form_nr].start_led ); } 	
 
-						else if  	(msg.match("/pal/ald",addrOffset))  {	deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led = uint16_t(result) 	;   LEDS_G_AutoCalcPal(0,orig_form_nr); }
+						else if  	(msg.match("/pal/ald",addrOffset))  {	deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led = uint16_t(result) 	;  deck[0].cfg.form_fx_pal[orig_form_nr].autoPalMode = Ap_MANUAL; osc_queu_MSG_int("/ostc/form/pal/ato/"+ String(orig_form_nr)  , uint8_t(Ap_MANUAL) );  }
 						else if  	(msg.match("/pal/afm",addrOffset))  	deck[0].cfg.form_fx_pal[orig_form_nr].index_add_frame = uint16_t(result) 	;   
 						else if  	(msg.match("/pal/sid",addrOffset))  	deck[0].cfg.form_fx_pal[orig_form_nr].index_start = uint16_t(result)	; 
 						else if		(msg.match("/pal/lvl",addrOffset))		deck[0].cfg.form_fx_pal[orig_form_nr].level  	=  uint8_t(result)  ;
 						
-						else if		(msg.match("/pal/ato",addrOffset))	{	deck[0].cfg.form_fx_pal[orig_form_nr].autoPalMode  =  uint8_t(result)	;  LEDS_G_AutoCalcPal(0,orig_form_nr); osc_queu_MSG_int("/ostc/form/pal/ald", deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led) ;  }
+						else if		(msg.match("/pal/ato",addrOffset))	{	debugMe(result); deck[0].cfg.form_fx_pal[orig_form_nr].autoPalMode  =  uint8_t(result)	;  LEDS_G_AutoCalcPal(0,orig_form_nr); osc_queu_MSG_int("/ostc/form/pal/ald/" + String(orig_form_nr), deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led) ;  }
 
 						else if  	(msg.match("/fft/ofs",addrOffset))  	deck[0].cfg.form_fx_fft[orig_form_nr].offset = uint8_t(msg.getInt(0))	; 
 						else if  	(msg.match("/fft/exd",addrOffset))  	deck[0].cfg.form_fx_fft[orig_form_nr].extend = uint8_t(msg.getInt(0))	; 
@@ -2060,7 +2098,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 							else if  	(msg.match("/fft/mlv",addrOffset))  { 	deck[0].cfg.form_fx_fft_signles[orig_form_nr].master_lvl 	= uint8_t(msg.getInt(0))	; deck[0].cfg.form_fx_fft_signles[orig_form_nr+1].master_lvl = deck[0].cfg.form_fx_fft_signles[orig_form_nr].master_lvl;}
 
 							else if		(msg.match("/pal/aat",addrOffset))	{ 	for (uint8_t iform = orig_form_nr * _M_NR_FORM_BYTES_  ; iform < orig_form_nr * _M_NR_FORM_BYTES_  + 2 * ( _M_NR_FORM_BYTES_)  ; iform++) { deck[0].cfg.form_fx_pal[iform].autoPalMode = result;  LEDS_G_AutoCalcPal(0,iform);   	osc_queu_MSG_int("/ostc/form/pal/ato/" + String(iform), result);  }      }
-							
+
 						}
 
 			
@@ -2307,12 +2345,27 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/S",addrOffset))   	{  tpm_settime(msg.getInt(0)   , NTP_get_time_m(), NTP_get_time_h());   }
 
 
-			else if (msg.fullMatch("/confname",addrOffset))		{ 
+			else if (msg.fullMatch("/confname",addrOffset))		
+			{ 
 				int length=msg.getDataLength(0);    
 				memset(deck[0].cfg.confname, 0, 	 	sizeof(deck[0].cfg.confname)		); 
 				if (length >= 32 )	msg.getString( 0,	deck[0].cfg.confname,  		sizeof(deck[0].cfg.confname), 0 , sizeof(deck[0].cfg.confname)-1 ) ;
-				else 	msg.getString( 0,	deck[0].cfg.confname,  		sizeof(deck[0].cfg.confname)  )   ;  osc_STC_check_Confname();  }
+				else 	msg.getString( 0,	deck[0].cfg.confname,  		sizeof(deck[0].cfg.confname)  )   ;  osc_STC_check_Confname();  
+			}
 
+			else if (msg.fullMatch("/refLampNames",addrOffset))		FS_get_Strip_Config_list();
+			else if (msg.fullMatch("/SaveLamp",addrOffset))		{	FS_write_Strip_Config(led_cfg.Led_Setup_ConfNr); FS_Bools_write(0) ; }
+			else if (msg.fullMatch("/LoadLamp",addrOffset))		{	FS_read_Strip_Config(uint8_t(msg.getInt(0)),&deck[0].cfg, &led_cfg); led_cfg.Led_Setup_ConfNr = uint8_t(msg.getInt(0)); osc_StC_ref_lampConfig();  }
+			else if (msg.fullMatch("/LampConfigNr",addrOffset))	 	led_cfg.Led_Setup_ConfNr = uint8_t(msg.getInt(0));
+			else if (msg.fullMatch("/LampRef",addrOffset))	 		osc_StC_ref_lampConfig();
+			else if (msg.fullMatch("/LampName",addrOffset))		
+			{ 
+				int length=msg.getDataLength(0);    
+				memset(led_cfg.Led_Setup_confname, 0, 	 	sizeof(led_cfg.Led_Setup_confname)		); 
+				if (length >= 32 )	msg.getString( 0,	led_cfg.Led_Setup_confname,  		sizeof(led_cfg.Led_Setup_confname), 0 , sizeof(led_cfg.Led_Setup_confname)-1 ) ;
+				else 	msg.getString( 0,	led_cfg.Led_Setup_confname,  		sizeof(led_cfg.Led_Setup_confname)  )   ;  
+			}
+			
 			else if (	(msg.match("/tmin",addrOffset))
 					|| (msg.match("/laye",addrOffset))
 					|| (msg.match("/auto",addrOffset))
@@ -2692,94 +2745,94 @@ void osc_api_refreshAllLoop()
 			osc_StC_menu_master_artnet_ref();
 		break;
 		case 9:
-			osc_StC_menu_form_pal_adv_ref(0);
+			osc_StC_menu_form_pal_adv_ref(0);osc_StC_menu_form_pal_adv_ref(1);
 		break;
 		case 10:
-			osc_StC_menu_form_pal_adv_ref(1);
+			osc_StC_menu_form_pal_adv_ref(2);osc_StC_menu_form_pal_adv_ref(3);
 		break;
 		case 11:
-			osc_StC_menu_form_pal_adv_ref(2);
+			osc_StC_menu_form_pal_adv_ref(4);osc_StC_menu_form_pal_adv_ref(5);
 		break;
 		case 12:
-			osc_StC_menu_form_pal_adv_ref(3);
+			osc_StC_menu_form_pal_adv_ref(6);osc_StC_menu_form_pal_adv_ref(7);
 		break;
 		case 13:
-			osc_StC_menu_form_fft_adv_ref(0);
+			osc_StC_menu_form_fft_adv_ref(0); osc_StC_menu_form_fft_adv_ref(1);
 		break;
 		case 14:
-			osc_StC_menu_form_fft_adv_ref(1);
+			osc_StC_menu_form_fft_adv_ref(2);osc_StC_menu_form_fft_adv_ref(3);
 		break;
 		case 15:
-			osc_StC_menu_form_fft_adv_ref(2);
+			osc_StC_menu_form_fft_adv_ref(4);osc_StC_menu_form_fft_adv_ref(5);
 		break;
 		case 16:
-			osc_StC_menu_form_fft_adv_ref(3);
+			osc_StC_menu_form_fft_adv_ref(6);osc_StC_menu_form_fft_adv_ref(7);
 		break;
 		case 17:
-			osc_StC_menu_form_fx_fire_adv_ref(0);
+			osc_StC_menu_form_fx_fire_adv_ref(0);osc_StC_menu_form_fx_fire_adv_ref(1);
 		break;
 		case 18:
-			osc_StC_menu_form_fx_fire_adv_ref(1);
+			osc_StC_menu_form_fx_fire_adv_ref(2);osc_StC_menu_form_fx_fire_adv_ref(1);
 		break;
 		case 19:
-			osc_StC_menu_form_shim_adv_ref(0);
+			osc_StC_menu_form_shim_adv_ref(0);osc_StC_menu_form_shim_adv_ref(1);
 		break;
 		case 20:
-			osc_StC_menu_form_shim_adv_ref(1);
+			osc_StC_menu_form_shim_adv_ref(2);osc_StC_menu_form_shim_adv_ref(3);
 		break;
 		case 21:
-			osc_StC_menu_form_glit_adv_ref(0);
+			osc_StC_menu_form_glit_adv_ref(0);osc_StC_menu_form_glit_adv_ref(1);
 		break;
 		case 22:
-			osc_StC_menu_form_glit_adv_ref(1);
+			osc_StC_menu_form_glit_adv_ref(2);osc_StC_menu_form_glit_adv_ref(3);
 		break;
 		case 23:
-			osc_StC_menu_form_dot_adv_ref(0);
+			osc_StC_menu_form_dot_adv_ref(0);osc_StC_menu_form_dot_adv_ref(1);
 		break;
 		case 24:
-			osc_StC_menu_form_dot_adv_ref(1);
+			osc_StC_menu_form_dot_adv_ref(2);osc_StC_menu_form_dot_adv_ref(3);
 		break;
 		case 25:
-			osc_StC_menu_form_fx1_adv_ref(0);
+			osc_StC_menu_form_fx1_adv_ref(0);osc_StC_menu_form_fx1_adv_ref(1);
 		break;
 		case 26:
-			osc_StC_menu_form_fx1_adv_ref(1);
+			osc_StC_menu_form_fx1_adv_ref(2);osc_StC_menu_form_fx1_adv_ref(3);
 		break;
 		case 27:
-			osc_StC_menu_form_fx_strobe_adv_ref(0);
+			osc_StC_menu_form_fx_strobe_adv_ref(0);osc_StC_menu_form_fx_strobe_adv_ref(1);
 		break;
 		case 28:
-			osc_StC_menu_form_fx_strobe_adv_ref(1);
+			osc_StC_menu_form_fx_strobe_adv_ref(2);osc_StC_menu_form_fx_strobe_adv_ref(3);
 		break;
 		case 29:
-			osc_StC_menu_form_fx_meteor_adv_ref(0);
+			osc_StC_menu_form_fx_meteor_adv_ref(0);osc_StC_menu_form_fx_meteor_adv_ref(1);
 		break;
 		case 30:
-			osc_StC_menu_form_fx_meteor_adv_ref(1);
+			osc_StC_menu_form_fx_meteor_adv_ref(2);osc_StC_menu_form_fx_meteor_adv_ref(3);
 		break;
 		case 31:
-			osc_StC_menu_form_fx_eyes_adv_ref(0);
+			osc_StC_menu_form_fx_eyes_adv_ref(0);osc_StC_menu_form_fx_eyes_adv_ref(1);
 		break;
 		case 32:
-			osc_StC_menu_form_fx_eyes_adv_ref(1);
+			osc_StC_menu_form_fx_eyes_adv_ref(2);osc_StC_menu_form_fx_eyes_adv_ref(4);
 		break;
 		case 33:
-			osc_StC_menu_form_modify_adv_ref(0);
+			osc_StC_menu_form_modify_adv_ref(0);osc_StC_menu_form_modify_adv_ref(1);
 		break;
 		case 34:
-			osc_StC_menu_form_modify_adv_ref(1);
+			osc_StC_menu_form_modify_adv_ref(2);osc_StC_menu_form_modify_adv_ref(3);
 		break;
 		case  35:
-			osc_StC_menu_form_modify_adv_ref(2);
+			osc_StC_menu_form_modify_adv_ref(4);osc_StC_menu_form_modify_adv_ref(5);
 		break;
 		case 36:
-			osc_StC_menu_form_modify_adv_ref(3);
+			osc_StC_menu_form_modify_adv_ref(6);osc_StC_menu_form_modify_adv_ref(7);
 		break;
 		case 37:
-			osc_StC_menu_FX_clock_adv_ref(0);
+			osc_StC_menu_FX_clock_adv_ref(0);osc_StC_menu_FX_clock_adv_ref(1);
 		break;
 		case 38:
-			osc_StC_menu_FX_clock_adv_ref(1);
+			osc_StC_menu_FX_clock_adv_ref(2);osc_StC_menu_FX_clock_adv_ref(3);
 		break;
 		case 39:
 			osc_StC_menu_master_loadsave_ref();

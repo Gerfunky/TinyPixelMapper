@@ -47,7 +47,8 @@ void osc_queu_MSG_rgb(String addr_string, uint8_t red,uint8_t green,uint8_t blue
 void osc_queu_MSG_float(String addr_string, float value) ;
 void osc_queu_MSG_int(String addr_string, int value) ;
 void osc_queu_MSG_VAL_STRING(String addr_string, String StringValue);
-
+void osc_Send_String(String Address, String StringName);
+void osc_StC_ref_lampConfig();
 
 
 #endif

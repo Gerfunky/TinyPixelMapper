@@ -30,6 +30,8 @@
 
 		#define MAX_INDEX_LONG 4096 //6			// must stay under this number!
 
+		#define MAX_LAMP_CONFIGS 16
+
 		// Strip/Form settings do not change!!! 
 		
 		#define _M_NR_FORM_BYTES_ 8				// 2 bytes = 16 forms   // 4 bytes = 32 forms
@@ -95,7 +97,8 @@
 		uint8_t 		framecounter;				// for counting FPS
 		unsigned long	framecounterUpdateTime; 	// for calculationg fps
 		
-		
+		char Led_Setup_confname[24];
+		uint8_t Led_Setup_ConfNr;
 
 	};
 	struct led_master_conf
@@ -136,7 +139,7 @@
 		{
 			uint16_t	start_led;			// where the pallete starts
 			uint16_t	nr_leds;			// how many ?  for mirror how many extra.
-		
+			
 
 		};
 
@@ -915,6 +918,7 @@ struct deck_cfg_struct
 	fft_config_struct 	fft_config;
 
 	form_Led_Setup_Struct form_cfg[NR_FORM_PARTS];
+
 
 	form_fx_pal_struct form_fx_pal[NR_FORM_PARTS];
 	form_fx_pal_singles_struct form_fx_pal_singles[_M_NR_FORM_BYTES_];
