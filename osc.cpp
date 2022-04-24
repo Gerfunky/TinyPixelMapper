@@ -134,14 +134,26 @@ float osc_byte_tofloat(byte value, uint8_t max_value = 255)
 
 void osc_send_MSG_rgb(String addr_string , uint8_t  red = 128, uint8_t  green = 128, uint8_t  blue = 128  ) 
 {	// Send out a color Directly to the OCS target not bufferd for bundle
+	
 	if (osc_Isconnected())
 	{
+		debugMe("sending RGB");
 		char address_out[30];
 		addr_string.toCharArray(address_out, addr_string.length() + 1); //address_out 
 
 		IPAddress ip_out(osc_server.remoteIP());
-		OSCMessage msg_out(address_out);
+		//OSCMessage msg_out(address_out);
 
+		OSCBundle bundle_out;
+
+		bundle_out.add(address_out).add(red).add(green).add(blue).add(255);
+
+		osc_server.beginPacket(ip_out,OSC_OUTPORT);// OSC_OUTPORT); //{172,16,222,104}, 8001) ; //  osc_server.remotePort()
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+		/*
 		msg_out.add(red);
 		msg_out.add(green);
 		msg_out.add(blue);
@@ -150,6 +162,7 @@ void osc_send_MSG_rgb(String addr_string , uint8_t  red = 128, uint8_t  green = 
 		msg_out.send(osc_server);
 		osc_server.endPacket();
 		msg_out.empty();
+		*/
 	}
 }
 
@@ -544,7 +557,21 @@ bool  osc_send_out_float_MSG_buffer()
 
 			if (osc_out_float_value.isEmpty() &&  (osc_out_rgb_value.isEmpty()) &&  (osc_out_SelVal_value.isEmpty())   &&  (osc_out_int_value.isEmpty())  && osc_out_Stringvalue.isEmpty() ) break;
 			}	// end while
+			
 
+			//debugMe(String("E " + String(osc_out_float_value.isEmpty()) + " - " + String(osc_out_SelVal_value.isEmpty()) + " - " + String(osc_out_int_value.isEmpty()) + " - " + String(osc_out_Stringvalue.isEmpty()) + " - " + String(Refreshloop)      ));
+			//debugMe(String("C " + String(osc_out_float_value.count()) + " - " + String(osc_out_SelVal_value.count()) + " - " + String(osc_out_int_value.count()) + " - " + String(osc_out_Stringvalue.count()) + " - " + String(Refreshloop)      ));
+
+
+			if (osc_out_float_value.isEmpty() 
+			&&  (osc_out_rgb_value.isEmpty()) 
+			&&  (osc_out_SelVal_value.isEmpty())   
+			&&  (osc_out_int_value.isEmpty())  
+			&& osc_out_Stringvalue.isEmpty() 
+			&& Refreshloop >= REFRESH_LOOP_END  
+			&& !get_bool(FFT_OSTC_VIZ)) 
+					bundle_out.add("/ostc/master/connled").add(0).add(255).add(random8(192)).add(255); // each bundle should refresh the led. when the buffers are amty and were not refreshing all send green
+			else if (!get_bool(FFT_OSTC_VIZ))	bundle_out.add("/ostc/master/connled").add(255).add(0).add(random8()).add(255); // else send red+some blue to indicate that we are still refreshing
 			osc_server.beginPacket(ip_out,OSC_OUTPORT);// OSC_OUTPORT); //{172,16,222,104}, 8001) ; //  osc_server.remotePort()
 			bundle_out.send(osc_server);
 			osc_server.endPacket();
@@ -556,7 +583,7 @@ bool  osc_send_out_float_MSG_buffer()
 		
 	}
 	
-	if (osc_out_float_value.count() == 0 &&  (osc_out_rgb_value.count()) == 0 &&  (osc_out_SelVal_value.count())   == 0 &&  (osc_out_int_value.count())   == 0)
+	if (osc_out_float_value.count() == 0 &&  (osc_out_rgb_value.count()) == 0 &&  (osc_out_SelVal_value.count())   == 0 &&  (osc_out_int_value.count())   == 0  && osc_out_Stringvalue.count () == 0)
 		return false;
 	else return true;
 }
@@ -941,6 +968,83 @@ void osc_toggle_artnet(bool value)
 
 void osc_StC_FFT_vizIt()
 {	// Send out the values x times a second  for visualisation
+/*
+		OSCBundle bundle_out;
+		IPAddress ip_out(osc_server.remoteIP());		
+		//char ConfOutAddress[32] ;
+
+		//Address.toCharArray(ConfOutAddress, Address.length() + 1);
+		bundle_out.add("/ostc/audio/color").add(LEDS_FFT_get_color_result(0,0)).add(LEDS_FFT_get_color_result(0,1)).add(LEDS_FFT_get_color_result(0,2)).add(255);
+		bundle_out.add("/ostc/audio/rfps").add(LEDS_get_FPS());
+		bundle_out.add("/ostc/audio/rbri").add(LEDS_get_real_bri() );
+		bundle_out.add("/ostc/audio/sum/bri").add(deck[0].run.fft.fft_color_result_bri );
+		bundle_out.add("/ostc/audio/sum/fps").add( deck[0].run.fft.fft_color_fps);
+		bundle_out.add("/ostc/audio/sum/red").add( LEDS_FFT_get_color_result(0,0));
+		bundle_out.add("/ostc/audio/sum/green").add( LEDS_FFT_get_color_result(0,1));
+		bundle_out.add("/ostc/audio/sum/blue").add( LEDS_FFT_get_color_result(0,2));
+
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+		for(uint8_t bin = 0 ; bin < 4 ; bin++)
+		{
+			bundle_out.add("/ostc/audio/abin/"+ char(bin)).add(deck[0].run.fft_data[6-bin].avarage ) ;
+			bundle_out.add("/ostc/audio/mbin/"+ char(bin)).add(deck[0].run.fft_data[6-bin].max  );
+			bundle_out.add("/ostc/audio/trig/"+ char(bin)).add(deck[0].cfg.fft_config.trigger[6-bin]   );
+			bundle_out.add("/ostc/audio/lbin/"+ char(bin)).add(fft_bin_results[6-bin]  );
+			bundle_out.add("/ostc/audio/rbin/"+ char(bin)).add(constrain((fft_bin_results[6-bin] - deck[0].cfg.fft_config.trigger[6-bin] ) , 0 ,255  ) );
+		}
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+		for(uint8_t bin = 0 ; bin >= 4 ; bin++)
+		{
+			bundle_out.add("/ostc/audio/abin/"+ char(bin)).add(deck[0].run.fft_data[6-bin].avarage ) ;
+			bundle_out.add("/ostc/audio/mbin/"+ char(bin)).add(deck[0].run.fft_data[6-bin].max  );
+			bundle_out.add("/ostc/audio/trig/"+ char(bin)).add(deck[0].cfg.fft_config.trigger[6-bin]   );
+			bundle_out.add("/ostc/audio/lbin/"+ char(bin)).add(fft_bin_results[6-bin]  );
+			bundle_out.add("/ostc/audio/rbin/"+ char(bin)).add(constrain((fft_bin_results[6-bin] - deck[0].cfg.fft_config.trigger[6-bin] ) , 0 ,255  ) );
+		}
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+
+		for(uint8_t fxbin = 0; fxbin < ( FFT_FX_NR_OF_BINS /2 ); fxbin++)
+		{
+			bundle_out.add("/ostc/audio/fxb/sum/" + char(fxbin)).add(deck[0].run.fft.fft_fxbin[fxbin].sum );
+			bundle_out.add("/ostc/audio/fxb/res/" + char(fxbin)).add(LEDS_fft_get_fxbin_result(fxbin,0) );
+			bundle_out.add("/ostc/audio/fxbin/t/" + char(fxbin)).add(deck[0].cfg.fft_config.fft_fxbin[fxbin].trrig_val );
+			bundle_out.add("/ostc/audio/fxbin/v/" + char(fxbin)).add( deck[0].cfg.fft_config.fft_fxbin[fxbin].set_val);
+			bundle_out.add("/ostc/audio/fxbin/m/" + char(fxbin)).add(deck[0].cfg.fft_config.fft_fxbin[fxbin].bin_mode );
+
+		}	
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();	
+
+		for(uint8_t fxbin = 0; fxbin >= (FFT_FX_NR_OF_BINS / 2 ); fxbin++)
+		{
+			bundle_out.add("/ostc/audio/fxb/sum/" + char(fxbin)).add(deck[0].run.fft.fft_fxbin[fxbin].sum );
+			bundle_out.add("/ostc/audio/fxb/res/" + char(fxbin)).add(LEDS_fft_get_fxbin_result(fxbin,0) );
+			bundle_out.add("/ostc/audio/fxbin/t/" + char(fxbin)).add(deck[0].cfg.fft_config.fft_fxbin[fxbin].trrig_val );
+			bundle_out.add("/ostc/audio/fxbin/v/" + char(fxbin)).add( deck[0].cfg.fft_config.fft_fxbin[fxbin].set_val);
+			bundle_out.add("/ostc/audio/fxbin/m/" + char(fxbin)).add(deck[0].cfg.fft_config.fft_fxbin[fxbin].bin_mode );
+
+		}	
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();	
+
+	*/
+
 
 	osc_queu_MSG_rgb("/ostc/audio/color", LEDS_FFT_get_color_result(0,0),LEDS_FFT_get_color_result(0,1),LEDS_FFT_get_color_result(0,2) );
 
@@ -1555,6 +1659,8 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/ManRef", 		(get_bool(MANUAL_REFRESH))); 
 	osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
 	osc_queu_MSG_int("/ostc/master/playNr", led_cfg.Play_Nr);
+	osc_queu_MSG_int("/ostc/master/overrideLamp", get_bool(CONF_OVERRIDES_LAMP));
+	
 	
 	osc_queu_MSG_int("/ostc/master/usedKBytes",   FS_get_UsedKBytes()  ); 
 	osc_queu_MSG_int("/ostc/master/totalKBytes",  FS_get_TotalKBytes()  );
@@ -2049,7 +2155,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if  	(msg.match("/pal/sid",addrOffset))  	deck[0].cfg.form_fx_pal[orig_form_nr].index_start = uint16_t(result)	; 
 						else if		(msg.match("/pal/lvl",addrOffset))		deck[0].cfg.form_fx_pal[orig_form_nr].level  	=  uint8_t(result)  ;
 						
-						else if		(msg.match("/pal/ato",addrOffset))	{	debugMe(result); deck[0].cfg.form_fx_pal[orig_form_nr].autoPalMode  =  uint8_t(result)	;  LEDS_G_AutoCalcPal(0,orig_form_nr); osc_queu_MSG_int("/ostc/form/pal/ald/" + String(orig_form_nr), deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led) ;  }
+						else if		(msg.match("/pal/ato",addrOffset))	{	 deck[0].cfg.form_fx_pal[orig_form_nr].autoPalMode  =  uint8_t(msg.getInt(0))	;  LEDS_G_AutoCalcPal(0,orig_form_nr); osc_queu_MSG_int("/ostc/form/pal/ald/" + String(orig_form_nr), deck[0].cfg.form_fx_pal[orig_form_nr].index_add_led) ;  }
 
 						else if  	(msg.match("/fft/ofs",addrOffset))  	deck[0].cfg.form_fx_fft[orig_form_nr].offset = uint8_t(msg.getInt(0))	; 
 						else if  	(msg.match("/fft/exd",addrOffset))  	deck[0].cfg.form_fx_fft[orig_form_nr].extend = uint8_t(msg.getInt(0))	; 
@@ -2339,6 +2445,8 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 			else if (msg.fullMatch("/playnr",addrOffset))   	{ FS_play_conf_read(uint8_t(msg.getInt(0) ) ,&deck[0].cfg ,&deck[0].fx1_cfg    )   ; }
 			else if (msg.fullMatch("/layreset",addrOffset))   	{ LEDS_clear_all_layers(0) ; for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
 			else if (msg.fullMatch("/layall",addrOffset))   	{ LEDS_default_layers(0) ;   for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++) 	osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); }
+	
+			else if (msg.fullMatch("/overrideLamp",addrOffset))   { write_bool(CONF_OVERRIDES_LAMP, bool(msg.getInt(0) )) ; }
 
 			else if (msg.fullMatch("/H",addrOffset))   	{  tpm_settime(NTP_get_time_s(), NTP_get_time_m(), msg.getInt(0));   }
 			else if (msg.fullMatch("/M",addrOffset))   	{  tpm_settime(NTP_get_time_s(), msg.getInt(0), NTP_get_time_h());   }
@@ -2517,15 +2625,16 @@ void osc_StC_menu_routing(OSCMessage &msg, int addrOffset)
 void osc_StC_routing(OSCMessage &msg, int addrOffset) 
 {
 		
-	msg.route("/menu", 		osc_StC_menu_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
-	msg.route("/master", 	osc_StC_master_routing,	addrOffset);   // Routing for MASTER TAB  -  Open Stage Controll
-	msg.route("/pal", 		osc_StC_pal_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
-	msg.route("/form", 		osc_StC_form_routing , 	addrOffset);   // Routing for FORM TAB    -  Open Stage Controll
-	msg.route("/audio", 	osc_StC_audio_routing , 	addrOffset);
-	if (msg.fullMatch("/refAll",addrOffset))  osc_ostc_Start_refreshAll();
-	if (msg.fullMatch("/index_reset",addrOffset))	{ LEDS_pal_reset_index(); }
+		 if (msg.match("/menu",addrOffset))  msg.route("/menu", 		osc_StC_menu_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
+	else if (msg.match("/master",addrOffset)) msg.route("/master", 		osc_StC_master_routing,	addrOffset);   // Routing for MASTER TAB  -  Open Stage Controll
+	else if (msg.match("/pal",addrOffset)) msg.route("/pal", 			osc_StC_pal_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
+	else if (msg.match("/form",addrOffset)) msg.route("/form", 			osc_StC_form_routing , 	addrOffset);   // Routing for FORM TAB    -  Open Stage Controll
+	else if (msg.match("/audio",addrOffset)) msg.route("/audio", 		osc_StC_audio_routing , 	addrOffset);
+	else if (msg.fullMatch("/refAll",addrOffset))  						osc_ostc_Start_refreshAll();
+	else if (msg.fullMatch("/index_reset",addrOffset))				{ 	LEDS_pal_reset_index(); }
 	
-	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
+	osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	255 ,random8(190),0 );	// send out a reply
+	//osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
 	
 
 }
@@ -2707,7 +2816,7 @@ void osc_api_pal(OSCMessage &msg, int addrOffset)
 void osc_ostc_Start_refreshAll()
 {
 	Refreshloop = 0;
-	debugMe(Refreshloop);
+	//debugMe(Refreshloop);
 	
 
 }
@@ -2836,6 +2945,13 @@ void osc_api_refreshAllLoop()
 		break;
 		case 39:
 			osc_StC_menu_master_loadsave_ref();
+		break;
+		case 40:
+			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
+		break;
+
+		case REFRESH_LOOP_END:
+		Refreshloop = 254;
 		break;
 		default :
 		Refreshloop = 254;
@@ -3397,14 +3513,15 @@ void OSC_loop()
 			debugMe(oscMSG.getInt(0));
 
 
-			oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
-			oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
+			if 		( oscMSG.match("/ostc") )    oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
+			else if ( oscMSG.match("/api") 	)	oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
+			else if ( oscMSG.match("/tosc") )		oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
+			else if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
+			else osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	 // unknow Command
 
-			oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
-
-			if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
 		}
 		else {
+			osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	
 			//error = bundle.getError();
 			debugMe("OSC error: ");	
 			debugMe( oscMSG.getError());

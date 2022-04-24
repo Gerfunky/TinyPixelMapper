@@ -35,7 +35,7 @@
 		// Strip/Form settings do not change!!! 
 		
 		#define _M_NR_FORM_BYTES_ 8				// 2 bytes = 16 forms   // 4 bytes = 32 forms
-		#define NR_FORM_PARTS	 ( _M_NR_FORM_BYTES_ * 8 )				// how many forms? default 6*8 = 64
+		#define NR_FORM_PARTS	 64 				// how many forms? default 6*8 = 64
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
@@ -1025,6 +1025,8 @@ struct save_struct
 	uint8_t LEDS_get_bri();
 	void LEDS_set_bri(uint8_t bri);
 	void LEDS_set_playNr(uint8_t setNr);
+
+	bool LEDS_check_if_layer_selected(uint8_t deckSelected , int8_t layer_no);
 
 	
 #endif

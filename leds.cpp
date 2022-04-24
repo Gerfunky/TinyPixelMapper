@@ -308,7 +308,8 @@ void LEDS_G_AutoCalcPal(uint8_t deckNo, uint8_t iform)
 
 			default:  break;
 		}
-
+		debugMe(String(leds) + " xxxx " + String(iform) + " x "  + String(deck[deckNo].cfg.form_cfg[iform].nr_leds) ); 
+		
 		if (leds != 0  && deck[deckNo].cfg.form_fx_pal[iform].autoPalMode != Ap_MANUAL ) deck[deckNo].cfg.form_fx_pal[iform].index_add_led  = calc_rounded_devision(MAX_INDEX_LONG , leds);
 		
 		
@@ -1539,6 +1540,11 @@ CRGB LEDS_select_color(uint8_t selector, uint16_t pal_index, uint8_t deckNo)
 
 // ******************************************************* Layer RUN *******************************
 
+
+
+
+
+
 // ************************************ FFT ****************************************
 void LEDS_run_fft(uint8_t z, uint8_t i, uint8_t DeckNo,CRGB *OutPutLedArray )
 {
@@ -1922,6 +1928,16 @@ void LEDS_default_layers(uint8_t deckSelected)
 
 }
 
+bool LEDS_check_if_layer_selected(uint8_t deckSelected , int8_t layer_no)
+{
+	
+	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
+		if 		( deck[deckSelected].cfg.layer.select[layer] == layer_no  ) 
+			return true;
+
+
+	return false;
+}
 
 void LEDS_run_layers(uint8_t deckSelected)
 {
@@ -2005,7 +2021,7 @@ void LEDS_init_config(uint8_t selected_Deck)
 {
 	for(uint8_t Form_Part_No = 0 ;Form_Part_No < NR_FORM_PARTS; Form_Part_No++)
 		{
-			//deck[selected_Deck].cfg.form_cfg[Form_Part_No] 		= {LEDS_DEF_START_LED,LEDS_DEF_NR_LEDs};
+			if (get_bool(CONF_OVERRIDES_LAMP)) deck[selected_Deck].cfg.form_cfg[Form_Part_No] 		= {LEDS_DEF_START_LED,LEDS_DEF_NR_LEDs};
 			deck[selected_Deck].cfg.form_fx_pal[Form_Part_No] 	= {LEDS_DEF_MAX_BRI,LEDS_DEF_PAL_START_INDEX,LEDS_DEF_PAL_COMPRESSION,LEDS_DEF_PAL_SPEED,LEDS_DEF_PALAUTOCOMPRESSION };
 			
 			deck[selected_Deck].cfg.form_fx_modify[Form_Part_No] 		= {LEDS_DEF_MODIFY_ROTATEFIXED};

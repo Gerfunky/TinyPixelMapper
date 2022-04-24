@@ -325,7 +325,7 @@ boolean FS_FFT_read(uint8_t conf_nr)
 
 	String addr = String("/conf/" + String(conf_nr) + ".fft.txt");
 	File conf_file = selectedFS.open(addr, "r");
-	delay(100);
+	//delay(100);
 	if (conf_file && !conf_file.isDirectory()) {
 
 		char character;
@@ -498,7 +498,7 @@ boolean FS_wifi_read()
 
   
 	
-	delay(100);
+	//delay(100);
 
 
 	if (conf_file && !conf_file.isDirectory())
@@ -521,7 +521,7 @@ boolean FS_wifi_read()
 
 			character = conf_file.read();
 			
-			delay(100);
+			//delay(100);
 			while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 				character = conf_file.read();
 			}
@@ -639,7 +639,7 @@ boolean FS_artnet_read()
 
 	String addr = String("/conf/artnet.txt");
 	File conf_file = selectedFS.open(addr, "r");
-	delay(100);
+	//delay(100);
 	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("artnet file read failed");
 	}
@@ -756,7 +756,7 @@ void FS_pal_load(uint8_t load_nr,uint8_t pal_no)
 String addr = String("/conf/" + String(load_nr) + ".pal.txt");
 	 debugMe("READ Conf " + addr);
 	File conf_file = selectedFS.open(addr, "r");
-	delay(100);
+	//delay(100);
 	if (conf_file && !conf_file.isDirectory())
 	{
 		char character;
@@ -818,7 +818,7 @@ void FS_write_Strip_Config(uint8_t val)
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			
-			conf_file.print(String("[LD:" + String(form)));
+			conf_file.print(String("[FC:" + String(form)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].start_led)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].nr_leds)));
 			conf_file.println("] ");
@@ -834,7 +834,7 @@ void FS_write_Strip_Config(uint8_t val)
 
 
 
-void	FS_play_conf_write1(uint8_t val)
+bool FS_play_conf_write1(uint8_t val)
 {
 	// write the artnet config to disk
 	uint8_t selectedDeckNo = 0;
@@ -845,7 +845,8 @@ void	FS_play_conf_write1(uint8_t val)
 	File conf_file = selectedFS.open(addr, "w");
 
 	if (!conf_file && !conf_file.isDirectory()) {
-		 debugMe("play file creation failed");
+		debugMe("play file creation failed");
+		return false;
 	}
 	else {   // yeah its open
 		debugMe("Write Conf File");
@@ -870,17 +871,8 @@ void	FS_play_conf_write1(uint8_t val)
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.fft_config.fftAutoMax)));
 			conf_file.println("] ");
 
-		//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade  ");
-/*		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
-		{
-			
-			conf_file.print(String("[FC:" + String(form)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].start_led)));
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].nr_leds)));
-			conf_file.println("] ");
 
-		} 
-*/		//conf_file.println("ly = Layers 0 to 47, ");
+		//conf_file.println("ly = Layers 0 to 47, ");
 		conf_file.print("[ly:" + String(deck[selectedDeckNo].cfg.layer.select[0]) )	;
 		for (uint8_t layer = 1 ; layer < MAX_LAYERS_SELECT ; layer++)
 		{
@@ -904,7 +896,19 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("PF - Pallete FX Form ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+			&& (	( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_PAL)						
+						&& 	form < 16 )
+					||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_PAL) 		
+						&& 	form >= 16 
+						&& 		form < 32 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_PAL) 						
+						&&		form >= 32 
+						&&		form < 48 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_PAL)
+						&&		form >= 48)
+					)
+				)
 			{
 				conf_file.print(String("[PF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal[form].level)));
@@ -918,7 +922,19 @@ void	FS_play_conf_write1(uint8_t val)
 
 		for (uint8_t form = 0; form < _M_NR_FORM_BYTES_; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+					(	( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_PAL)						
+						&& 	form < 2 )
+					||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_PAL) 		
+						&& 	form >= 2 
+						&& 		form < 4 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_PAL) 						
+						&&		form >= 4 
+						&&		form < 6 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_PAL)
+						&&		form >= 6)
+					)
+				)
 			{
 				conf_file.print(String("[PS:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].pal)));
@@ -931,22 +947,54 @@ void	FS_play_conf_write1(uint8_t val)
 				conf_file.println("] ");
 			}
 		}
-
+		
 		//conf_file.println("TF form fft  ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
 			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
 			{
+				 
+			if (   deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&& (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_FFT)						
+							&& 	form < 16 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_FFT) 		
+							&& 	form >= 16 
+							&& 	form < 32 )
+						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_FFT) 						
+							&&	form >= 32 
+							&&	form < 48 )
+						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT)
+							&&	form >= 48)
+						)
+					)
+				)
+				{	
 				conf_file.print(String("[TF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].level)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].offset)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft[form].extend)));
 				conf_file.println("] ");
+				}
 			}
 		}
+
 		for (uint8_t form = 0; form < _M_NR_FORM_BYTES_; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_FFT)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_FFT) 		
+							&& 	form >= 2 
+							&& 	form < 4 )
+						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_FFT) 						
+							&&	form >= 4 
+							&&	form < 6 )
+						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT)
+							&&	form >= 6)
+						)
+				)
+					
 			{
 				conf_file.print(String("[TC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].mix_mode)));
@@ -961,7 +1009,15 @@ void	FS_play_conf_write1(uint8_t val)
 
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&& (	(( 	deck[0].fx1_cfg.form_menu_dot[0][_M_FORM_DOT_RUN] != 0 
+						||		deck[0].fx1_cfg.form_menu_dot[1][_M_FORM_DOT_RUN] != 0
+						)&&	form < 16 )
+					||  ((	deck[0].fx1_cfg.form_menu_dot[2][_M_FORM_DOT_RUN] != 0
+						||	deck[0].fx1_cfg.form_menu_dot[3][_M_FORM_DOT_RUN] != 0 
+						)&& 		form >= 16  )
+					)
+				)
 			{
 				conf_file.print(String("[DF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots[form].nr_dots)));
@@ -974,7 +1030,15 @@ void	FS_play_conf_write1(uint8_t val)
 		
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+				 (	(( 	deck[0].fx1_cfg.form_menu_dot[0][_M_FORM_DOT_RUN] != 0 
+						||		deck[0].fx1_cfg.form_menu_dot[1][_M_FORM_DOT_RUN] != 0
+						)&&	form < 2 )
+					||  ((	deck[0].fx1_cfg.form_menu_dot[2][_M_FORM_DOT_RUN] != 0
+						||	deck[0].fx1_cfg.form_menu_dot[3][_M_FORM_DOT_RUN] != 0 
+						)&& 		form >= 2  )
+					)
+				)
 			{
 				conf_file.print(String("[DC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_dots_bytes[form].pal)));
@@ -987,7 +1051,16 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("SF shimmer ");
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&& (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_SHIMMER)						
+							&& 	form < 16 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_SHIMMER) 		
+							&& 	form >= 16 )
+
+						)
+					)	
+				)
 			{
 				conf_file.print(String("[SF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim[form].xscale)));
@@ -1000,7 +1073,14 @@ void	FS_play_conf_write1(uint8_t val)
 		}
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_SHIMMER)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_SHIMMER) 		
+							&& 	form >= 2 )
+
+						)
+					)
 			{
 				conf_file.print(String("[SC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_shim_bytes[form].pal)));
@@ -1016,7 +1096,14 @@ void	FS_play_conf_write1(uint8_t val)
 
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_CLOCK)						
+							&& 	form < 16 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_CLOCK) 		
+							&& 	form >= 16 )
+
+						)
+					)
 			{
 				conf_file.print(String("[CK:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock[form].color )));
@@ -1031,7 +1118,14 @@ void	FS_play_conf_write1(uint8_t val)
 		}
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_CLOCK)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_CLOCK) 		
+							&& 	form >= 2 )
+
+						)
+					)
 			{
 				conf_file.print(String("[CB:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_clock_bytes[form].mix_mode)));
@@ -1048,7 +1142,15 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("IF form Fire  ");
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_FIRE)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_FIRE) 		
+							&& 	form >= 2 )
+
+						)
+					)
+				
 			{
 				conf_file.print(String("[IF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_fire_bytes[form].pal)));
@@ -1069,7 +1171,14 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("EF form eyes  ");
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_EYES)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_EYES) 		
+							&& 	form >= 2 )
+
+						)
+					)	
 			{
 				conf_file.print(String("[EF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_eyes_bytes[form].color)));
@@ -1093,7 +1202,14 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("TF form eyes  ");
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_STROBE)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_STROBE) 		
+							&& 	form >= 2 )
+
+						)
+					)	
 			{
 				conf_file.print(String("[OF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_strobe_bytes[form].pal)));
@@ -1115,7 +1231,17 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("TF form eyes  ");
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&&
+				((	( 	deck[0].fx1_cfg.form_menu_meteor[0][_M_FORM_METEOR_RUN] != 0 
+					||	deck[0].fx1_cfg.form_menu_meteor[1][_M_FORM_METEOR_RUN] != 0
+					)&&	form < 16 
+					)
+				||	((	deck[0].fx1_cfg.form_menu_meteor[2][_M_FORM_METEOR_RUN] != 0
+					||	deck[0].fx1_cfg.form_menu_meteor[3][_M_FORM_METEOR_RUN] != 0 
+					)&& 		form >= 16  )
+				)
+			)
 			{
 				conf_file.print(String("[MF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor[form].meteorSize)));
@@ -1126,7 +1252,14 @@ void	FS_play_conf_write1(uint8_t val)
 		}
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if ((	( 	deck[0].fx1_cfg.form_menu_meteor[0][_M_FORM_METEOR_RUN] != 0 
+					||	deck[0].fx1_cfg.form_menu_meteor[1][_M_FORM_METEOR_RUN] != 0
+					)&&	form < 2 
+					)
+				||	((	deck[0].fx1_cfg.form_menu_meteor[2][_M_FORM_METEOR_RUN] != 0
+					||	deck[0].fx1_cfg.form_menu_meteor[3][_M_FORM_METEOR_RUN] != 0 
+					)&& 		form >= 2  )
+				)
 			{
 				conf_file.print(String("[MC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_meteor_bytes[form].color)));
@@ -1142,7 +1275,17 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("GF Glitter ");
 		for (uint8_t form = 0; form < NR_FX_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&&
+				((	( 	deck[0].fx1_cfg.form_menu_glitter[0][_M_FORM_GLITTER_RUN] != 0 
+					||	deck[0].fx1_cfg.form_menu_glitter[1][_M_FORM_GLITTER_RUN] != 0
+					)&&	form < 16 
+					)
+				||	((	deck[0].fx1_cfg.form_menu_glitter[2][_M_FORM_GLITTER_RUN] != 0
+					||	deck[0].fx1_cfg.form_menu_glitter[3][_M_FORM_GLITTER_RUN] != 0 
+					)&& 		form >= 16  )
+				)
+			)
 			{
 				conf_file.print(String("[GF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter[form].value)));
@@ -1153,7 +1296,14 @@ void	FS_play_conf_write1(uint8_t val)
 		}
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if ((	( 	deck[0].fx1_cfg.form_menu_glitter[0][_M_FORM_GLITTER_RUN] != 0 
+					||	deck[0].fx1_cfg.form_menu_glitter[1][_M_FORM_GLITTER_RUN] != 0
+					)&&	form < 2 
+					)
+				||	((	deck[0].fx1_cfg.form_menu_glitter[2][_M_FORM_GLITTER_RUN] != 0
+					||	deck[0].fx1_cfg.form_menu_glitter[3][_M_FORM_GLITTER_RUN] != 0 
+					)&& 		form >= 2  )
+				)
 			{
 				conf_file.print(String("[GC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].fx1_cfg.form_fx_glitter_bytes[form].pal)));
@@ -1171,7 +1321,14 @@ void	FS_play_conf_write1(uint8_t val)
 		//conf_file.println("XF  FX1 form ");
 		for (uint8_t form = 0; form < NR_FX_BYTES; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_FX01)						
+							&& 	form < 2 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_FX01) 		
+							&& 	form >= 2 )
+
+						)
+					)
 			{
 
 				
@@ -1192,14 +1349,14 @@ void	FS_play_conf_write1(uint8_t val)
 							// When writing to SPIFFS its faster to do it all in one go and not append it since here we write traigt to the SPIFFS
 		
 				conf_file.close();
-		
+				return true;
 	}
 
 
 }
 
 
-void  FS_play_conf_write_append1(uint8_t val)
+bool  FS_play_conf_write_append1(uint8_t val)
 {
 	uint8_t selectedDeckNo = 0;
 	String addr = String("/conf/" + String(val) + ".playConf.txt");
@@ -1210,6 +1367,7 @@ void  FS_play_conf_write_append1(uint8_t val)
 
 	if (!conf_file && !conf_file.isDirectory()) {
 		 debugMe("play file creation failed");
+		return false;
 	}
 	else {   // yeah its open
 		debugMe("Write Conf File");
@@ -1221,7 +1379,21 @@ void  FS_play_conf_write_append1(uint8_t val)
 		//conf_file.println("Modify ");
 		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+				&& (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_ROTATE)						
+							&& 	form < 16 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_ROTATE) 		
+							&& 	form >= 16 
+							&& 	form < 32 )
+						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_ROTATE) 						
+							&&	form >= 32 
+							&&	form < 48 )
+						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
+							&&	form >= 48)
+						)
+					)
+				)
 			{
 				conf_file.print(String("[YF:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_modify[form].RotateFixed)));
@@ -1230,7 +1402,21 @@ void  FS_play_conf_write_append1(uint8_t val)
 		}
 		for (uint8_t form = 0; form < _M_NR_FORM_BYTES_; form++) 
 		{
-			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
+			&& (
+						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_ROTATE)						
+							&& 	form < 16 )
+						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_ROTATE) 		
+							&& 	form >= 16 
+							&& 	form < 32 )
+						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_ROTATE) 						
+							&&	form >= 32 
+							&&	form < 48 )
+						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
+							&&	form >= 48)
+						)
+					)
+				)
 			{
 				conf_file.print(String("[YC:" + String(form)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_modify_bytes[form].RotateFullFrames)));
@@ -1271,6 +1457,7 @@ void  FS_play_conf_write_append1(uint8_t val)
 		for (int fxbin = 0; fxbin < FFT_FX_NR_OF_BINS; fxbin++) 	
 		{
 			//if (deck[selectedDeckNo].cfg.fft_config.fft_fxbin[fxbin].set_val != 0 || deck[selectedDeckNo].cfg.fft_config.fft_fxbin[fxbin].menu_select != 0 || deck[selectedDeckNo].cfg.fft_config.fft_fxbin[fxbin].trrig_val != 0)
+			if (deck[selectedDeckNo].cfg.fft_config.fft_fxbin[fxbin].menu_select != 0)
 			{
 			conf_file.print(String("[AF:" + String(fxbin)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.fft_config.fft_fxbin[fxbin].set_val)));
@@ -1279,9 +1466,21 @@ void  FS_play_conf_write_append1(uint8_t val)
 			conf_file.println("] ");
 			}
 		}
+				//conf_file.println("FC = form Config : Start Led : Nr Leds : Fade   // moved to Lampconfig and is LD ");
+		for (uint8_t form = 0; form < NR_FORM_PARTS; form++) 
+		{
+			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0)
+			{
+				conf_file.print(String("[FC:" + String(form)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].start_led)));
+				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_cfg[form].nr_leds)));
+				conf_file.println("] ");
+			}
+		} 
+
 		//*/
 		conf_file.close();
-		
+		return true;
 	}
 
 
@@ -1292,17 +1491,28 @@ void  FS_play_conf_write_append1(uint8_t val)
 
 
 //play conf
-void FS_play_conf_write(uint8_t conf_nr) 
+bool FS_play_conf_write(uint8_t conf_nr) 
 {
+	 
 
-	FS_play_conf_write1(conf_nr);
-
+	if (FS_play_conf_write1(conf_nr))
+	{
 	#ifdef USE_SD   // when writing to SD we need to split the file into appends since it writes to mem and then to disk 
 		FS_play_conf_write_append1(conf_nr);
 	#endif
 	FS_write_Conf_status(conf_nr, true);
-	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 0,255,0);
+	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 0,255,0); 
 	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr)  , deck[0].cfg.confname);
+	return true;
+	}
+	else
+	{
+	FS_write_Conf_status(conf_nr, false);
+	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 255,0,0); 
+	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr)  , "---ERROR---");
+	return false;
+	}
+	
 }
 
 
@@ -1328,7 +1538,7 @@ void FS_play_conf_readSendSavenames( )
 		String OSCAddress = "/ostc/master/savename/" + String(confNo);
 		
 
-		delay(100);
+		//delay(100);
 		if (conf_file && !conf_file.isDirectory())
 		{
 
@@ -1398,7 +1608,7 @@ void FS_play_conf_readSendSavenames( )
 		{
 			FS_write_Conf_status(confNo,false);
 			osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
-			osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
+			osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 255,0,0);
 
 			//List_conf_file.println(String(confNo) +  ": - " );
 		}
@@ -1431,7 +1641,7 @@ void FS_play_conf_custom_readSendSavenames( )
 		osc_queu_MSG_int(String("/ostc/master/cnum/"+String(confNo)),SaveConf.confCustomLoadNrs[confNo]);
 
 
-		delay(100);
+		//delay(100);
 		if (conf_file && !conf_file.isDirectory())
 		{
 
@@ -1529,7 +1739,7 @@ void FS_get_Strip_Config_list( )
 		//osc_queu_MSG_int(String("/ostc/master/cnum/"+String(confNo)),SaveConf.confCustomLoadNrs[confNo]);
 
 
-		delay(100);
+		//delay(100);
 		if (conf_file && !conf_file.isDirectory())
 		{
 
@@ -1622,7 +1832,7 @@ boolean FS_read_Strip_Config(uint8_t conf_nr, deck_cfg_struct* DeckConf , led_cf
 	File conf_file = selectedFS.open(addr, "r");
 	String settingValue;
 
-	delay(100);
+	//delay(100);
 	if (conf_file && !conf_file.isDirectory())
 	{
 
@@ -1655,7 +1865,7 @@ boolean FS_read_Strip_Config(uint8_t conf_nr, deck_cfg_struct* DeckConf , led_cf
 				debugMe("Loading Conf :", false);
 				debugMe(String(LedConf->Led_Setup_confname));
 			}
-				else if ((type == 'L') && (typeb == 'D'))  
+				else if ((type == 'F') && (typeb == 'C'))  
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); DeckConf->form_cfg[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);}
@@ -1754,7 +1964,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 	File conf_file = selectedFS.open(addr, "r");
 	String settingValue;
 
-	delay(100);
+	//delay(100);
 	if (conf_file && !conf_file.isDirectory())
 	{
 
@@ -1807,14 +2017,14 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.fftAutoMax 				= uint8_t(constrain(in_int, 0,255));}
 
 			}
-#ifdef LOAD_LEDS_FROM_PLAYCONFIG	
-			else if ((type == 'F') && (typeb == 'C'))  
+	
+			else if ((type == 'F') && (typeb == 'C') &&   get_bool(CONF_OVERRIDES_LAMP))  
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_cfg[strip_no].start_led = constrain(in_int, 0, led_cfg.NrLeds);}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_cfg[strip_no].nr_leds = constrain(in_int, 0, led_cfg.NrLeds - targetConf->form_cfg[strip_no].start_led);}
 			}
-#endif			
+			
 			else if ((type == 'P') && (typeb == 'F'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -2214,7 +2424,7 @@ boolean FS_mqtt_read()
 			{
 				//debugMe("pre read");	
 				character = conf_file.read();
-				delay(10);
+				//delay(10);
 				//debugMe("1");
 				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 					character = conf_file.read();
@@ -2323,7 +2533,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 			{
 
 				character = conf_file.read();
-				delay(10);
+				//delay(10);
 
 				while ((conf_file.available()) && (character != '[')) {  // Go to first setting
 					character = conf_file.read();

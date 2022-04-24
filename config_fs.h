@@ -51,8 +51,7 @@ uint8_t confStatus[NR_CustomConfbits] = {0,0};
 
 
 
-void	FS_play_conf_write1(uint8_t val);
-void   FS_play_conf_write_append1(uint8_t val);
+
 
 
 // Public function
@@ -73,7 +72,9 @@ void FS_setup();
 	
 	boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf, deck_fx1_struct* targetFXConf)  ;		//osc.cpp  , leds.cpp
 	boolean FS_check_Conf_Available(uint8_t play_NR); // leds.cpp	
-	void FS_play_conf_write(uint8_t conf_nr);		//osc.cpp
+	bool FS_play_conf_write(uint8_t conf_nr);		//osc.cpp
+	bool FS_play_conf_write1(uint8_t val);
+	bool FS_play_conf_write_append1(uint8_t val);
 	void FS_play_conf_clear(uint8_t conf_nr) ;		// delete a conf file
 
 	void FS_FFT_write(uint8_t conf_nr);				//osc.cpp
