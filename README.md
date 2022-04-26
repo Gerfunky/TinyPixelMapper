@@ -16,7 +16,7 @@ It is a PixelMapping software for a ESP32 Chip.
 The main LED driving library is [FastLed](https://github.com/FastLED/FastLED).
 
 # Crowdfunding Campaign
-We are planning on starting a crowdfunding campaign in the summer 2021. In the crowdfunding you will have to possibility to get the Hardware and purpose-built Lamps that show what the Tinypixelmapper can do. After crowdfunding the PCB’s will be opensource.
+We were planning on starting a crowdfunding campaign in the summer 2021. But do to the current situation in the Word wer are Thinking of just making a Shop.
 We are negotiation with an artist for permission to use his music. Once this is done we will start posting videos of the different lamps that will be available. 
 
 # Configuration Interface:
