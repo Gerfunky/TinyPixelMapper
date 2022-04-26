@@ -13,29 +13,31 @@ IF  "%~3" == ""  GOTO DOONE
 
 GOTO DOSOME
 
-goto DONEs
+
 
 :DOALL
 echo **************************************************
 echo DOWNLOADING all Configs 0-15 to %1
 echo **************************************************
-FOR /L %%c IN (0 1 15) DO  (
+FOR /L %%c IN (0 1 63) DO  (
 echo Downloading %%c.playConf.txt
-curl "http://%1/conf/%%c.playConf.txt" > %%c.playConf.txt
+curl --fail "http://%1/conf/%%c.playConf.txt" -o %%c.playConf.txt
+
 )
 
-GOTO DONEs
+
+GOTO DOALLS
 
 :DOONE
 echo **************************************************
 echo DOWNLOADING Config %2 to %1
 echo **************************************************
 echo Downloading %2.playConf.txt
-curl "http://%1/conf/%2.playConf.txt" > %2.playConf.txt
+curl --fail  "http://%1/conf/%2.playConf.txt" -o %2.playConf.txt
 
 
 
-GOTO DONEs
+GOTO DOALLS
 
 :DOSOME
 echo **************************************************
@@ -44,11 +46,17 @@ echo **************************************************
 
 FOR /L %%c IN (%2 1 %3) DO  (
 echo Downloading %%c.playConf.txt
-curl "http://%1/conf/%%c.playConf.txt" > %%c.playConf.txt
+curl --fail  "http://%1/conf/%%c.playConf.txt" -o %%c.playConf.txt
 )
+GOTO DOALLS
+
+:DOALLS
+echo Downloading %%c.Savelist.txt
+curl --fail "http://%1/conf/Savelist.txt" -o Savelist.txt
+
+
+
 GOTO DONEs
-
-
 
 :SYNTAX
 echo  tpm-download  IPADDRESS  				 			  = download all 0-15
@@ -63,4 +71,6 @@ ECHO IP not specified !   Add IP after command or /? for help
 
 
 :DONEs
+
+
 Echo Finished

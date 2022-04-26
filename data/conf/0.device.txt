@@ -1,0 +1,9 @@
+Main Config for ESP. 0 = off,  1 = on
+D = Device Config :Led Mode: max bri : Startup bri : Nr of Leds (Max 680): Data1 Nr Leds: Data1 StartLed: Data2 ....-> data4 Startled : Lamp Config Nr
+[D:4:255:255:330:330:0:330:0:330:0:330:0:4:6:8:0] 
+b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW 
+[b:0:0:0:0:0:0:1:1:1:1:0:0] 
+S = Sequencer on: Conf ON . time in min : ... to conf 15 
+[S:0:1.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.1:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.1:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:0.0:1.1:1.1] 
+C = Custom Save Nrs 
+[C:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:1:1] 

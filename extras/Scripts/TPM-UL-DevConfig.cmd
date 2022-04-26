@@ -11,7 +11,7 @@ IF  "%~1" == ""  GOTO MISSINGIP
 
 
 echo **************************************************
-echo Uploading all Configs 0-15 to %1
+echo Uploading all Device Configs  to %1
 echo **************************************************
 
 echo Uploading wifi.txt
@@ -22,6 +22,19 @@ echo Uploading artnet.txt
 curl -F "file=@artnet.txt;filename=conf/artnet.txt"  "http://%1/edit"
 echo Uploading 0.device.txt
 curl -F "file=@0.device.txt;filename=conf/0.device.txt"  "http://%1/edit"
+
+echo **************************************************
+echo Uploading Lamp Configs 0-15 if available to %1
+echo **************************************************
+
+FOR /L %%c IN (0 1 15) DO  (
+IF EXIST %%c.LampConf.txt (
+echo Uploading %%c.LampConf.txt
+curl -F "file=@%%c.LampConf.txt;filename=conf/%%c.LampConf.txt"  "http://%1/edit"
+)
+)
+
+
 
 GOTO DONEs
 

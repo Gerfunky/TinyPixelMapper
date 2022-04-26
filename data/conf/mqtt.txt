@@ -1,0 +1,2 @@
+M = MQTT :ON =1 off = 0: IP  : PORT  : Username  : Password : Publish timeout in seconds
+[M:0:172.16.222.19:1883:lights:lights123:60] 

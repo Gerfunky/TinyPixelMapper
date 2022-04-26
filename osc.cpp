@@ -84,6 +84,7 @@
 	WiFiUDP osc_server;				// the normal osc server
 
 	uint8_t Refreshloop = 255;
+	uint8_t MobRefreshloop = 255;
 
 
 void OSC_setup()
@@ -569,6 +570,7 @@ bool  osc_send_out_float_MSG_buffer()
 			&&  (osc_out_int_value.isEmpty())  
 			&& osc_out_Stringvalue.isEmpty() 
 			&& Refreshloop >= REFRESH_LOOP_END  
+			&& MobRefreshloop >= REFRESH_LOOP_END  
 			&& !get_bool(FFT_OSTC_VIZ)) 
 					bundle_out.add("/ostc/master/connled").add(0).add(255).add(random8(192)).add(255); // each bundle should refresh the led. when the buffers are amty and were not refreshing all send green
 			else if (!get_bool(FFT_OSTC_VIZ))	bundle_out.add("/ostc/master/connled").add(255).add(0).add(random8()).add(255); // else send red+some blue to indicate that we are still refreshing
@@ -2373,6 +2375,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		
 			if 		(msg.fullMatch("/bri",addrOffset))				{ deck[0].cfg.led_master_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
 			else if (msg.fullMatch("/conn",addrOffset))				{ if(get_bool(MANUAL_REFRESH)) osc_StC_menu_master_ref();  else  osc_ostc_Start_refreshAll();  }
+			else if (msg.fullMatch("/connM",addrOffset))			{  MobRefreshloop = 0;  }
 			else if (msg.fullMatch("/refseq",addrOffset))			 osc_StC_menu_master_loadsave_ref();
 			else if (msg.fullMatch("/ref/wifi",addrOffset))			{ osc_oStC_menu_master_wifi_ref();   }
 			else if (msg.fullMatch("/ref/leds",addrOffset))			{ osc_StC_menu_master_ledcfg_ref(); }
@@ -2820,6 +2823,55 @@ void osc_ostc_Start_refreshAll()
 	
 
 }
+
+
+void osc_api_MobilerefreshAllLoop()
+{
+	
+	switch(MobRefreshloop)
+	{
+		case 0:
+			osc_StC_menu_master_ref();
+		break;
+		case 1:
+			osc_StC_menu_audio_ref() ;
+		break;
+		case 5:
+			osc_oStC_menu_master_wifi_ref(); 
+		break;
+		case 6:
+			osc_StC_menu_master_ledcfg_ref();
+		break;
+		case 7:
+			osc_oStC_menu_master_mqtt_ref();
+		break;
+		case 8:
+			osc_StC_menu_master_artnet_ref();
+		break;
+		case 39:
+			osc_StC_menu_master_loadsave_ref();
+		break;
+		case 40:
+			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
+		break;
+		
+
+		case REFRESH_LOOP_END:
+		MobRefreshloop = 254;
+		break;
+		default :
+		
+		break;
+
+
+	}
+	MobRefreshloop++;
+
+
+
+
+}
+
 
 void osc_api_refreshAllLoop()
 {
@@ -3529,7 +3581,11 @@ void OSC_loop()
 	}   //else debugMe("XXXXX");
 
 
-	if (osc_send_out_float_MSG_buffer() == false && Refreshloop < 255  )  osc_api_refreshAllLoop();
+	if (osc_send_out_float_MSG_buffer() == false )
+	 {
+		if (  Refreshloop < 255  )  osc_api_refreshAllLoop();
+		if (  MobRefreshloop < 255  )  osc_api_MobilerefreshAllLoop();
+	 }
 
 	//osc_send_out_API_FX_MSG_buffer() ;
 }

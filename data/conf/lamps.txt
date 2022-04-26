@@ -1,0 +1,4 @@
+{ "0 : TPM Junction" : 0
+, "1 : TPM Projector Wood" : 1
+, "2 : TPM Projector V2" : 2
+ }

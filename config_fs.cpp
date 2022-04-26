@@ -441,7 +441,7 @@ void FS_wifi_write()
 		conf_file.println("] ");
 
 
-		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l : wifi channel 1-12");
+		conf_file.println("w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l ");
 		conf_file.print(String("[w:" + String(wifi_cfg.APname)));
 		conf_file.print(String(":" + String(wifi_cfg.APpassword)));
 		conf_file.print(String(":" + String(wifi_cfg.ssid)));
@@ -455,7 +455,7 @@ void FS_wifi_write()
 
 		conf_file.print(String(":" + String(wifi_cfg.ipSubnet[0])));
 		conf_file.print(String("." + String(wifi_cfg.ipSubnet[1])));
-		conf_file.print(String("." + String(wifi_cfg.ipSubnet[2])));
+		conf_file.print(String("." + String(wifi_cfg.ipSubnet[2])));	
 		conf_file.print(String("." + String(wifi_cfg.ipSubnet[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ipDGW[0])));
@@ -469,7 +469,7 @@ void FS_wifi_write()
 		conf_file.print(String("." + String(wifi_cfg.ipDNS[3])));
 
 		conf_file.print(String(":" + String(wifi_cfg.ntp_fqdn)));
-		conf_file.print(String(":" + String(wifi_cfg.wifiChannel)));
+		
 
 		
 
@@ -2328,7 +2328,7 @@ void FS_Bools_write(uint8_t conf_nr)
 	else  // it opens
 	{
 		conf_file.println(F("Main Config for ESP. 0 = off,  1 = on"));
-		conf_file.println(F("D = Device Config :Led Mode: max bri : Startup bri : Nr of Leds (Max 680): Data1 Nr Leds: Data1 StartLed: Data2 ....-> data4 Startled"));
+		conf_file.println(F("D = Device Config :Led Mode: max bri : Startup bri : Nr of Leds (Max 680): Data1 Nr Leds: Data1 StartLed: Data2 ....-> data4 Startled : Lamp Config Nr"));
 		conf_file.print(String("[D:"	+ String(led_cfg.ledMode)));
 		conf_file.print(String(":"		+ String(led_cfg.max_bri)));
 		conf_file.print(String(":"		+ String(led_cfg.startup_bri)));

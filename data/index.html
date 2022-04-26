@@ -1,100 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-
-  <!-- Basic Page Needs
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta charset="utf-8">
   <title>TinyPixelMapper</title>
-  <meta name="description" content="Portal">
-  <meta name="author" content="TinyPixelMapper">
 
-  <!-- Mobile Specific Metas
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <!--
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-  -->
-  
-  <!-- CSS
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="css/normalize.mod.css">
-  <link rel="stylesheet" href="css/skeleton.min.css">
-  <!--  <link rel="stylesheet" href="css/fonts.css">
-  <link rel="stylesheet" href="css/dropdown.css"> -->
-
-
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="/images/favicon.png">
-
-</head>
+ </head>
 <body>
 
-	<script src="js/jquery-2.1.4.min.js"></script>
-
-  <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="band navigation">
-    <nav class="container primary">
-        <div class="sixteen columns">
-            <ul>
-                <li><a style="background: #33C3F0;" href="index.html">Home</a></li>
-                <li><a href="settings.html">Settings</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-        </div>
-    </nav>
-</div>
-
-
-
   
-  <div class="section intro">
-    <div class="container">  	
-      <div class="row">
-      <h1 >Main Page</h1>
-      </div>
-      <div class="row" align="center">
-        
-          <h4 class="intro-heading">Fractal Control</h4>
-          		<form action="/index.html" method="post">
-				Play_mode <input type="text" name="play_mode" id="play_mode"><br>
-				<label for="bri">led_brightness</label>
-				<input type="range" name="bri" id="bri" value="200" min="0" max="255"><br>
-				<input type="submit" value="Submit">
-				</form>
-		  
-		 
-	
-	
-	
-	
-		
-		<script type="text/javascript">
-			
-			$.get('/play_mode', function (data) {
-				$("#play_mode").val(data);
-			});
-					
-			// Make sure that this only returns fake characters
-			$.get('/bri', function (data) {
-    			$("#bri").val(data);
-			});
-          
+ <h1>HTML Links</h2>
 
-          </script>      
-		</div>
-		
-      </div>
-    </div>
-  </div>
+  <a href="https://github.com/Gerfunky/TinyPixelMapper"> TinyPixelMapper GitHub </a>
+ </p>
+  <a href="https://www.tinypixelmapper.com"> TinyPixelMapper HomePage </a>
+ </p>
+  <a href="https://openstagecontrol.ammd.net/ "> Open Stage Control </a>
+   </p>
+   <p>   <a href="https://raw.githubusercontent.com/Gerfunky/TinyPixelMapper/master/extras/OSC/TPM-minimal-phone-open-stage-control-(v1.16.0).json" download> <b>TPM Player</b> OpenStage Control Config File for version 1.15.8</a>   </p>
+  <p>   <a href="https://raw.githubusercontent.com/Gerfunky/TinyPixelMapper/master/extras/OSC/TinyPixelMapper-open-stage-control-(v1.16.0)-20.4.2022.json" download> <b>TPM Editor</b> OpenStage Control Config File for version 1.15.8</a>  </p>
+  
+    
+<HR WIDTH="100%" SIZE="3">
+   <p>On this SD in the Folder OSC you can find a copy of Open Stage Control</p>
+   <p>Open Stage Control OSC port = 9000 ,  TPM default address:port = 192.168.4.1:8000 if WifiAccess Point , DHCP on Ethernet</p>
+   <p>You can edit the Config file /conf/wifi.txt to set a IP or use Open Stage Control as a Gui</p>
+   <p>When Ethernet is connected Wifi is turned off. If we dont recive a DHCP ip over Ethernet it switches Wifi back on except if disable over the GUI</p>
+   <p></p>
+  
+  <HR WIDTH="100%" SIZE="3">
+  
+  <p></p>
   
 
-
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <HR WIDTH="100%" SIZE="3">
+   <h1><a href="/update"> Update Firmware </a></h1>
+   <iframe src="/update" height="100" width="400" title="Frimware Update"></iframe>
+  <HR WIDTH="100%" SIZE="3">
+   <h1><a href="/edit">The Config Editor </a></h1>
+   <iframe src="/edit" height="1500" width="100%" title="FileEditor"></iframe>
 </body>
 </html>

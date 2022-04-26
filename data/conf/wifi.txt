@@ -1,0 +1,5 @@
+Main Wifi Config for ESP.
+b = Wifi-booleans: Wifi Power 0=0ff, 1=on: Mode 0= Client 1 = Access point : 0= DHCP 1= static IP: OTA Update 1=on : HTTP Server 1=on: 
+[b:1:1:0:1:0] 
+w = Wifi : name and APname: AP Password : SSID : Password : wifi-channe (1-12): ip1-4: IP subnet 1-4 : IP DGW 1-4: IP DNS 1-4: NTP-FQDN l 
+[w:TinyPixelMapperT:love4all:Plasmaverse:FreeEnergy:1:172.16.222.27:255.255.255.0:172.16.222.1:172.16.222.1:0.at.pool.ntp.org] 

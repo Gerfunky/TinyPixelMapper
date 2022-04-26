@@ -409,12 +409,23 @@ boolean LEDS_checkIfAudioSelected()
 {	// check if there are audi strips if so return true
 	//for (byte zp = 0; zp < _M_NR_STRIP_BYTES_; zp++) if (strip_menu[zp][_M_AUDIO_] != 0)   return true;
 	for (byte zf = 0; zf < _M_NR_FORM_BYTES_; zf++)  if ((deck[0].cfg.form_menu_fft[zf][_M_FORM_FFT_RUN] != 0) ) return true;
+	
 	if(deck[0].cfg.fft_config.fft_menu_bri != 0) return true;
 	if(deck[0].cfg.fft_config.fft_fxbin[0].menu_select != 0) return true;
 	if(deck[0].cfg.fft_config.fft_fxbin[1].menu_select != 0) return true;
 	if(deck[0].cfg.fft_config.fft_fxbin[2].menu_select != 0) return true;
 	if(deck[0].cfg.fft_config.fft_menu_fps != 0) return true;
 	
+	for (byte zf = 0; zf < NR_FX_BYTES; zf++) 
+	{
+		if ((deck[0].fx1_cfg.form_menu_fx1[zf][_M_FORM_FX1_RUN] != 0) ) return true;
+		if ((deck[0].fx1_cfg.form_menu_strobe[zf][_M_FORM_STROBE_RUN] != 0) ) return true;
+		if ((deck[0].fx1_cfg.form_menu_clock[zf][_M_FORM_CLOCK_RUN] != 0) ) return true;
+		if ((deck[0].fx1_cfg.form_menu_eyes[zf][_M_FORM_EYES_RUN] != 0) ) return true;
+
+	}
+
+
 	return false;
 
 }

@@ -15,15 +15,25 @@ IF  "%~3" == ""  GOTO DOONE
 
 GOTO DOSOME
 
-goto DONEs
+
 
 :DOALL
 echo **************************************************
 echo Uploading all Configs 0-15 to %1
 echo **************************************************
-FOR /L %%c IN (0 1 15) DO  (
-echo Uploading %%c.playConf.txt
-curl -F "file=@%%c.playConf.txt;filename=conf/%%c.playConf.txt"  "http://%1/edit"
+FOR /L %%c IN (0 1 63) DO  (
+
+
+
+IF EXIST %%c.playConf.txt (
+	echo Uploading %%c.playConf.txt
+	curl -F "file=@%%c.playConf.txt;filename=conf/%%c.playConf.txt"  "http://%1/edit"
+) ELSE (
+  ECHO %%c.playConf.txt doesn't exist
+)
+
+
+
 )
 
 GOTO DONEs
@@ -43,10 +53,15 @@ GOTO DONEs
 echo **************************************************
 echo Uploading Configs %2 - %3 to %1
 echo **************************************************
-
 FOR /L %%c IN (%2 1 %3) DO  (
-echo Uploading %%c.playConf.txt
-curl -F "file=@%%c.playConf.txt;filename=conf/%%c.playConf.txt"  "http://%1/edit"
+
+
+IF EXIST %%c.playConf.txt (
+	echo Uploading %%c.playConf.txt
+	curl -F "file=@%%c.playConf.txt;filename=conf/%%c.playConf.txt"  "http://%1/edit"
+)
+
+
 )
 GOTO DONEs
 
