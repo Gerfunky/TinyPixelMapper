@@ -1,7 +1,14 @@
 # TinyPixelMapper
-a Pixelmapping software for the ESP32 and ESP8266 for addressible LED Strips, with a OSC controll interface and FFT data from a Mic hocked up to a MSGEQ7.
+a Pixelmapping software for the ESP32 and ESP8266 for addressible LED Strips, with a OSC controll interface and FFT data from a Mic or Audio Jack.
 
 have a look what it can do: https://www.youtube.com/watch?v=r7bt4Rk3eVM  
+
+
+# Update 26.04.2022 
+We are ready to release Version 1.0 for the ESP32
+We wanted to do a Crowdfunding but due to the current things happening in the World we are contemplating to just go straight for a Shop and let it grow gradually. 
+We had to do another Major Change in the Code. It is now possible to set Pallets to auto calculate the Compression based on the NR of LEDs in the Strip. So that its possible to Load the same config into different lamps (last layer has different amount of leds in my Lamps) without having to update the compression or make a different config for each Lamp. In the Load Save options it possible to make a Pattern Load override whats in the Lamp config. Since we still save the entire led setup on each Pattern Save. 
+We have also updated the Open Stage Controll Interface to 1.16.0 So you can use a new Version of Open Stage Controll.
 
 # Note to everyone that has been using this before 06.21
 The Software has gone over some major changes in the config files please be aware that when lodaing old config it wont work. Sorry about that but it was nessesery becouse We are running out of memory in the ESP32 with this Software. So I had to do some changes like selecting paletts and mixing will always be 1 setting for 8 Strips. Which I quite like since it was a hassle to change the palette on every strip manually to just see what another one would look like.
@@ -21,10 +28,13 @@ We are negotiation with an artist for permission to use his music. Once this is 
 
 # Configuration Interface:
 Configuration is done over OSC, with the opensource Software [Open Stage Control](https://openstagecontrol.ammd.net/)
-We are still on the Open Stage Control version 0.47.1  although the SW is already on version 1.9 or above the performance of the SW is much better on the old version and we have not found a way to get the CHARTS to work on the new Version.
-
+We are now on the Open Stage Control version 1.16.0 
+In the Settings make shure to set the OSC port to 9000
 Open Stage Control creates a HTTP Server, so you can connect from any device on your network over a web browser. To configure the Tinypixelmapper.
-There is also a confuration file with just simple options like loading a save file, available for [TouchOSC](https://hexler.net/touchosc) a App available in the Google/ Apple App stores. Any OSC Software can be used to configure the System. So it is also possible to use Midi Controllers with faders to Play with the unit.
+There are 2 Version of the Interface one for edeting Pattern and one just to Play around and Load Paterns (Phone version)
+There is also a configuration file with just simple options like loading a save file, available for [TouchOSC](https://hexler.net/touchosc) a App available in the Google/ Apple App stores. 
+
+Any OSC Software can be used to configure the System. So it is also possible to use Midi Controllers with faders to Play with the unit.
 
 # Modes
 There are different modes of operation: Artnet and Normal.
@@ -46,7 +56,7 @@ There are effects that can be added to each strip
 A very important and strong feature is the Mixing, You can shoose how and in what order the different layers should be mixed.
 
 It should work with any ESP32 it was designed for a [Adafruit HUZZAH32](https://www.adafruit.com/product/3405).
-But we have decided to switch to an OLIMEX board since Ethernet and and SD card are alot more user friendly. For professional lighting solutions Wifi is not possible since the Party crowd with there mobile phones would interrupt the led output. 
+But we have decided to switch to an [OLIMEX  ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware). board since Ethernet and and SD card are alot more user friendly. For professional lighting solutions Wifi is not possible since the Party crowd with there mobile phones would interrupt the led output. 
 
 # Work In progress 
 The SW is working this Documentation + wiki is still missing some Stuff.
