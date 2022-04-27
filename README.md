@@ -3,6 +3,8 @@ a Pixelmapping software for the ESP32 and ESP8266 for addressible LED Strips, wi
 
 have a look what it can do: https://www.youtube.com/watch?v=r7bt4Rk3eVM  
 
+[READ THE WIKI](https://github.com/Gerfunky/TinyPixelMapper/wiki)
+
 
 # Update 26.04.2022 
 We are ready to release Version 1.0 for the ESP32
