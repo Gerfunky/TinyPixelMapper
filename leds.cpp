@@ -1725,7 +1725,7 @@ void LEDS_run_FX_meteor(uint8_t z, uint8_t i, uint8_t selectedDeck ,CRGB *OutPut
 		//debugMe(deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos);
 		deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos++;
 		if (deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos >=  deck[selectedDeck].cfg.form_cfg[i + (z * 8)].nr_leds ) 
-			deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos = 0;
+			deck[selectedDeck].fx1_cfg.form_fx_meteor[i + (z * 8)].frame_pos = 0 ;
 	}
 
 }
@@ -1734,7 +1734,7 @@ void LEDS_run_FX_meteor(uint8_t z, uint8_t i, uint8_t selectedDeck ,CRGB *OutPut
 // ************************************ rotate  ****************************************
 void LEDS_run_FX_rotate(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArray  )
 {
-	if (  deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE], i) == true) && ( deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin   == 255   ||   LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin ,0 )        != 0 ))
+	if (  deck[selectedDeck].cfg.form_cfg[i + (z  * 8)].nr_leds != 0 &&  (bitRead(deck[selectedDeck].cfg.form_menu_modify[z][_M_FORM_MODIFY_ROTATE], i) == true) && ( deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin   == 255   ||   LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_modify_bytes[z].RotateTriggerBin ,0 )   != 0 ))
 	{
 		
 

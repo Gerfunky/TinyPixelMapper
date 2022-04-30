@@ -863,7 +863,7 @@ bool FS_play_conf_write1(uint8_t val)
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.pal_bri)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.pal_fps)));	
 			
-			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.led_master_cfg.bri)));
+			conf_file.print(String(":" + String(  map(deck[0].cfg.led_master_cfg.bri, 0 , led_cfg.max_bri , 0 ,255) )));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.layer.clear_start_led)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.layer.clear_Nr_leds)));
 			conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.fft_config.Scale)));
@@ -2009,7 +2009,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->led_master_cfg.pal_bri				= uint8_t(constrain(in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER)) targetConf->led_master_cfg.pal_fps     			= uint8_t(constrain(in_int, 1, MAX_PAL_FPS));}
 				
-				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER))   targetConf->led_master_cfg.bri					= uint8_t(constrain( in_int, 0, 255));}
+				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	if (!get_bool(POTS_LVL_MASTER))    targetConf->led_master_cfg.bri					=  map(in_int, 0 , 255  , 0 ,led_cfg.max_bri) ;  } //uint8_t(constrain( in_int, 0, 255));}
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_start_led				= uint16_t(constrain(in_int, 0, led_cfg.NrLeds)); }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->layer.clear_Nr_leds					= uint16_t(constrain( in_int, 0, led_cfg.NrLeds ));  }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);	targetConf->fft_config.Scale  					= uint8_t(constrain( in_int, 1, 100)); }

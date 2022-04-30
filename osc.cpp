@@ -1649,7 +1649,7 @@ void osc_StC_ref_lampConfig()
 void osc_StC_menu_master_ref()
 {
 	osc_StC_ref_lampConfig();
-	osc_queu_MSG_int("/ostc/master/bri", 		deck[0].cfg.led_master_cfg.bri) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
+	osc_queu_MSG_int("/ostc/master/bri", 		map(deck[0].cfg.led_master_cfg.bri, 0 , led_cfg.max_bri , 0 ,255) ) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
 	osc_queu_MSG_int("/ostc/master/r", 			deck[0].cfg.led_master_cfg.r);
 	osc_queu_MSG_int("/ostc/master/g", 			deck[0].cfg.led_master_cfg.g);
 	osc_queu_MSG_int("/ostc/master/b", 			deck[0].cfg.led_master_cfg.b);
@@ -1681,7 +1681,7 @@ void osc_StC_menu_master_ref()
 
 
 
-	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );
+	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );   
 	osc_queu_MSG_int("/ostc/master/playnr", 	led_cfg.Play_Nr);
 
 	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
