@@ -8,7 +8,9 @@
 #endif
 #include "leds_palletes.h"
 
-
+#define UINT16_SIZE 65535
+#define COLORINDEXLONG 256
+#define HALFCOLORINDEXLONG 128
 //#include <FastLED.h>	
 	//#include <pixeltypes.h>
 	//#include "pixeltypes.h"
@@ -239,7 +241,7 @@
 
 // ***************Palette  ************************
 
-		#define _M_NR_FORM_PAL_OPTIONS_ 6
+		#define _M_NR_FORM_PAL_OPTIONS_ 7
 		enum form_pal_options
 		{
 			_M_FORM_PAL_RUN,
@@ -247,13 +249,15 @@
 			_M_FORM_PAL_MIRROR,
 			_M_FORM_PAL_BLEND,
 			_M_FORM_PAL_ONECOLOR,
-			_M_FORM_PAL_SPEED_FROM_FFT
+			_M_FORM_PAL_SPEED_FROM_FFT,
+			_M_FORM_PAL_BOUNCE
 		};
 
 		struct form_fx_pal_run_struct
 		{
 					uint16_t 	indexLong;
 					uint8_t		index;				// the pallete index
+					boolean 	bounce;				// the bounce state.
 		};
 
 		struct form_fx_pal_struct
@@ -263,6 +267,7 @@
 					uint16_t	index_add_led;		// how much to add onto the index on 
 					uint16_t	index_add_frame;	// ???
 					uint8_t 	autoPalMode;
+					
 
 		};
 
@@ -274,6 +279,7 @@
 			uint8_t 	palSpeedBin; 		// index_add_frame  + trigger from bin     , 255 = none 
 			uint8_t 	lvl_bin;			// whats the lvl bin to add to the lvl   , 255 = none
 			uint8_t 	master_lvl; 		// the master level for the layer
+			
 			
 		};
 

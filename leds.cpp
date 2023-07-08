@@ -195,8 +195,9 @@ void LEDS_show()
 				FastLED.setBrightness(deck[0].cfg.led_master_cfg.bri);
 
 			if (get_bool(ARTNET_SEND) == true) 	LEDS_G_artnet_master_out();  // Send out the artnet data if enabled
-			else FastLEDshowESP32();
-			//FastLED.show();
+			else 
+				//FastLEDshowESP32();
+			FastLED.show();
 			//FastLED[0].showLeds(deck[0].led_master_cfg.bri);
 			//FastLED[1].showLeds(deck[0].led_master_cfg.bri);
 			//FastLED[2].showLeds(deck[0].led_master_cfg.bri);
@@ -308,7 +309,7 @@ void LEDS_G_AutoCalcPal(uint8_t deckNo, uint8_t iform)
 
 			default:  break;
 		}
-		debugMe(String(leds) + " xxxx " + String(iform) + " x "  + String(deck[deckNo].cfg.form_cfg[iform].nr_leds) ); 
+		//debugMe(String(leds) + " xxxx " + String(iform) + " x "  + String(deck[deckNo].cfg.form_cfg[iform].nr_leds) ); 
 		
 		if (leds != 0  && deck[deckNo].cfg.form_fx_pal[iform].autoPalMode != Ap_MANUAL ) deck[deckNo].cfg.form_fx_pal[iform].index_add_led  = calc_rounded_devision(MAX_INDEX_LONG , leds);
 		
@@ -328,7 +329,7 @@ void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr)
 	write_bool(FADE_INOUT_SAVE, Save);
 	led_cfg.fade_inout_val = 0;
 	led_cfg.next_config_loadsave = confNr;
-	led_cfg.confSwitch_time = micros() ;
+	led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
 }
 
 void LEDS_FX1_increment_indexes(uint8_t DeckNo)
@@ -955,7 +956,7 @@ void LEDS_FFT_calc_avarage()
 
 
 void LEDS_MSGEQ7_setup() {
-
+	debugMe("MSGEQ Setup");
 	pinMode(MSGEQ7_INPUT_PIN, INPUT);
 	pinMode(MSGEQ7_STROBE_PIN, OUTPUT);
 	pinMode(MSGEQ7_RESET_PIN, OUTPUT);
@@ -1003,7 +1004,23 @@ void LEDS_FFT_process()
 
 	int bins[7] = {0,0,0,0,0,0,0};
 
-	LEDS_MSGEQ7_get();  // get the FFT data and put it in fft_data[i].value
+	if (get_bool(FFT_ENABLE) && !get_bool(FFT_MASTER))
+	{
+
+		for (byte i = 0; i < 7; i++) 
+		{
+			fft_bin_results[i] = FFT_fifo.dequeue();  	
+		}
+
+
+	}
+	else
+	{
+
+		LEDS_MSGEQ7_get();  // get the FFT data and put it in fft_data[i].value
+
+	}
+	
 	LEDS_FFT_calc_avarage(); // update the avarages for autofft.
 
 	// debugMe("FFT fill bins");
@@ -1605,11 +1622,53 @@ void LEDS_run_pal(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArr
 			
 		uint16_t pal_speed; 
 		if (deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin != 255) 	pal_speed = LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin ,0 )  ;
-		else  												pal_speed = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;  
+		else  																	pal_speed = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;  
 
-		deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
-		deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
-		if ( deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= MAX_INDEX_LONG ) 	deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
+		if (!deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_BOUNCE])
+		{
+			deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
+			deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
+			if ( deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= MAX_INDEX_LONG ) 	
+			{
+			
+				deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
+			}
+		}
+		else // were bouncing
+			{
+				
+
+
+
+				if (!deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce)   
+					{
+						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
+						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
+
+						if (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= (MAX_INDEX_LONG - COLORINDEXLONG))
+						{
+							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = MAX_INDEX_LONG - COLORINDEXLONG  - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - (MAX_INDEX_LONG - COLORINDEXLONG )) ;
+							//deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = MAX_INDEX_LONG  - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG ) ;
+							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce = true;
+						}
+
+					}
+				else 
+				{
+						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index - pal_speed;
+						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - pal_speed;
+
+						if (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= (MAX_INDEX_LONG))
+						{
+							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = UINT16_SIZE - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  )  ;
+							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce = false;
+						}
+
+				}
+			}  // end bounce
+		
+
+
 	}
 	else
 	{	// if thers noting to do just move the index so they stay synced in the position. if its not linked to an fft bin
@@ -2426,10 +2485,33 @@ void LEDS_setup()
     xTaskCreatePinnedToCore(FastLEDshowTask, "FastLEDshowTask", 2048, NULL, 2, &FastLEDshowTaskHandle, FASTLED_SHOW_CORE);
 
 	 LEDS_load_default_play_conf();	
-	if (led_cfg.bootCFG != MAX_NR_SAVES) FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
-	FS_read_Strip_Config(led_cfg.Led_Setup_ConfNr,&deck[0].cfg, &led_cfg);
 
-	LEDS_pal_reset_index();
+	 
+	 LEDS_pal_reset_index();
+
+
+
+	if (led_cfg.bootCFG != MAX_NR_SAVES) 
+	{
+		FS_play_conf_read(led_cfg.bootCFG ,&deck[0].cfg ,&deck[0].fx1_cfg ) ;	
+		if (get_bool(SEQUENCER_ON) ) // && !LEDS_get_sequencer(led_cfg.bootCFG)  )  
+		{
+			if (LEDS_get_sequencer(led_cfg.bootCFG) )
+				led_cfg.confSwitch_time = ( micros() +  play_conf_time_min[led_cfg.bootCFG] * MICROS_TO_MIN )  ;
+			else	
+			{
+				//debugMe("JOHOHOHOHO");
+				led_cfg.confSwitch_time = micros();
+				//LEDS_seqencer_advance();
+			}
+
+		}
+		if (!get_bool(CONF_OVERRIDES_LAMP))  FS_read_Strip_Config(led_cfg.Led_Setup_ConfNr,&deck[0].cfg, &led_cfg);
+		led_cfg.update_time = micros();
+		
+	}
+	
+	
 
 
 
@@ -2439,7 +2521,7 @@ void LEDS_setup()
 	deck[0].run.fft.update_time = micros();
 	//fft_led_cfg.viz_fps = DEF_VIZ_UPDATE_TIME_FPS ;
 
-	led_cfg.confSwitch_time = micros()  ; // +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+	//led_cfg.confSwitch_time = micros()  ; // +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
 
 
 	//static deck_cfg_struct mem_confs_real[5] ;
@@ -2503,7 +2585,6 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 
 void LEDS_loop()
 {	// the main led loop
-
 	unsigned long currentT = micros();
 
 	
@@ -2537,9 +2618,7 @@ void LEDS_loop()
 	
 	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
-		
 		{	
-			//debugMe(String(ESP.getFreeHeap()));
 
 			
 
@@ -2560,8 +2639,11 @@ void LEDS_loop()
 			if (LEDS_checkIfAudioSelected()) 
 			{
 				LEDS_FFT_process();  // Get the color from the FFT data
+
+
+
 				LEDS_FFT_history_run(deck[DeckNo].run.fft.GlobalColor_result, DeckNo);
-				
+				if(get_bool(FFT_ENABLE) && get_bool(FFT_MASTER)) WIFI_FFT_master_send() ;
 				yield();
 			}
 
@@ -2580,12 +2662,9 @@ void LEDS_loop()
 
 		}
 
-
 			LEDS_G_pre_show_processing();
 			yield();
-
 			LEDS_G_run_LOAD_SAVE_SHOW_Loop();
-
 			
 
 
@@ -2626,10 +2705,10 @@ void LEDS_loop()
 
 
 	if (get_bool(SEQUENCER_ON)) 
-	{
-		unsigned long 	confSwitch_time = led_cfg.confSwitch_time  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ; ; 	
+	{  //debugMe("x6 ");
+		//unsigned long 	confSwitch_time = led_cfg.confSwitch_time  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ; ; 	
 
-		if (currentT > confSwitch_time)  LEDS_seqencer_advance();
+		if (currentT > led_cfg.confSwitch_time )  LEDS_seqencer_advance();
 		
 	} 
 
@@ -2641,7 +2720,7 @@ void LEDS_loop()
 
 	//if (micros() > led_cfg.update_time ) {deck[0].cfg.led_master_cfg.pal_fps--; debugMe("To slow");}
 
-	}
+	}     //end in led update   // if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 
 
 	

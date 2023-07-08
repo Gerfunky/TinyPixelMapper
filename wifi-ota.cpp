@@ -388,98 +388,41 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 
 
 
-
-void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
+void WiFi_Event(WiFiEvent_t event )
 {
-	//if (get_bool(WIFI_EVENTS) == true || event == 7 )   // DHCP response (7) or all
-	{
-		debugMe("[WiFi-event] event:"+ String(event));
-		//ip4_addr_t  infoIP4;
-		IPAddress infoIP;
-		
-		
-		switch (event) {
-		case  SYSTEM_EVENT_SCAN_DONE:					/**< 1 ESP32 finish scanning AP */
-			debugMe("finish scanning AP");
-			debugMe("Status: " + info.scan_done.status);
-			debugMe("number: " + info.scan_done.number);
-			debugMe("scan ID: " + info.scan_done.scan_id);
-			break;
+	debugMe("[WiFi-event] event NoInfo :"+ String(event));
+    
+	switch (event) {
+
 
 		case SYSTEM_EVENT_STA_START:					/**<2 ESP32 station start */
 			debugMe("STA Started",true,true);
-			WiFi.setHostname(wifi_cfg.APname);
+			//WiFi.setHostname(wifi_cfg.APname);
 			break;
 
 		case SYSTEM_EVENT_STA_STOP:						/**<3 ESP32 station stop */
 			debugMe("STA Stopped",true,true);
 			break;
 
-		case SYSTEM_EVENT_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
-			debugMe("WIFI:STA Connected");
-			debugMe("SSID = " + String(reinterpret_cast<const char*>(info.connected.ssid)));
-			//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.connected.bssid)));
-			debugMe("BSSID/MAC = " + String(info.connected.bssid[0], HEX) + ":" + String(info.connected.bssid[1], HEX) + ":" + String(info.connected.bssid[2], HEX) + ":" + String(info.connected.bssid[3], HEX) + ":" + String(info.connected.bssid[4], HEX) + ":" + String(info.connected.bssid[5], HEX));
-			debugMe("Channel = " + String(info.connected.channel));
-			debugMe("Authmode = " + String(info.connected.authmode));
-			break;
-
-		case SYSTEM_EVENT_STA_DISCONNECTED:				/**<5 ESP32 station disconnected from AP */
-			Serial.println("STA Disconnected");
-			debugMe("SSID = " + String(reinterpret_cast<const char*>(info.disconnected.ssid)));
-			//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.disconnected.bssid)));
-			debugMe("BSSID/MAC = " + String(info.disconnected.bssid[0], HEX) + ":" + String(info.disconnected.bssid[1], HEX) + ":" + String(info.disconnected.bssid[2], HEX) + ":" + String(info.disconnected.bssid[3], HEX) + ":" + String(info.disconnected.bssid[4], HEX) + ":" + String(info.disconnected.bssid[5], HEX));
-			debugMe("Reason = " + String(info.disconnected.reason));
-			break;
-
-		case	SYSTEM_EVENT_STA_AUTHMODE_CHANGE:      /**<6 the auth mode of AP connected by ESP32 station changed */
-			debugMe("auth mode of AP connected by ESP32 station changed");
-			debugMe("Authmode New" + info.auth_change.new_mode);
-			debugMe("Authmode old" + info.auth_change.old_mode);
-			break;
-			
-		case	SYSTEM_EVENT_STA_GOT_IP:               /**<7 ESP32 station got IP from connected AP */
-			debugMe("station got IP from connected AP",true,true);
-			debugMe("ON SSID :" + String(WiFi.SSID()),true,true);
-			infoIP = info.got_ip.ip_info.ip.addr;
-			debugMe("Got IPv4: ",false,true);
-			debugMe(infoIP,true,true);
-			infoIP = info.got_ip.ip_info.netmask.addr;
-			debugMe("Got NetMask: ", false,true);
-			debugMe(infoIP,true,true);
-			infoIP = info.got_ip.ip_info.gw.addr;
-			debugMe("Got DGW: ", false,true);
-			debugMe(infoIP,true,true);
-			//debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
-			
-			break;
-
+		
+    
 		case	SYSTEM_EVENT_STA_LOST_IP:              /**<8 ESP32 station lost IP and the IP is reset to 0 */
 			debugMe("station lost IP and the IP is reset to 0");
 			break;
 
-		case	SYSTEM_EVENT_STA_WPS_ER_SUCCESS:       /**<9 ESP32 station wps succeeds in enrollee mode */
-			debugMe("station wps succeeds in enrollee mode");
-			break;
-
-		case	SYSTEM_EVENT_STA_WPS_ER_FAILED:        /**<10 ESP32 station wps fails in enrollee mode */
-			debugMe("wps fails in enrollee mode");
-			break;
-
+		
 		case	SYSTEM_EVENT_STA_WPS_ER_TIMEOUT:       /**<11 ESP32 station wps timeout in enrollee mode */
 			debugMe("wps timeout in enrollee mode");
 			break;
 
-		case	SYSTEM_EVENT_STA_WPS_ER_PIN:           /**<12 ESP32 station wps pin code in enrollee mode */
-			debugMe("wps pin code in enrollee mode ");
-			break;
-
+			
 		case	SYSTEM_EVENT_AP_START:                 /**<13 ESP32 soft-AP start */
 			//WiFi.softAPsetHostname(wifi_cfg.APname);
-			debugMe("WiFi: soft-AP Started HOSTNAME = " + String(wifi_cfg.APname)+ " PWD: " + String(wifi_cfg.APpassword),true,true);
+		//	debugMe("WiFi: soft-AP Started HOSTNAME = " + String(wifi_cfg.APname)+ " PWD: " + String(wifi_cfg.APpassword),true,true);
 			debugMe("IP:",false,true);
-			if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal,true,true);
-				else debugMe("192.168.4.1",true,true);
+			//if(get_bool(STATIC_IP_ENABLED) ) debugMe(wifi_cfg.ipStaticLocal,true,true);
+			//	else 
+      		debugMe("192.168.4.1",true,true);
 				
 			break;
 
@@ -487,28 +430,11 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 			debugMe("WiFi: soft-AP Stopped",true,true);
 			break;
 
-		case	SYSTEM_EVENT_AP_STACONNECTED:          /**<15 a station connected to ESP32 soft-AP */
-			debugMe("a station connected to ESP32 soft-AP");
-			debugMe("AID = " + String(info.sta_connected.aid));
-			debugMe("MAC = " + String(info.sta_connected.mac[0], HEX) +":" + String(info.sta_connected.mac[1],HEX) + ":" + String(info.sta_connected.mac[2], HEX) + ":" + String(info.sta_connected.mac[3], HEX) + ":" + String(info.sta_connected.mac[4], HEX) + ":" + String(info.sta_connected.mac[5], HEX));
-			break;
-
-		case	SYSTEM_EVENT_AP_STADISCONNECTED:       /**<16 a station disconnected from ESP32 soft-AP */
-			debugMe("a station disconnected from soft-AP");
-			debugMe("AID = " + String(info.sta_disconnected.aid));
-			debugMe("MAC = " + String(info.sta_disconnected.mac[0], HEX) + ":" + String(info.sta_disconnected.mac[1], HEX) + ":" + String(info.sta_disconnected.mac[2], HEX) + ":" + String(info.sta_disconnected.mac[3], HEX) + ":" + String(info.sta_disconnected.mac[4], HEX) + ":" + String(info.sta_disconnected.mac[5], HEX));
-			break;
-
-		case	SYSTEM_EVENT_AP_PROBEREQRECVED:        /**<17 Receive probe request packet in soft-AP interface */
-			debugMe("Receive probe request packet in soft-AP interface");
-			debugMe("rssi = " + String(info.ap_probereqrecved.rssi));
-			debugMe("MAC = " + String(info.ap_probereqrecved.mac[0], HEX) + ":" + String(info.ap_probereqrecved.mac[1], HEX) + ":" + String(info.ap_probereqrecved.mac[2], HEX) + ":" + String(info.ap_probereqrecved.mac[3], HEX) + ":" + String(info.ap_probereqrecved.mac[4], HEX) + ":" + String(info.ap_probereqrecved.mac[5], HEX));
-
-			break;
-
+		
 		case	SYSTEM_EVENT_GOT_IP6:                  /**<18 ESP32 station or ap or ethernet interface v6IP addr is preferred */
 			debugMe("station or ap or ethernet interface v6IP addr is preferred");
 			break;
+
 
 #ifdef USE_ETHERNET
 
@@ -558,6 +484,114 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 
 		default:
 			debugMe("OTHER UNKNOWN EVENT");
+			break;
+		}
+		debugMe("WiFi Event END---------");
+
+}
+
+
+void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
+{
+	//if (get_bool(WIFI_EVENTS) == true || event == 7 )   // DHCP response (7) or all
+	{
+		debugMe("[WiFi-event] event:"+ String(event));
+		//ip4_addr_t  infoIP4;
+		IPAddress infoIP;
+		
+		
+		switch (event) {
+		case  SYSTEM_EVENT_SCAN_DONE:					/**< 1 ESP32 finish scanning AP */
+			debugMe("finish scanning AP");
+			debugMe("Status: " + info.scan_done.status);
+			debugMe("number: " + info.scan_done.number);
+			debugMe("scan ID: " + info.scan_done.scan_id);
+			break;
+
+		case SYSTEM_EVENT_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
+			debugMe("WIFI:STA Connected");
+			debugMe("SSID = " + String(reinterpret_cast<const char*>(info.connected.ssid)));
+			//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.connected.bssid)));
+			debugMe("BSSID/MAC = " + String(info.connected.bssid[0], HEX) + ":" + String(info.connected.bssid[1], HEX) + ":" + String(info.connected.bssid[2], HEX) + ":" + String(info.connected.bssid[3], HEX) + ":" + String(info.connected.bssid[4], HEX) + ":" + String(info.connected.bssid[5], HEX));
+			debugMe("Channel = " + String(info.connected.channel));
+			debugMe("Authmode = " + String(info.connected.authmode));
+			break;
+
+		case SYSTEM_EVENT_STA_DISCONNECTED:				/**<5 ESP32 station disconnected from AP */
+			Serial.println("STA Disconnected");
+			debugMe("SSID = " + String(reinterpret_cast<const char*>(info.disconnected.ssid)));
+			//debugMe("BSSID = " + String(reinterpret_cast<const char*>(info.disconnected.bssid)));
+			debugMe("BSSID/MAC = " + String(info.disconnected.bssid[0], HEX) + ":" + String(info.disconnected.bssid[1], HEX) + ":" + String(info.disconnected.bssid[2], HEX) + ":" + String(info.disconnected.bssid[3], HEX) + ":" + String(info.disconnected.bssid[4], HEX) + ":" + String(info.disconnected.bssid[5], HEX));
+			debugMe("Reason = " + String(info.disconnected.reason));
+			break;
+
+		case	SYSTEM_EVENT_STA_AUTHMODE_CHANGE:      /**<6 the auth mode of AP connected by ESP32 station changed */
+			debugMe("auth mode of AP connected by ESP32 station changed");
+			debugMe("Authmode New" + info.auth_change.new_mode);
+			debugMe("Authmode old" + info.auth_change.old_mode);
+			break;
+			
+		case	SYSTEM_EVENT_STA_GOT_IP:               /**<7 ESP32 station got IP from connected AP */
+			debugMe("station got IP from connected AP",true,true);
+			debugMe("ON SSID :" + String(WiFi.SSID()),true,true);
+			infoIP = info.got_ip.ip_info.ip.addr;
+			debugMe("Got IPv4: ",false,true);
+			debugMe(infoIP,true,true);
+			infoIP = info.got_ip.ip_info.netmask.addr;
+			debugMe("Got NetMask: ", false,true);
+			debugMe(infoIP,true,true);
+			infoIP = info.got_ip.ip_info.gw.addr;
+			debugMe("Got DGW: ", false,true);
+			debugMe(infoIP,true,true);
+			//debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
+			
+			break;
+
+
+		case	SYSTEM_EVENT_STA_WPS_ER_SUCCESS:       /**<9 ESP32 station wps succeeds in enrollee mode */
+			debugMe("station wps succeeds in enrollee mode");
+			break;
+
+		case	SYSTEM_EVENT_STA_WPS_ER_FAILED:        /**<10 ESP32 station wps fails in enrollee mode */
+			debugMe("wps fails in enrollee mode");
+			break;
+
+
+
+		case	SYSTEM_EVENT_STA_WPS_ER_PIN:           /**<12 ESP32 station wps pin code in enrollee mode */
+			debugMe("wps pin code in enrollee mode ");
+			break;
+
+
+
+		case	SYSTEM_EVENT_AP_STACONNECTED:          /**<15 a station connected to ESP32 soft-AP */
+			debugMe("a station connected to ESP32 soft-AP");
+			debugMe("AID = " + String(info.sta_connected.aid));
+			debugMe("MAC = " + String(info.sta_connected.mac[0], HEX) +":" + String(info.sta_connected.mac[1],HEX) + ":" + String(info.sta_connected.mac[2], HEX) + ":" + String(info.sta_connected.mac[3], HEX) + ":" + String(info.sta_connected.mac[4], HEX) + ":" + String(info.sta_connected.mac[5], HEX));
+			break;
+
+		case	SYSTEM_EVENT_AP_STADISCONNECTED:       /**<16 a station disconnected from ESP32 soft-AP */
+			debugMe("a station disconnected from soft-AP");
+			debugMe("AID = " + String(info.sta_disconnected.aid));
+			debugMe("MAC = " + String(info.sta_disconnected.mac[0], HEX) + ":" + String(info.sta_disconnected.mac[1], HEX) + ":" + String(info.sta_disconnected.mac[2], HEX) + ":" + String(info.sta_disconnected.mac[3], HEX) + ":" + String(info.sta_disconnected.mac[4], HEX) + ":" + String(info.sta_disconnected.mac[5], HEX));
+			break;
+
+		case	SYSTEM_EVENT_AP_PROBEREQRECVED:        /**<17 Receive probe request packet in soft-AP interface */
+			debugMe("Receive probe request packet in soft-AP interface");
+			debugMe("rssi = " + String(info.ap_probereqrecved.rssi));
+			debugMe("MAC = " + String(info.ap_probereqrecved.mac[0], HEX) + ":" + String(info.ap_probereqrecved.mac[1], HEX) + ":" + String(info.ap_probereqrecved.mac[2], HEX) + ":" + String(info.ap_probereqrecved.mac[3], HEX) + ":" + String(info.ap_probereqrecved.mac[4], HEX) + ":" + String(info.ap_probereqrecved.mac[5], HEX));
+
+			break;
+
+		case	SYSTEM_EVENT_GOT_IP6:                  /**<18 ESP32 station or ap or ethernet interface v6IP addr is preferred */
+			debugMe("station or ap or ethernet interface v6IP addr is preferred");
+			break;
+
+
+
+
+		default:
+			debugMe("OTHER UNKNOWN -INFO- EVENT ");
 			break;
 		}
 		debugMe("WiFi Event END---------");
@@ -614,7 +648,7 @@ void Wifi_Stop_Network()
 }
 
 
-
+ 
 void WiFi_Start_Network()
 {
 	//debugMe("x0");
@@ -873,6 +907,7 @@ boolean Network_connected_check()
 
 void wifi_start_IP_services()
 {	
+	//delay(2000);
 	debugMe("start services");
 #ifdef USE_ETHERNET
 	yield();
@@ -903,7 +938,7 @@ void wifi_start_IP_services()
 		//if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "tpm", wifi_cfg.ipStaticLocal);// WiFi.localIP());
 		//else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
 
-		//WiFi_FFT_Setup();
+		//WiFi_FFT_Setup();    // Start the Wifi FFT Master Slave setup
 
 		//WiFi_print_settings();
 		debugMe("end services");
@@ -927,13 +962,13 @@ void wifi_setup()
 		yield();
 		wifi_cfg.connectTimeout = millis() + 20000;
 		yield();
-//		if (!eth_connected)
-//		{
-//			debugMe(String("eth not connected dropping to Wifi  "),true,true);
-//			//WiFi.onEvent(WiFi_Event); // Start event handler!
-//			WiFi_Start_Network();
+		if (!eth_connected)
+		{
+			debugMe(String("eth not connected dropping to Wifi  "),true,true);
+			//WiFi.onEvent(WiFi_Event); // Start event handler!
+			WiFi_Start_Network();
 
-//		}
+		}
 	#else
 		
 		WiFi_Start_Network();
@@ -942,7 +977,7 @@ void wifi_setup()
 	
 	
 	//if (get_bool(WIFI_POWER_ON_BOOT))
-	
+	debugMe(String("WifiSetup Done  "),true,true);
 }
 
 
@@ -975,6 +1010,7 @@ void ip_services_loop()
 // making shure that all ports are handeld and flushed.
 void wifi_loop()
 {
+	
 		#ifdef USE_ETHERNET
 			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) && !eth_connected ) 
 		#else  
@@ -994,6 +1030,7 @@ void wifi_loop()
 			}
 			
 		}
+	
 
 #ifdef USE_ETHERNET
 		if  ((get_bool(WIFI_POWER_ON_BOOT)) || eth_connected)

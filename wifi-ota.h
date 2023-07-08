@@ -63,7 +63,7 @@
  void WIFI_FFT_toggle_master(boolean value);			// osc.cpp
  void WIFI_FFT_toggle(boolean mode_value);				//osc.cpp
 
- //void WIFI_FFT_master_send();   // Comms
+ void WIFI_FFT_master_send();   // Comms
 
  void WiFi_telnet_print(String input, boolean line);
  void WiFi_telnet_print(tm input, boolean line);
@@ -85,3 +85,4 @@
 
 #endif
 
+ 

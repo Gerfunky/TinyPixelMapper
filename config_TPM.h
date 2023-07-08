@@ -45,13 +45,13 @@
 	#define DEF_AP_PASSWD		"love4all"						// PW for AP mode   !!! no OSC config yet STATIC !!!!
 
 	#define DEF_STATIC_IP_ENABLED false							// set static ip for startup  ?
-	#define DEF_IP_LOCAL		{172,16,222,27}					// Static IP
+	#define DEF_IP_LOCAL		{192,168,18,27}					// Static IP
 	#define DEF_IP_SUBNET		{255,255,255,0}					// Subnet Mask
-	#define DEF_IP_DGW			{172,16,222,1}					// DGW
+	#define DEF_IP_DGW			{192,168,18,1}					// DGW
 
 	#define DEF_WIFI_CHANNEL    1								// the wifi channel 1-12
 
-	#define DEF_DNS				{172,16,222,1}					// DNS server
+	#define DEF_DNS				{192,168,18,1}					// DNS server
 	#define DEF_NTP_SERVER		"0.at.pool.ntp.org"				//"0.at.pool.ntp.org"	 // only FQDN's  no ip!! 	
 	#define DEF_TIMEZONE		2								// how much to add to UTC for the NTP client
 	#define WIFI_CLIENT_CONNECT_TIMEOUT		1000				// how long to try to connect to the Wifi
@@ -68,7 +68,7 @@
 	#define DEF_FFT_IP_MULTICAST	{239, 0, 0, 57}			//  Multicast IP address to send the FFT data to
 	#define DEF_FFT_SLAVE_PORT		431						// Multicast DEST port for FFT packets
 	#define DEF_FFT_MASTER_PORT		432						// Multicast source port to send from
-	#define DEF_FFT_ENABLE			false					// enalbe FFT from start?
+	//#define DEF_FFT_ENABLE			false					// enalbe FFT from start?
 	#define DEF_FFT_MASTER			false					// set the node to Master mode?
 	#define DEF_AUTO_FFT 			true					// enalbe auto FFT ?
 	#define DEF_FFT_MASTER_SEND		false					//  if in master mode send out the UDP Multicast packets?

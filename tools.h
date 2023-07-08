@@ -26,6 +26,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,WIFI_EVENTS      	= 5		// Show all Wifi Events not only 7 Ipaddress .
 	,OSC_EDIT			= 6		// alow Edditing of NR LEds and Start Led ?
 	,FFT_MASTER			= 7		// Master FFT-Server ? if not = slave!
+
 	,FFT_ENABLE			= 8		// FFT enabled
 	,BLEND_INVERT		= 9		// invert all blend modes!
 	,OSC_MC_SEND		= 10	// send OSC to slave OSC devices ?
@@ -34,6 +35,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,FFT_OSTC_VIZ		= 13	// send FFT data to Open Stage Controll for analisys ?
 	,DEBUG_TELNET		= 14	// Debug to telnet ?
 	,FFT_MASTER_SEND	= 15	// if in master mode send out the UDP Multicast packets?
+//2	
 	,WIFI_POWER 		= 16    // enable WIFI power.
 	,BTN_LASTSTATE		= 17 	// what was the last bttn state
 	,DATA1_ENABLE		= 18 	// enable Data line 1
@@ -42,6 +44,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,DATA4_ENABLE		= 21	// enable Data line 4
 	,WIFI_POWER_ON_BOOT = 22 	// was wifi on on boot?
 	,POT_DISABLE 		= 23  	// Disable HW Pots BRI & FPS!
+//3
 	,SEQUENCER_ON 		= 24	// Is the sequencer switched on?
 	,MQTT_ON 			= 25     // Enable Mqtt.
 	,ARTNET_SEND		= 26	// Are we a artnet sender (no direct output only calculation unit)
@@ -50,12 +53,15 @@ enum GLOBAL_OPTIONS_ENUM
 	,FADE_INOUT			= 29	// Trigger for save/load loop
 	,FADE_INOUT_SAVE	= 30	// are we saving or loading for the fade.  flase = load
 	,FADE_INOUT_FADEBACK = 31   // used for SAve load loop Fadebackin
+//4	
 	,POTS_LVL_MASTER	= 32	// override the LVL from the save to the value set on the pot
 	,PAUSE_DISPLAY		= 33 	// frezze the display but continue to calculate in the background
 	,ARTNET_REMAPPING   = 34	// remap artnet universe to FFT data and use almost all other features.
 	,MANUAL_REFRESH  = 35   // is it a custom load.
 	,CONF_OVERRIDES_LAMP = 36   // when loading a config it overwrites the Lamp config (a save pattern save also saves the Led Layout )
 
+
+//5
 };
 
 

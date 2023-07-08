@@ -191,11 +191,11 @@ void httpd_handleFileCreate() {
 void httpd_handlecConfFileList() {
 	String path = "/conf";
 
-	 debugMe("handleCONFFileList xxxx: " + path);
-
+	// debugMe("handleCONFFileList xxxx: " + path);
+	
 	File dir = httpFS.open(path);
 
-	path = String();
+	//path = String();
 
 	String output = "[";
 
@@ -205,20 +205,25 @@ void httpd_handlecConfFileList() {
 
 	
 	while (fileX) {
-		if( String(fileX.name()).startsWith("/"))
+		if(fileX.isDirectory())
+		{ 
+			debugMe("Dir!!!!");
+		}
+		else
 		{
+			debugMe("NotDir");
 			if (output != "[") output += ',';
 			bool isDir = false;
 			output += "{\"type\":\"";
-			output += (isDir) ? "dir" : "file";
+			output += "file";
 			output += "\",\"name\":\"";
-			output += String(fileX.name()).substring(1);
+			output += String("conf/" + String(fileX.name()).substring(0));
 			output += "\"}";
-			debugMe(String(fileX.name()));
-		}
 			fileX.close();
-			fileX = dir.openNextFile();
-		
+			
+			//debugMe(String(fileX.name()));
+		}
+		fileX = dir.openNextFile();
 	}
 
 	dir.close();
@@ -246,22 +251,31 @@ void httpd_handleFileList() {
 	 debugMe("handleFileList: " + path);
 
 	File dir = httpFS.open(path);
-	path = String();
+	//path = String();
 	String output = "[";
 	File fileX = dir.openNextFile();
 	debugMe(String(fileX.name()));
 
 	while (fileX) {
-		if (output != "[") output += ',';
-		bool isDir = false;
-		output += "{\"type\":\"";
-		output += (isDir) ? "dir" : "file";
-		output += "\",\"name\":\"";
-		output += String(fileX.name()).substring(1);
-		output += "\"}";
-		fileX.close();
+		if(fileX.isDirectory())
+		{ 
+			debugMe("Dir!!!!");
+		}
+		else
+		{
+			debugMe("NotDir");
+			if (output != "[") output += ',';
+			bool isDir = false;
+			output += "{\"type\":\"";
+			output += "file";
+			output += "\",\"name\":\"";
+			output += String(fileX.name()).substring(0);
+			output += "\"}";
+			fileX.close();
+			
+			//debugMe(String(fileX.name()));
+		}
 		fileX = dir.openNextFile();
-		debugMe(String(fileX.name()));
 	}
 
 	dir.close();

@@ -223,7 +223,7 @@ void MMQT_loop()
 
 
 void MMQT_setup() {
-
+  debugMe(String("MQTT Setup Start  "),true,true);
   if (FS_mqtt_read() == false )   FS_mqtt_write();
 
    client.setServer(mqtt_cfg.mqttIP, mqtt_cfg.mqttPort);
@@ -235,4 +235,5 @@ void MMQT_setup() {
   {
     reconnect();
   }
+  debugMe(String("MQTT Setup Done  "),true,true);
 }

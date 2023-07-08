@@ -89,7 +89,9 @@
 
 void OSC_setup()
 {	// OSC Setup function 
-	osc_server.begin(osc_cfg.inPort);
+	uint8_t  tester ;
+	tester = osc_server.begin(osc_cfg.inPort);
+	debugMe("Tester1 " + String(tester));
 	debugMe("OSC Setup Done In Port: ", false ); debugMe(String(osc_cfg.inPort), true  );
 	debugMe(" - Out Port: ", false );debugMe(String(osc_cfg.outPort), true  );    // osc_server.remotePort()   // OSC_OUTPORT
 }
@@ -608,7 +610,7 @@ bool  osc_send_out_API_FX_MSG_buffer()
 		
 		int deckSel ;
 
-		uint8_t send_val = 0;
+		//uint8_t send_val = 0;
 
 		if (osc_out_fx_intvalue.count() != 0 )
 		{
@@ -1398,6 +1400,7 @@ void osc_StC_menu_form_pal_adv_ref(uint8_t bit)
 			osc_queu_MSG_int( "/ostc/form/pal/mir/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	bit_formNr)));  		
 			osc_queu_MSG_int( "/ostc/form/pal/bld/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_BLEND], 	bit_formNr)));  	 
 			osc_queu_MSG_int( "/ostc/form/pal/ifm/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_SPEED_FROM_FFT], 	bit_formNr)));	
+			osc_queu_MSG_int( "/ostc/form/pal/bnc/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_BOUNCE], 	bit_formNr)));	
 			osc_queu_MSG_int("/ostc/form/pal/ato/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].autoPalMode );	
 			osc_queu_MSG_int("/ostc/form/pal/lvl/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].level );
 
@@ -2171,7 +2174,8 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if		(msg.match("/pal/rev",addrOffset))			{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_REVERSED], i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/pal/bld",addrOffset))			{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_BLEND], i_form_nr, 			bool(result));  ;}
 						else if  	(msg.match("/pal/ifm",addrOffset))  		{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_SPEED_FROM_FFT], i_form_nr, 			bool(result));  ;}
-
+						else if  	(msg.match("/pal/bnc",addrOffset))  		{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_BOUNCE], i_form_nr, 			bool(result));  ;}
+	
 						else if		(msg.match("/fft/run",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_RUN], 			i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/rev",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_REVERSED], 	i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/mir",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_MIRROR], 		i_form_nr, 	bool(result));  ;}
@@ -3538,56 +3542,59 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 // Main OSC loop
 void OSC_loop() 
 {	// the main osc loop
-	
+	//debugMe("OSCLoop");
+	//if(osc_server.available()) 
+	//debugMe("oooo" + String(osc_server.available()));
+	//if (0)
+	{
+		OSCMessage oscMSG;
+	//	debugMe("OSCLoop1");
+		//OSCMessage oscMSG_MC;
+	//debugMe("OSCLoop2");
+
+		int size = osc_server.parsePacket();
+	//debugMe("OSCLoop3");
+		if (size > 0) {
+			// debugMe(size);
+			while (size--) {
+				oscMSG.fill(osc_server.read());
+			}
+			if (!oscMSG.hasError())
+			{
+
+				//OSC_debug_call();
+				char address[30];
+				memset(address, 0, sizeof(address));
+
+				oscMSG.getAddress(address);
+				debugMe(address,false);
+				debugMe(" : ",false);
+				debugMe(oscMSG.getInt(0));
 
 
-	OSCMessage oscMSG;
-	OSCMessage oscMSG_MC;
+				if 		( oscMSG.match("/ostc") )    oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
+				else if ( oscMSG.match("/api") 	)	oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
+				else if ( oscMSG.match("/tosc") )		oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
+				else if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
+				else osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	 // unknow Command
+
+			}
+			else {
+				osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	
+				//error = bundle.getError();
+				debugMe("OSC error: ");	
+				debugMe( oscMSG.getError());
+			}
+		}   //else debugMe("XXXXX");
 
 
-	int size = osc_server.parsePacket();
-
-	if (size > 0) {
-		// debugMe(size);
-		while (size--) {
-			oscMSG.fill(osc_server.read());
-		}
-		if (!oscMSG.hasError())
+		if (osc_send_out_float_MSG_buffer() == false )
 		{
-
-			//OSC_debug_call();
-			char address[30];
-			memset(address, 0, sizeof(address));
-
-			oscMSG.getAddress(address);
-			debugMe(address,false);
-			debugMe(" : ",false);
-			debugMe(oscMSG.getInt(0));
-
-
-			if 		( oscMSG.match("/ostc") )    oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
-			else if ( oscMSG.match("/api") 	)	oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
-			else if ( oscMSG.match("/tosc") )		oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
-			else if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
-			else osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	 // unknow Command
-
+			if (  Refreshloop < 255  )  osc_api_refreshAllLoop();
+			if (  MobRefreshloop < 255  )  osc_api_MobilerefreshAllLoop();
 		}
-		else {
-			osc_send_MSG_rgb( "/ostc/master/connled"  ,  0 ,0 ,255  );	
-			//error = bundle.getError();
-			debugMe("OSC error: ");	
-			debugMe( oscMSG.getError());
-		}
-	}   //else debugMe("XXXXX");
 
+		//osc_send_out_API_FX_MSG_buffer() ;
+	}
 
-	if (osc_send_out_float_MSG_buffer() == false )
-	 {
-		if (  Refreshloop < 255  )  osc_api_refreshAllLoop();
-		if (  MobRefreshloop < 255  )  osc_api_MobilerefreshAllLoop();
-	 }
-
-	//osc_send_out_API_FX_MSG_buffer() ;
 }
-
-

@@ -608,6 +608,7 @@ void	FS_artnet_write()
 		conf_file.print(String(":" + String(artnet_cfg.startU)));
 		conf_file.print(String(":" + String(artnet_cfg.numU)));
 		conf_file.print(String(":" + String(get_bool(ARTNET_RECIVE))));
+		conf_file.print(String(":" + String(get_bool(ARTNET_REMAPPING))));
 
 		conf_file.println("] ");
 
@@ -668,7 +669,8 @@ boolean FS_artnet_read()
 				write_bool(ARTNET_SEND,	get_bool_conf_value(conf_file, &character));
 				artnet_cfg.startU =			get_int_conf_value(conf_file, &character);
 				artnet_cfg.numU =			get_int_conf_value(conf_file, &character);
-				write_bool(ARTNET_RECIVE,	get_bool_conf_value(conf_file, &character));
+				if(AnotherSetting(&character)) {write_bool(ARTNET_RECIVE,	get_bool_conf_value(conf_file, &character));}
+				if(AnotherSetting(&character)) {write_bool(ARTNET_REMAPPING,	get_bool_conf_value(conf_file, &character));}
 
 							
 			}
@@ -942,9 +944,14 @@ bool FS_play_conf_write1(uint8_t val)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].palSpeedBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].triggerBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].lvl_bin)));
-				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
+				//for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].master_lvl)));
 				conf_file.println("] ");
+
+				conf_file.print(String("[PM:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
+				conf_file.println("] ");
+
 			}
 		}
 		
@@ -1001,8 +1008,12 @@ bool FS_play_conf_write1(uint8_t val)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].triggerBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].lvl_bin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].color)));
-				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
+				//for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].master_lvl)));
+				conf_file.println("] ");
+
+				conf_file.print(String("[TM:" + String(form)));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
 				conf_file.println("] ");
 			}
 		}
@@ -1532,7 +1543,7 @@ void FS_play_conf_readSendSavenames( )
 	{
 
 		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
-		debugMe("READ Conf " + addr);
+		//debugMe("READ Conf " + addr);
 		File conf_file = selectedFS.open(addr, "r");
 		String settingValue;
 		String OSCAddress = "/ostc/master/savename/" + String(confNo);
@@ -1561,7 +1572,7 @@ void FS_play_conf_readSendSavenames( )
 				typeb = conf_file.read();
 				character = conf_file.read(); // go past the first ":"
 				
-				int  in_int = 0;
+				//int  in_int = 0;
 
 				
 
@@ -1572,8 +1583,8 @@ void FS_play_conf_readSendSavenames( )
 					memset(Confname, 0, sizeof(Confname));
 					settingValue = get_string_conf_value(conf_file, &character);
 					settingValue.toCharArray(Confname, settingValue.length() + 1);
-					debugMe("checking Conf :", false);
-					debugMe(String(Confname));
+					debugMe("checking Conf :" + String(Confname));
+					
 
 					
 					osc_queu_MSG_VAL_STRING(OSCAddress, Confname);
@@ -1587,18 +1598,19 @@ void FS_play_conf_readSendSavenames( )
 			}
 			// close the file:
 			conf_file.close();
-			debugMe("play-File-Closed");
+			//debugMe("play-File-Closed");
 
 			//String addrList = String("/conf/Savelist.txt");
 			//File List_conf_file = selectedFS.open(addrList, "a");
 			List_conf_file.println(String(confNo) +  ":" + settingValue);
 			
 			Bundle_Counter = Bundle_Counter +1;
-			if (Bundle_Counter > 8 )
+			if (Bundle_Counter >= 6 )
 			{
 				Bundle_Counter = 0;
-				osc_send_out_float_MSG_buffer() ;
-				debugMe("one Set");
+				
+				while(osc_send_out_float_MSG_buffer() );
+				debugMe("***one Set Sent***"); 
 			}
 
 			
@@ -1672,7 +1684,7 @@ void FS_play_conf_custom_readSendSavenames( )
 				typeb = conf_file.read();
 				character = conf_file.read(); // go past the first ":"
 				
-				int  in_int = 0;
+				//int  in_int = 0;
 
 				
 
@@ -2046,15 +2058,19 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].palSpeedBin 	= in_int; }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].triggerBin 	= in_int; }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].lvl_bin 		= in_int; 	}
-				if(AnotherSetting(&character)) {for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);   targetConf->form_menu_pal[strip_no][setting] = in_int; } }
+				if(AnotherSetting(&character)) {for (uint8_t setting = 0; setting < 6 ; setting++) if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);   targetConf->form_menu_pal[strip_no][setting] = in_int; } }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].master_lvl 		= in_int; 	} else targetConf->form_fx_pal_singles[strip_no].master_lvl  = 255 ;
 			}
-			else if ((type == 'P') && (typeb == 'B'))
+			else if ((type == 'P') && (typeb == 'M'))
+			{
+				{for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);   targetConf->form_menu_pal[strip_no][setting] = in_int; } }	
+			}
+			/*else if ((type == 'P') && (typeb == 'B'))
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
 				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) 
 					if(AnotherSetting(&character)) { bitWrite(targetConf->form_menu_pal[get_strip_menu_bit(strip_no)][setting], striptobit(strip_no), get_bool_conf_value(conf_file, &character)); }
-			}
+			}*/
 			
 			
 			else if ((type == 'T') && (typeb == 'F'))	
@@ -2071,8 +2087,12 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].triggerBin = in_int; }	else  targetConf->form_fx_fft_signles[strip_no].triggerBin  = 255;
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].lvl_bin = in_int; }   	else  targetConf->form_fx_fft_signles[strip_no].lvl_bin  = 255;
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].color = in_int; }   		else  targetConf->form_fx_fft_signles[strip_no].color  = 0; 
-				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
+				for (uint8_t setting = 0; setting < 6; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].master_lvl = in_int; }  	else  targetConf->form_fx_fft_signles[strip_no].master_lvl  = 255; 
+			}
+			else if ((type == 'T') && (typeb == 'M'))	
+			{
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
 			}
 			else if ((type == 'D') && (typeb == 'F'))	
 			{
@@ -2361,6 +2381,10 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":" + String(get_bool(POT_DISABLE))));
 		conf_file.print(String(":" + String(get_bool(POTS_LVL_MASTER))));
 		
+		conf_file.print(String(":" + String(get_bool(CONF_OVERRIDES_LAMP))));
+		conf_file.print(String(":" + String(get_bool(MANUAL_REFRESH))));
+		
+		
 		conf_file.println("] ");
 
 
@@ -2376,7 +2400,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.println(F("] "));
 		
 		conf_file.println(F("C = Custom Save Nrs "));
-		conf_file.print(String("[C:" + String(get_bool(SEQUENCER_ON))));
+		conf_file.print(String("[C"));
 		
 		for(uint8_t confNr = 0; confNr < Nr_CustomConfs; confNr++)
 		{
@@ -2582,6 +2606,9 @@ boolean FS_Bools_read(uint8_t conf_nr)
 					write_bool(DATA4_ENABLE, get_bool_conf_value(conf_file, &character));
 					write_bool(POT_DISABLE, get_bool_conf_value(conf_file, &character));
 					if(AnotherSetting(&character))  write_bool(POTS_LVL_MASTER, get_bool_conf_value(conf_file, &character));
+					if(AnotherSetting(&character))  write_bool(CONF_OVERRIDES_LAMP, get_bool_conf_value(conf_file, &character));
+					if(AnotherSetting(&character))  write_bool(MANUAL_REFRESH, get_bool_conf_value(conf_file, &character));
+					
 					
 					
 					
