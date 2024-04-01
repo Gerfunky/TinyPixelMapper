@@ -1622,53 +1622,11 @@ void LEDS_run_pal(uint8_t z, uint8_t i , uint8_t selectedDeck,CRGB *OutPutLedArr
 			
 		uint16_t pal_speed; 
 		if (deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin != 255) 	pal_speed = LEDS_fft_get_fxbin_result(deck[selectedDeck].cfg.form_fx_pal_singles[z].palSpeedBin ,0 )  ;
-		else  																	pal_speed = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;  
+		else  												pal_speed = deck[selectedDeck].cfg.form_fx_pal[i + (z * 8)].index_add_frame;  
 
-		if (!deck[selectedDeck].cfg.form_menu_pal[z][_M_FORM_PAL_BOUNCE])
-		{
-			deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
-			deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
-			if ( deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= MAX_INDEX_LONG ) 	
-			{
-			
-				deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
-			}
-		}
-		else // were bouncing
-			{
-				
-
-
-
-				if (!deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce)   
-					{
-						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
-						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
-
-						if (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= (MAX_INDEX_LONG - COLORINDEXLONG))
-						{
-							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = MAX_INDEX_LONG - COLORINDEXLONG  - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - (MAX_INDEX_LONG - COLORINDEXLONG )) ;
-							//deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = MAX_INDEX_LONG  - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG ) ;
-							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce = true;
-						}
-
-					}
-				else 
-				{
-						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index - pal_speed;
-						deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - pal_speed;
-
-						if (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= (MAX_INDEX_LONG))
-						{
-							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  = UINT16_SIZE - (deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong  )  ;
-							deck[selectedDeck].run.form_fx_pal[i + (z * 8)].bounce = false;
-						}
-
-				}
-			}  // end bounce
-		
-
-
+		deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].index + pal_speed;
+		deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong + pal_speed;
+		if ( deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong >= MAX_INDEX_LONG ) 	deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong = deck[selectedDeck].run.form_fx_pal[i + (z * 8)].indexLong - MAX_INDEX_LONG;
 	}
 	else
 	{	// if thers noting to do just move the index so they stay synced in the position. if its not linked to an fft bin

@@ -4,10 +4,10 @@
 
 #ifndef _TPM_ARTNET_h
 #define _TPM_ARTNET_h
-	//#ifndef ARTNET_DISABLED 
+ 	//#ifndef ARTNET_DISABLED 
     #if defined(ARDUINO) && ARDUINO >= 100
-        #include "arduino.h"
-    #endif 
+        #include "Arduino.h"
+    #endif  
 	
 #include "IPAddress.h"
 

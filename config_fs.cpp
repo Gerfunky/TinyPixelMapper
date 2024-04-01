@@ -944,13 +944,13 @@ bool FS_play_conf_write1(uint8_t val)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].palSpeedBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].triggerBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].lvl_bin)));
-				//for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_pal_singles[form].master_lvl)));
 				conf_file.println("] ");
 
-				conf_file.print(String("[PM:" + String(form)));
-				for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
-				conf_file.println("] ");
+				//conf_file.print(String("[PM:" + String(form)));
+				//for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_; setting++) conf_file.print((String(":" + String(deck[selectedDeckNo].cfg.form_menu_pal[form][setting]))));
+				//conf_file.println("] ");
 
 			}
 		}
@@ -1008,13 +1008,13 @@ bool FS_play_conf_write1(uint8_t val)
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].triggerBin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].lvl_bin)));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].color)));
-				//for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
 				conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_fx_fft_signles[form].master_lvl)));
 				conf_file.println("] ");
 
-				conf_file.print(String("[TM:" + String(form)));
-				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
-				conf_file.println("] ");
+				//conf_file.print(String("[TM:" + String(form)));
+				//for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++) conf_file.print(String(":" + String(deck[selectedDeckNo].cfg.form_menu_fft[form][setting])));
+				//conf_file.println("] ");
 			}
 		}
 
@@ -2058,7 +2058,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].palSpeedBin 	= in_int; }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].triggerBin 	= in_int; }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].lvl_bin 		= in_int; 	}
-				if(AnotherSetting(&character)) {for (uint8_t setting = 0; setting < 6 ; setting++) if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);   targetConf->form_menu_pal[strip_no][setting] = in_int; } }
+				if(AnotherSetting(&character)) {for (uint8_t setting = 0; setting < _M_NR_FORM_PAL_OPTIONS_ ; setting++) if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character);   targetConf->form_menu_pal[strip_no][setting] = in_int; } }
 				if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_pal_singles[strip_no].master_lvl 		= in_int; 	} else targetConf->form_fx_pal_singles[strip_no].master_lvl  = 255 ;
 			}
 			else if ((type == 'P') && (typeb == 'M'))
@@ -2090,10 +2090,10 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				for (uint8_t setting = 0; setting < 6; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].master_lvl = in_int; }  	else  targetConf->form_fx_fft_signles[strip_no].master_lvl  = 255; 
 			}
-			else if ((type == 'T') && (typeb == 'M'))	
-			{
-				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
-			}
+			//else if ((type == 'T') && (typeb == 'M'))	
+		//	{
+		//		for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
+		//	}
 			else if ((type == 'D') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
@@ -2736,6 +2736,24 @@ void FS_setup()
 	} else{
 
 		debugMe("FAILED toStart FS");
+
+	#ifdef HUZZAH32_BOARD   // IF SPIFFS IS not fomratted Format it.
+		debugMe("*** Starting Format SPIFFS");
+		bool formatted = selectedFS.format();
+		if(formatted){
+    	debugMe("\n\nSuccess formatting");
+		}else{
+    	debugMe("\n\nError formatting");
+		}
+		if (selectedFS.begin())   // true = format on fail
+		{
+		debugMe("Started selectedFS");
+		FS_listDir(selectedFS, "/", 0);
+		}
+
+
+	#endif
+
 
 	}
 	delay(100);

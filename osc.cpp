@@ -1400,7 +1400,6 @@ void osc_StC_menu_form_pal_adv_ref(uint8_t bit)
 			osc_queu_MSG_int( "/ostc/form/pal/mir/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_MIRROR], 	bit_formNr)));  		
 			osc_queu_MSG_int( "/ostc/form/pal/bld/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_BLEND], 	bit_formNr)));  	 
 			osc_queu_MSG_int( "/ostc/form/pal/ifm/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_SPEED_FROM_FFT], 	bit_formNr)));	
-			osc_queu_MSG_int( "/ostc/form/pal/bnc/" + String(formNr), 	(bitRead(deck[0].cfg.form_menu_pal[bit][_M_FORM_PAL_BOUNCE], 	bit_formNr)));	
 			osc_queu_MSG_int("/ostc/form/pal/ato/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].autoPalMode );	
 			osc_queu_MSG_int("/ostc/form/pal/lvl/"  + String(formNr), deck[0].cfg.form_fx_pal[formNr].level );
 
@@ -2174,8 +2173,7 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 						else if		(msg.match("/pal/rev",addrOffset))			{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_REVERSED], i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/pal/bld",addrOffset))			{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_BLEND], i_form_nr, 			bool(result));  ;}
 						else if  	(msg.match("/pal/ifm",addrOffset))  		{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_SPEED_FROM_FFT], i_form_nr, 			bool(result));  ;}
-						else if  	(msg.match("/pal/bnc",addrOffset))  		{ bitWrite(deck[0].cfg.form_menu_pal[i_bit_int][_M_FORM_PAL_BOUNCE], i_form_nr, 			bool(result));  ;}
-	
+
 						else if		(msg.match("/fft/run",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_RUN], 			i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/rev",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_REVERSED], 	i_form_nr, 	bool(result));  ;}
 						else if		(msg.match("/fft/mir",addrOffset))		{ bitWrite(deck[0].cfg.form_menu_fft[i_bit_int][_M_FORM_FFT_MIRROR], 		i_form_nr, 	bool(result));  ;}

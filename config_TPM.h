@@ -6,7 +6,7 @@
 //#define HUZZAH32_BOARD
 //#define OMILEX32_POE_BOARD
 
-//#include "arduino.h"
+//#include "Arduino.h"
 
 
 
