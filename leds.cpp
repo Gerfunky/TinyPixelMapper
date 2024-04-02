@@ -2412,6 +2412,15 @@ void LEDS_setup()
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (deck[0].run.leds, led_cfg.DataStart_leds[2] , uint16_t(constrain(led_cfg.DataNR_leds[2], 0,led_cfg.NrLeds - led_cfg.DataStart_leds[2] )) ).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}
 			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<SK6822, LED_DATA_4_PIN, GRB>           (deck[0].run.leds, led_cfg.DataStart_leds[3] , uint16_t(constrain(led_cfg.DataNR_leds[3], 0,led_cfg.NrLeds - led_cfg.DataStart_leds[3] )) ).setCorrection(TypicalLEDStrip); 	debugMe("SK6822 leds added on DATA4");}
 		break;
+		case 6:
+		debugMe("WS2813 - GS8208 Line");
+
+			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<WS2813,LED_DATA_PIN  , RGB>(deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA2_ENABLE)) {FastLED.addLeds<WS2813,LED_CLK_PIN   , RGB>(deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2813,LED_DATA_3_PIN, RGB>(deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); }
+			if(get_bool(DATA4_ENABLE)) {FastLED.addLeds<WS2813,LED_DATA_4_PIN, RGB>(deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip);}
+		
+		break;
 		default:
 			if(get_bool(DATA1_ENABLE)) {FastLED.addLeds<APA102,LED_DATA_PIN , LED_CLK_PIN, BGR,DATA_RATE_MHZ(2)>(deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("APA102 leds added on  DATA1+CLK");}
 			if(get_bool(DATA3_ENABLE)) {FastLED.addLeds<WS2812, LED_DATA_3_PIN, GRB>           (deck[0].run.leds, led_cfg.NrLeds).setCorrection(TypicalLEDStrip); 	debugMe("WS2812 leds added on DATA3");}

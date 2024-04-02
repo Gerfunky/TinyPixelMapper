@@ -2571,7 +2571,7 @@ boolean FS_Bools_read(uint8_t conf_nr)
 				{
 					
 					int in_int = 0;
-					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 			= uint8_t(constrain(in_int, 0, 5));
+					in_int = get_int_conf_value(conf_file, &character);		led_cfg.ledMode 			= uint8_t(constrain(in_int, 0, NO_OF_LED_MODES));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.max_bri 			= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.startup_bri 		= uint8_t(constrain(in_int, 0, 255));
 					in_int = get_int_conf_value(conf_file, &character);		led_cfg.NrLeds 				= uint16_t(constrain(in_int, 1,MAX_NUM_LEDS));

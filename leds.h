@@ -56,6 +56,7 @@
 		
 	};
 
+	#define NO_OF_LED_MODES 6
 
 	struct led_cfg_struct					// LED config structure
 	{										// 

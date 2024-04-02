@@ -3492,6 +3492,10 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
 							led_cfg.ledMode =5 ;
 							
 							break;
+						case 6:
+							led_cfg.ledMode =6 ;
+							
+							break;
 					}
 				
 					outval = 1;

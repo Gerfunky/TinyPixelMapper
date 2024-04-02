@@ -96,7 +96,7 @@ void load_bool()
 	if (!FS_Bools_read(0) || OVERWRITE_INIT_CONF_ON )
 	{
 		debugMe("Loading default device config");
-		led_cfg.ledMode 		= constrain(DEF_LED_MODE, 0, 5);
+		led_cfg.ledMode 		= constrain(DEF_LED_MODE, 0, NO_OF_LED_MODES);
 		led_cfg.max_bri 		= constrain(DEF_MAX_BRI, 1, 255);
 		led_cfg.startup_bri 	= constrain(DEF_MAX_BRI, 1, 255);
 		led_cfg.NrLeds			= constrain(NUM_LEDS, 1,MAX_NUM_LEDS) ;
