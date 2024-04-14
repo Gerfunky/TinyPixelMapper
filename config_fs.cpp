@@ -2241,7 +2241,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 			else if ((type == 'Y') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED); 		targetConf->form_fx_modify[strip_no].RotateFixed = in_int;}
+				if(AnotherSetting(&character)) { in_int = constrain(  get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED) , 0 , targetConf->form_cfg[strip_no].nr_leds )    ; 		targetConf->form_fx_modify[strip_no].RotateFixed = in_int;}
 				
 			}
 			else if ((type == 'Y') && (typeb == 'C'))	

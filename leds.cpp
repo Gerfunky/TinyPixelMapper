@@ -218,6 +218,15 @@ void LEDS_setLED_show(uint8_t ledNr, uint8_t color[3])
 
 
 
+void LEDS_SET_nrLeds( uint8_t formNr, uint16_t nrLeds, uint8_t deckNr )
+{
+
+	deck[deckNr].cfg.form_cfg[formNr].nr_leds =  constrain( nrLeds , 0,  (led_cfg.NrLeds - deck[deckNr].cfg.form_cfg[formNr].start_led )  );   
+	
+	//osc_queu_MSG_int("/ostc/form/sys/nld/" + String(orig_form_nr), deck[0].cfg.form_cfg[orig_form_nr].nr_leds ); 
+}
+
+
 
 	
 void LEDS_fadeout()

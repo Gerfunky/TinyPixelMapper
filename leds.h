@@ -15,8 +15,11 @@
 
 // defines , DO NOT CHANGE!!!!
 
-		#define MAX_NUM_LEDS   (170*6)  		// what is the max it can be set to in the config    
+		//#define MAX_NUM_LEDS_LINE 850	     (MAX_NUM_LEDS_LINE*4)   
+		#define MAX_NUM_LEDS    (850*3) //(170*6*3)  		// what is the max it can be set to in the config   
+		#define FFT_HISTORY_LENGTH (170*2)			// how much fft history to keep 
 		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
+		
 		#define POT_SENSE_DEF 4   				// only take Variable resistor value if it changes more than this.
 
 
@@ -842,19 +845,19 @@
 // The RUN struct these values change with calucations not relevant for saving.
 struct deck_run_struct
 {
-		CRGBArray<MAX_NUM_LEDS> leds_FFT_history;
+		CRGBArray<FFT_HISTORY_LENGTH> leds_FFT_history;
 		CRGBArray<MAX_NUM_LEDS> led_FX_out; 
 		CRGBArray<MAX_NUM_LEDS> leds;
 		//CRGB leds_FFT_history[MAX_NUM_LEDS];
 		//CRGB led_FX_out[MAX_NUM_LEDS]; 
 		//CRGB leds[MAX_NUM_LEDS];
-		byte heat[MAX_NUM_LEDS	];
+		byte heat[FFT_HISTORY_LENGTH	];
 		fft_data_struct 	fft_data[7];
 		fft_run_struct  	fft;
 		CRGBArray<MAX_NUM_LEDS> SaveLayers[NO_OF_SAVE_LAYERS];
 		form_fx_ffr_run_struct form_fx_fft[NR_FORM_PARTS];
 		form_fx_pal_run_struct  form_fx_pal[NR_FORM_PARTS]; 
-		form_fx_modify_run_struct form_fx_modify[NR_FORM_PARTS];
+		form_fx_modify_run_struct form_fx_modify[NR_FORM_PARTS];    
 		form_fx_dots_run_struct form_fx_dots[NR_FX_PARTS];
 		form_fx_eyes_run_struct form_fx_eyes[NR_FX_PARTS];
 		form_fx_strobe_run_struct form_fx_strobe[NR_FX_PARTS] ;
