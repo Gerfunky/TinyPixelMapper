@@ -2024,7 +2024,30 @@ void LEDS_run_layers(uint8_t deckSelected)
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_ROTATE ) 	for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_48_MIRROR ) 	for (byte z = 6; z < 8; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
 
-			
+			// LAYERS 49 to  64  *** Z =4 ; Z<6
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_64_FFT ) 		for (byte z = 8; z < 10; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_64_PAL ) 		for (byte z = 8; z < 10; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_64_ROTATE ) 	for (byte z = 8; z < 10; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_64_MIRROR ) 	for (byte z = 8; z < 10; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
+
+			// LAYERS 65 to  80  *** Z =4 ; Z<6
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_80_FFT ) 		for (byte z = 10; z < 12; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_80_PAL ) 		for (byte z = 10; z < 12; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_80_ROTATE ) 	for (byte z = 10; z < 12; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_80_MIRROR ) 	for (byte z = 10; z < 12; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
+
+			// LAYERS 81 to  96  *** Z =4 ; Z<6
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_96_FFT ) 		for (byte z = 12; z < 14; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_96_PAL ) 		for (byte z = 12; z < 14; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_96_ROTATE ) 	for (byte z = 12; z < 14; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_96_MIRROR ) 	for (byte z = 12; z < 14; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
+
+			// LAYERS 97 to  112  *** Z =4 ; Z<6
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_112_FFT ) 		for (byte z = 14; z < 16; z++) for (byte i = 0; i < 8; i++)  LEDS_run_fft(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_112_PAL ) 		for (byte z = 14; z < 16; z++) for (byte i = 0; i < 8; i++)  LEDS_run_pal(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_112_ROTATE ) 	for (byte z = 14; z < 16; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_rotate(z,i,deckSelected, deck[0].run.leds);
+			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_112_MIRROR ) 	for (byte z = 14; z < 16; z++) for (byte i = 0; i < 8; i++)  LEDS_run_FX_mirror(z,i,deckSelected, deck[0].run.leds);
+
 
 			// Save Layers
 			else if ( deck[deckSelected].cfg.layer.select[layer] ==_M_LAYER_SAVE_ALPHA )     {    LEDS_RUN_save_saved_layer(deckSelected,0); }       

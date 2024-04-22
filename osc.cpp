@@ -1899,17 +1899,33 @@ void osc_StC_form_routing(OSCMessage &msg, int addrOffset)
 		else if  	(msg.fullMatch("/pal/adv/1",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(2);osc_StC_menu_form_pal_adv_ref(3);}
 		else if  	(msg.fullMatch("/pal/adv/2",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(4);osc_StC_menu_form_pal_adv_ref(5);}
 		else if  	(msg.fullMatch("/pal/adv/3",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(6);osc_StC_menu_form_pal_adv_ref(7);}
+
+		else if  	(msg.fullMatch("/pal/adv/4",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(8);osc_StC_menu_form_pal_adv_ref(9);}
+		else if  	(msg.fullMatch("/pal/adv/5",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(10);osc_StC_menu_form_pal_adv_ref(11);}
+		else if  	(msg.fullMatch("/pal/adv/6",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(12);osc_StC_menu_form_pal_adv_ref(13);}
+		else if  	(msg.fullMatch("/pal/adv/7",addrOffset) 	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_pal_adv_ref(14);osc_StC_menu_form_pal_adv_ref(15);}
 		
 		else if  	(msg.fullMatch("/fft/adv/0",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(0);osc_StC_menu_form_fft_adv_ref(1);}
 		else if  	(msg.fullMatch("/fft/adv/1",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(2);osc_StC_menu_form_fft_adv_ref(3);}
 		else if  	(msg.fullMatch("/fft/adv/2",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(4);osc_StC_menu_form_fft_adv_ref(5);}
 		else if  	(msg.fullMatch("/fft/adv/3",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(6);osc_StC_menu_form_fft_adv_ref(7);}
 
+		else if  	(msg.fullMatch("/fft/adv/4",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(8);osc_StC_menu_form_fft_adv_ref(9);}
+		else if  	(msg.fullMatch("/fft/adv/5",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(10);osc_StC_menu_form_fft_adv_ref(11);}
+		else if  	(msg.fullMatch("/fft/adv/6",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(12);osc_StC_menu_form_fft_adv_ref(13);}
+		else if  	(msg.fullMatch("/fft/adv/7",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_fft_adv_ref(14);osc_StC_menu_form_fft_adv_ref(15);}
+
+
 		else if  	(msg.fullMatch("/fx/modify/adv/0",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(0);osc_StC_menu_form_modify_adv_ref(1);}
 		else if  	(msg.fullMatch("/fx/modify/adv/1",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(2);osc_StC_menu_form_modify_adv_ref(3);}
 		else if  	(msg.fullMatch("/fx/modify/adv/2",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(4);osc_StC_menu_form_modify_adv_ref(5);}
 		else if  	(msg.fullMatch("/fx/modify/adv/3",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(6);osc_StC_menu_form_modify_adv_ref(7);}
 
+
+		else if  	(msg.fullMatch("/fx/modify/adv/4",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(8);osc_StC_menu_form_modify_adv_ref(9);}
+		else if  	(msg.fullMatch("/fx/modify/adv/5",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(10);osc_StC_menu_form_modify_adv_ref(11);}
+		else if  	(msg.fullMatch("/fx/modify/adv/6",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(12);osc_StC_menu_form_modify_adv_ref(13);}
+		else if  	(msg.fullMatch("/fx/modify/adv/7",addrOffset)	&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_modify_adv_ref(14);osc_StC_menu_form_modify_adv_ref(15);}
 
 		else if  	(msg.fullMatch("/leds/adv",addrOffset)			&& bool(msg.getInt(0)) == true)	{osc_StC_menu_form_led_adv_ref();}
 
