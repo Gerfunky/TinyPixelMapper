@@ -37,8 +37,8 @@
 
 		// Strip/Form settings do not change!!! 
 		
-		#define _M_NR_FORM_BYTES_ 16 // 8				// 2 bytes = 16 forms   // 4 bytes = 32 forms 8=64     16 =128
-		#define NR_FORM_PARTS	128 //64 				// how many forms? default 6*8 = 64
+		#define _M_NR_FORM_BYTES_  20 //16 // 8				// 2 bytes = 16 forms   // 4 bytes = 32 forms 8=64     16 =128
+		#define NR_FORM_PARTS	 160 // 128 //64 				// how many forms? default 6*8 = 64
 
 
 	//	#define NR_STRIPS		32				// how many strips  default 32
@@ -154,7 +154,7 @@
 
 
 	#define MAX_LAYERS_SELECT 65 // up to how many layers can you add
-	#define MAX_LAYERS 65 					// what is the max layer Number
+	#define MAX_LAYERS 72 					// what is the max layer Number
 	#define MAX_LAYERS_BASIC 22				// what is the max layer Number
 
 	enum layer_options
@@ -207,6 +207,18 @@
 		_M_LAYER_112_PAL = 62,
 		_M_LAYER_112_ROTATE = 63,
 		_M_LAYER_112_MIRROR = 64,
+
+
+		_M_LAYER_128_FFT = 65,
+		_M_LAYER_128_PAL = 66,
+		_M_LAYER_128_ROTATE = 67,
+		_M_LAYER_128_MIRROR = 68,
+
+
+		_M_LAYER_144_FFT = 69,
+		_M_LAYER_144_PAL = 70,
+		_M_LAYER_144_ROTATE = 71,
+		_M_LAYER_144_MIRROR = 72,
 
 
 

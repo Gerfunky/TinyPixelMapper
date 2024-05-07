@@ -908,7 +908,27 @@ bool FS_play_conf_write1(uint8_t val)
 						&&		form >= 32 
 						&&		form < 48 )
 					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_PAL)
-						&&		form >= 48)
+						&&		form >= 48
+						&&		form < 64 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_PAL)
+						&&		form >= 64
+						&&		form < 80 )	
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_PAL)
+						&&		form >= 80
+						&&		form < 96 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_PAL)
+						&&		form >= 96
+						&&		form < 112 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_PAL)
+						&&		form >= 112
+						&&		form < 128 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_PAL)
+						&&		form >= 128
+						&&		form < 144 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_PAL)
+						&&		form >= 144
+						&&		form < 160 )
+
 					)
 				)
 			{
@@ -933,8 +953,31 @@ bool FS_play_conf_write1(uint8_t val)
 					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_PAL) 						
 						&&		form >= 4 
 						&&		form < 6 )
-					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_PAL)
-						&&		form >= 6)
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_PAL) 						
+						&&		form >= 6 
+						&&		form < 8 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_PAL) 						
+						&&		form >= 8 
+						&&		form < 10 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_PAL) 						
+						&&		form >= 10
+						&&		form < 12 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_PAL) 						
+						&&		form >= 12 
+						&&		form < 14 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_PAL) 						
+						&&		form >= 14 
+						&&		form < 16 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_PAL) 						
+						&&		form >= 16 
+						&&		form < 18 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_PAL) 						
+						&&		form >= 18 
+						&&		form < 20 )
+
+
+
+
 					)
 				)
 			{
@@ -971,8 +1014,31 @@ bool FS_play_conf_write1(uint8_t val)
 						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_FFT) 						
 							&&	form >= 32 
 							&&	form < 48 )
-						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT)
-							&&	form >= 48)
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT)
+						&&		form >= 48
+						&&		form < 64 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_FFT)
+						&&		form >= 64
+						&&		form < 80 )	
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_FFT)
+						&&		form >= 80
+						&&		form < 96 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_FFT)
+						&&		form >= 96
+						&&		form < 112 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_FFT)
+						&&		form >= 112
+						&&		form < 128 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_FFT)
+						&&		form >= 128
+						&&		form < 144 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_FFT)
+						&&		form >= 144
+						&&		form < 160 )
+
+
+
+
 						)
 					)
 				)
@@ -997,8 +1063,30 @@ bool FS_play_conf_write1(uint8_t val)
 						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_FFT) 						
 							&&	form >= 4 
 							&&	form < 6 )
-						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT)
-							&&	form >= 6)
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_FFT) 						
+						&&		form >= 6 
+						&&		form < 8 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_FFT) 						
+						&&		form >= 8 
+						&&		form < 10 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_FFT) 						
+						&&		form >= 10
+						&&		form < 12 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_FFT) 						
+						&&		form >= 12 
+						&&		form < 14 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_FFT) 						
+						&&		form >= 14 
+						&&		form < 16 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_FFT) 						
+						&&		form >= 16 
+						&&		form < 18 )
+					||  ( 		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_FFT) 						
+						&&		form >= 18 
+						&&		form < 20 )
+
+
+
 						)
 				)
 					
@@ -1400,8 +1488,31 @@ bool  FS_play_conf_write_append1(uint8_t val)
 						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_ROTATE) 						
 							&&	form >= 32 
 							&&	form < 48 )
-						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
-							&&	form >= 48)
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
+						&&		form >= 48
+						&&		form < 64 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_ROTATE)
+						&&		form >= 64
+						&&		form < 80 )	
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_ROTATE)
+						&&		form >= 80
+						&&		form < 96 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_ROTATE)
+						&&		form >= 96
+						&&		form < 112 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_ROTATE)
+						&&		form >= 112
+						&&		form < 128 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_ROTATE)
+						&&		form >= 128
+						&&		form < 144 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_ROTATE)
+						&&		form >= 144
+						&&		form < 160 )
+
+
+
+
 						)
 					)
 				)
@@ -1416,15 +1527,34 @@ bool  FS_play_conf_write_append1(uint8_t val)
 			if (deck[selectedDeckNo].cfg.form_cfg[form].nr_leds > 0
 			&& (
 						(	( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_00_ROTATE)						
-							&& 	form < 16 )
+							&& 	form < 2 )
 						||  (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_16_ROTATE) 		
-							&& 	form >= 16 
-							&& 	form < 32 )
+							&& 	form >= 2 
+							&& 	form < 4 )
 						||  ( 	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_32_ROTATE) 						
-							&&	form >= 32 
-							&&	form < 48 )
-						|| (	LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
-							&&	form >= 48)
+							&&	form >= 4 
+							&&	form < 6 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_48_ROTATE)
+						&&		form >= 6
+						&&		form < 8 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_64_ROTATE)
+						&&		form >= 8
+						&&		form < 10 )	
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_80_ROTATE)
+						&&		form >= 10
+						&&		form < 12 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_96_ROTATE)
+						&&		form >= 12
+						&&		form < 14 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_112_ROTATE)
+						&&		form >= 14
+						&&		form < 16 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_128_ROTATE)
+						&&		form >= 16
+						&&		form < 18 )
+					|| (		LEDS_check_if_layer_selected(selectedDeckNo,  _M_LAYER_144_ROTATE)
+						&&		form >= 18
+						&&		form < 20 )
 						)
 					)
 				)
@@ -2241,7 +2371,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 			else if ((type == 'Y') && (typeb == 'F'))	
 			{
 				strip_no = get_int_conf_value(conf_file, &character);
-				if(AnotherSetting(&character)) { in_int = constrain(  get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED) , 0 , targetConf->form_cfg[strip_no].nr_leds )    ; 		targetConf->form_fx_modify[strip_no].RotateFixed = in_int;}
+				if(AnotherSetting(&character))  {    in_int = get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED)     ; targetConf->form_fx_modify[strip_no].RotateFixed = in_int;    }  //  { in_int = constrain(  get_int_conf_value(conf_file, &character, LEDS_DEF_MODIFY_ROTATEFIXED) , 0 , targetConf->form_cfg[strip_no].nr_leds )    ; 		targetConf->form_fx_modify[strip_no].RotateFixed = in_int;}
 				
 			}
 			else if ((type == 'Y') && (typeb == 'C'))	
