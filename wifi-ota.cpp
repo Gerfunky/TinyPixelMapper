@@ -390,7 +390,7 @@ void WiFi_load_settings()   // load the wifi settings from SPIFFS or from defaul
 
 void WiFi_Event(WiFiEvent_t event )
 {
-	debugMe("[WiFi-event] event NoInfos :"+ String(event));
+	debugMe("[WiFi-event] event NoInfos :"+ String(event) + " : ",false );
     
 	switch (event) {
 
@@ -404,8 +404,30 @@ void WiFi_Event(WiFiEvent_t event )
 			debugMe("STA Stopped",true,true);
 			break;
 
-		
-    
+
+			case ARDUINO_EVENT_WIFI_STA_CONNECTED:				/**<4 ESP32 station connected to AP */
+			debugMe("WIFI:STA Connected");
+
+			break;
+
+
+
+		case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:				/**<5 ESP32 station disconnected from AP */
+			Serial.println("STA Disconnected");
+
+			
+			break;
+    	
+		case	ARDUINO_EVENT_WIFI_STA_GOT_IP:               /**<7 ESP32 station got IP from connected AP */
+			debugMe("station got IP from connected AP",true,true);
+			debugMe("ON SSID :" + String(WiFi.SSID()),true,true);
+
+			debugMe(WiFi.localIP());
+			//debugMe("Changed = " + String(info.got_ip.ip_changed),true,true);
+			
+			break;
+
+
 		case	ARDUINO_EVENT_WIFI_STA_LOST_IP:              /**<8 ESP32 station lost IP and the IP is reset to 0 */
 			debugMe("station lost IP and the IP is reset to 0");
 			break;
@@ -601,24 +623,58 @@ void WiFi_Event(WiFiEvent_t event, system_event_info_t info)
 }
 
 
+void WiFi_reconnect_Network_CLIENT()
+{
+		debugMe("Wifi_Client_RE_Connect : ");
+		//WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS);
+		//WiFi.persistent(false);
+		//WiFi.disconnect(true);
+		//WiFi.mode(WIFI_OFF);
+		//yield();
+		//delay(1000);
+		//WiFi.mode(WIFI_STA);
+		//yield();
+		//delay(10000);
+		//if (get_bool(STATIC_IP_ENABLED))
+			
 
+		//delay(10000);
+		
+		WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
+		debugMe("SSID : " + String(wifi_cfg.ssid) + "  PWD : " + String(wifi_cfg.pwd) ,true,true);
+	
+	
+	
+}
 
 
 
 void WiFi_Start_Network_CLIENT()
 {
 		debugMe("Wifi_Client_Connect : ");
-		WiFi.persistent(false);
-		WiFi.disconnect(true);
-		WiFi.mode(WIFI_OFF);
-		WiFi.mode(WIFI_STA);
+		//if (get_bool(STATIC_IP_ENABLED))
+		//	WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS);
+		
 		if (get_bool(STATIC_IP_ENABLED))
-			WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS);
+		if (!WiFi.config(wifi_cfg.ipStaticLocal, wifi_cfg.ipDGW, wifi_cfg.ipSubnet,wifi_cfg.ipDNS,wifi_cfg.ipDNS)) {
+   			 debugMe("------------STA Failed to configure");
+ 			 }
+	
+		//WiFi.mode(WIFI_OFF);
+		//yield();
+		//WiFi.mode(WIFI_STA);
+		//yield();
 		WiFi.begin(wifi_cfg.ssid, wifi_cfg.pwd);
-		debugMe("SSID : ",false,true);
-		debugMe(String(wifi_cfg.ssid),false,true);
-		debugMe(" - PWD : ",false,true);
-		debugMe(wifi_cfg.pwd,true,true);
+		debugMe("SSID : " + String(wifi_cfg.ssid) + "  PWD : " + String(wifi_cfg.pwd) ,true,true);
+		 // while (WiFi.status() != WL_CONNECTED) {
+		//		delay(500);
+	//			debugMe(".x",false);
+	//		}
+
+		
+		
+		
+
 	
 	
 }
@@ -680,7 +736,7 @@ void WiFi_Start_Network()
 		}
 		else if(get_bool(WIFI_POWER))
 			{
-				//debugMe("c2");
+				debugMe("Starting AP mode:");
 					if(get_bool(STATIC_IP_ENABLED)) WiFi.softAPConfig(wifi_cfg.ipStaticLocal, wifi_cfg.ipStaticLocal, wifi_cfg.ipSubnet); // ,wifi_cfg.APname, DEF_AP_PASSWD);
 					//debugMe("c2x");
 					
@@ -707,7 +763,8 @@ void WiFi_Start_Network()
 		LEDS_setall_color(3); FastLEDshowESP32(); delay(500);
 
 		write_bool(WIFI_MODE_BOOT, false);
-			
+
+		//WiFi_reconnect_Network_CLIENT();	
 		WiFi_Start_Network_CLIENT();
 
 	
@@ -966,7 +1023,8 @@ void wifi_setup()
 	
 
 	WiFi_load_settings();
-	
+	WiFi.persistent(false);
+	WiFi.disconnect(true);
 	WiFi.onEvent(WiFi_Event); // Start event handler!
 	
 	//delay(5000);
@@ -997,7 +1055,7 @@ void wifi_setup()
 
 void ip_services_loop()
 {
-		
+		//debugMe("inloop");
 		ArduinoOTA.handle();	// Run the main OTA loop for Wifi updating
 		//yield();
 		//NTP_parse_response();	// get new packets and flush if not correct.
@@ -1025,21 +1083,32 @@ void ip_services_loop()
 void wifi_loop()
 {
 	
+
+		
+
+
 		#ifdef USE_ETHERNET
-			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) && !eth_connected ) 
+			//if(!WiFi.isConnected()) WiFi.reconnect();
+
+			if ( !WiFi.isConnected() && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) && !eth_connected ) 
 		#else  
 			if ( (WiFi.status() != WL_CONNECTED) && (get_bool(WIFI_MODE_BOOT) != WIFI_ACCESSPOINT ) &&  (get_bool(WIFI_POWER_ON_BOOT)) ) 
 		#endif 
 		{	
+			
+
+
 			unsigned long currentT = millis();
 			if (currentT > wifi_cfg.connectTimeout )
 			{
+				debugMe("WifiNot connected! - > reconectiong");
 				wifi_cfg.connectTimeout = currentT + 30000;
 			//WiFi.disconnect(); 
 			//WIFI_start_wificlient(); 
 			//WiFi_Start_Network();
-			
-				WiFi_Start_Network_CLIENT();
+				WiFi.reconnect();	
+				//WiFi_reconnect_Network_CLIENT();
+				//WiFi_Start_Network_CLIENT();
 				//WiFi_print_settings();
 			}
 			

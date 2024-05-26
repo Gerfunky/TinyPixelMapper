@@ -2497,7 +2497,7 @@ void FS_Bools_write(uint8_t conf_nr)
 		conf_file.print(String(":"		+ String(led_cfg.Led_Setup_ConfNr)));
 		conf_file.println("] ");
 
-		conf_file.println(F("b = Device Bool Config 0=false 1= true : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
+		conf_file.println(F("b = Device Bool Config 0=false 1= true b: Debug Serial : Debug Telnet: FFT enabled : FFT Master : FFT Auto : FFT Master Send out UDP MC : DATA1_ENABLE : DATA2_ENABLE :DATA3_ENABLE :DATA4_ENABLE : Disable FPS&BRI on HW "));
 		conf_file.print(String("[b:" + String(get_bool(DEBUG_OUT))));	
 		conf_file.print(String(":" + String(get_bool(DEBUG_TELNET))));
 		conf_file.print(String(":" + String(get_bool(FFT_ENABLE))));

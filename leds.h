@@ -16,7 +16,7 @@
 // defines , DO NOT CHANGE!!!!
 
 		//#define MAX_NUM_LEDS_LINE 850	     (MAX_NUM_LEDS_LINE*4)   
-		#define MAX_NUM_LEDS    (850*3) //(170*6*3)  		// what is the max it can be set to in the config   
+		#define MAX_NUM_LEDS    (1000) //(170*6*3)  		// what is the max it can be set to in the config   850 test old without wifi.
 		#define FFT_HISTORY_LENGTH (170*2)			// how much fft history to keep 
 		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
 		
@@ -153,7 +153,7 @@
 // *************** Layers  ************************
 
 
-	#define MAX_LAYERS_SELECT 65 // up to how many layers can you add
+	#define MAX_LAYERS_SELECT 48 // up to how many layers can you add 48 in interface 
 	#define MAX_LAYERS 72 					// what is the max layer Number
 	#define MAX_LAYERS_BASIC 22				// what is the max layer Number
 

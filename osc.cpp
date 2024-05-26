@@ -83,7 +83,7 @@
 	// The OSC Server
 	WiFiUDP osc_server;				// the normal osc server
 
-	uint8_t Refreshloop = 255;
+	uint8_t Refreshloop = 255;      
 	uint8_t MobRefreshloop = 255;
 
 
@@ -1648,7 +1648,7 @@ void osc_StC_ref_lampConfig()
 }
 
 
-void osc_StC_menu_master_ref()
+void osc_StC_menu_master_ref_no_layers()
 {
 	osc_StC_ref_lampConfig();
 	osc_queu_MSG_int("/ostc/master/bri", 		map(deck[0].cfg.led_master_cfg.bri, 0 , led_cfg.max_bri , 0 ,255) ) ; //float(led_cfg.bri) / float(led_cfg.max_bri) );
@@ -1656,7 +1656,8 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/g", 			deck[0].cfg.led_master_cfg.g);
 	osc_queu_MSG_int("/ostc/master/b", 			deck[0].cfg.led_master_cfg.b);
 	osc_queu_MSG_int("/ostc/master/palbri", 	deck[0].cfg.led_master_cfg.pal_bri);
-	osc_queu_MSG_int("/ostc/master/fps", 		deck[0].cfg.led_master_cfg.pal_fps);
+	//osc_queu_MSG_int("/ostc/master/fps", 		deck[0].cfg.led_master_cfg.pal_fps);
+	
 	osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
 	osc_queu_MSG_int("/ostc/master/seq", 		(get_bool(SEQUENCER_ON))); 
 	osc_queu_MSG_int("/ostc/master/pasue", 		(get_bool(PAUSE_DISPLAY))); 
@@ -1686,14 +1687,34 @@ void osc_StC_menu_master_ref()
 	osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );   
 	osc_queu_MSG_int("/ostc/master/playnr", 	led_cfg.Play_Nr);
 
-	osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
+	//osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
 	osc_queu_MSG_int("/ostc/audio/rbri", 		LEDS_get_real_bri()); 
+
+	osc_queu_MSG_int("/ostc/master/lycs"  , 	deck[0].cfg.layer.clear_start_led	);
+	osc_queu_MSG_int("/ostc/master/lycn"  , 	deck[0].cfg.layer.clear_Nr_leds	);
+
+
+
+
+	
+	//yield();
+	
+
+}
+
+
+
+void osc_StC_layers_ref()
+{
 
 	for (uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++)
 	{
 			osc_queu_MSG_int("/ostc/master/laye/" + String(layer) , 	deck[0].cfg.layer.select[layer]	); 
 			
 	}
+
+		
+
 	for (uint8_t layersv = 0 ; layersv < NO_OF_SAVE_LAYERS ; layersv++)
 	{
 			osc_queu_MSG_int("/ostc/master/lymx/" + String(layersv) , 	deck[0].cfg.layer.save_mix[layersv]	); 
@@ -1701,12 +1722,7 @@ void osc_StC_menu_master_ref()
 			osc_queu_MSG_int("/ostc/master/lynl/" + String(layersv) , 	deck[0].cfg.layer.save_NrLeds[layersv]	); 
 			osc_queu_MSG_int("/ostc/master/lysl/" + String(layersv) , 	deck[0].cfg.layer.save_startLed[layersv]	); 
 	}
-	osc_queu_MSG_int("/ostc/master/lycs"  , 	deck[0].cfg.layer.clear_start_led	);
-	osc_queu_MSG_int("/ostc/master/lycn"  , 	deck[0].cfg.layer.clear_Nr_leds	);
-
-	
-	//yield();
-
+	debugMe("Done sending mensu_master_ref " );
 
 }
 
@@ -2854,6 +2870,15 @@ void osc_ostc_Start_refreshAll()
 
 }
 
+void osc_StC_menu_master_ref()
+{
+	Refreshloop = 40;
+		osc_queu_MSG_int("/ostc/master/fps", 		deck[0].cfg.led_master_cfg.pal_fps);
+		osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
+	//debugMe(Refreshloop);
+	
+
+}
 
 void osc_api_MobilerefreshAllLoop()
 {
@@ -2861,7 +2886,7 @@ void osc_api_MobilerefreshAllLoop()
 	switch(MobRefreshloop)
 	{
 		case 0:
-			osc_StC_menu_master_ref();
+			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
 		break;
 		case 1:
 			osc_StC_menu_audio_ref() ;
@@ -2882,7 +2907,11 @@ void osc_api_MobilerefreshAllLoop()
 			osc_StC_menu_master_loadsave_ref();
 		break;
 		case 40:
-			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
+			osc_StC_menu_master_ref_no_layers();
+			
+		break;
+		case 41:
+			osc_StC_layers_ref();
 		break;
 		
 
@@ -2909,13 +2938,18 @@ void osc_api_refreshAllLoop()
 	switch(Refreshloop)
 	{
 		case 0:
+		osc_queu_MSG_int("/ostc/master/fps", 		deck[0].cfg.led_master_cfg.pal_fps);
+		osc_queu_MSG_int("/ostc/audio/rfps", 		LEDS_get_FPS());
+	
 			//osc_api_pal_refall() ;
+			
 		break;
 		case 1:
 			osc_StC_menu_audio_ref() ;
 		break;
 		case 2:
-			osc_StC_menu_master_ref();
+			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
+			//osc_StC_menu_master_ref();
 		break;
 		case 3:
 			 osc_StC_menu_audio_ref() ;
@@ -3029,7 +3063,11 @@ void osc_api_refreshAllLoop()
 			osc_StC_menu_master_loadsave_ref();
 		break;
 		case 40:
-			osc_StC_menu_pal_ref(led_cfg.edit_pal) ;
+			osc_StC_menu_master_ref_no_layers();
+
+		break;
+		case 41:
+			osc_StC_layers_ref();
 		break;
 
 		case REFRESH_LOOP_END:
@@ -3618,10 +3656,11 @@ void OSC_loop()
 		}   //else debugMe("XXXXX");
 
 
-		if (osc_send_out_float_MSG_buffer() == false )
+		if (osc_send_out_float_MSG_buffer() == false )  // slow down the message output between ticks.
 		{
 			if (  Refreshloop < 255  )  osc_api_refreshAllLoop();
-			if (  MobRefreshloop < 255  )  osc_api_MobilerefreshAllLoop();
+
+			if (  MobRefreshloop < 255 &&  Refreshloop == 255  ) osc_api_MobilerefreshAllLoop();
 		}
 
 		//osc_send_out_API_FX_MSG_buffer() ;

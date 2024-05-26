@@ -18,7 +18,7 @@
 #define VIZ_FPS_MAX 15
 #define OSC_QEUE_ADD_LEN 30
 //#define OSC_MC_SERVER_DISABLED
-#define REFRESH_LOOP_END  41
+#define REFRESH_LOOP_END  42
 
 struct osc_cfg_struct				// OSC configuration structure
 {
