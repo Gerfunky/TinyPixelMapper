@@ -2217,7 +2217,7 @@ boolean FS_play_conf_read(uint8_t conf_nr, deck_cfg_struct* targetConf  ,deck_fx
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].triggerBin = in_int; }	else  targetConf->form_fx_fft_signles[strip_no].triggerBin  = 255;
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].lvl_bin = in_int; }   	else  targetConf->form_fx_fft_signles[strip_no].lvl_bin  = 255;
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].color = in_int; }   		else  targetConf->form_fx_fft_signles[strip_no].color  = 0; 
-				for (uint8_t setting = 0; setting < 6; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
+				for (uint8_t setting = 0; setting < _M_NR_FORM_FFT_OPTIONS_; setting++)  if(AnotherSetting(&character)) {in_int = get_int_conf_value(conf_file, &character); targetConf->form_menu_fft[strip_no][setting] = in_int;  }
 				if(AnotherSetting(&character)) { in_int = get_int_conf_value(conf_file, &character); targetConf->form_fx_fft_signles[strip_no].master_lvl = in_int; }  	else  targetConf->form_fx_fft_signles[strip_no].master_lvl  = 255; 
 			}
 			//else if ((type == 'T') && (typeb == 'M'))	
