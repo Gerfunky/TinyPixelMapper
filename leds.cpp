@@ -1980,7 +1980,7 @@ void LEDS_run_layers(uint8_t deckSelected)
 {
 
 
-	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT/2 ; layer++ )
+	for ( uint8_t layer = 0 ; layer < MAX_LAYERS_SELECT ; layer++ )
 	{
 				
 		if( deck[deckSelected].cfg.layer.select[layer] != 0 &&  deck[deckSelected].cfg.layer.select[layer] <= MAX_LAYERS  )
