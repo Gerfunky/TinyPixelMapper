@@ -16,7 +16,7 @@
 // defines , DO NOT CHANGE!!!!
 
 		//#define MAX_NUM_LEDS_LINE 850	     (MAX_NUM_LEDS_LINE*4)   
-		#define MAX_NUM_LEDS    (2500) //(170*6*3)  		// what is the max it can be set to in the config   850 test old without wifi.
+		#define MAX_NUM_LEDS    (2000) //(170*6*3)  		// what is the max it can be set to in the config   850 test old without wifi. 2500 killedWifiAP mode!
 		#define FFT_HISTORY_LENGTH (170*2)			// how much fft history to keep 
 		#define MAX_NUM_LEDS_BOOT  21 			//	only set the first 20 for boot info green=ap / red= clinet
 		
