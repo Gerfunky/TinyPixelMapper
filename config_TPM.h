@@ -20,6 +20,7 @@
 #define OVERWRITE_INIT_CONF_ON	false 
 //Overwrite, wifi, device and led settings to defaut
 
+#define FW_VERSION "xx.dev"
 
 
 
@@ -124,6 +125,8 @@
 		#define FIRE_SPARKING_MAX 200
 
 #ifdef HUZZAH32_BOARD
+		
+		#define BOARD_TYPE 0
 		#define LED_DATA_PIN    18 							// DATA 1 PIN	
 		#define LED_CLK_PIN     5 							// DATA 2 PIN / data1CLK pin
 
@@ -143,6 +146,7 @@
 #endif
 #ifdef OMILEX32_POE_BOARD
 
+		#define BOARD_TYPE 1
 		#define USE_SD
 		#define USE_ETHERNET
 

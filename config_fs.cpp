@@ -1675,12 +1675,13 @@ void FS_play_conf_readSendSavenames( )
 		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
 		//debugMe("READ Conf " + addr);
 		File conf_file = selectedFS.open(addr, "r");
+		//if (!conf_file) { debugMe( String(confNo) + ' file not exists' );}
 		String settingValue;
 		String OSCAddress = "/ostc/master/savename/" + String(confNo);
 		
 
 		//delay(100);
-		if (conf_file && !conf_file.isDirectory())
+		if (conf_file && !conf_file.isDirectory() )
 		{
 
 			char Confname[32];
@@ -1713,7 +1714,7 @@ void FS_play_conf_readSendSavenames( )
 					memset(Confname, 0, sizeof(Confname));
 					settingValue = get_string_conf_value(conf_file, &character);
 					settingValue.toCharArray(Confname, settingValue.length() + 1);
-					debugMe("checking Conf :" + String(Confname));
+		//			debugMe("checking Conf :" + String(Confname));
 					
 
 					
@@ -1724,15 +1725,16 @@ void FS_play_conf_readSendSavenames( )
 					break;
 				}
 				
-				
+		//		debugMe("xy Conf :" + String(Confname));
 			}
 			// close the file:
+		//	debugMe("x Conf " + addr);
 			conf_file.close();
 			//debugMe("play-File-Closed");
 
 			//String addrList = String("/conf/Savelist.txt");
 			//File List_conf_file = selectedFS.open(addrList, "a");
-			List_conf_file.println(String(confNo) +  ":" + settingValue);
+		//	List_conf_file.println(String(confNo) +  ":" + settingValue);
 			
 			Bundle_Counter = Bundle_Counter +1;
 			if (Bundle_Counter >= 6 )
@@ -1740,7 +1742,7 @@ void FS_play_conf_readSendSavenames( )
 				Bundle_Counter = 0;
 				
 				while(osc_send_out_float_MSG_buffer() );
-				debugMe("***one Set Sent***"); 
+				//debugMe("***one Set Sent***"); 
 			}
 
 			

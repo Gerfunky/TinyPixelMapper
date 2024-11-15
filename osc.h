@@ -12,7 +12,7 @@
 #include "IPAddress.h"
 
 
-#define OSC_BUNDLE_SEND_COUNT 30				// how many OSC messages to send in one bundle.
+#define OSC_BUNDLE_SEND_COUNT 25				// how many OSC messages to send in one bundle.
 #define OSC_FX_BUNDLE_SEND_COUNT 6				// how many OSC messages to send in one bundle.
 #define OSC_CONF_MAX_SAVES 	16					// what is the max amount of saves
 #define VIZ_FPS_MAX 15
@@ -50,6 +50,7 @@ void osc_queu_MSG_VAL_STRING(String addr_string, String StringValue);
 void osc_Send_String(String Address, String StringName);
 void osc_StC_ref_lampConfig();
 
+void osc_app_audio_ref(bool onlyStats = false );
 
 #endif
 

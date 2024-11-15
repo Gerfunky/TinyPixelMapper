@@ -1074,7 +1074,7 @@ struct save_struct
 	void LEDS_set_playNr(uint8_t setNr);
 
 	bool LEDS_check_if_layer_selected(uint8_t deckSelected , int8_t layer_no);
-
+	void LEDS_seqencer_advance(bool forward = true);
 	
 #endif
 

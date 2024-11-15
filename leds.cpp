@@ -323,7 +323,7 @@ void LEDS_G_AutoCalcPal(uint8_t deckNo, uint8_t iform)
 		if (leds != 0  && deck[deckNo].cfg.form_fx_pal[iform].autoPalMode != Ap_MANUAL ) deck[deckNo].cfg.form_fx_pal[iform].index_add_led  = calc_rounded_devision(MAX_INDEX_LONG , leds);
 		
 		
-		osc_queu_MSG_int("/ostc/form/pal/ald/" + String(iform), deck[0].cfg.form_fx_pal[iform].index_add_led );
+		//osc_queu_MSG_int("/ostc/form/pal/ald/" + String(iform), deck[0].cfg.form_fx_pal[iform].index_add_led );
 
 
 }
@@ -336,9 +336,10 @@ void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr)
 	write_bool(FADE_INOUT, true);
 	write_bool(FADE_INOUT_FADEBACK, false);
 	write_bool(FADE_INOUT_SAVE, Save);
+	debugMe("gggg"+String(Save));
 	led_cfg.fade_inout_val = 0;
 	led_cfg.next_config_loadsave = confNr;
-	led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
+	//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
 }
 
 void LEDS_FX1_increment_indexes(uint8_t DeckNo)
@@ -1353,7 +1354,7 @@ boolean LEDS_get_sequencer(uint8_t play_nr)
 
 }
 
-void LEDS_seqencer_advance()
+void LEDS_seqencer_advance(bool forward)
 {
 		uint8_t orig_play_nr = led_cfg.Play_Nr;
 
@@ -1363,9 +1364,11 @@ void LEDS_seqencer_advance()
 	if (get_bool(SEQUENCER_ON))	
 	{	
 		if (orig_play_nr < MAX_NR_SAVES-1 )
-		{
-			for (int play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+		{	
+			if(forward)
 			{
+				for (int play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
+				{
 						//debugMe("Play switch test to " + String(play_nr));
 						//if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
 
@@ -1379,12 +1382,49 @@ void LEDS_seqencer_advance()
 						}
 						if (play_nr == MAX_NR_SAVES -1 )  play_nr = -1;
 						if (play_nr == orig_play_nr ) break;
+				}
 			}
-		}
-		else
-		{
-			for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
+			else // reverse
 			{
+					for (int play_nr = led_cfg.Play_Nr -1 ; play_nr >=0  ; play_nr--  )
+				{
+						//debugMe("Play switch test to " + String(play_nr));
+						//if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
+
+						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+						{
+
+							LEDS_G_LoadSAveFade(false,play_nr) ;
+							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+							break;
+							
+						}
+						if (play_nr ==  0 )  play_nr = MAX_NR_SAVES;
+						if (play_nr == orig_play_nr ) break;
+				}
+
+			}
+		}// Sequencer off
+		{
+			if(forward)
+			{
+				for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
+				{
+							//debugMe("15-Play switch test to " + String(play_nr));
+							if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
+							{
+								LEDS_G_LoadSAveFade(false,play_nr) ;
+								//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
+								break;
+								
+							}
+							
+				}			
+			}
+			else // reverse
+			{
+				for (uint8_t play_nr = MAX_NR_SAVES ; play_nr >= 0 ; play_nr--  )
+				{
 						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
@@ -1393,9 +1433,12 @@ void LEDS_seqencer_advance()
 							break;
 							
 						}
+						if (play_nr ==  0 )  play_nr = MAX_NR_SAVES;
+						if (play_nr == orig_play_nr ) break; // sanity break if there are no configs
 						
-			}			
-			
+				}			
+
+			}
 		}
 
 		//led_cfg.confSwitch_time = micros() ; //  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
@@ -1406,7 +1449,12 @@ void LEDS_seqencer_advance()
 
 		if (orig_play_nr < MAX_NR_SAVES-1 )
 		{
-			uint8_t load_play_nr = orig_play_nr+1;
+			uint8_t load_play_nr ;
+			if(forward) load_play_nr = orig_play_nr+1;
+			else {
+				load_play_nr = orig_play_nr-1;
+				if (load_play_nr == -1) load_play_nr = MAX_NR_SAVES;
+				 }
 
 			while (load_play_nr <= MAX_NR_SAVES )
 			//for (uint8_t play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
@@ -1423,8 +1471,12 @@ void LEDS_seqencer_advance()
 							break;
 							
 						}
-						load_play_nr++;
-						if (load_play_nr == MAX_NR_SAVES -1 )  load_play_nr = 0;
+						if(forward) load_play_nr++;
+						else load_play_nr--;
+
+						if (load_play_nr == MAX_NR_SAVES -1 && forward )  load_play_nr = 0;
+						if (load_play_nr == 0 && !forward )  load_play_nr = MAX_NR_SAVES ;
+
 						if (load_play_nr == orig_play_nr ) break;
 			}
 		}
@@ -2577,10 +2629,10 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 								LEDS_init_config(0);	
 								FS_play_conf_read(led_cfg.next_config_loadsave ,&deck[0].cfg, &deck[0].fx1_cfg  );
 								LEDS_pal_reset_index(); 
-								if (osc_Isconnected())
+								/* if (osc_Isconnected())
 								{
 									if(get_bool(MANUAL_REFRESH)) osc_StC_menu_master_ref();  else  osc_ostc_Start_refreshAll();
-								}
+								} */
 							}
 
 						write_bool(FADE_INOUT_FADEBACK, true);
@@ -2699,6 +2751,20 @@ void LEDS_loop()
 
 
 		 } 
+
+		
+		if (get_bool(APP_VIZIT) && currentT >= deck[0].run.fft.update_time ) 
+		 {
+
+			deck[0].run.fft.update_time = currentT + (1000000 / deck[0].cfg.fft_config.viz_fps);	 
+			 
+			debugMe("in appVizit!");
+			 osc_app_audio_ref(true);
+			 //osc_StC_FFT_vizIt(); 
+			 //debugMe("vizzit");
+
+		}
+
 
 		 if (get_bool(FFT_OSTC_VIZ) && currentT >= deck[0].run.fft.update_time ) 
 		 {

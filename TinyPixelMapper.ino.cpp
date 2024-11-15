@@ -43,7 +43,7 @@ void setup()
 		debugMe(debug_ResetReason(0));
 		debugMe(debug_ResetReason(1));
 	
-		debugMe("Starting Setup - TinypixelMapper");
+		debugMe("Starting Setup - TinypixelMapper the one!");
 		
 		#ifdef OMILEX32_GW_BOARD 
 			debugMe("***** Olimex-Gateway *****");
@@ -52,6 +52,8 @@ void setup()
 		#elif HUZZAH32_BOARD
 			debugMe("***** Adafruit Huzzah32 *****");
 		#endif
+
+		debugMe("Build Date:"+ String(__DATE__)  );
 	}
 
 	btStop(); // disable bluetooth

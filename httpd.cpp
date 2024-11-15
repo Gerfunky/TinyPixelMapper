@@ -375,7 +375,8 @@ void httpd_handleRequestSettings()
 	}, []() {
 		HTTPUpload& upload = httpd.upload();
 		if (upload.status == UPLOAD_FILE_START) {
-			Serial.printf("Update: %s\n", upload.filename.c_str());
+		  	Serial.printf("Update: %s\n", upload.filename.c_str());
+			debugMe(upload.filename.c_str() );
 			if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {//start with max available size
 				Update.printError(Serial);
 			}
@@ -388,6 +389,7 @@ void httpd_handleRequestSettings()
 		}
 		else if (upload.status == UPLOAD_FILE_END) {
 			if (Update.end(true)) { //true to set the size to the current progress
+			debugMe("updateDone OKidoki");
 				Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
 			}
 			else {

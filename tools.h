@@ -59,7 +59,7 @@ enum GLOBAL_OPTIONS_ENUM
 	,ARTNET_REMAPPING   = 34	// remap artnet universe to FFT data and use almost all other features.
 	,MANUAL_REFRESH  = 35   // is it a custom load.
 	,CONF_OVERRIDES_LAMP = 36   // when loading a config it overwrites the Lamp config (a save pattern save also saves the Led Layout )
-
+	,APP_VIZIT			= 37
 
 //5
 };
