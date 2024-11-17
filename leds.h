@@ -902,7 +902,8 @@ struct deck_run_struct
 		form_fx_eyes_run_struct form_fx_eyes[NR_FX_PARTS];
 		form_fx_strobe_run_struct form_fx_strobe[NR_FX_PARTS] ;
 		form_fx_clock_run_struct form_fx_clock[NR_FX_PARTS];
-		
+		//char savenames[64][32]; 
+		String saveNames[64];
 };
 
 

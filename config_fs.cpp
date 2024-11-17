@@ -15,6 +15,12 @@
 #include "tpm_artnet.h"
 #include "osc.h"
 
+#include <OSCMessage.h>
+#include <OSCBundle.h>
+
+#include <WiFiUdp.h>
+
+extern WiFiUDP osc_server;	
 
 #ifdef USE_SD
 	#include "SD_MMC.h"
@@ -117,7 +123,7 @@ void FS_load_PlayConf_status()
 {
 
 
-	for(uint8_t bit_nr = 0; bit_nr < sizeof(SaveConf.confStatus); bit_nr++)
+	/* for(uint8_t bit_nr = 0; bit_nr < sizeof(SaveConf.confStatus); bit_nr++)
 	{
 			for(uint8_t conf_nr = 0; conf_nr < 8; conf_nr++)
 			{
@@ -126,8 +132,8 @@ void FS_load_PlayConf_status()
 
 			}
 
-	}
-
+	} */
+	FS_play_conf_readSavenames();
 }
 
 
@@ -1658,15 +1664,211 @@ bool FS_play_conf_write(uint8_t conf_nr)
 
 
 
+void FS_play_conf_readSendSavenamesAPP( ) 
+{
+	// Read the Play config NR
+	
+	//String addrList = String("/conf/Savelist.txt");
+	//File List_conf_file = selectedFS.open(addrList, "w");
+	//List_conf_file.println( "Nr:Name");
 
+	
+	uint8_t Bundle_Counter = 0;
+
+	uint8_t confNo = 0;
+
+
+	while ( confNo < MAX_NR_SAVES )
+	{
+		String OSCAddress = "/app/savename/" + String(Bundle_Counter);
+
+		char address_out[30];
+		OSCAddress.toCharArray(address_out, OSCAddress.length() + 1); //addre
+		debugMe(OSCAddress);
+	   OSCMessage theMSG(address_out) ;
+
+
+		for (int msgNr = 0; msgNr < MAX_NR_SAVES/2; msgNr++)
+		{
+			String addr = String("/conf/" + String(confNo) + ".playConf.txt");
+			//debugMe("READ Conf " + addr);
+			File conf_file = selectedFS.open(addr, "r");
+			//if (!conf_file) { debugMe( String(confNo) + ' file not exists' );}
+			String settingValue;
+			
+			if (conf_file && !conf_file.isDirectory() )
+			{
+			//	debugMe("READ Conf da  " + addr);
+				char Confname[32];
+				char character;
+				char type;
+				char typeb;
+				// debugMe("File-opened");
+				FS_write_Conf_status(confNo,true);
+				while (conf_file.available()) 
+				{
+
+					character = conf_file.read();
+					while ((conf_file.available()) && (character != '[')) 
+					{  // Go to first setting
+						character = conf_file.read();
+					}
+
+					type = conf_file.read();
+					typeb = conf_file.read();
+					character = conf_file.read(); // go past the first ":"
+					
+					if ((type == 'N') && (typeb == 'M'))
+					{
+						
+						
+						memset(Confname, 0, sizeof(Confname));
+						settingValue = get_string_conf_value(conf_file, &character);
+						settingValue.toCharArray(Confname, settingValue.length() + 1);
+
+						theMSG.add(Confname);
+						//osc_queu_MSG_VAL_STRING(OSCAddress, Confname);
+					
+						
+					//	break;
+					}
+					else
+					{
+							//theMSG.add("-.-");
+
+					}
+					
+
+				}
+
+				conf_file.close();
+				yield;
+				confNo++;
+			//	debugMe("end  Conf " + addr);
+					
+			}
+			else
+			{
+			//	debugMe("READ else Conf " + addr);
+				FS_write_Conf_status(confNo,false);
+				theMSG.add(" - ");
+				
+			//	osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
+			
+			confNo++;
+
+			}
+			yield;
+
+			debugMe("READ else Conf x" );
+			//if ( msgNr == 3) confNo--;
+
+		}		
+			yield;
+		debugMe("READ else Conf 1" );
+
+	osc_server.beginPacket(osc_server.remoteIP(), OSC_OUTPORT);
+	theMSG.send(osc_server);
+	osc_server.endPacket();
+	yield;
+	theMSG.empty();
+
+
+	//theMSG = OSCMessage;
+		yield;
+	Bundle_Counter++;
+		//delay(100);
+		debugMe("---  " + String( Bundle_Counter) );
+		
+	}
+
+	//List_conf_file.close();
+
+	
+}
+
+void FS_play_conf_readSendSavenamesAPPmem( ) 
+{
+	// Read the Play config NR
+	
+	//String addrList = String("/conf/Savelist.txt");
+	//File List_conf_file = selectedFS.open(addrList, "w");
+	//List_conf_file.println( "Nr:Name");
+
+	debugMe("inappmem");
+	uint8_t Bundle_Counter = 0;
+
+	uint8_t confNo = 0;
+
+
+	while ( confNo < MAX_NR_SAVES )
+	{
+		String OSCAddress = "/app/savename/" + String(Bundle_Counter);
+
+		char address_out[30];
+		OSCAddress.toCharArray(address_out, OSCAddress.length() + 1); //addre
+	//	debugMe(OSCAddress);
+	   OSCMessage theMSG(address_out) ;
+
+
+		for (int msgNr = 0; msgNr < MAX_NR_SAVES/2; msgNr++)
+		{
+			//String addr = String("/conf/" + String(confNo) + ".playConf.txt");
+			//debugMe("READ Conf " + addr);
+			//File conf_file = selectedFS.open(addr, "r");
+			//if (!conf_file) { debugMe( String(confNo) + ' file not exists' );}
+			//String settingValue;
+					char Confname[32];
+					memset(Confname, 0, sizeof(Confname));
+				
+
+
+		
+
+			deck[0].run.saveNames[confNo].toCharArray(Confname, deck[0].run.saveNames[confNo].length() + 1); 
+			//debugMe(Confname);
+			theMSG.add(Confname);
+			//debugMe(  " String - " + deck[0].run.saveNames[confNo]  );
+			
+				confNo++;
+			//	debugMe("end  Conf " + addr);
+					
+			}
+			
+
+			//if ( msgNr == 3) confNo--;
+
+				
+			yield;
+		debugMe("READ else Conf 1" );
+
+	osc_server.beginPacket(osc_server.remoteIP(), OSC_OUTPORT);
+	theMSG.send(osc_server);
+	osc_server.endPacket();
+	yield;
+	theMSG.empty();
+
+
+	//theMSG = OSCMessage;
+		yield;
+	Bundle_Counter++;
+		//delay(100);
+	//debugMe("---  " + String( Bundle_Counter) );
+		
+	}
+
+	//List_conf_file.close();
+
+	
+}
 
 void FS_play_conf_readSendSavenames( ) 
 {
 	// Read the Play config NR
 	
-	String addrList = String("/conf/Savelist.txt");
-	File List_conf_file = selectedFS.open(addrList, "w");
-	List_conf_file.println( "Nr:Name");
+	//String addrList = String("/conf/Savelist.txt");
+	//File List_conf_file = selectedFS.open(addrList, "w");
+	//List_conf_file.println( "Nr:Name");
 	uint8_t Bundle_Counter = 0;
 
 	for (uint8_t confNo = 0; confNo < MAX_NR_SAVES ; confNo++)
@@ -1715,9 +1917,9 @@ void FS_play_conf_readSendSavenames( )
 					settingValue = get_string_conf_value(conf_file, &character);
 					settingValue.toCharArray(Confname, settingValue.length() + 1);
 		//			debugMe("checking Conf :" + String(Confname));
-					
+					deck[0].run.saveNames[confNo] = settingValue;
+					debugMe(   settingValue +  " String xxxxxxxxxxxxxxxxxxx- " + deck[0].run.saveNames[confNo]  );
 
-					
 					osc_queu_MSG_VAL_STRING(OSCAddress, Confname);
 					//osc_StC_Send_CharArray(OSCAddress, Confname) ;
 					osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 0,255,0);
@@ -1734,7 +1936,7 @@ void FS_play_conf_readSendSavenames( )
 
 			//String addrList = String("/conf/Savelist.txt");
 			//File List_conf_file = selectedFS.open(addrList, "a");
-		//	List_conf_file.println(String(confNo) +  ":" + settingValue);
+			//List_conf_file.println(String(confNo) +  ":" + settingValue);
 			
 			Bundle_Counter = Bundle_Counter +1;
 			if (Bundle_Counter >= 6 )
@@ -1754,12 +1956,92 @@ void FS_play_conf_readSendSavenames( )
 			osc_queu_MSG_VAL_STRING(OSCAddress, " - ") ;
 			osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(confNo)), 255,0,0);
 
+			deck[0].run.saveNames[confNo] = " -.- ";
+
 			//List_conf_file.println(String(confNo) +  ": - " );
 		}
 		
 	}
 
-	List_conf_file.close();
+	//List_conf_file.close();
+
+	
+}
+void FS_play_conf_readSavenames( ) 
+{
+	// Read the Play config NR
+
+	for (uint8_t confNo = 0; confNo < MAX_NR_SAVES ; confNo++)
+	{
+
+		String addr = String("/conf/" + String(confNo) + ".playConf.txt");
+		//debugMe("READ Conf " + addr);
+		File conf_file = selectedFS.open(addr, "r");
+		//if (!conf_file) { debugMe( String(confNo) + ' file not exists' );}
+		String settingValue;
+		//String OSCAddress = "/ostc/master/savename/" + String(confNo);
+		
+
+		//delay(100);
+		if (conf_file && !conf_file.isDirectory() )
+		{
+
+			char Confname[32];
+			char character;
+			char type;
+			char typeb;
+			// debugMe("File-opened");
+			FS_write_Conf_status(confNo,true);
+			while (conf_file.available()) 
+			{
+
+				character = conf_file.read();
+				while ((conf_file.available()) && (character != '[')) 
+				{  // Go to first setting
+					character = conf_file.read();
+				}
+
+				type = conf_file.read();
+				typeb = conf_file.read();
+				character = conf_file.read(); // go past the first ":"
+				
+				//int  in_int = 0;
+
+				
+
+				if ((type == 'N') && (typeb == 'M'))
+				{
+					
+					
+					memset(Confname, 0, sizeof(Confname));
+					settingValue = get_string_conf_value(conf_file, &character);
+					settingValue.toCharArray(Confname, settingValue.length() + 1);
+	
+					deck[0].run.saveNames[confNo] = settingValue;
+					debugMe(   settingValue +  " String xxxxxxxxxxxxxxxxxxx- " + deck[0].run.saveNames[confNo]  );
+
+					
+					break;
+				}
+
+			}
+	
+			conf_file.close();
+
+		}
+		else
+		{
+			FS_write_Conf_status(confNo,false);
+			
+
+			deck[0].run.saveNames[confNo] = " -.- ";
+
+			//List_conf_file.println(String(confNo) +  ": - " );
+		}
+		
+	}
+
+	//List_conf_file.close();
 
 	
 }
@@ -1858,6 +2140,97 @@ void FS_play_conf_custom_readSendSavenames( )
 
 	List_conf_file.close();
 }
+
+
+void FS_get_Strip_Config_listApp( )
+{
+
+	// Read the Play config NR
+	//String addrList = String("/conf/lamps.txt");
+	//File List_conf_file = selectedFS.open(addrList, "w");
+	//List_conf_file.print( "{ ");
+	
+	OSCMessage outMsg("/app/lamp/list");
+	outMsg.add(led_cfg.Led_Setup_ConfNr );
+
+
+
+	for (uint8_t confNo = 0; confNo < MAX_LAMP_CONFIGS ; confNo++)
+	{
+		//SaveConf.confCustomLoadNrs[confNo]
+		//String OSCAddress = "/ostc/master/custsave/" + String(confNo);
+
+		String addr = String("/conf/" + String(confNo)  + ".LampConf.txt" );
+		debugMe("READ Conf " + addr);
+		File conf_file = selectedFS.open(addr, "r");
+
+		String settingValue;
+
+		//delay(100);
+		if (conf_file && !conf_file.isDirectory())
+		{
+
+			char Confname[24];
+			char character;
+			char type;
+			char typeb;
+			// debugMe("File-opened");
+
+			while (conf_file.available()) 
+			{
+
+				character = conf_file.read();
+				while ((conf_file.available()) && (character != '[')) 
+				{  // Go to first setting
+					character = conf_file.read();
+				}
+
+				type = conf_file.read();
+				typeb = conf_file.read();
+				character = conf_file.read(); // go past the first ":"
+				
+
+				if ((type == 'N') && (typeb == 'M'))
+				{
+					
+					
+					memset(Confname, 0, sizeof(Confname));
+					settingValue = get_string_conf_value(conf_file, &character);
+					settingValue.toCharArray(Confname, settingValue.length() + 1);
+					debugMe("checking Conf :", false);
+					debugMe(String(Confname));
+					
+					outMsg.add(Confname);
+					
+					
+				}
+				break;
+				
+			}
+			// close the file:
+			conf_file.close();
+			//debugMe("custom play-File-Closed");
+			
+			
+			
+		}
+		else
+		{
+	
+		
+		}
+	//List_conf_file.println( " }");
+	//List_conf_file.close();
+	}
+	
+	osc_server.beginPacket(osc_server.remoteIP(),OSC_OUTPORT);// OSC_OUTPORT); //{172,16,222,104}, 8001) ; //  osc_server.remotePort()
+	outMsg.send(osc_server);
+	osc_server.endPacket();
+	outMsg.empty();
+	//osc_queu_MSG_VAL_STRING("/ostc/master/Lamp/Versions", ExportString);
+	//osc_Send_String("/ostc/master/Lamp/Versions" , ExportString);
+
+ }
 
 void FS_get_Strip_Config_list( )
 {

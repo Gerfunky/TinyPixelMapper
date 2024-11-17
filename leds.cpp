@@ -336,10 +336,13 @@ void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr)
 	write_bool(FADE_INOUT, true);
 	write_bool(FADE_INOUT_FADEBACK, false);
 	write_bool(FADE_INOUT_SAVE, Save);
-	debugMe("gggg"+String(Save));
+	debugMe("gggg"+String(confNr));
+	
+	debugMe(Save);
 	led_cfg.fade_inout_val = 0;
 	led_cfg.next_config_loadsave = confNr;
-	//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
+	if (Save) deck[0].run.saveNames[confNr] = deck[0].cfg.confname;
+	led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
 }
 
 void LEDS_FX1_increment_indexes(uint8_t DeckNo)
@@ -1360,28 +1363,32 @@ void LEDS_seqencer_advance(bool forward)
 
 
 
-
+	//debugMe("forward O" + String(orig_play_nr));
 	if (get_bool(SEQUENCER_ON))	
-	{	
+	{	//debugMe(" seq on forward O" + String(orig_play_nr));
 		if (orig_play_nr < MAX_NR_SAVES-1 )
-		{	
+		{		//debugMe(" seq on forward x" + String(orig_play_nr));
 			if(forward)
 			{
+					//debugMe(" seq on forward y" + String(orig_play_nr));
 				for (int play_nr = led_cfg.Play_Nr +1 ; play_nr < MAX_NR_SAVES ; play_nr++  )
 				{
 						//debugMe("Play switch test to " + String(play_nr));
 						//if (play_nr == MAX_NR_SAVES -1 )  play_nr = 0;
-
+					//	debugMe("forward" + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-
+							//debugMe("forward Seq" + String(play_nr));
 							LEDS_G_LoadSAveFade(false,play_nr) ;
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
 							
 						}
 						if (play_nr == MAX_NR_SAVES -1 )  play_nr = -1;
-						if (play_nr == orig_play_nr ) break;
+						if (play_nr == orig_play_nr ) {
+							
+							led_cfg.confSwitch_time = micros()  +  play_conf_time_min[orig_play_nr] * MICROS_TO_MIN  ;
+							break;}
 				}
 			}
 			else // reverse
@@ -1393,7 +1400,7 @@ void LEDS_seqencer_advance(bool forward)
 
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
-
+						
 							LEDS_G_LoadSAveFade(false,play_nr) ;
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
@@ -1404,8 +1411,8 @@ void LEDS_seqencer_advance(bool forward)
 				}
 
 			}
-		}// Sequencer off
-		{
+	//	}// Sequencer off
+			/* 	{
 			if(forward)
 			{
 				for (uint8_t play_nr = 0 ; play_nr <= orig_play_nr ; play_nr++  )
@@ -1413,6 +1420,7 @@ void LEDS_seqencer_advance(bool forward)
 							//debugMe("15-Play switch test to " + String(play_nr));
 							if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 							{
+							
 								LEDS_G_LoadSAveFade(false,play_nr) ;
 								//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 								break;
@@ -1428,6 +1436,7 @@ void LEDS_seqencer_advance(bool forward)
 						//debugMe("15-Play switch test to " + String(play_nr));
 						if(LEDS_get_sequencer(play_nr) && FS_check_Conf_Available(play_nr ) &&  play_conf_time_min[play_nr] != 0   )
 						{
+							//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[play_nr] * MICROS_TO_MIN  ;
 							LEDS_G_LoadSAveFade(false,play_nr) ;
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
@@ -1438,7 +1447,7 @@ void LEDS_seqencer_advance(bool forward)
 						
 				}			
 
-			}
+			} */
 		}
 
 		//led_cfg.confSwitch_time = micros() ; //  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
@@ -1465,6 +1474,7 @@ void LEDS_seqencer_advance(bool forward)
 
 						if( FS_check_Conf_Available(load_play_nr ) )
 						{
+							//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[load_play_nr] * MICROS_TO_MIN  ;
 							LEDS_G_LoadSAveFade(false,load_play_nr) ;
 							
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
@@ -1487,6 +1497,7 @@ void LEDS_seqencer_advance(bool forward)
 						
 						if( FS_check_Conf_Available(play_nr ) )
 						{
+							//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[play_nr] * MICROS_TO_MIN  ;
 							LEDS_G_LoadSAveFade(false,play_nr) ;
 							//FS_play_conf_read(play_nr,&deck[0].cfg, &deck[0].fx1_cfg);
 							break;
@@ -2626,13 +2637,17 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 							}
 							else 
 							{
+								
 								LEDS_init_config(0);	
 								FS_play_conf_read(led_cfg.next_config_loadsave ,&deck[0].cfg, &deck[0].fx1_cfg  );
 								LEDS_pal_reset_index(); 
-								/* if (osc_Isconnected())
+								/// reset timing ?
+								//led_cfg.confSwitch_time = micros()  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ;
+								 if (osc_Isconnected())
 								{
-									if(get_bool(MANUAL_REFRESH)) osc_StC_menu_master_ref();  else  osc_ostc_Start_refreshAll();
-								} */
+									 osc_app_sendUpdate();
+									//if(get_bool(MANUAL_REFRESH)) osc_StC_menu_master_ref();  else  osc_ostc_Start_refreshAll();
+								} 
 							}
 
 						write_bool(FADE_INOUT_FADEBACK, true);
@@ -2658,6 +2673,9 @@ void LEDS_loop()
 	#endif
 
 
+
+	
+
 	// Calculate the real FPS 
 	// increment the led_cfg.framecounter by one on each pass
 	// reset every second.
@@ -2682,6 +2700,18 @@ void LEDS_loop()
 	
 	if (currentT > led_cfg.update_time  && !get_bool(ARTNET_RECIVE) )
 	{
+		
+		if (get_bool(SEQUENCER_ON)) 
+		{  //debugMe("x6 ");
+		//unsigned long 	confSwitch_time = led_cfg.confSwitch_time  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ; ; 	
+
+		if (currentT > led_cfg.confSwitch_time )  {LEDS_seqencer_advance(true);
+		}
+		
+		} 
+		
+		
+		
 		{	
 
 			
@@ -2744,7 +2774,7 @@ void LEDS_loop()
 			 	write_bool(BTN_LASTSTATE, Btn_state);
 				 if (Btn_state == false )
 				 {
-					LEDS_seqencer_advance();
+					LEDS_seqencer_advance(true);
 						
 
 				 }
@@ -2782,13 +2812,7 @@ void LEDS_loop()
 		//FS_play_conf_loop();
 
 
-	if (get_bool(SEQUENCER_ON)) 
-	{  //debugMe("x6 ");
-		//unsigned long 	confSwitch_time = led_cfg.confSwitch_time  +  play_conf_time_min[led_cfg.Play_Nr] * MICROS_TO_MIN  ; ; 	
-
-		if (currentT > led_cfg.confSwitch_time )  LEDS_seqencer_advance();
-		
-	} 
+	
 
 
 

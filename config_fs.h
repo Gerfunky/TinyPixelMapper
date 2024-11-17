@@ -101,7 +101,11 @@ void FS_setup();
 	boolean FS_get_PalyConfSatatus(uint8_t bit_nr);
 
 	void FS_play_conf_readSendSavenames( ) ;
+	void FS_play_conf_readSendSavenamesAPP( ) ;
 	void FS_play_conf_custom_readSendSavenames( ) ;
+	void FS_play_conf_readSendSavenamesAPPmem( );
+ 	void FS_play_conf_readSavenames();
+	void FS_get_Strip_Config_listApp( );
 
 	
 	boolean FS_read_Strip_Config(uint8_t conf_nr, deck_cfg_struct* DeckConf , led_cfg_struct* LedConf );

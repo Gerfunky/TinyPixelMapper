@@ -53,7 +53,7 @@
 
 	extern SaveStruct  SaveConf; 
 
-
+	bool appMode = false;
 
 // ************* Local Variables
 
@@ -733,6 +733,27 @@ void osc_Send_String(String Address, String StringName)
 		bundle_out.send(osc_server);
 		osc_server.endPacket();
 		bundle_out.empty();
+
+	}
+
+}
+
+void osc_Send_buttonState(String Address, int buttonState)
+{
+	if (osc_Isconnected())
+	{
+		
+		IPAddress ip_out(osc_server.remoteIP());		
+		char ConfOutAddress[32] ;
+
+		Address.toCharArray(ConfOutAddress, Address.length() + 1);
+
+		OSCMessage theMsg(ConfOutAddress);
+		theMsg.add(buttonState);
+		osc_server.beginPacket(ip_out , OSC_OUTPORT);   //osc_server.remotePort());//
+		theMsg.send(osc_server);
+		osc_server.endPacket();
+		theMsg.empty();
 
 	}
 
@@ -2424,7 +2445,7 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 		//debugMe("in master routing");
 		
 			if 		(msg.fullMatch("/bri",addrOffset))				{ deck[0].cfg.led_master_cfg.bri		= map(uint8_t(msg.getInt(0)), 0 , 255 , 0 , led_cfg.max_bri) ;  osc_queu_MSG_int("/ostc/audio/rbri", LEDS_get_real_bri());    } 
-			else if (msg.fullMatch("/next",addrOffset)) 			{  LEDS_seqencer_advance();}
+			else if (msg.fullMatch("/next",addrOffset)) 			{  LEDS_seqencer_advance(true);}
 			else if (msg.fullMatch("/prev",addrOffset)) 			{  LEDS_seqencer_advance(false);}
 			else if (msg.fullMatch("/conn",addrOffset))				{ if(get_bool(MANUAL_REFRESH)) osc_StC_menu_master_ref();  else  osc_ostc_Start_refreshAll();  }
 			else if (msg.fullMatch("/connM",addrOffset))			{  MobRefreshloop = 0;  }
@@ -2602,40 +2623,72 @@ void osc_StC_master_routing(OSCMessage &msg, int addrOffset)
 
 }
 
-void osc_app_savename_ref(bool onlyStats  )
+///
+//
+//
+//
+//
+//				APP
+//
+////
+
+
+
+void osc_app_savename_ref( )
 {
-	
+		
 		IPAddress ip_out(osc_server.remoteIP());
-		OSCMessage msg_out("/app/savename");
-		//msg_out.add();
+		OSCMessage msg_out("/app/SeqStatus");
+	
+		
+		msg_out.add(int(get_bool(SEQUENCER_ON)));
+		msg_out.add(led_cfg.Play_Nr);
+
+		OSCMessage save_msg_out("/app/saveStatus");
+		OSCMessage save_msg_out2("/app/saveStatus2");
+		OSCMessage seqStatus_msg_out("/app/seqSelected");
+		OSCMessage seqTime_msg_out("/app/SeqTime");
+		OSCMessage seqStatus_msg_out2("/app/seqSelected2");
+		OSCMessage seqTime_msg_out2("/app/SeqTime2");
+
+		for(uint8_t confNr = 0; confNr < MAX_NR_SAVES/2 ; confNr++)  		// update leds to show what confs are saved
+		{
+			save_msg_out.add(int( FS_check_Conf_Available(confNr)) );
+			seqStatus_msg_out.add(int(LEDS_get_sequencer(confNr) )  );
+			seqTime_msg_out.add(int(play_conf_time_min[confNr])  );
+	
+		}
+		for(uint8_t confNr = MAX_NR_SAVES/2 ; confNr < MAX_NR_SAVES; confNr++)  		// update leds to show what confs are saved
+		{
+			save_msg_out2.add(int( FS_check_Conf_Available(confNr)) );
+			seqStatus_msg_out2.add(int(LEDS_get_sequencer(confNr) )  );
+			seqTime_msg_out2.add(int(play_conf_time_min[confNr])  );
+	
+		}
+
 
 		OSCBundle bundle_out;
-		//OSCMessage tempMesage;
-		
+		bundle_out.add(msg_out);
+		bundle_out.add(save_msg_out);
+		bundle_out.add(save_msg_out2);
+	 	bundle_out.add(seqStatus_msg_out);
+		bundle_out.add(seqStatus_msg_out2);
 
+		bundle_out.add(seqTime_msg_out);
+		bundle_out.add(seqTime_msg_out2); 
 
-
-
-		if (!onlyStats)
-		{
-			bundle_out.add("/app/vizIt")  .add(int(get_bool(APP_VIZIT)) );
-
-			bundle_out.add("/app/audio/r")
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 0) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 1) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 2) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 3) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 4) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 5) ))
-				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 6) ));
-
-	osc_server.beginPacket(ip_out,OSC_OUTPORT);
+		osc_server.beginPacket(ip_out,OSC_OUTPORT);
 		bundle_out.send(osc_server);
 		osc_server.endPacket();
+
 		bundle_out.empty();
+		msg_out.empty();
+		save_msg_out.empty();
+		seqStatus_msg_out.empty();
+		seqTime_msg_out.empty();
 
 
-		}
+
 		
 		
 		
@@ -2759,6 +2812,83 @@ void osc_app_audio_ref(bool onlyStats  )
 		
 }	
 
+
+void osc_app_menu_ledCfg_ref()
+{
+	OSCMessage bundle_out("/app/leds/settings");
+	IPAddress ip_out(osc_server.remoteIP());
+
+		bundle_out.add(int(get_bool(DATA1_ENABLE) ));
+		bundle_out.add(int(get_bool(DATA2_ENABLE) ));
+
+		bundle_out.add(int(get_bool(DATA3_ENABLE) ));
+		bundle_out.add(int(get_bool(DATA4_ENABLE) ));
+		bundle_out.add(int(get_bool(POT_DISABLE) ));
+		bundle_out.add(int(get_bool(POTS_LVL_MASTER) )); 
+
+		bundle_out.add( led_cfg.DataStart_leds[0]    );
+		bundle_out.add(    led_cfg.DataNR_leds[0]  );
+		bundle_out.add( led_cfg.DataStart_leds[1]    );
+		bundle_out.add(    led_cfg.DataNR_leds[1]  );
+		bundle_out.add( led_cfg.DataStart_leds[2]    );
+		bundle_out.add(    led_cfg.DataNR_leds[2]  );
+		bundle_out.add( led_cfg.DataStart_leds[3]    );
+		bundle_out.add(    led_cfg.DataNR_leds[3]  );
+
+		bundle_out.add(led_cfg.NrLeds   );
+		bundle_out.add(led_cfg.max_bri     );
+		bundle_out.add( led_cfg.ledMode   );
+		bundle_out.add(led_cfg.apa102data_rate    );
+		bundle_out.add( led_cfg.bootCFG   );
+		bundle_out.add( led_cfg.PotSens   );
+
+		bundle_out.add( led_cfg.Led_Setup_ConfNr  );
+		bundle_out.add(int(get_bool(CONF_OVERRIDES_LAMP) )); 
+
+		osc_server.beginPacket(ip_out, OSC_OUTPORT);    // osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+
+
+}
+
+void osc_app_menu_wifi_ref()
+{
+
+		OSCMessage bundle_out("/app/wifi/settings");
+		IPAddress ip_out(osc_server.remoteIP());
+
+		bundle_out.add(int(get_bool(WIFI_MODE_TPM) ));
+		bundle_out.add(int(get_bool(STATIC_IP_ENABLED) ));
+		bundle_out.add(int(get_bool(WIFI_POWER) ));
+		bundle_out.add(int(get_bool(HTTP_ENABLED) ));
+		bundle_out.add(int(get_bool(DEBUG_OUT) ));
+		bundle_out.add(int(get_bool(DEBUG_TELNET) ));
+
+		bundle_out.add(wifi_cfg.APname );
+		bundle_out.add(wifi_cfg.APpassword );
+		bundle_out.add(wifi_cfg.pwd );
+		bundle_out.add(wifi_cfg.ssid );
+		bundle_out.add(wifi_cfg.ntp_fqdn );
+
+
+		
+
+		bundle_out.add(String(String(wifi_cfg.ipStaticLocal[0]) + "." + String(wifi_cfg.ipStaticLocal[1] ) + "." + String(wifi_cfg.ipStaticLocal[2] ) + "." + String(wifi_cfg.ipStaticLocal[3] )).c_str() );
+		bundle_out.add(String(String(wifi_cfg.ipSubnet[0]) + "." + String(wifi_cfg.ipSubnet[1] ) + "." + String(wifi_cfg.ipSubnet[2] ) + "." + String(wifi_cfg.ipSubnet[3] ) ).c_str() );
+		bundle_out.add(String(String(wifi_cfg.ipDGW[0]) + "." + String(wifi_cfg.ipDGW[1] ) + "." + String(wifi_cfg.ipDGW[2] ) + "." + String(wifi_cfg.ipDGW[3] ) ).c_str() );
+		bundle_out.add(String(String(wifi_cfg.ipDNS[0]) + "." + String(wifi_cfg.ipDNS[1] ) + "." + String(wifi_cfg.ipDNS[2] ) + "." + String(wifi_cfg.ipDNS[3] ) ).c_str() );
+
+	
+		osc_server.beginPacket(ip_out, OSC_OUTPORT);    // osc_server.remotePort());//
+		bundle_out.send(osc_server);
+		osc_server.endPacket();
+		bundle_out.empty();
+
+}	
+
 void osc_app_menu_master_ref()
 {
 
@@ -2786,6 +2916,9 @@ void osc_app_menu_master_ref()
 			.add(int(get_bool(PAUSE_DISPLAY)))
 			.add(led_cfg.Play_Nr)
 			.add(deck[0].cfg.confname)
+			.add(float(ESP.getFreeHeap()))
+			.add(temperatureRead())
+			.add(wifi_cfg.APname);
 			
 			;
 
@@ -2801,10 +2934,6 @@ void osc_app_menu_master_ref()
 
 
 
-//	osc_queu_MSG_int("/app/refMix", 0 ); // set the led
-	
-
-
 
 	osc_server.beginPacket(ip_out,OSC_OUTPORT);// OSC_OUTPORT); //{172,16,222,104}, 8001) ; //  osc_server.remotePort()
 		bundle_out.send(osc_server);
@@ -2812,31 +2941,6 @@ void osc_app_menu_master_ref()
 		bundle_out.empty();
 
 
-
-
-	//osc_queu_MSG_int("/ostc/blend", 			(get_bool(BLEND_INVERT))); 
-	//osc_queu_MSG_int("/ostc/master/ManRef", 		(get_bool(MANUAL_REFRESH))); 
-	//osc_queu_MSG_float("/ostc/heap", float(ESP.getFreeHeap()));
-	
-	
-	//osc_queu_MSG_int("/ostc/master/usedKBytes",   FS_get_UsedKBytes()  ); 
-	//osc_queu_MSG_int("/ostc/master/totalKBytes",  FS_get_TotalKBytes()  );
-	//osc_queu_MSG_int("/ostc/master/leftKBytes",  FS_get_leftKBytes()  );
-
-	//osc_queu_MSG_int("/ostc/master/H", NTP_get_time_h()  );
-	//osc_queu_MSG_int("/ostc/master/M", NTP_get_time_m()  );
-	//osc_queu_MSG_int("/ostc/master/S", NTP_get_time_s()  );
-	//float temp = temperatureRead();
-	//osc_queu_MSG_float("/ostc/master/ctemp", temp  );
-	//debugMe("CoreTemp : " + String(temp) );
-	
-	//osc_queu_MSG_int("/ostc/master/data/maxbri",  led_cfg.max_bri );   
-	//osc_queu_MSG_int("/ostc/master/playnr", 	led_cfg.Play_Nr);
-
-	
-
-	//osc_queu_MSG_int("/ostc/master/lycs"  , 	deck[0].cfg.layer.clear_start_led	);
-	//osc_queu_MSG_int("/ostc/master/lycn"  , 	deck[0].cfg.layer.clear_Nr_leds	);
 
 
 
@@ -2847,8 +2951,49 @@ void osc_app_menu_master_ref()
 	//osc_queu_MSG_int("/app/refMix", 1 );
 }
 
+void osc_app_sendUpdate()
+	{
+		if (appMode) osc_app_menu_master_ref(); 
+
+	}
+
+void osc_app_routing(OSCMessage &msg, int addrOffset) 
+{
+		appMode = true;
+		if (msg.fullMatch("/refMix",addrOffset))						{ 	osc_app_menu_master_ref(); }
+		else if (msg.fullMatch("/wifi/ref",addrOffset))					{ osc_Send_buttonState( "/app/wifi/save"   ,0  );     osc_Send_buttonState( "/app/wifi/ref"   ,1  );  	 osc_app_menu_wifi_ref(); 	}
+		else if (msg.fullMatch("/wifi/save",addrOffset))				{ osc_Send_buttonState( "/app/wifi/save"   ,1  );     osc_Send_buttonState( "/app/wifi/ref"   ,0  );	 FS_wifi_write(); }
+		else if (msg.fullMatch("/cfg/leds/ref",addrOffset))				{osc_Send_buttonState( "/app/cfg/leds/save"   ,0  );  osc_Send_buttonState( "/app/cfg/leds/ref"   ,1  ); osc_app_menu_ledCfg_ref() ; FS_get_Strip_Config_listApp( );}
+		else if (msg.fullMatch("/cfg/leds/save",addrOffset))			{ osc_Send_buttonState( "/app/cfg/leds/save"   ,1  ); osc_Send_buttonState( "/app/cfg/leds/ref"   ,0  ); FS_Bools_write(0) ;  }
+		
+		
+		else if (msg.fullMatch("/pause",addrOffset))				{ 	write_bool(PAUSE_DISPLAY,		bool(msg.getInt(0) )) ;}
+		else if (msg.fullMatch("/refSeq",addrOffset))				
+		{  
+			osc_app_savename_ref() ;
+			FS_play_conf_readSendSavenamesAPPmem( ); 
+			
+			
+			} //           FS_play_conf_readSendSavenames( ); } osc_StC_menu_master_loadsave_ref();	
+		else if (msg.fullMatch("/audio/ref",addrOffset))				{ 	osc_app_audio_ref(); }    
+		else if (msg.fullMatch("/lamp/active",addrOffset))				{    write_bool(CONF_OVERRIDES_LAMP, bool(msg.getInt(0) )) ;    }    // /ostc/master/overrideLamp
+		//else if (msg.fullMatch("/lamp/ref",addrOffset))				{ FS_get_Strip_Config_listApp( )	; }     //  /ostc/master/LampRef
+		//else if (msg.fullMatch("/lamp/save",addrOffset))			{ FS_write_Strip_Config(led_cfg.Led_Setup_ConfNr); FS_Bools_write(0) ;  }		// /ostc/master/SaveLamp
+		//else if (msg.fullMatch("/lamp/load",addrOffset))				{ 	; } // /ostc/master/LoadLamp     sender= /ostc/master/LampConfigNr
+		else if (msg.fullMatch("/lamp/selected",addrOffset))		{  FS_read_Strip_Config(uint8_t(msg.getInt(0)),&deck[0].cfg, &led_cfg); led_cfg.Led_Setup_ConfNr = uint8_t(msg.getInt(0));  } // /ostc/master/LoadLamp     sender= /ostc/master/LampConfigNr	
+		
+		
 
 
+		else if (msg.fullMatch("/vizIt",addrOffset))				    { 	write_bool(APP_VIZIT,			bool(msg.getInt(0) )) ;       } 
+		else if (msg.fullMatch("/vizItFPS",addrOffset))				{ 	deck[0].cfg.fft_config.viz_fps =		bool(msg.getInt(0) ) ;}
+		else if (msg.fullMatch("/appOff",addrOffset))				{ 	appMode = false ;}
+
+
+
+	
+
+}
 
 //////////////////// PAL In
 
@@ -2940,27 +3085,7 @@ void osc_StC_routing(OSCMessage &msg, int addrOffset)
 
 
 
-void osc_app_routing(OSCMessage &msg, int addrOffset) 
-{
-		if (msg.fullMatch("/refMix",addrOffset))				{ 	osc_app_menu_master_ref(); }
-		if (msg.fullMatch("/refSeq",addrOffset))				{  osc_StC_menu_master_loadsave_ref();	FS_play_conf_readSendSavenames( ); }
-		if (msg.fullMatch("/refAudio",addrOffset))				{ 	osc_app_audio_ref(); }
-		if (msg.fullMatch("/vizIt",addrOffset))				    { 	write_bool(APP_VIZIT,			bool(msg.getInt(0) )) ;       } 
-		if (msg.fullMatch("/vizItFPS",addrOffset))				{ 	deck[0].cfg.fft_config.viz_fps =		bool(msg.getInt(0) ) ;}
 
-	//	 if (msg.match("/menu",addrOffset))  msg.route("/menu", 		osc_StC_menu_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
-	// if (msg.match("/master",addrOffset)) msg.route("/master", 		osc_app_master_routing,	addrOffset);   // Routing for MASTER TAB  -  Open Stage Controll
-	//else if (msg.match("/pal",addrOffset)) msg.route("/pal", 			osc_StC_pal_routing , 	addrOffset);   // Routing for PALLETE TAB -  Open Stage Controll
-	//else if (msg.match("/form",addrOffset)) msg.route("/form", 			osc_StC_form_routing , 	addrOffset);   // Routing for FORM TAB    -  Open Stage Controll
-	//else if (msg.match("/audio",addrOffset)) msg.route("/audio", 		osc_StC_audio_routing , 	addrOffset);
-	//else if (msg.fullMatch("/refAll",addrOffset))  						osc_ostc_Start_refreshAll();
-	//else if (msg.fullMatch("/index_reset",addrOffset))				{ 	LEDS_pal_reset_index(); }
-	
-	//osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	255 ,random8(190),0 );	// send out a reply
-	//osc_queu_MSG_rgb( String("/ostc/master/connled" ) ,  	getrand8() ,getrand8() ,getrand8( )  );	
-	
-
-}
 
 
 //////////////////////////////////// API 
