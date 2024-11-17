@@ -2643,6 +2643,7 @@ void osc_app_savename_ref( )
 		
 		msg_out.add(int(get_bool(SEQUENCER_ON)));
 		msg_out.add(led_cfg.Play_Nr);
+		msg_out.add(1);  // reset REfreshButton
 
 		OSCMessage save_msg_out("/app/saveStatus");
 		OSCMessage save_msg_out2("/app/saveStatus2");
@@ -2668,7 +2669,7 @@ void osc_app_savename_ref( )
 
 
 		OSCBundle bundle_out;
-		bundle_out.add(msg_out);
+		
 		bundle_out.add(save_msg_out);
 		bundle_out.add(save_msg_out2);
 	 	bundle_out.add(seqStatus_msg_out);
@@ -2676,6 +2677,8 @@ void osc_app_savename_ref( )
 
 		bundle_out.add(seqTime_msg_out);
 		bundle_out.add(seqTime_msg_out2); 
+
+		bundle_out.add(msg_out);
 
 		osc_server.beginPacket(ip_out,OSC_OUTPORT);
 		bundle_out.send(osc_server);
@@ -2693,6 +2696,7 @@ void osc_app_savename_ref( )
 		
 		
 }	
+
 void osc_app_audio_ref(bool onlyStats  )
 {
 	
@@ -2703,7 +2707,8 @@ void osc_app_audio_ref(bool onlyStats  )
 
 		if (!onlyStats)
 		{
-			bundle_out.add("/app/vizIt")  .add(int(get_bool(APP_VIZIT)) );
+			
+			
 
 			bundle_out.add("/app/audio/r")
 				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu[0], 0) ))
@@ -2745,6 +2750,9 @@ void osc_app_audio_ref(bool onlyStats  )
 				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu_bri, 4) ))
 				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu_bri, 5) ))
 				.add(int(bitRead(deck[0].cfg.fft_config.fft_menu_bri, 6) ));
+			
+			bundle_out.add("/app/vizIt")  .add(int(get_bool(APP_VIZIT)) ) 
+										.add(1); //reset the REfLed
 		}
 		bundle_out.add("/app/audio/trig")
 			.add(deck[0].cfg.fft_config.trigger[0]   )
@@ -2845,7 +2853,11 @@ void osc_app_menu_ledCfg_ref()
 		bundle_out.add( led_cfg.Led_Setup_ConfNr  );
 		bundle_out.add(int(get_bool(CONF_OVERRIDES_LAMP) )); 
 
+		bundle_out.add( 1  ); // set refbutton
+
 		osc_server.beginPacket(ip_out, OSC_OUTPORT);    // osc_server.remotePort());//
+
+
 		bundle_out.send(osc_server);
 		osc_server.endPacket();
 		bundle_out.empty();
@@ -2881,6 +2893,8 @@ void osc_app_menu_wifi_ref()
 		bundle_out.add(String(String(wifi_cfg.ipDGW[0]) + "." + String(wifi_cfg.ipDGW[1] ) + "." + String(wifi_cfg.ipDGW[2] ) + "." + String(wifi_cfg.ipDGW[3] ) ).c_str() );
 		bundle_out.add(String(String(wifi_cfg.ipDNS[0]) + "." + String(wifi_cfg.ipDNS[1] ) + "." + String(wifi_cfg.ipDNS[2] ) + "." + String(wifi_cfg.ipDNS[3] ) ).c_str() );
 
+		bundle_out.add(1); // button ref Wifi to 1
+		   
 	
 		osc_server.beginPacket(ip_out, OSC_OUTPORT);    // osc_server.remotePort());//
 		bundle_out.send(osc_server);
@@ -2918,7 +2932,8 @@ void osc_app_menu_master_ref()
 			.add(deck[0].cfg.confname)
 			.add(float(ESP.getFreeHeap()))
 			.add(temperatureRead())
-			.add(wifi_cfg.APname);
+			.add(wifi_cfg.APname)
+			.add(1);   // Set refLed
 			
 			;
 
@@ -2961,25 +2976,20 @@ void osc_app_routing(OSCMessage &msg, int addrOffset)
 {
 		appMode = true;
 		if (msg.fullMatch("/refMix",addrOffset))						{ 	osc_app_menu_master_ref(); }
-		else if (msg.fullMatch("/wifi/ref",addrOffset))					{ osc_Send_buttonState( "/app/wifi/save"   ,0  );     osc_Send_buttonState( "/app/wifi/ref"   ,1  );  	 osc_app_menu_wifi_ref(); 	}
-		else if (msg.fullMatch("/wifi/save",addrOffset))				{ osc_Send_buttonState( "/app/wifi/save"   ,1  );     osc_Send_buttonState( "/app/wifi/ref"   ,0  );	 FS_wifi_write(); }
-		else if (msg.fullMatch("/cfg/leds/ref",addrOffset))				{osc_Send_buttonState( "/app/cfg/leds/save"   ,0  );  osc_Send_buttonState( "/app/cfg/leds/ref"   ,1  ); osc_app_menu_ledCfg_ref() ; FS_get_Strip_Config_listApp( );}
-		else if (msg.fullMatch("/cfg/leds/save",addrOffset))			{ osc_Send_buttonState( "/app/cfg/leds/save"   ,1  ); osc_Send_buttonState( "/app/cfg/leds/ref"   ,0  ); FS_Bools_write(0) ;  }
+		else if (msg.fullMatch("/wifi/ref",addrOffset))					{   	 osc_app_menu_wifi_ref(); 	}
+		else if (msg.fullMatch("/wifi/save",addrOffset))				{ osc_Send_buttonState( "/app/wifi/save"   ,1  );    	 FS_wifi_write(); }
+		else if (msg.fullMatch("/cfg/leds/ref",addrOffset))				{	 osc_app_menu_ledCfg_ref() ; FS_get_Strip_Config_listApp( );}
+		else if (msg.fullMatch("/cfg/leds/save",addrOffset))			{ osc_Send_buttonState( "/app/cfg/leds/save"   ,1  );    FS_Bools_write(0) ;  }
 		
 		
 		else if (msg.fullMatch("/pause",addrOffset))				{ 	write_bool(PAUSE_DISPLAY,		bool(msg.getInt(0) )) ;}
 		else if (msg.fullMatch("/refSeq",addrOffset))				
 		{  
 			osc_app_savename_ref() ;
-			FS_play_conf_readSendSavenamesAPPmem( ); 
-			
-			
-			} //           FS_play_conf_readSendSavenames( ); } osc_StC_menu_master_loadsave_ref();	
+			FS_play_conf_readSendSavenamesAPPmem( ); }   //           FS_play_conf_readSendSavenames( ); } osc_StC_menu_master_loadsave_ref();	
 		else if (msg.fullMatch("/audio/ref",addrOffset))				{ 	osc_app_audio_ref(); }    
 		else if (msg.fullMatch("/lamp/active",addrOffset))				{    write_bool(CONF_OVERRIDES_LAMP, bool(msg.getInt(0) )) ;    }    // /ostc/master/overrideLamp
-		//else if (msg.fullMatch("/lamp/ref",addrOffset))				{ FS_get_Strip_Config_listApp( )	; }     //  /ostc/master/LampRef
-		//else if (msg.fullMatch("/lamp/save",addrOffset))			{ FS_write_Strip_Config(led_cfg.Led_Setup_ConfNr); FS_Bools_write(0) ;  }		// /ostc/master/SaveLamp
-		//else if (msg.fullMatch("/lamp/load",addrOffset))				{ 	; } // /ostc/master/LoadLamp     sender= /ostc/master/LampConfigNr
+	
 		else if (msg.fullMatch("/lamp/selected",addrOffset))		{  FS_read_Strip_Config(uint8_t(msg.getInt(0)),&deck[0].cfg, &led_cfg); led_cfg.Led_Setup_ConfNr = uint8_t(msg.getInt(0));  } // /ostc/master/LoadLamp     sender= /ostc/master/LampConfigNr	
 		
 		
