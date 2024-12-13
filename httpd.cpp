@@ -208,6 +208,14 @@ void httpd_handlecConfFileList() {
 		if(fileX.isDirectory())
 		{ 
 			debugMe("Dir!!!!");
+/* 			if (output != "[") output += ',';
+			bool isDir = true;
+			output += "{\"type\":\"";
+			output += "Dir";
+			output += "\",\"name\":\"";
+			output += String("conf/" + String(fileX.name()).substring(0));
+			output += "\"}";
+			fileX.close(); */
 		}
 		else
 		{

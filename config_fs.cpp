@@ -723,9 +723,9 @@ void FS_play_conf_clear(uint8_t conf_nr)
 	}
 
 	bitWrite(SaveConf.confStatus[byte_nr], bit_nr, false);
-
+	deck[0].run.saveNames[conf_nr]  = "--.--" ;
 	osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 255,0,0);
-	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr) , "-" ) ;
+	osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr) , "--.--" ) ;
 
 }	
 

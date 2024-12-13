@@ -50,6 +50,7 @@ void osc_queu_MSG_VAL_STRING(String addr_string, String StringValue);
 void osc_Send_String(String Address, String StringName);
 void osc_StC_ref_lampConfig();
 void osc_app_sendUpdate();
+void osc_app_sendUpdateSave(int conf_nr);
 
 void osc_app_audio_ref(bool onlyStats = false );
 

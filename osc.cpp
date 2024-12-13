@@ -2968,7 +2968,25 @@ void osc_app_menu_master_ref()
 
 void osc_app_sendUpdate()
 	{
-		if (appMode) osc_app_menu_master_ref(); 
+		if (appMode) {
+  
+			
+	
+			osc_app_menu_master_ref(); }
+
+	}
+
+void osc_app_sendUpdateSave(int conf_nr)
+	{
+		if (appMode) {
+			
+
+		osc_queu_MSG_VAL_STRING("/ostc/master/savename/" + String(conf_nr) , deck[0].cfg.confname ) ; 
+		  osc_queu_MSG_rgb(String("/ostc/master/conf/l/"+String(conf_nr)), 0,255,0);       
+			
+	
+			//osc_app_menu_master_ref(); 
+			}
 
 	}
 
@@ -2976,7 +2994,7 @@ void osc_app_routing(OSCMessage &msg, int addrOffset)
 {
 		appMode = true;
 		if (msg.fullMatch("/refMix",addrOffset))						{ 	osc_app_menu_master_ref(); }
-		else if (msg.fullMatch("/wifi/ref",addrOffset))					{   	 osc_app_menu_wifi_ref(); 	}
+		else if (msg.fullMatch("/wifi/ref",addrOffset))					{   osc_app_menu_wifi_ref(); 	}
 		else if (msg.fullMatch("/wifi/save",addrOffset))				{ osc_Send_buttonState( "/app/wifi/save"   ,1  );    	 FS_wifi_write(); }
 		else if (msg.fullMatch("/cfg/leds/ref",addrOffset))				{	 osc_app_menu_ledCfg_ref() ; FS_get_Strip_Config_listApp( );}
 		else if (msg.fullMatch("/cfg/leds/save",addrOffset))			{ osc_Send_buttonState( "/app/cfg/leds/save"   ,1  );    FS_Bools_write(0) ;  }
@@ -2995,7 +3013,7 @@ void osc_app_routing(OSCMessage &msg, int addrOffset)
 		
 
 
-		else if (msg.fullMatch("/vizIt",addrOffset))				    { 	write_bool(APP_VIZIT,			bool(msg.getInt(0) )) ;       } 
+		else if (msg.fullMatch("/vizIt",addrOffset))				    { 	write_bool(APP_VIZIT,			bool(msg.getInt(0) )) ;   deck[0].run.fft.update_time = millis();     } 
 		else if (msg.fullMatch("/vizItFPS",addrOffset))				{ 	deck[0].cfg.fft_config.viz_fps =		bool(msg.getInt(0) ) ;}
 		else if (msg.fullMatch("/appOff",addrOffset))				{ 	appMode = false ;}
 

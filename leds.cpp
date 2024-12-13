@@ -21,6 +21,7 @@
 
 	#include "config_fs.h"	
 
+	
 
 	#include "tpm_artnet.h"
 	#include "osc.h"
@@ -342,7 +343,7 @@ void LEDS_G_LoadSAveFade(boolean Save, uint8_t confNr)
 	led_cfg.fade_inout_val = 0;
 	led_cfg.next_config_loadsave = confNr;
 	if (Save) deck[0].run.saveNames[confNr] = deck[0].cfg.confname;
-	led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
+    if (Save != true)	led_cfg.confSwitch_time = micros()  +  play_conf_time_min[confNr] * MICROS_TO_MIN  ;
 }
 
 void LEDS_FX1_increment_indexes(uint8_t DeckNo)
@@ -2577,7 +2578,7 @@ void LEDS_setup()
 			{
 				//debugMe("JOHOHOHOHO");
 				led_cfg.confSwitch_time = micros();
-				//LEDS_seqencer_advance();
+				LEDS_seqencer_advance();
 			}
 
 		}
@@ -2634,7 +2635,10 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 							 	FS_play_conf_write(led_cfg.next_config_loadsave) ;
 								
 								
-							}
+								osc_app_sendUpdateSave(led_cfg.next_config_loadsave);
+								debugMe("insave");
+
+							}	
 							else 
 							{
 								
@@ -2661,7 +2665,7 @@ void LEDS_G_run_LOAD_SAVE_SHOW_Loop()
 
 			}
 }
-
+	 
 void LEDS_loop()
 {	// the main led loop
 	unsigned long currentT = micros();
