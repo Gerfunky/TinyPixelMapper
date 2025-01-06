@@ -3310,7 +3310,7 @@ void osc_StC_menu_master_ref()
 	
 
 }
-
+/* 
 void osc_api_MobilerefreshAllLoop()
 {
 	
@@ -3361,7 +3361,7 @@ void osc_api_MobilerefreshAllLoop()
 
 
 }
-
+*/
 
 void osc_api_refreshAllLoop()
 {
@@ -3522,7 +3522,7 @@ void osc_api_refreshAllLoop()
 }
 
 
-
+ /*
 // OSC MESSAGE :    Int PalNr , int ColorNr, int Red , int Green , intBlue
 // Recive a Palette Color.
 void osc_api_fx(OSCMessage &msg, int addrOffset)
@@ -3566,9 +3566,9 @@ void osc_api_fx(OSCMessage &msg, int addrOffset)
 	
 
  }
+ */
 
-
-
+/* 
 
 /////////////////////////////////
 ////////// API  Routing 
@@ -3683,7 +3683,7 @@ void osc_tosc_refresh()
 
 
 }
-
+ */
 
 void osc_tosc_routing(OSCMessage &msg, int addrOffset) 
 {
@@ -3694,7 +3694,7 @@ void osc_tosc_routing(OSCMessage &msg, int addrOffset)
     else if (msg.fullMatch("/b",addrOffset))				{ deck[0].cfg.led_master_cfg.b		= byte(msg.getFloat(0)	* 255); }
 	else if (msg.fullMatch("/FPS", addrOffset))										osc_queu_MSG_float("/tosc/FPSL", LEDS_get_FPS());
 	
-	else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
+	//else if (msg.fullMatch("/ref", addrOffset) && bool(msg.getFloat(0)) == true)			{ osc_tosc_refresh(); }
 	else if (msg.fullMatch("/RESET", addrOffset) && bool(msg.getFloat(0)) == true)			{ESP.restart(); }
 	else if (msg.fullMatch("/IPSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_wifi_write(); FS_Bools_write(0); }
 	else if (msg.fullMatch("/ARTNETSAVE", addrOffset) && bool(msg.getFloat(0)) == true) 		{FS_artnet_write(); }
@@ -4072,7 +4072,7 @@ void OSC_loop()
 
 
 				if 		( oscMSG.match("/ostc") )    oscMSG.route("/ostc", osc_StC_routing);   // Routing for Open Stage Control
-				else if ( oscMSG.match("/api") 	)	oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
+			//	else if ( oscMSG.match("/api") 	)	oscMSG.route("/api", osc_api_routing);   // Routing for Open Stage Control
 				else if ( oscMSG.match("/tosc") )		oscMSG.route("/tosc", osc_tosc_routing);	// Routing for touchosc
 				else if (oscMSG.fullMatch("/reset-index", 0) && bool(oscMSG.getFloat(0)) == true) LEDS_pal_reset_index();
 				else if (oscMSG.match("/app") )     	oscMSG.route("/app", osc_app_routing);	// Routing for myApps
@@ -4088,12 +4088,12 @@ void OSC_loop()
 		}   //else debugMe("XXXXX");
 
 
-		if (osc_send_out_float_MSG_buffer() == false )  // slow down the message output between ticks.
+	 if (osc_send_out_float_MSG_buffer() == false )  // slow down the message output between ticks.
 		{
 			if (  Refreshloop < 255  )  osc_api_refreshAllLoop();
 
-			if (  MobRefreshloop < 255 &&  Refreshloop == 255  ) osc_api_MobilerefreshAllLoop();
-		}
+		//	if (  MobRefreshloop < 255 &&  Refreshloop == 255  ) osc_api_MobilerefreshAllLoop();
+		} 
 
 		//osc_send_out_API_FX_MSG_buffer() ;
 	}
