@@ -60,10 +60,9 @@
 
 
 
- void WIFI_FFT_toggle_master(boolean value);			// osc.cpp
- void WIFI_FFT_toggle(boolean mode_value);				//osc.cpp
 
- void WIFI_FFT_master_send();   // Comms
+
+ 
 
  void WiFi_telnet_print(String input, boolean line);
  void WiFi_telnet_print(tm input, boolean line);
@@ -82,6 +81,13 @@
  
  boolean Network_connected_check();
  void wifi_start_IP_services();
+
+
+ #ifndef FFT_SERVER_DISABLED
+		void WIFI_FFT_master_send();   // Comms
+		void WIFI_FFT_toggle_master(boolean value);			// osc.cpp
+ 		void WIFI_FFT_toggle(boolean mode_value);				//osc.cpp
+ #endif 
 
 #endif
 

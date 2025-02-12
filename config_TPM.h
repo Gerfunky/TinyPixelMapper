@@ -5,7 +5,7 @@
 
 //#define HUZZAH32_BOARD
 //#define OMILEX32_POE_BOARD
-
+#define FFT_SERVER_DISABLED    // disable FFT Master Slave Multicasting 
 //#include "Arduino.h"
 
 
@@ -20,7 +20,7 @@
 #define OVERWRITE_INIT_CONF_ON	false 
 //Overwrite, wifi, device and led settings to defaut
 
-#define FW_VERSION "xx.dev"
+#define FW_VERSION "2.0-RC"
 
 
 

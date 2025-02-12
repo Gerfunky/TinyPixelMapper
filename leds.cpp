@@ -2741,7 +2741,12 @@ void LEDS_loop()
 
 
 				LEDS_FFT_history_run(deck[DeckNo].run.fft.GlobalColor_result, DeckNo);
-				if(get_bool(FFT_ENABLE) && get_bool(FFT_MASTER)) WIFI_FFT_master_send() ;
+
+
+
+				#ifndef FFT_SERVER_DISABLED
+					if(get_bool(FFT_ENABLE) && get_bool(FFT_MASTER)) WIFI_FFT_master_send() ;
+				#endif 
 				yield();
 			}
 

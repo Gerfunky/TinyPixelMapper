@@ -1009,8 +1009,9 @@ void wifi_start_IP_services()
 		//if(get_bool(STATIC_IP_ENABLED)) dnsServer.start(53, "tpm", wifi_cfg.ipStaticLocal);// WiFi.localIP());
 		//else dnsServer.start(53, "tpm", IPAddress(192, 168, 4, 1));// WiFi.localIP());
 
-		//WiFi_FFT_Setup();    // Start the Wifi FFT Master Slave setup
-
+		#ifndef FFT_SERVER_DISABLED
+				WiFi_FFT_Setup();    // Start the Wifi FFT Master Slave setup
+		#endif
 		//WiFi_print_settings();
 		debugMe("end services");
 	}

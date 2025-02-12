@@ -63,16 +63,16 @@ void setup()
 	FS_setup();  // includes loadbool()
 	yield();
 	
-	debugMe("PreeLEDS");
+	//debugMe("PreeLEDS");
 	LEDS_setup();
-	debugMe("PooooooooooooooostLEDS");
+	//debugMe("PooooooooooooooostLEDS");
 	wifi_setup();
 	yield();
  	
 
 	//MMQT_setup() ;
 	yield();
-	debugMe("pre Services Setup");
+	//debugMe("pre Services Setup");
 	yield();
 	wifi_start_IP_services();
 
