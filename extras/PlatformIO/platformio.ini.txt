@@ -1,0 +1,43 @@
+; PlatformIO Project Configuration File
+;
+;   Build options: build flags, source filter
+;   Upload options: custom upload port, speed and extra flags
+;   Library options: dependencies, extra library storages
+;   Advanced options: extra scripting
+;
+; Please visit documentation for the other options and examples
+; http://docs.platformio.org/page/projectconf.html
+[platformio]
+default_envs = esp32-poe,  feather32 
+;default_envs =   feather32 
+;default_envs = esp32-poe     ...
+
+
+
+
+
+
+
+[env:esp32-poe]
+platform = espressif32
+board = esp32-poe
+framework = arduino
+monitor_speed = 115200
+board_build.partitions = min_spiffs.csv
+build_flags = -D OMILEX32_POE_BOARD  -DPIO_FRAMEWORK_ESP_IDF_ENABLE_EXCEPTIONS  
+upload_port = 172.16.222.27
+
+
+[env:feather32]
+platform = espressif32
+;platform = https://github.com/platformio/platform-espressif32.git#feature/stage
+board =featheresp32
+build_flags = -D HUZZAH32_BOARD 
+;-DPIO_FRAMEWORK_ESP_IDF_ENABLE_EXCEPTIONS 
+framework = arduino
+monitor_speed = 115200
+upload_port = 172.16.222.23
+upload_protocol = espota
+
+
+
